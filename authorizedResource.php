@@ -1,27 +1,40 @@
 <?php
-  ini_set('display_errors', 'On');
-  require __DIR__ . '/vendor/autoload.php';
-  require_once('storage.php');
+ini_set('display_errors', 'On');
+require __DIR__ . '/vendor/autoload.php';
+require_once('storage.php');
+require_once('utilities.php');
 
-  // Use this class to deserialize error caught
-  use XeroAPI\XeroPHP\AccountingObjectSerializer;
 
-  // Storage Classe uses sessions for storing token > extend to your DB of choice
-  $storage = new StorageClass();
-  $xeroTenantId = (string)$storage->getSession()['tenant_id'];
+$dbh = getDbh();
 
-  if ($storage->getHasExpired()) {
-    $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-      'clientId'                => '__YOUR_CLIENT_ID__',
-      'clientSecret'            => '__YOUR_CLIENT_SECRET__',
-      'redirectUri'             => 'http://localhost:8888/xero-php-oauth2-starter/callback.php',
-      'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
-      'urlAccessToken'          => 'https://identity.xero.com/connect/token',
-      'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
-    ]);
+// Use this class to deserialize error caught
+use XeroAPI\XeroPHP\AccountingObjectSerializer;
+
+// Storage Classe uses sessions for storing token > extend to your DB of choice
+$storage = new StorageClass();
+$xeroTenantId = (string) $storage->getSession()['tenant_id'];
+if (array_key_exists('user_name', $_SESSION)) {
+    $userName = $_SESSION['user_name'];
+} else {
+    try {
+        $jwt = new XeroAPI\XeroPHP\JWTClaims();
+        $jwt->setTokenId((string) $storage->getIdToken());
+        // Set access token in order to get authentication event id
+        $jwt->setTokenAccess((string) $storage->getAccessToken());
+        $jwt->decode();
+
+        $userName = $_SESSION['user_name'] = $jwt->getGivenName();
+        $userEmail = $_SESSION['user_email'] = $jwt->getEmail();
+    } catch (Exception $e) {
+        echo 'Message: ' . $e->getMessage();
+    }
+}
+
+if ($storage->getHasExpired()) {
+    $provider = getProvider();
 
     $newAccessToken = $provider->getAccessToken('refresh_token', [
-      'refresh_token' => $storage->getRefreshToken()
+        'refresh_token' => $storage->getRefreshToken()
     ]);
 
     // Save my token, expiration and refresh token
@@ -30,22 +43,28 @@
         $newAccessToken->getExpires(),
         $xeroTenantId,
         $newAccessToken->getRefreshToken(),
-        $newAccessToken->getValues()["id_token"] );
-  }
+        $newAccessToken->getValues()["id_token"]
+    );
+}
 
-  $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$storage->getSession()['token'] );
-  $apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
-      new GuzzleHttp\Client(),
-      $config
-  );
-  
-  $message = "no API calls";
-  if (isset($_GET['action'])) {
-    if ($_GET["action"] == 1) {
+$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string) $storage->getSession()['token']);
+$apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
+    new GuzzleHttp\Client(),
+    $config
+);
+
+$message = "no API calls";
+
+$action = filter_input(INPUT_GET, 'action');
+
+switch ($action) {
+    case 1:
         // Get Organisation details
         $apiResponse = $apiInstance->getOrganisations($xeroTenantId);
         $message = 'Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
-    } else if ($_GET["action"] == 2) {
+        break;
+
+    case 2:
         // Create Contact
         try {
             $person = new XeroAPI\XeroPHP\Models\Accounting\ContactPerson;
@@ -63,13 +82,13 @@
                 ->setLastName("Bar")
                 ->setEmailAddress("ben.bowden@24locks.com")
                 ->setContactPersons($arr_persons);
-            
+
             $arr_contacts = [];
             array_push($arr_contacts, $contact);
             $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
             $contacts->setContacts($arr_contacts);
 
-            $apiResponse = $apiInstance->createContacts($xeroTenantId,$contacts);
+            $apiResponse = $apiInstance->createContacts($xeroTenantId, $contacts);
             $message = 'New Contact Name: ' . $apiResponse->getContacts()[0]->getName();
         } catch (\XeroAPI\XeroPHP\ApiException $e) {
             $error = AccountingObjectSerializer::deserialize(
@@ -79,8 +98,9 @@
             );
             $message = "ApiException - " . $error->getElements()[0]["validation_errors"][0]["message"];
         }
+        break;
 
-    } else if ($_GET["action"] == 3) {
+    case 3:  // filter invoices
         $if_modified_since = new \DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
         $if_modified_since = null;
         $where = 'Type=="ACCREC"'; // string
@@ -89,7 +109,8 @@
         $ids = null; // string[] | Filter by a comma-separated list of Invoice Ids.
         $invoice_numbers = null; // string[] |  Filter by a comma-separated list of Invoice Numbers.
         $contact_ids = null; // string[] | Filter by a comma-separated list of ContactIDs.
-        $statuses = array("DRAFT", "SUBMITTED");;
+        $statuses = array("DRAFT", "SUBMITTED");
+        $statuses = [];
         $page = 1; // int | e.g. page=1 – Up to 100 invoices will be returned in a single API call with line items
         $include_archived = null; // bool | e.g. includeArchived=true - Contacts with a status of ARCHIVED will be included
         $created_by_my_app = null; // bool | When set to true you'll only retrieve Invoices created by your app
@@ -97,15 +118,21 @@
 
         try {
             $apiResponse = $apiInstance->getInvoices($xeroTenantId, $if_modified_since, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp);
-            if (  count($apiResponse->getInvoices()) > 0 ) {
+            if (count($apiResponse->getInvoices()) > 0) {
                 $message = 'Total invoices found: ' . count($apiResponse->getInvoices());
+                //var_export($apiResponse->getInvoices());
             } else {
                 $message = "No invoices found matching filter criteria";
             }
         } catch (Exception $e) {
             echo 'Exception when calling AccountingApi->getInvoices: ', $e->getMessage(), PHP_EOL;
         }
-    } else if ($_GET["action"] == 4) {
+        break;
+
+    case 9:
+        // don't actually need to do anything?
+        break;
+    case 4:
         // Create Multiple Contacts
         try {
             $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
@@ -122,7 +149,7 @@
             $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
             $contacts->setContacts($arr_contacts);
 
-            $apiResponse = $apiInstance->createContacts($xeroTenantId,$contacts,false);
+            $apiResponse = $apiInstance->createContacts($xeroTenantId, $contacts, false);
             $message = 'First contacts created: ' . $apiResponse->getContacts()[0]->getName();
 
             if ($apiResponse->getContacts()[1]->getHasValidationErrors()) {
@@ -137,7 +164,8 @@
             );
             $message = "ApiException - " . $error->getElements()[0]["validation_errors"][0]["message"];
         }
-    } else if ($_GET["action"] == 5) {
+        break;
+    case 5:
 
         $if_modified_since = new \DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
         $where = null;
@@ -145,10 +173,10 @@
         $ids = null; // string[] | Filter by a comma-separated list of Invoice Ids.
         $page = 1; // int | e.g. page=1 – Up to 100 invoices will be returned in a single API call with line items
         $include_archived = null; // bool | e.g. includeArchived=true - Contacts with a status of ARCHIVED will be included
-   
+
         try {
             $apiResponse = $apiInstance->getContacts($xeroTenantId, $if_modified_since, $where, $order, $ids, $page, $include_archived);
-            if (  count($apiResponse->getContacts()) > 0 ) {
+            if (count($apiResponse->getContacts()) > 0) {
                 $message = 'Total contacts found: ' . count($apiResponse->getContacts());
             } else {
                 $message = "No contacts found matching filter criteria";
@@ -156,43 +184,49 @@
         } catch (Exception $e) {
             echo 'Exception when calling AccountingApi->getContacts: ', $e->getMessage(), PHP_EOL;
         }
-    } else if ($_GET["action"] == 6) {
+        break;
+    case 6:
 
         $jwt = new XeroAPI\XeroPHP\JWTClaims();
-        $jwt->setTokenId((string)$storage->getIdToken() );
+        $jwt->setTokenId((string) $storage->getIdToken());
         // Set access token in order to get authentication event id
-        $jwt->setTokenAccess( (string)$storage->getAccessToken() );
+        $jwt->setTokenAccess((string) $storage->getAccessToken());
         $jwt->decode();
 
-        echo("sub:" . $jwt->getSub() . "<br>");
-        echo("sid:" . $jwt->getSid() . "<br>");
-        echo("iss:" . $jwt->getIss() . "<br>");
-        echo("exp:" . $jwt->getExp() . "<br>");
-        echo("given name:" . $jwt->getGivenName() . "<br>");
-        echo("family name:" . $jwt->getFamilyName() . "<br>");
-        echo("email:" . $jwt->getEmail() . "<br>");
-        echo("user id:" . $jwt->getXeroUserId() . "<br>");
-        echo("username:" . $jwt->getPreferredUsername() . "<br>");
-        echo("session id:" . $jwt->getGlobalSessionId() . "<br>");
-        echo("authentication_event_id:" . $jwt->getAuthenticationEventId() . "<br>");
+        echo ("sub:" . $jwt->getSub() . "<br>");
+        echo ("sid:" . $jwt->getSid() . "<br>");
+        echo ("iss:" . $jwt->getIss() . "<br>");
+        echo ("exp:" . $jwt->getExp() . "<br>");
+        echo ("given name:" . $jwt->getGivenName() . "<br>");
+        echo ("family name:" . $jwt->getFamilyName() . "<br>");
+        echo ("email:" . $jwt->getEmail() . "<br>");
+        echo ("user id:" . $jwt->getXeroUserId() . "<br>");
+        echo ("username:" . $jwt->getPreferredUsername() . "<br>");
+        echo ("session id:" . $jwt->getGlobalSessionId() . "<br>");
+        echo ("authentication_event_id:" . $jwt->getAuthenticationEventId() . "<br>");
 
-    }
-  }
+        break;
+
+    default:
+    // nothing to do
+}
+
+
+require_once('views/header.php');
+require_once('views/menu.php');
+
 ?>
-<html>
-    <body>
-        <ul>
-            <li><a href="authorizedResource.php?action=1">Get Organisation Name</a></li>
-            <li><a href="authorizedResource.php?action=2">Create one Contact</a></li>
-            <li><a href="authorizedResource.php?action=3">Get Invoice with Filters</a></li>
-            <li><a href="authorizedResource.php?action=4">Create multiple contacts and summarizeErrors</a></li>
-            <li><a href="authorizedResource.php?action=5">Get Contact with Filters</a></li>
-            <li><a href="authorizedResource.php?action=6">Get JWT Claims</a></li>
-        </ul>
-        <div>
-        <?php
-            echo($message );
-        ?>
-        </div>
-    </body>
-</html>
+
+<div>
+    <?php
+
+    switch ($action) {
+        case 9:
+            include 'views/invoices_index.php';
+            break;
+    }
+    ?>
+</div>
+<?php
+require_once('views/footer.php');
+?>
