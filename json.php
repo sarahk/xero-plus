@@ -103,51 +103,15 @@ try {
             }
             break;
 
-        case "BankTransactions":
-            switch ($action) {
-                case "Create":
-                    print_r($json->createBankTransaction($xeroTenantId, $apiInstance));
-                    break;
-                case "CreateMulti":
-                    print_r($json->createBankTransactions($xeroTenantId, $apiInstance));
-                    break;
-                case "Read":
-                    echo $json->getBankTransaction($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $json->updateBankTransaction($xeroTenantId, $apiInstance);
-                    break;
 
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
-        case "BankTransfers":
-            switch ($action) {
-                case "Create":
-                    echo $json->createBankTransfer($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getBankTransfer($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-        case "BrandingThemes":
-            switch ($action) {
-                case "Read":
-                    echo $json->getBrandingTheme($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "Contacts":
             switch ($action) {
+                case 'Refresh':
+                case 'refresh':
+                    $json->getContactRefresh();
+                    break;
                 case "Create":
                     echo $json->createContact($xeroTenantId, $apiInstance);
                     break;
@@ -244,8 +208,8 @@ try {
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
-                    
-                    $json->getInvoiceRefresh();
+                    $tenancy = filter_input(INPUT_GET, 'tenancy');
+                    $json->getInvoiceRefresh($tenancy);
                     break;
                 case "Create":
                     echo $json->createInvoice($xeroTenantId, $apiInstance);
@@ -346,10 +310,15 @@ try {
             break;
 
         case "Organisations":
+        case 'organisations':
             switch ($action) {
                 case "Read":
                     echo $json->getOrganisation($xeroTenantId, $apiInstance);
                     break;
+                case 'List':
+                    case 'list':
+                        echo $json->getOrganisationList();
+                        break;
                 default:
                     echo $action . " action not supported in API";
             }

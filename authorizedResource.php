@@ -33,9 +33,16 @@ if (array_key_exists('user_name', $_SESSION)) {
 if ($storage->getHasExpired()) {
     $provider = getProvider();
 
-    $newAccessToken = $provider->getAccessToken('refresh_token', [
-        'refresh_token' => $storage->getRefreshToken()
-    ]);
+    try {
+        $newAccessToken = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $storage->getRefreshToken()
+        ]);
+    } catch (Exception $e) {
+        // need to log in again
+        header('Location: /index.php');
+        exit;
+    }
+
 
     // Save my token, expiration and refresh token
     $storage->setToken(
@@ -45,8 +52,9 @@ if ($storage->getHasExpired()) {
         $newAccessToken->getRefreshToken(),
         $newAccessToken->getValues()["id_token"]
     );
+    
 }
-
+require_once 'config.php';
 $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string) $storage->getSession()['token']);
 $apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
     new GuzzleHttp\Client(),
@@ -61,7 +69,29 @@ switch ($action) {
     case 1:
         // Get Organisation details
         $apiResponse = $apiInstance->getOrganisations($xeroTenantId);
-        $message = 'Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
+        $message = '<p>Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
+        $message .= '<p>' . $xeroTenantId;
+
+        $accessToken = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $storage->getRefreshToken()
+        ]);
+        $options = [
+            'scope' => ['openid email profile offline_access accounting.transactions accounting.settings']
+        ];
+        $connectionsResponse = $provider->getAuthenticatedRequest(
+            'GET',
+            'https://api.xero.com/Connections',
+            $accessToken->getToken(),
+            $options
+        );
+
+        $xeroTenantIdArray = $provider->getParsedResponse($connectionsResponse);
+
+
+        // https://api.xero.com/connections
+//Authorization: "Bearer " + access_token
+//Content-Type: application/json
+        //     exit;
         break;
 
     case 2:
@@ -100,7 +130,7 @@ switch ($action) {
         }
         break;
 
-    case 3:  // filter invoices
+    case 3: // filter invoices
         $if_modified_since = new \DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
         $if_modified_since = null;
         $where = 'Type=="ACCREC"'; // string
@@ -165,26 +195,10 @@ switch ($action) {
             $message = "ApiException - " . $error->getElements()[0]["validation_errors"][0]["message"];
         }
         break;
-    case 5:
 
-        $if_modified_since = new \DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
-        $where = null;
-        $order = null; // string
-        $ids = null; // string[] | Filter by a comma-separated list of Invoice Ids.
-        $page = 1; // int | e.g. page=1 – Up to 100 invoices will be returned in a single API call with line items
-        $include_archived = null; // bool | e.g. includeArchived=true - Contacts with a status of ARCHIVED will be included
 
-        try {
-            $apiResponse = $apiInstance->getContacts($xeroTenantId, $if_modified_since, $where, $order, $ids, $page, $include_archived);
-            if (count($apiResponse->getContacts()) > 0) {
-                $message = 'Total contacts found: ' . count($apiResponse->getContacts());
-            } else {
-                $message = "No contacts found matching filter criteria";
-            }
-        } catch (Exception $e) {
-            echo 'Exception when calling AccountingApi->getContacts: ', $e->getMessage(), PHP_EOL;
-        }
-        break;
+
+
     case 6:
 
         $jwt = new XeroAPI\XeroPHP\JWTClaims();
@@ -213,7 +227,6 @@ switch ($action) {
 
 
 require_once('views/header.php');
-require_once('views/menu.php');
 
 ?>
 
@@ -221,6 +234,12 @@ require_once('views/menu.php');
     <?php
 
     switch ($action) {
+        case 1:
+            include 'views/organisations_list.php';
+            break;
+        case 5:
+            include 'views/contacts_index.php';
+            break;
         case 9:
             include 'views/invoices_index.php';
             break;

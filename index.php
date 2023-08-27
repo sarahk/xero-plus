@@ -1,4 +1,9 @@
 <?php
+if (array_key_exists('action',$_GET) && $_GET['action'] == 'logoff'){
+    session_destroy();
+}
+
+$nosidebar = true;
 require_once('views/header.php');
 ?>
 <div class="container">

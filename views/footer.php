@@ -1,28 +1,61 @@
-</main>
-<footer class='container'>
-    <button class="btn btn-secondary" id='loadfromxero'>
-        <span class="spinner-grow spinner-grow-sm" id='loadfromxerospinner'></span>
-        Request latest from Xero
-    </button>
-</footer>
+</div>
+</div>
+ <!--SIDEBAR-RIGHT-->
+ <?php include 'layouts/sidebar-right.php'; ?>
 
-
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"
-    crossorigin="anonymous"></script>
-<!-- Popper JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<!--/SIDEBAR-RIGHT-->
 
 
 
-<script type="text/javascript"
-    src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-print-1.6.1/r-2.2.3/sp-1.0.1/sl-1.3.1/datatables.min.js"></script>
 
+<footer class="footer">
+				<div class="container">
+					<div class="row align-items-center flex-row-reverse">
+						<div class="col-md-12 col-sm-12 text-center">
+							 Copyright © <span id="year"></span> <a href="javascript:void(0);">Zanex</a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0);"> Spruko </a> All rights reserved
+						</div>
+					</div>
+				</div>
+			</footer>
+</div>
+
+            <?php include 'layouts/scripts.php'; ?>
+
+<!-- SPARKLINE JS-->
+<script src="/assets/js/jquery.sparkline.min.js"></script>
+
+<!-- CHART-CIRCLE JS-->
+<script src="/assets/js/circle-progress.min.js"></script>
+
+<!-- CHARTJS CHART JS-->
+<script src="/assets/plugins/chart/Chart.bundle.js"></script>
+<script src="/assets/plugins/chart/utils.js"></script>
+
+<!-- PIETY CHART JS-->
+<script src="/assets/plugins/peitychart/jquery.peity.min.js"></script>
+<script src="/assets/plugins/peitychart/peitychart.init.js"></script>
+
+<!-- INTERNAL SELECT2 JS -->
+<script src="/assets/plugins/select2/select2.full.min.js"></script>
+
+<!-- INTERNAL DATA TABLES JS -->
+<script src="/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+<script src="/assets/plugins/datatable/js/dataTables.bootstrap5.js"></script>
+<script src="/assets/plugins/datatable/dataTables.responsive.min.js"></script>
+
+<!-- ECHART JS-->
+<script src="/assets/plugins/echarts/echarts.js"></script>
+
+<!-- APEXCHART JS -->
+<script src="/assets/js/apexcharts.js"></script>
+
+<!-- INDEX JS -->
+<script src="/assets/js/index1.js"></script>
+
+<!-- COOKIES JS -->
+<script src="/node_modules/js-cookie/dist/js.cookie.min.js"></script>
+
+<?php include 'layouts/main-scripts.php'; ?>
 <script type="text/javascript" src="/js/invoices.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>
 
@@ -34,14 +67,14 @@
     //});  */ ?>
 
     <?php
-    if (file_exists("js/{$endpoint}{$action}.js")):
-        echo "jQuery.getScript('/js/{$endpoint}{$action}.js');";
-    endif;
+  //  if (file_exists("js/{$endpoint}{$action}.js")):
+  //      echo "jQuery.getScript('/js/{$endpoint}{$action}.js');";
+  //  endif;
     ?>
 
     $(document).ready(function () {
 
-        var tContacts = $('#getContactTable').DataTable({
+        var tContacts = $('#tContacts').DataTable({
             ajax: {
                 "url": "/json.php?endpoint=Contacts&action=Read"
             },
@@ -191,12 +224,14 @@
 <script>
     $(document).ready(function () {
 
-        function loadFromXero() {
+        // refresh data from Xero
+        // but only for one tenancy
+        function loadFromXero(tenancy) {
             //The load button
-            console.log('loadFromXero');
+            console.log('loadFromXero: ' + tenancy);
             $('#loadfromxerospinner').show();//Load button clicked show spinner
             $.ajax({
-                url: "/json.php?endpoint=Invoices&action=refresh",
+                url: "/json.php?endpoint=Invoices&action=refresh&tenancy="+tenancy,
                 type: 'GET',
                 dataType: 'json',
 
@@ -208,12 +243,43 @@
 
         $("#loadfromxero").click(loadFromXero);
 
+        
         // every minute
         setInterval(function () {
-            console.log('setInterval loadFromXero');
-            loadFromXero();
+            const tenancies = ['auckland','waikato','bop'];
+            for (let i = 0; i < tenancies.length; i++) {
+            if (Cookies.get(tenancies[i]) === 'true'){
+                console.log('setInterval loadFromXero: '+tenancies[i]);
+                loadFromXero(tenancies[i]);
+            }
+        }
         }, 60 * 1000);
 
+// save the working with choices
+// https://github.com/js-cookie/js-cookie/tree/main
+$('#territory-auckland').change(function(){
+    Cookies.set('auckland', $('#territory-auckland')[0].checked);
+    console.log('auckland cookie');
+});
+$('#territory-waikato').change(function(){
+    Cookies.set('waikato', $('#territory-waikato')[0].checked);
+    console.log('waikato cookie');
+});
+$('#territory-bop').change(function(){
+    Cookies.set('bop', $('#territory-bop')[0].checked);
+    console.log('bop cookie');
+});
+
+// set checkboxes to how they were last time
+if (Cookies.get('auckland') === 'true'){
+    $("#territory-auckland").prop("checked", true);
+}
+if (Cookies.get('waikato') === 'true'){
+    $("#territory-waikato").prop("checked", true);
+}
+if (Cookies.get('bop') === 'true'){
+    $("#territory-bop").prop("checked", true);
+}
     });
 </script>
 </body>

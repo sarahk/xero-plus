@@ -7,6 +7,8 @@ class JsonClass
 
     public $apiInstance;
     public $xeroTenantId;
+
+    public $tenancies = [];
     public $pdo;
 
     private $colInvoice = ['contact_id', 'status', 'invoice_number', 'reference', 'total', 'amount_due', 'amount_paid', 'date', 'due_date', 'updated_date_utc'];
@@ -312,7 +314,7 @@ class JsonClass
         $output['length'] = filter_input(INPUT_GET, 'length', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 10]]);
         //$output['search'] = filter_input(INPUT_GET, 'search', FILTER_DEFAULT, ['options' => ['default' => '']]);
         //$output['order'] = filter_input(INPUT_GET, 'order', FILTER_DEFAULT, ['options' => ['default' => '']]);
-        $output['order'] = $_GET['order'] ?? '';
+        $output['order'] = $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']];
         $output['search'] = $_GET['search']['value'] ?? '';
         // getInvoice
         $output['invoice_status'] = filter_input(INPUT_GET, 'invoice_status', FILTER_DEFAULT);
@@ -387,37 +389,34 @@ class JsonClass
         return $minutes;
     }
 
-    public function saveXeroTimestamp($category)
+    public function saveXeroTimestamp($category, $xeroTenantId)
     {
         $sql = "INSERT INTO `settings` (`xerotenant_id`,`category`,`key`,`value`) 
             VALUES (:xeroTenantId, :category, 'xerocheck', :xerotime)
             ON DUPLICATE KEY UPDATE `value` = :xerotime2";
 
         $vals = [
-            'xeroTenantId' => $this->xeroTenantId
-            ,
-            'category' => $category
-            ,
-            'xerotime' => time()
-            ,
+            'xeroTenantId' => $xeroTenantId,
+            'category' => $category,
+            'xerotime' => time(),
             'xerotime2' => time()
         ];
         $this->pdo->prepare($sql)->execute($vals);
     }
 
-    public function getContactRefresh()
+    public function getContactRefresh($tenancy)
     {
 
         $k = 1;
-
+        $xeroTenantId = $this->getXeroTenantId($tenancy);
         //      public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
 
-        if ($this->getXeroTimestamp('Contact') > 10) {
+        if ($this->getXeroTimestamp('Contact', $xeroTenantId) > 10) {
             $updated_date_utc = $this->getUpdatedDate('Contact');
 
             $this->initPDOContact();
 
-            $result = $this->apiInstance->getContacts($this->xeroTenantId, $updated_date_utc, null, null, null, 1, true);
+            $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, null, null, null, 1, true);
             $data = $result->getContacts();
 
             if (count($data)) {
@@ -425,7 +424,7 @@ class JsonClass
                     $this->saveContactRow($row);
                 }
             }
-            $this->saveXeroTimestamp('Contact');
+            $this->saveXeroTimestamp('Contact', $xeroTenantId);
         }
 
         return $k;
@@ -435,23 +434,15 @@ class JsonClass
     {
 
         $valuesContact = [
-            'contact_id' => $row->getContactId()
-            ,
-            'contact_status' => $row->getContactStatus()
-            ,
-            'name' => $row->getName()
-            ,
-            'first_name' => $row->getFirstName()
-            ,
-            'last_name' => $row->getLastName()
-            ,
-            'email_address' => $row->getEmailAddress()
-            ,
-            'is_supplier' => $row->getIsSupplier()
-            ,
-            'is_customer' => $row->getIsCustomer()
-            ,
-            'updated_date_utc' => $row['updated_date_utc']->format('Y-m-d H:i:s')
+            'contact_id' => $row->getContactId(),
+            'contact_status' => $row->getContactStatus(),
+            'name' => $row->getName(),
+            'first_name' => $row->getFirstName(),
+            'last_name' => $row->getLastName(),
+            'email_address' => $row->getEmailAddress(),
+            'is_supplier' => $row->getIsSupplier(),
+            'is_customer' => $row->getIsCustomer(),
+            'updated_date_utc' => getDateFromXero($row['updated_date_utc'])
         ];
         foreach ($this->colContact as $v) {
             $valuesContact["upd8{$v}"] = $valuesContact[$v];
@@ -462,26 +453,16 @@ class JsonClass
 
         foreach ($row['addresses'] as $addy) {
             $valuesAddress = [
-                'contact_id' => $valuesContact['contact_id']
-                ,
-                'address_type' => $addy->getAddressType()
-                ,
-                'address_line1' => $addy->getAddressLine1()
-                ,
-                'address_line2' => $addy->getAddressLine2()
-                ,
-                'address_line3' => $addy->getAddressLine3()
-                ,
-                'address_line4' => $addy->getAddressLine4()
-                ,
-                'city' => $addy->getCity()
-                ,
-                'region' => $addy->getRegion()
-                ,
-                'postal_code' => $addy->getPostalCode()
-                ,
-                'country' => $addy->getCountry()
-                ,
+                'contact_id' => $valuesContact['contact_id'],
+                'address_type' => $addy->getAddressType(),
+                'address_line1' => $addy->getAddressLine1(),
+                'address_line2' => $addy->getAddressLine2(),
+                'address_line3' => $addy->getAddressLine3(),
+                'address_line4' => $addy->getAddressLine4(),
+                'city' => $addy->getCity(),
+                'region' => $addy->getRegion(),
+                'postal_code' => $addy->getPostalCode(),
+                'country' => $addy->getCountry(),
                 'attention_to' => $addy->getAttentionTo()
             ];
             foreach ($this->colAddress as $v) {
@@ -493,14 +474,10 @@ class JsonClass
 
         foreach ($row['phones'] as $phone) {
             $valuesPhone = [
-                'contact_id' => $valuesContact['contact_id']
-                ,
-                'phone_type' => $phone->getPhoneType()
-                ,
-                'phone_number' => $phone->getPhoneNumber()
-                ,
-                'phone_area_code' => $phone->getPhoneAreaCode()
-                ,
+                'contact_id' => $valuesContact['contact_id'],
+                'phone_type' => $phone->getPhoneType(),
+                'phone_number' => $phone->getPhoneNumber(),
+                'phone_area_code' => $phone->getPhoneAreaCode(),
                 'phone_country_code' => $phone->getPhoneCountryCode()
             ];
             foreach ($this->colPhone as $v) {
@@ -513,66 +490,153 @@ class JsonClass
     }
 
 
+    public function getContactRefreshx()
+    {
+        $if_modified_since = new \DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
+        $where = null;
+        $order = null; // string
+        $ids = null; // string[] | Filter by a comma-separated list of Invoice Ids.
+        $page = 1; // int | e.g. page=1 – Up to 100 invoices will be returned in a single API call with line items
+        $include_archived = null; // bool | e.g. includeArchived=true - Contacts with a status of ARCHIVED will be included
 
+        try {
+            $apiResponse = $this->apiInstance->getContacts($this->xeroTenantId, $if_modified_since, $where, $order, $ids, $page, $include_archived);
+            if (count($apiResponse->getContacts()) > 0) {
+                $message = 'Total contacts found: ' . count($apiResponse->getContacts());
+            } else {
+                $message = "No contacts found matching filter criteria";
+            }
+        } catch (Exception $e) {
+            echo 'Exception when calling AccountingApi->getContacts: ', $e->getMessage(), PHP_EOL;
+        }
+    }
+
+    // get all the tenancies from the database
+    // then see if they're ticked by the user
+    // and return the ones that are active
+    public function getTenancies()
+    {
+        if (count($this->tenancies) == 0) {
+            $sql = "SELECT * from `tenancies`";
+            $this->tenancies = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        }
+        $output = [];
+        foreach ($this->tenancies as $row) {
+            if ($this->isCookieTrue($row['shortname'])) {
+                $output[] = $row['tenant_id'];
+            }
+        }
+        return $output;
+    }
+    public function getTenancyList()
+    {
+        if (count($this->tenancies) == 0) {
+            $sql = "SELECT * from `tenancies` order by `sortorder`";
+            $this->tenancies = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        }
+        $output = [];
+        foreach ($this->tenancies as $k => $row) {
+            $row['active'] = $this->isCookieTrue($row['shortname']);
+            $output[] = $row;
+        }
+        return $output;
+    }
+
+    public function isCookieTrue($tenancy)
+    {
+        return (array_key_exists($tenancy, $_COOKIE) && $_COOKIE[$tenancy] == 'true');
+    }
+
+
+    // using the short name of the tenancy, get the Xero TenantId
+    public function getXeroTenantId($tenancy)
+    {
+        $tenancies = $this->getTenancies();
+        foreach ($tenancies as $row) {
+            if ($row['shortname'] == $tenancy) {
+                return $row['tenant_id'];
+            }
+        }
+        return null;
+    }
+    // use the list of tenancies to create the where sql 
+    public function getXeroTenantClause()
+    {
+        //debug($this->xeroTenantId);
+        $tenancies = $this->getTenancies();
+        //   "contacts.xerotenant_id = '{$this->xeroTenantId}'";
+
+        $output = " (`contacts`.`xerotenant_id` = '" . implode("' OR `contacts`.`xerotenant_id` = '", $tenancies) . "') ";
+        return $output;
+    }
+
+    public function getTenancyColour($prefix, $xeroTenantId)
+    {
+        foreach ($this->tenancies as $row) {
+            if ($row['tenant_id'] == $xeroTenantId) {
+                return "{$prefix}{$row['colour']}";
+            }
+        }
+        return "{$prefix}black";
+    }
     /*
      * calls
      * public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
      */
-
     public function getContact($xeroTenantId, $apiInstance, $returnObj = false)
     {
-
-
         $output = $this->getOutput();
 
-        $refreshContact = $this->getContactRefresh();
 
 
-
-
+        // $refreshContact = $this->getContactRefresh();
         //checkboxes are column 0
         switch ($output['order'][0]['column']) {
             case 1:
-                $order = "total_due {$output['order'][0]['dir']}";
+                $order = "`total_due` {$output['order'][0]['dir']}";
                 break;
-
             case 2:
-                $order = "last_name {$output['order'][0]['dir']}, first_name ASC";
+                $order = "`last_name` {$output['order'][0]['dir']}, `first_name` ASC";
                 break;
-
             case 4:
-                $order = "email_address {$output['order'][0]['dir']}";
+                $order = "`email_address` {$output['order'][0]['dir']}";
                 break;
-
             default:
-                $order = "name {$output['order'][0]['dir']}";
+                $order = "`name` {$output['order'][0]['dir']}";
         }
 
 
         $fields = [
+            'contacts.xerotenant_id',
             'contacts.contact_id',
             'contacts.name',
             'contacts.email_address',
             'contacts.contact_status',
             'contacts.is_supplier',
-            'contacts.is_customer'
-            ,
+            'contacts.is_customer',
             'address_line1',
             'address_line2',
             'city',
-            'postal_code'
-            ,
+            'postal_code',
             'phones.phone_number',
-            'phones.phone_area_code'
-            ,
+            'phones.phone_area_code',
             'vAmountDue.total_due'
         ];
 
 
-        $conditions = ["contacts.xerotenant_id = '{$this->xeroTenantId}'", "contacts.is_customer = TRUE"];
+        $conditions = [
+            $this->getXeroTenantClause(),
+            "contacts.is_customer = TRUE"
+        ];
 
-        if (!empty($output['search']['value'])) {
-            $conditions[] = "`contacts`.`name` like '%{$output['search']['value']}%'";
+        if (!empty($output['search'])) {
+            $subconditions = [
+                "`contacts`.`name` LIKE '%{$output['search']}%'",
+                "`contacts`.`email_address` LIKE '%{$output['search']}%'",
+                "`addresses`.`address_line1` LIKE '%{$output['search']}%'",
+                "`phones`.`phone_number` LIKE '%{$output['search']}%'"
+            ];
+            $conditions[] = ' (' . implode(' OR ', $subconditions) . ') ';
         }
         if (!empty($output['button'])) {
             $status = strtoupper($output['button']);
@@ -595,9 +659,15 @@ class JsonClass
 
         $contacts = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM contacts WHERE `contacts`.`xerotenant_id` = '{$this->xeroTenantId}'")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query("SELECT count(*) FROM contacts WHERE " . implode(' AND ', $conditions))->fetchColumn();
-        $output['refreshContact'] = $refreshContact;
+        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM contacts WHERE {$conditions[0]}")->fetchColumn();
+        $output['recordsFiltered'] = $this->pdo->query(
+            "SELECT count(*) FROM contacts "
+            . " LEFT JOIN vAmountDue ON (contacts.contact_id = vAmountDue.contact_id) "
+            . " LEFT JOIN addresses ON (contacts.contact_id = addresses.contact_id and addresses.address_type = 'STREET') "
+            . " LEFT JOIN phones ON (contacts.contact_id = phones.contact_id and phones.phone_type = 'MOBILE') "
+            . " WHERE " . implode(' AND ', $conditions)
+        )->fetchColumn();
+        //$output['refreshContact'] = $refreshContact;
 
 
 
@@ -646,21 +716,15 @@ class JsonClass
                 $actionClass = ($row['contact_status'] === 'ACTIVE') ? 'text-success' : '';
 
                 $output['data'][] = [
-                    'checkbox' => "<input name='select{$row['contact_id']}' type='checkbox' value=''>"
-                    ,
-                    'theyowe' => "<span class='{$class}'>$ " . intval($row['total_due']) . "</span>"
-                    ,
-                    'name' => "<a href='https://go.xero.com/Contacts/View/{$row['contact_id']}' target='_blank'>{$row['name']}</a>"
-                    ,
-                    'phone' => $phone
-                    ,
-                    'email' => $row['email_address']
-                    ,
-                    'address' => "<address>" . implode(', ', $address) . "</address>"
-                    ,
+                    'DT_RowClass' => $this->getTenancyColour('bar-', $row['xerotenant_id']),
+                    'checkbox' => "<input name='select{$row['contact_id']}' type='checkbox' value=''>",
+                    'theyowe' => "<span class='{$class}'>$ " . intval($row['total_due']) . "</span>",
+                    'name' => "<a href='https://go.xero.com/Contacts/View/{$row['contact_id']}' target='_blank'>{$row['name']}</a>",
+                    'phone' => $phone,
+                    'email' => $row['email_address'],
+                    'address' => "<address>" . implode(', ', $address) . "</address>",
                     'action' => "<small class='{$actionClass}'>{$row['contact_status']}</span>"
                 ];
-
             }
             $output['row'] = $row;
         }
@@ -1301,7 +1365,7 @@ class JsonClass
         return $str;
     }
 
-    public function getUpdatedDate($table)
+    public function getUpdatedDate($table, $xeroTenantId)
     {
         // 3 days before we started using xero
         $updated_date_utc = '2017-10-10 00:00:00';
@@ -1315,7 +1379,7 @@ class JsonClass
 
         $stmt = $this->pdo->prepare("SELECT max(`updated_date_utc`) as `updated_date_utc` FROM `{$table}` where `xerotenant_id` = :xerotenant_id");
 
-        $stmt->execute(['xerotenant_id' => $this->xeroTenantId]);
+        $stmt->execute(['xerotenant_id' => $xeroTenantId]);
         $row = $stmt->fetch();
 
         if ($row) {
@@ -1358,18 +1422,20 @@ class JsonClass
         $this->statements['invoice'] = $this->pdo->prepare($sql);
     }
 
-    // https://cabinkingmanagement:8890/json.php?endpoint=Invoices&action=refresh
-    public function getInvoiceRefresh()
+    // https://cabinkingmanagement:8890/json.php?endpoint=Invoices&action=refresh&tenancy=auckland
+    public function getInvoiceRefresh($tenancy)
     {
         $testing = true;
         $k = 0;
         if ($this->getXeroTimestamp('Invoice') > 10 || $testing) {
-            $updated_date_utc = $this->getUpdatedDate('invoices');
+            $xeroTenantId = $this->getXeroTenantId($tenancy);
+
+            $updated_date_utc = $this->getUpdatedDate('invoices', $xeroTenantId);
 
             $this->initPDOInvoice();
 
             //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_i_ds = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
-            $result = $this->apiInstance->getInvoices($this->xeroTenantId, $updated_date_utc, null, null, null, null, null, null, 1);
+            $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, null, null, null, null, null, null, 1);
 
             $data = $result->getInvoices();
 
@@ -1403,7 +1469,7 @@ class JsonClass
                 //$this->statements['invoice']->debugDumpParams();
             }
 
-            $this->saveXeroTimestamp('Invoice');
+            $this->saveXeroTimestamp('Invoice', $xeroTenantId);
         }
 
         return $k;
@@ -2130,6 +2196,54 @@ class JsonClass
         }
     }
 
+    public function getOrganisationList($returnObj = false)
+    {
+        $tenancies = $this->getTenancyList();
+        $userTenancies = $this->getTenanciesforUser();
+
+        foreach ($tenancies as $k => $row) {
+            $disabled = 1;
+            foreach ($userTenancies as $userRow) {
+                if ($row['tenant_id'] == $userRow['tenantId']) {
+                    $disabled = 0;
+                }
+            }
+            $tenancies[$k]['disabled'] = $disabled;
+        }
+        if($returnObj){
+            return $tenancies;
+        }
+        
+        echo json_encode($tenancies);
+    }
+
+    // this needs to be saved in the session
+    private function getTenanciesforUser()
+    {
+        if (array_key_exists('tenancies', $_SESSION)) {
+            return $_SESSION['tenancies'];
+        } else {
+            $provider = getProvider();
+            $storage = new StorageClass();
+            $accessToken = $provider->getAccessToken('refresh_token', [
+                'refresh_token' => $storage->getRefreshToken()
+            ]);
+            $options = [
+                'scope' => ['openid email profile offline_access accounting.transactions accounting.settings']
+            ];
+            $connectionsResponse = $provider->getAuthenticatedRequest(
+                'GET',
+                'https://api.xero.com/Connections',
+                $accessToken->getToken(),
+                $options
+            );
+
+            $xeroTenantIdArray = $provider->getParsedResponse($connectionsResponse);
+            $_SESSION['tenancies'] = $xeroTenantIdArray;
+            return $xeroTenantIdArray;
+        }
+    }
+
     public function getOverpayment($xeroTenantId, $apiInstance, $returnObj = false)
     {
         $str = '';
@@ -2147,122 +2261,6 @@ class JsonClass
         }
     }
 
-    public function createOverpayment($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $lineitem = $this->getLineItemForOverpayment($xeroTenantId, $apiInstance);
-        $lineitems = [];
-        array_push($lineitems, $lineitem);
-
-        $getAccount = $this->getBankAccount($xeroTenantId, $apiInstance);
-        $accountId = $getAccount->getAccounts()[0]->getAccountId();
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-
-        if (count($getAccount->getAccounts())) {
-
-            //[Overpayments:Create]
-            $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-            $contact->setContactId($contactId);
-
-            $bankAccount = new XeroAPI\XeroPHP\Models\Accounting\Account;
-            $bankAccount->setCode($getAccount->getAccounts()[0]->getCode())
-                ->setAccountId($accountId);
-
-            $overpayment = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
-            $overpayment->setReference('Ref-' . $this->getRandNum())
-                ->setDate(new DateTime('2017-01-02'))
-                ->setType(XeroAPI\XeroPHP\Models\Accounting\BankTransaction::TYPE_RECEIVE_OVERPAYMENT)
-                ->setLineItems($lineitems)
-                ->setContact($contact)
-                ->setLineAmountTypes("NoTax")
-                ->setBankAccount($bankAccount);
-
-            $result = $apiInstance->createBankTransaction($xeroTenantId, $overpayment);
-            //[/Overpayments:Create]
-
-            $str = $str . "Create Overpayment(Bank Transaction) ID: " . $result->getBankTransactions()[0]->getBankTransactionId() . "<br>";
-        } else {
-            $str = $str . "No Bank Account exists";
-        }
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function allocateOverpayment($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $invNew = $this->createInvoiceAccRec($xeroTenantId, $apiInstance, true);
-        $invoiceId = $invNew->getInvoices()[0]->getInvoiceID();
-        $overpaymentNew = $this->createOverpayment($xeroTenantId, $apiInstance, true);
-        $overpaymentId = $overpaymentNew->getBankTransactions()[0]->getOverpaymentId();
-
-        //[Overpayments:Allocate]
-        $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
-        $invoice->setInvoiceID($invoiceId);
-
-        $allocation = new XeroAPI\XeroPHP\Models\Accounting\Allocation;
-        $allocation->setInvoice($invoice)
-            ->setAmount("1.00")
-            ->setDate(new DateTime('2019-08-02'));
-        $arr_allocation = [];
-        array_push($arr_allocation, $allocation);
-
-        $allocations = new XeroAPI\XeroPHP\Models\Accounting\Allocations;
-        $allocations->setAllocations($arr_allocation);
-
-        $result = $apiInstance->createOverpaymentAllocation($xeroTenantId, $overpaymentId, $allocations);
-        //[/Overpayments:Allocate]
-
-        $str = $str . "Allocate Overpayment: " . $result->getAllocations()[0]->getInvoice()->getInvoiceId() . "<br>";
-
-        return $str;
-    }
-
-    public function allocateOverpayments($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $invNew = $this->createInvoiceAccRec($xeroTenantId, $apiInstance, true);
-        $invoiceId = $invNew->getInvoices()[0]->getInvoiceID();
-        $overpaymentNew = $this->createOverpayment($xeroTenantId, $apiInstance, true);
-        $overpaymentId = $overpaymentNew->getBankTransactions()[0]->getOverpaymentId();
-
-        //[Overpayments:AllocateMulti]
-        $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
-        $invoice->setInvoiceID($invoiceId);
-
-        $arr_allocations = [];
-
-        $allocation_1 = new XeroAPI\XeroPHP\Models\Accounting\Allocation;
-        $allocation_1->setInvoice($invoice)
-            ->setAmount("1.00")
-            ->setDate(new DateTime('2019-12-02'));
-        array_push($arr_allocations, $allocation_1);
-
-        $allocation_2 = new XeroAPI\XeroPHP\Models\Accounting\Allocation;
-        $allocation_2->setInvoice($invoice)
-            ->setAmount("1.00")
-            ->setDate(new DateTime('2019-12-07'));
-        array_push($arr_allocations, $allocation_2);
-
-        $allocations = new XeroAPI\XeroPHP\Models\Accounting\Allocations;
-        $allocations->setAllocations($arr_allocations);
-
-        $result = $apiInstance->createOverpaymentAllocation($xeroTenantId, $overpaymentId, $allocations);
-        //[/Overpayments:AllocateMulti]
-
-        $str = $str . "Allocate 2 Overpayment to Invoice ID: " . $result->getAllocations()[0]->getInvoice()->getInvoiceId() . "<br>";
-
-        return $str;
-    }
 
 
 
