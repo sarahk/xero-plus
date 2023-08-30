@@ -18,7 +18,8 @@
             <ul class="side-menu">
                 <?php include 'widgets/tenancy-picker.php'; ?>
 
-
+                <li class="slide"><a href="javascript:void(0);"
+                        class="btn btn-md btn-block m-3 btn-lime tracking-wide"><strong>Add An Enquiry</strong></a></li>
 
 
                 <li class="sub-category">
@@ -315,10 +316,7 @@
                 </li>
             </ul>
 
-            <button class="btn btn-secondary" id='loadfromxero'>
-                <span class="spinner-grow spinner-grow-sm" id='loadfromxerospinner'></span>
-                Request latest from Xero
-            </button>
+            
 
 
             <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24"

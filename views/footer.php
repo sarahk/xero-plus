@@ -19,7 +19,7 @@
 			</footer>
 </div>
 
-            <?php include 'layouts/scripts.php'; ?>
+<?php include 'layouts/scripts.php'; ?>
 
 <!-- SPARKLINE JS-->
 <script src="/assets/js/jquery.sparkline.min.js"></script>
@@ -50,15 +50,19 @@
 <script src="/assets/js/apexcharts.js"></script>
 
 <!-- INDEX JS -->
-<script src="/assets/js/index1.js"></script>
+<!--<script src="/assets/js/index1.js"></script>-->
 
 <!-- COOKIES JS -->
 <script src="/node_modules/js-cookie/dist/js.cookie.min.js"></script>
 
-<?php include 'layouts/main-scripts.php'; ?>
 <script type="text/javascript" src="/js/invoices.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>
 
+<?php if (intval($_GET['action']) === 10): 
+    include_once 'addins/footer-edit-js.php' ?>
+    	
+    <script type="text/javascript" src="/js/enquiry.js"></script>
+  <?php endif; ?>
 
 <script type="text/javascript">
     <?php /*
@@ -70,7 +74,7 @@
   //  if (file_exists("js/{$endpoint}{$action}.js")):
   //      echo "jQuery.getScript('/js/{$endpoint}{$action}.js');";
   //  endif;
-    ?>
+  ?>
 
     $(document).ready(function () {
 
@@ -241,7 +245,7 @@
             });
         }
 
-        $("#loadfromxero").click(loadFromXero);
+        //$("#loadfromxero").click(loadFromXero);
 
         
         // every minute

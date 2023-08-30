@@ -26,7 +26,7 @@ $tenancies = $json1->getOrganisationList(true);
             $disabled = ($row['disabled'] == 1) ? 'disabled' : '';
             $checked = ($row['active'] == 1) ? 'checked' : '';
             ?>
-            <label class="custom-control custom-checkbox">
+            <label classÏ="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="tenancy-<?= $row['shortname']; ?>"
                     name="tenancy-<?= $row['shortname']; ?>" value="Y" <?= $checked; ?><?= $disabled; ?>>
                 <span class="custom-control-label text-<?= $row['colour']; ?>"><b>

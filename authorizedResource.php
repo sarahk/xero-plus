@@ -3,24 +3,27 @@ ini_set('display_errors', 'On');
 require __DIR__ . '/vendor/autoload.php';
 require_once('storage.php');
 require_once('utilities.php');
+require_once('functions.php');
 
 
 $dbh = getDbh();
 
 // Use this class to deserialize error caught
+use models\ContactModel;
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
+use XeroAPI\XeroPHP\ApiException;
 
 // Storage Classe uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
-$xeroTenantId = (string) $storage->getSession()['tenant_id'];
+$xeroTenantId = (string)$storage->getSession()['tenant_id'];
 if (array_key_exists('user_name', $_SESSION)) {
     $userName = $_SESSION['user_name'];
 } else {
     try {
         $jwt = new XeroAPI\XeroPHP\JWTClaims();
-        $jwt->setTokenId((string) $storage->getIdToken());
+        $jwt->setTokenId((string)$storage->getIdToken());
         // Set access token in order to get authentication event id
-        $jwt->setTokenAccess((string) $storage->getAccessToken());
+        $jwt->setTokenAccess((string)$storage->getAccessToken());
         $jwt->decode();
 
         $userName = $_SESSION['user_name'] = $jwt->getGivenName();
@@ -52,10 +55,10 @@ if ($storage->getHasExpired()) {
         $newAccessToken->getRefreshToken(),
         $newAccessToken->getValues()["id_token"]
     );
-    
+
 }
 require_once 'config.php';
-$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string) $storage->getSession()['token']);
+$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
 $apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
     new GuzzleHttp\Client(),
     $config
@@ -120,7 +123,7 @@ switch ($action) {
 
             $apiResponse = $apiInstance->createContacts($xeroTenantId, $contacts);
             $message = 'New Contact Name: ' . $apiResponse->getContacts()[0]->getName();
-        } catch (\XeroAPI\XeroPHP\ApiException $e) {
+        } catch (ApiException $e) {
             $error = AccountingObjectSerializer::deserialize(
                 $e->getResponseBody(),
                 '\XeroAPI\XeroPHP\Models\Accounting\Error',
@@ -131,7 +134,7 @@ switch ($action) {
         break;
 
     case 3: // filter invoices
-        $if_modified_since = new \DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
+        $if_modified_since = new DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
         $if_modified_since = null;
         $where = 'Type=="ACCREC"'; // string
         $where = null;
@@ -186,7 +189,7 @@ switch ($action) {
                 $message = $message . '<br> Second contact validation error : ' . $apiResponse->getContacts()[1]->getValidationErrors()[0]["message"];
             }
 
-        } catch (\XeroAPI\XeroPHP\ApiException $e) {
+        } catch (ApiException $e) {
             $error = AccountingObjectSerializer::deserialize(
                 $e->getResponseBody(),
                 '\XeroAPI\XeroPHP\Models\Accounting\Error',
@@ -197,32 +200,37 @@ switch ($action) {
         break;
 
 
-
-
     case 6:
 
         $jwt = new XeroAPI\XeroPHP\JWTClaims();
-        $jwt->setTokenId((string) $storage->getIdToken());
+        $jwt->setTokenId((string)$storage->getIdToken());
         // Set access token in order to get authentication event id
-        $jwt->setTokenAccess((string) $storage->getAccessToken());
+        $jwt->setTokenAccess((string)$storage->getAccessToken());
         $jwt->decode();
 
-        echo ("sub:" . $jwt->getSub() . "<br>");
-        echo ("sid:" . $jwt->getSid() . "<br>");
-        echo ("iss:" . $jwt->getIss() . "<br>");
-        echo ("exp:" . $jwt->getExp() . "<br>");
-        echo ("given name:" . $jwt->getGivenName() . "<br>");
-        echo ("family name:" . $jwt->getFamilyName() . "<br>");
-        echo ("email:" . $jwt->getEmail() . "<br>");
-        echo ("user id:" . $jwt->getXeroUserId() . "<br>");
-        echo ("username:" . $jwt->getPreferredUsername() . "<br>");
-        echo ("session id:" . $jwt->getGlobalSessionId() . "<br>");
-        echo ("authentication_event_id:" . $jwt->getAuthenticationEventId() . "<br>");
+        echo("sub:" . $jwt->getSub() . "<br>");
+        echo("sid:" . $jwt->getSid() . "<br>");
+        echo("iss:" . $jwt->getIss() . "<br>");
+        echo("exp:" . $jwt->getExp() . "<br>");
+        echo("given name:" . $jwt->getGivenName() . "<br>");
+        echo("family name:" . $jwt->getFamilyName() . "<br>");
+        echo("email:" . $jwt->getEmail() . "<br>");
+        echo("user id:" . $jwt->getXeroUserId() . "<br>");
+        echo("username:" . $jwt->getPreferredUsername() . "<br>");
+        echo("session id:" . $jwt->getGlobalSessionId() . "<br>");
+        echo("authentication_event_id:" . $jwt->getAuthenticationEventId() . "<br>");
 
         break;
 
+    case 10:
+        if (array_key_exists('data', $_POST)) {
+            $contact = new ContactModel();
+            $contact->prep($_POST['data']);
+        }
+        break;
+
     default:
-    // nothing to do
+        // nothing to do
 }
 
 
@@ -230,22 +238,25 @@ require_once('views/header.php');
 
 ?>
 
-<div>
-    <?php
+    <div>
+        <?php
 
-    switch ($action) {
-        case 1:
-            include 'views/organisations_list.php';
-            break;
-        case 5:
-            include 'views/contacts_index.php';
-            break;
-        case 9:
-            include 'views/invoices_index.php';
-            break;
-    }
-    ?>
-</div>
+        switch ($action) {
+            case 1:
+                include 'views/organisations_list.php';
+                break;
+            case 5:
+                include 'views/contacts_index.php';
+                break;
+            case 9:
+                include 'views/invoices_index.php';
+                break;
+            case 10:
+                include 'views/enquiry-edit.php';
+                break;
+        }
+        ?>
+    </div>
 <?php
 require_once('views/footer.php');
 ?>
