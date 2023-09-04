@@ -1,22 +1,22 @@
 </div>
 </div>
- <!--SIDEBAR-RIGHT-->
- <?php include 'layouts/sidebar-right.php'; ?>
+<!--SIDEBAR-RIGHT-->
+<?php include 'layouts/sidebar-right.php'; ?>
 
 <!--/SIDEBAR-RIGHT-->
 
 
-
-
 <footer class="footer">
-				<div class="container">
-					<div class="row align-items-center flex-row-reverse">
-						<div class="col-md-12 col-sm-12 text-center">
-							 Copyright © <span id="year"></span> <a href="javascript:void(0);">Zanex</a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0);"> Spruko </a> All rights reserved
-						</div>
-					</div>
-				</div>
-			</footer>
+    <div class="container">
+        <div class="row align-items-center flex-row-reverse">
+            <div class="col-md-12 col-sm-12 text-center">
+                Copyright © <span id="year"></span> <a href="javascript:void(0);">Zanex</a>. Designed with <span
+                        class="fa fa-heart text-danger"></span> by <a href="javascript:void(0);"> Spruko </a> All rights
+                reserved
+            </div>
+        </div>
+    </div>
+</footer>
 </div>
 
 <?php include 'layouts/scripts.php'; ?>
@@ -58,11 +58,11 @@
 <script type="text/javascript" src="/js/invoices.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>
 
-<?php if (intval($_GET['action']) === 10): 
+<?php if (intval($_GET['action'] ?? 0) === 10):
     include_once 'addins/footer-edit-js.php' ?>
-    	
+
     <script type="text/javascript" src="/js/enquiry.js"></script>
-  <?php endif; ?>
+<?php endif; ?>
 
 <script type="text/javascript">
     <?php /*
@@ -71,10 +71,10 @@
     //});  */ ?>
 
     <?php
-  //  if (file_exists("js/{$endpoint}{$action}.js")):
-  //      echo "jQuery.getScript('/js/{$endpoint}{$action}.js');";
-  //  endif;
-  ?>
+    //  if (file_exists("js/{$endpoint}{$action}.js")):
+    //      echo "jQuery.getScript('/js/{$endpoint}{$action}.js');";
+    //  endif;
+    ?>
 
     $(document).ready(function () {
 
@@ -85,13 +85,13 @@
             processing: true,
             serverSide: true,
             columns: [
-                { data: "checkbox", orderable: false },
-                { data: "theyowe", className: 'dt-right' },
-                { data: "name" },
-                { data: "phone", orderable: false },
-                { data: "email" },
-                { data: "address", orderable: false },
-                { data: "action", orderable: false }
+                {data: "checkbox", orderable: false},
+                {data: "theyowe", className: 'dt-right'},
+                {data: "name"},
+                {data: "phone", orderable: false},
+                {data: "email"},
+                {data: "address", orderable: false},
+                {data: "action", orderable: false}
             ],
             paging: true,
             stateSave: true,
@@ -129,8 +129,6 @@
         });
 
 
-
-
         var tCabins = $('#getCabinsTable').DataTable({
             "ajax": {
                 "url": "/json.php?endpoint=Cabins&action=Read",
@@ -138,12 +136,12 @@
             "processing": true,
             "serverSide": true,
             "columns": [
-                { data: "number" },
-                { data: "style" },
-                { data: "status" },
-                { data: "contact", },
-                { data: "paintgrey" },
-                { data: "paintinside" },
+                {data: "number"},
+                {data: "style"},
+                {data: "status"},
+                {data: "contact",},
+                {data: "paintgrey"},
+                {data: "paintinside"},
             ],
             "paging": true,
             dom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
@@ -195,7 +193,6 @@
         }
 
 
-
         $('#contactSingle').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var contactid = button.data('contactid') // Extract info from data-* attributes
@@ -235,7 +232,7 @@
             console.log('loadFromXero: ' + tenancy);
             $('#loadfromxerospinner').show();//Load button clicked show spinner
             $.ajax({
-                url: "/json.php?endpoint=Invoices&action=refresh&tenancy="+tenancy,
+                url: "/xero.php?endpoint=Invoices&action=refresh&tenancy=" + tenancy,
                 type: 'GET',
                 dataType: 'json',
 
@@ -247,43 +244,44 @@
 
         //$("#loadfromxero").click(loadFromXero);
 
-        
+
         // every minute
         setInterval(function () {
-            const tenancies = ['auckland','waikato','bop'];
+            const tenancies = ['auckland', 'waikato', 'bop'];
             for (let i = 0; i < tenancies.length; i++) {
-            if (Cookies.get(tenancies[i]) === 'true'){
-                console.log('setInterval loadFromXero: '+tenancies[i]);
-                loadFromXero(tenancies[i]);
+                if (Cookies.get(tenancies[i]) === 'true') {
+                    console.log('setInterval loadFromXero: ' + tenancies[i]);
+                    loadFromXero(tenancies[i]);
+                }
             }
-        }
         }, 60 * 1000);
 
 // save the working with choices
 // https://github.com/js-cookie/js-cookie/tree/main
-$('#territory-auckland').change(function(){
-    Cookies.set('auckland', $('#territory-auckland')[0].checked);
-    console.log('auckland cookie');
-});
-$('#territory-waikato').change(function(){
-    Cookies.set('waikato', $('#territory-waikato')[0].checked);
-    console.log('waikato cookie');
-});
-$('#territory-bop').change(function(){
-    Cookies.set('bop', $('#territory-bop')[0].checked);
-    console.log('bop cookie');
-});
+        $('#tenancy-auckland').change(function () {
+            Cookies.set('auckland', $('#tenancy-auckland')[0].checked);
+            console.log('auckland cookie');
+        });
+        $('#tenancy-waikato').change(function () {
+            Cookies.set('waikato', $('#tenancy-waikato')[0].checked);
+            console.log('waikato cookie');
+        });
+        $('#tenancy-bop').change(function () {
+            Cookies.set('bop', $('#tenancy-bop')[0].checked);
+            console.log('bop cookie');
+        });
 
 // set checkboxes to how they were last time
-if (Cookies.get('auckland') === 'true'){
-    $("#territory-auckland").prop("checked", true);
-}
-if (Cookies.get('waikato') === 'true'){
-    $("#territory-waikato").prop("checked", true);
-}
-if (Cookies.get('bop') === 'true'){
-    $("#territory-bop").prop("checked", true);
-}
+        // this should be set up in TenancyModel
+     /*   if (Cookies.get('auckland') === 'true') {
+            $("#tenancy-auckland").prop("checked", true);
+        }
+        if (Cookies.get('waikato') === 'true') {
+            $("#tenancy-waikato").prop("checked", true);
+        }
+        if (Cookies.get('bop') === 'true') {
+            $("#tenancy-bop").prop("checked", true);
+        }*/
     });
 </script>
 </body>

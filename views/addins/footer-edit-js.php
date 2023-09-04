@@ -36,20 +36,20 @@
 <script src="/assets/plugins/time-picker/toggles.min.js"></script>
 
 <!-- INTERNAL INTLTELINPUT JS -->
-<script src="/assets/plugins/intl-tel-input-master/intlTelInput.js"></script>
+<!--<script src="/assets/plugins/intl-tel-input-master/intlTelInput.js"></script>-->
 <!--<script src="/assets/plugins/intl-tel-input-master/country-select.js"></script>-->
-<script src="/assets/plugins/intl-tel-input-master/utils.js"></script>
+<!--<script src="/assets/plugins/intl-tel-input-master/utils.js"></script>-->
 
 <!-- INTERNAL JQUERY TRANSFER JS -->
-<script src="/assets/plugins/jQuerytransfer/jquery.transfer.js"></script>
+<!--<script src="/assets/plugins/jQuerytransfer/jquery.transfer.js"></script>-->
 
 <!-- INTERNAL MULTI JS -->
-<script src="/assets/plugins/multi/multi.min.js"></script>
+<!--<script src="/assets/plugins/multi/multi.min.js"></script>-->
 
 
 <!-- MULTI SELECT JS-->
-<script src="/assets/plugins/multipleselect/multiple-select.js"></script>
-<script src="/assets/plugins/multipleselect/multi-select.js"></script>
+<!--<script src="/assets/plugins/multipleselect/multiple-select.js"></script>-->
+<!--<script src="/assets/plugins/multipleselect/multi-select.js"></script>-->
 
 <!-- FORMELEMENTS JS -->
 <!--<script src="/assets/js/formelementadvnced.js"></script>-->

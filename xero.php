@@ -1,4 +1,11 @@
 <?php
+/*
+ * Handles direct calls to Xero
+ * Does not return json - saves the information into the mysql database
+ *
+ * TODO
+ * Remove unused functions
+ */
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -8,9 +15,8 @@ $path = 'vendor/autoload.php';
 require $path;
 
 require_once('storage.php');
-require_once('JsonClass.php');
+require_once('XeroClass.php');
 require_once('config.php');
-require_once('utilities.php');
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
@@ -21,7 +27,14 @@ $xeroTenantId = (string)$storage->getSession()['tenant_id'];
 // Check if Access Token is expired
 // if so - refresh token
 if ($storage->getHasExpired()) {
-    $provider = getProvider();
+    $provider = new \League\OAuth2\Client\Provider\GenericProvider([
+        'clientId' => $clientId,
+        'clientSecret' => $clientSecret,
+        'redirectUri' => $redirectUri,
+        'urlAuthorize' => 'https://login.xero.com/identity/connect/authorize',
+        'urlAccessToken' => 'https://identity.xero.com/connect/token',
+        'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
+    ]);
 
     $newAccessToken = $provider->getAccessToken('refresh_token', [
         'refresh_token' => $storage->getRefreshToken()
@@ -43,7 +56,7 @@ $apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
 );
 
 // ALL methods are demonstrated using this class
-$json = new JsonClass($apiInstance, $xeroTenantId);
+$xero = new XeroClass($apiInstance, $xeroTenantId);
 //$json = new JsonClass();
 //$json->setup($apiInstance);
 
@@ -202,7 +215,11 @@ try {
         case "Invoices":
         case 'invoices':
             switch ($action) {
-
+                case 'Refresh':
+                case 'refresh':
+                    $tenancy = filter_input(INPUT_GET, 'tenancy');
+                    $xero->getInvoiceRefresh($tenancy);
+                    break;
                 case "Create":
                     echo $json->createInvoice($xeroTenantId, $apiInstance);
                     break;
@@ -210,7 +227,7 @@ try {
                     echo $json->createInvoices($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getInvoiceList();
+                    echo $json->getInvoice();
                     break;
                 case "Update":
                     echo $json->updateInvoice($xeroTenantId, $apiInstance);

@@ -4,7 +4,7 @@
 //
 
 
-require_once 'json_class.php';
+require_once 'JsonClass.php';
 $json1 = new JsonClass($apiInstance, $xeroTenantId);
 
 
@@ -13,10 +13,12 @@ $tenancies = $json1->getOrganisationList(true);
 ?>
 
 <style>
-    input#territory-auckland.custom-control-input::before,
-    {
-    background-color: var(--bs-yellow) !important;
+<?php foreach ($tenancies as $row): ?>
+    .custom-checkbox .<?= $row['shortname']; ?>::before {
+        border-radius: 3px;
+        background-color: var(--bs-<?= $row['colour']; ?>) !important;
     }
+<?php endforeach; ?>
 </style>
 
 <div class="form-group ml-4">
@@ -26,14 +28,14 @@ $tenancies = $json1->getOrganisationList(true);
             $disabled = ($row['disabled'] == 1) ? 'disabled' : '';
             $checked = ($row['active'] == 1) ? 'checked' : '';
             ?>
-            <label classÏ="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="tenancy-<?= $row['shortname']; ?>"
-                    name="tenancy-<?= $row['shortname']; ?>" value="Y" <?= $checked; ?><?= $disabled; ?>>
-                <span class="custom-control-label text-<?= $row['colour']; ?>"><b>
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input <?= $row['shortname']; ?>-input" id="tenancy-<?= $row['shortname']; ?>"
+                       name="tenancy-<?= $row['shortname']; ?>" value="Y" <?= $checked; ?><?= $disabled; ?>>
+                <span class="custom-control-label text-<?= $row['colour']; ?> <?= $row['shortname']; ?>"><b>
                         <?= $row['name']; ?>
                     </b></span>
             </label>
         <?php endforeach; ?>
-       
+
     </div>
 </div>

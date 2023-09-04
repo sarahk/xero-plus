@@ -1,6 +1,11 @@
 <?php
 require_once('utilities.php');
 require_once('functions.php');
+require_once('models/AddressModel.php');
+require_once('models/ContactModel.php');
+require_once('models/InvoiceModel.php');
+require_once('models/PhoneModel.php');
+require_once('models/TenancyModel.php');
 
 class JsonClass
 {
@@ -40,7 +45,7 @@ class JsonClass
 
     public function getCabins()
     {
-        $output = $this->getOutput();
+        $output = $this->getParams();
 
 
         $order = null;
@@ -305,7 +310,7 @@ class JsonClass
 
 
 
-    public function getOutput()
+    public function getParams()
     {
         $output = ['data' => []];
 
@@ -321,7 +326,7 @@ class JsonClass
         $output['dates'] = filter_input(INPUT_GET, 'dates', FILTER_DEFAULT);
         $output['contact_status'] = filter_input(INPUT_GET, 'dates', FILTER_DEFAULT);
         $output['button'] = filter_input(INPUT_GET, 'button', FILTER_DEFAULT);
-
+        $output['tenancies'] = $this->getTenancies();
         // prima
         $output['key'] = filter_input(INPUT_GET, 'key', FILTER_DEFAULT);
 
@@ -430,6 +435,12 @@ class JsonClass
         return $k;
     }
 
+    public function getSearchContacts(){
+        $contact = new \models\ContactModel();
+        $result = $contact->search();
+        return json_encode($result);
+    }
+
     public function saveContactRow($row)
     {
 
@@ -512,34 +523,28 @@ class JsonClass
     }
 
     // get all the tenancies from the database
-    // then see if they're ticked by the user
     // and return the ones that are active
     public function getTenancies()
     {
         if (count($this->tenancies) == 0) {
-            $sql = "SELECT * from `tenancies`";
-            $this->tenancies = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        }
+            $tenancies = new TenancyModel();
+            $this->tenancies = $tenancies->list();
+         }
         $output = [];
         foreach ($this->tenancies as $row) {
-            if ($this->isCookieTrue($row['shortname'])) {
+            if ($row['active']) {
                 $output[] = $row['tenant_id'];
             }
         }
         return $output;
     }
+
+    // get all the tenancies and show if they're active or not
     public function getTenancyList()
     {
-        if (count($this->tenancies) == 0) {
-            $sql = "SELECT * from `tenancies` order by `sortorder`";
-            $this->tenancies = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        }
-        $output = [];
-        foreach ($this->tenancies as $k => $row) {
-            $row['active'] = $this->isCookieTrue($row['shortname']);
-            $output[] = $row;
-        }
-        return $output;
+        $tenancies = new TenancyModel();
+        $this->tenancies = $tenancies->list();
+        return $this->tenancies;
     }
 
     public function isCookieTrue($tenancy)
@@ -1423,7 +1428,7 @@ class JsonClass
     }
 
     // https://cabinkingmanagement:8890/json.php?endpoint=Invoices&action=refresh&tenancy=auckland
-    public function getInvoiceRefresh($tenancy)
+    public function getInvoiceRefreshX($tenancy)
     {
         $testing = true;
         $k = 0;
@@ -1475,140 +1480,13 @@ class JsonClass
         return $k;
     }
 
-    public function getInvoice($returnObj = false)
+    public function getInvoiceList($returnObj = false)
     {
-
-        //$refreshInvoice = $this->getInvoiceRefresh();
-        //$refreshContact = $this->getContactRefresh();
-        // turn this into a loop, $num should be <100 when finished
-
-        $output = $this->getOutput();
-
-        //[Invoices:Read]
-// READ ALL 
-        //$result1 = $apiInstance->getInvoices($xeroTenantId);
-
-        /*
-          "VOIDED"
-          "PAID"
-          "AUTHORISED"
-          "DRAFT"
-         */
-        // READ only ACTIVE
-        $where = $statuses = null;
-        /*
-        <th>#</th>
-        <th>Contact</th>
-        <th>Ref</th>
-        <th>Total</th>
-        <th>Due</th>
-        <th>Date</th>
-*/
-        $order = null;
-        if (is_array($output['order'])) {
-            switch ($output['order'][0]['column']) {
-                case 0:
-                    $order = "invoices.invoice_number {$output['order'][0]['dir']}";
-                    break;
-                case 1:
-                    $order = "contacts.last_name {$output['order'][0]['dir']}, contacts.first_name ASC";
-                    break;
-
-                case 2:
-                    $order = "invoices.reference {$output['order'][0]['dir']}";
-                    break;
-
-                case 3:
-                    $order = "invoices.total {$output['order'][0]['dir']}";
-                    break;
-
-                case 4: // amount due
-                    $order = "invoices.amount_due {$output['order'][0]['dir']}";
-                    break;
-
-                case 5:
-                default:
-                    $order = "invoices.due_date {$output['order'][0]['dir']}";
-                    break;
-            }
-        } else {
-            $order = "invoices.due_date DESC";
-        }
-
-        $conditions = ["`invoices`.`xerotenant_id` = '{$this->xeroTenantId}'"];
-        if (!empty($output['search'])) {
-            $search = [
-                "`contacts`.`name` like '%{$output['search']}%'",
-                "`contacts`.`last_name` like '%{$output['search']}%'",
-                "`contacts`.`first_name` like '%{$output['search']}%'",
-                "`invoices`.`invoice_number` like '%{$output['search']}%'"
-            ];
-            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
-        }
-        if (!empty($output['button'])) {
-            $status = strtoupper($output['button']);
-            $conditions[] = "`invoices`.`status` = '{$status}'";
-        } else {
-            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";
-        }
-
-
-        $fields = [
-            'invoices.invoice_id',
-            'invoices.status',
-            'invoices.invoice_number',
-            'invoices.reference',
-            'invoices.total',
-            'invoices.amount_paid',
-            'invoices.amount_due',
-            'invoices.due_date',
-            'invoices.contact_id',
-            'contacts.name'
-        ];
-
-
-        $sql = "SELECT " . implode(',', $fields) . " FROM `invoices` 
-        LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
-        WHERE " . implode(' AND ', $conditions) . "
-        ORDER BY {$order} 
-        LIMIT {$output['start']}, {$output['length']}";
-
-
-
-        $invoices = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM invoices WHERE `invoices`.`xerotenant_id` = '{$this->xeroTenantId}'")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query("SELECT count(*) FROM invoices LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) WHERE " . implode(' AND ', $conditions))->fetchColumn();
-        //$output['refreshInvoice'] = $refreshInvoice;
-        // $output['refreshContact'] = $refreshContact;
-
-
-        if (count($invoices)) {
-            foreach ($invoices as $k => $row) {
-                if (empty($row['name'])) {
-                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['contact_id']}</a>";
-                } else {
-                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
-                }
-                $output['data'][] = [
-                    'number' => $row['invoice_number'],
-                    'reference' => $row['reference'],
-                    'contact' => $contactName,
-                    'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
-                    'total' => $row['total'],
-                    'amount_paid' => $row['amount_paid'],
-                    'amount_due' => $row['amount_due'],
-                    'due_date' => $row['due_date']
-                ];
-            }
-            $output['row'] = $row;
-        }
-
-        if ($returnObj) {
-            return $returnObj->getInvoices()[0];
-        } else {
+        $params = $this->getParams();
+        $invoice = new InvoiceModel();
+        $output = $invoice->list($params);
             return json_encode($output);
-        }
+
     }
 
 

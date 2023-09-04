@@ -1,5 +1,5 @@
 <?php
-
+const SITE_ROOT = __DIR__;
 function getProvider()
 {
 

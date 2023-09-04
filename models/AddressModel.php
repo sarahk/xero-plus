@@ -1,8 +1,6 @@
 <?php
 
-namespace models;
-
-use models\BaseModel;
+require_once (SITE_ROOT.'/models/BaseModel.php');
 
 class AddressModel extends BaseModel
 {

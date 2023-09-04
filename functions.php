@@ -23,6 +23,8 @@ function debug($val)
 {
     echo '<ul>';
     showValue('', $val);
+
+    // show where debug was called from
     $bt = debug_backtrace();
     
     $caller = array_shift($bt);
@@ -39,11 +41,11 @@ function showValue($k, $val)
 {
     echo '<li>';
     if (is_array($val)) {
-        echo '<ul>';
+        echo $k.'<ul>';
         foreach ($val as $k => $row) {
             showValue($k, $row);
         }
-        echo '</ul>';
+        echo '</li></ul>';
     } else {
         echo (strlen($k) ? "{$k}: " : ''), $val;
     }
