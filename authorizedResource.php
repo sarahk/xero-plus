@@ -175,6 +175,8 @@ switch ($action) {
         // enquiries
         $contact = new ContactModel();
         $data = $contact->get($id);
+        //debug($data);
+        //exit;
         break;
 
     default:

@@ -8,5 +8,7 @@ class PhoneModel extends BaseModel
                 values (:contact_id, 'MOBILE', :phone_number , :phone_area_code)
                 ON DUPLICATE KEY UPDATE phone_number = :phone_number, :phone_area_code = :phone_area_code";
 
-
+    protected $table = 'phones';
+    protected $joins = ['contacts' => "`phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2"];
+    protected $virtualFields = ['phone' => "CONCAT(`phone_area_code`,' ',`phone_number`)"];
 }

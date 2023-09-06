@@ -7,18 +7,18 @@
     FormBuilder::hidden('id');
     FormBuilder::hidden('contact_id');
     FormBuilder::hidden('contact_status');
-    debug($data);
+
     ?>
     <div class="row row-sm">
         <div class="col-md-6">
 
             <?php FormBuilder::inputs('Name', [
-                ['name' => 'first_name', 'type' => 'text', 'value' => $data['first_name']],
-                ['name' => 'last_name', 'type' => 'text', 'value' => $data['last_name']]
+                ['name' => 'first_name', 'type' => 'text', 'value' => $data['contacts']['first_name']],
+                ['name' => 'last_name', 'type' => 'text', 'value' => $data['contacts']['last_name']]
             ], true); ?>
-            <?php FormBuilder::input('phone', 'Phone', true, 'tel', $data['phone']); ?>
-            <?php FormBuilder::input('email', 'Email', false, 'email', $data['email_address']); ?>
-            <?php FormBuilder::textarea('notes', 'Notes', $data['notes']); ?>
+            <?php FormBuilder::input('phone', 'Phone', true, 'tel', $data['phones'][0]['phone']); ?>
+            <?php FormBuilder::input('email', 'Email', false, 'email', $data['contacts']['email_address']); ?>
+            <?php FormBuilder::textarea('notes', 'Notes', $data['contacts']['notes']); ?>
 
         </div>
         <div class="col-md-3">
@@ -33,22 +33,23 @@
             </div>
         </div>
         <div class="col-md-3">
-            <?php FormBuilder::radio('bwtc', 'Best way to contact', [
+            <?php FormBuilder::radio('best_way_to_contact', 'Best way to contact', [
                 ['name' => 'phone', 'label' => 'Phone'],
                 ['name' => 'email', 'label' => 'Email'],
                 ['name' => 'text', 'label' => 'Text/SMS'],
                 ['name' => 'nopref', 'label' => 'Whatever is easiest']
-            ], $data['best_way_to_contact']);
-            FormBuilder::radio('winz', 'WINZ Form',
-                [['name' => 'No'], ['name' => 'Requested'], ['name' => 'Sent']],
-                $data['winz_form']
+            ], $data['contacts']['best_way_to_contact']
             );
-            FormBuilder::radio('hdyh', 'How did you  hear about us?',
+            FormBuilder::radio('winz_form', 'WINZ Form',
+                [['name' => 'No'], ['name' => 'Requested'], ['name' => 'Sent']],
+                $data['contacts']['winz_form']
+            );
+            FormBuilder::radio('how_did_you_hear', 'How did you  hear about us?',
                 [['name' => 'search', 'label' => 'Web Search'],
                     ['name' => 'facebook', 'label' => 'Facebook'],
                     ['name' => 'wom', 'label' => 'Word of Mouth'],
                     ['name' => 'other', 'label' => 'Other']],
-                '');
+                $data['contacts']['how_did_you_hear']);
             ?>
 
         </div>
@@ -76,17 +77,20 @@
                                 color: <?=$colour;?>;
                                 background-color: hsl(from <?=$colour; ?> h s l / .5);
                             }
+
                             <?php endforeach;?>
                         </style>
                         <?php
                         // tenancies should still be a variable from the sidebar
                         foreach (TENANCIES as $k => $row):
+                            $checked = ($data['contacts']['xerotenant_id'] === $row['tenant_id'] ? ' checked="true" ' : '');
                             ?>
                             <label class="selectgroup-item">
                                 <input type="radio" name="data[xerotenant_id]"
                                        value="<?= $row['tenant_id']; ?>"
-                                       class="selectgroup-input <?= $row['shortname']; ?>">
-                                <span class="selectgroup-button" id="xerotenant_id<?=$k;?>"><b><?= $row['name']; ?></b></span>
+                                       class="selectgroup-input <?= $row['shortname']; ?>" <?= $checked; ?>>
+                                <span class="selectgroup-button"
+                                      id="xerotenant_id<?= $k; ?>"><b><?= $row['name']; ?></b></span>
                             </label>
                         <?php endforeach; ?>
 
@@ -94,11 +98,24 @@
                     </div>
 
                 </div>
+               <?php
+               function getBestAddress($addresses)
+               {
+                   $best = 0;
+                   foreach($addresses as $k => $row){
+                       if (!empty($row['address_line1'])){
+                           $best = $k;
+                       }
+                   }
+                   return $addresses[$best]['address'];
+               }
+               ?>
                 <div class='form-group'>
                     <label class='form-label' for='name'>Delivery Address</label>
                     <div class='input-group'>
                         <input class="form-control" id='name' name='data[address]'
-                               placeholder="Delivery Address" type="text">
+                               placeholder="Delivery Address" type="text"
+                               value="<?= getBestAddress($data['contracts']); ?>">
                         <span id='open-in-maps' class="input-group-text btn btn-info">Maps</span>
                     </div>
                 </div>

@@ -13,44 +13,21 @@ class ContactModel extends BaseModel
                 ON DUPLICATE KEY UPDATE
                 (name = :name, first_name = :first_name, last_name = :last_name, email_address = :email, 
                     updated_date_utc = :updated_date_utc, xerotenant_id = :xerotenant_id)";
-    protected $address;
-    protected $phone;
+    protected $addresses;
+    protected $phones;
+    protected $table = 'contacts';
+    protected $hasMany = ['phones','addresses','contracts'];
 
 
     function __construct()
     {
         parent::__construct();
 
-        $this->address = new AddressModel();
-        $this->phone = new PhoneModel();
+        $this->addresses = new AddressModel();
+        $this->phones = new PhoneModel();
     }
 
-    /*
-     * Default values belong in mysql
-     */
-    public function get($id){
-        if ($id) {
-            $sql = "SELECT `contacts`.*, concat(phones.phone_area_code, ' ', phones.phone_number) as phone
-            FROM contacts 
-            LEFT JOIN `phones` on (phones.ckcontact_id = contacts.id OR phones.contact_id = contacts.contact_id)
-            WHERE id = :id";
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute(['id' => $id]);
-            $data = $statement->fetchAll(PDO::FETCH_ASSOC);
-            return $data[0];
-        }
-        else {
-            $sql = "SHOW FULL COLUMNS FROM `contacts`";
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute();
-            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-            $data = [];
-            foreach($result as $row){
-                $data[$row['Field']] = $row['Default'];
-            }
-            return $data;
-        }
-    }
+
     public function prepAndSave($data)
     {
         $values = [];
