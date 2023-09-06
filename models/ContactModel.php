@@ -1,6 +1,8 @@
 <?php
 
-require_once (SITE_ROOT.'/models/BaseModel.php');
+require_once(SITE_ROOT . '/models/BaseModel.php');
+require_once(SITE_ROOT . '/models/AddressModel.php');
+require_once(SITE_ROOT . '/models/PhoneModel.php');
 
 class ContactModel extends BaseModel
 {
@@ -23,7 +25,33 @@ class ContactModel extends BaseModel
         $this->phone = new PhoneModel();
     }
 
-    public function prep($data)
+    /*
+     * Default values belong in mysql
+     */
+    public function get($id){
+        if ($id) {
+            $sql = "SELECT `contacts`.*, concat(phones.phone_area_code, ' ', phones.phone_number) as phone
+            FROM contacts 
+            LEFT JOIN `phones` on (phones.ckcontact_id = contacts.id OR phones.contact_id = contacts.contact_id)
+            WHERE id = :id";
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute(['id' => $id]);
+            $data = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return $data[0];
+        }
+        else {
+            $sql = "SHOW FULL COLUMNS FROM `contacts`";
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $data = [];
+            foreach($result as $row){
+                $data[$row['Field']] = $row['Default'];
+            }
+            return $data;
+        }
+    }
+    public function prepAndSave($data)
     {
         $values = [];
 
@@ -52,27 +80,43 @@ class ContactModel extends BaseModel
         $this->phone->save($values);
     }
 
+    /*
+     * need to provide the option to limit it to a particular tenancy
+     * add weighting in the future?
+     */
     public function search()
     {
-
-        $searchFields = ['first_name', 'last_name', 'email', 'phone'];
+        $searchFields = ['first_name', 'last_name', 'email_address', 'phone'];
         $conditions = $values = [];
 
+
         foreach ($searchFields as $var) {
-            if (!empty($_POST[$var])) {
-                $conditions[] = " {$var} = :{$var} ";
-                $values[$var] = $_POST[$var];
+            if (!empty($_GET[$var])) {
+                $conditions[] = " `{$var}` LIKE :$var ";
+                $values[':' . $var] = $_GET[$var];
             }
         }
 
-        $sql = "SELECT * FROM `contacts`
-         LEFT JOIN `phones` on contacts.id = phones.ckcontact_id WHERE " . implode(' OR ', $conditions);
+        $sql = "SELECT `contacts`.`id`, `contacts`.`contact_id`, `contacts`.`status`
+            `contacts`.`name`, `first_name`, `last_name`, 
+            `email_address`, `phone_area_code`, `phone_number`, 
+            `xerotenant_id`, `contacts`.`updated_date_utc`,
+            `tenancies`.`colour`
+            FROM `contacts`
+            LEFT JOIN `phones` on `contacts`.`id` = `phones`.`ckcontact_id` 
+            LEFT JOIN `tenancies` on `contacts`.`xerotenant_id` = `tenancies`.`tenant_id`
+            WHERE `is_customer` = 1 
+              AND (" . implode(' AND ', $conditions) .
+            ') LIMIT 10';
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute($values);
         $list = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $list['draw'] = $_POST['draw'];
-        debug($list);
-        return $list;
+
+        return [
+            'count' => count($list),
+            'draw' => $_GET['draw'],
+            'data' => $list
+        ];
     }
 }

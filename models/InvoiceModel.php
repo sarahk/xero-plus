@@ -85,10 +85,10 @@ class InvoiceModel extends BaseModel
 
 
         $sql = "SELECT " . implode(',', $fields) . " FROM `invoices` 
-        LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
-        WHERE " . implode(' AND ', $conditions) . "
-        ORDER BY {$order} 
-        LIMIT {$params['start']}, {$params['length']}";
+            LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
+            WHERE " . implode(' AND ', $conditions) . "
+            ORDER BY {$order} 
+            LIMIT {$params['start']}, {$params['length']}";
 
         $invoices = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 

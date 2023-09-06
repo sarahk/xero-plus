@@ -1,22 +1,13 @@
-<?php
-//$tenancies = json_decode(file_get_contents('../json.php?endpoint=Organisations&action=list'));
-//$t = json_decode(file_get_contents('https://cabinkingmanagement:8890/json.php?endpoint=Organisations&action=list'));
-//
 
-
-require_once 'JsonClass.php';
-$json1 = new JsonClass($apiInstance, $xeroTenantId);
-
-
-//echo $json1->getOrganisationList(true);
-$tenancies = $json1->getOrganisationList(true);
-?>
 
 <style>
-<?php foreach ($tenancies as $row): ?>
-    .custom-checkbox .<?= $row['shortname']; ?>::before {
+<?php foreach (TENANCIES as $row):
+$colour = "var(--bs-{$row['colour']})";
+$class = ".{$row['shortname']}";
+?>
+    .custom-checkbox <?= $class; ?>::before {
         border-radius: 3px;
-        background-color: var(--bs-<?= $row['colour']; ?>) !important;
+        background-color: <?= $colour; ?> !important;
     }
 <?php endforeach; ?>
 </style>
@@ -24,7 +15,7 @@ $tenancies = $json1->getOrganisationList(true);
 <div class="form-group ml-4">
     <div class="form-label">Working With:</div>
     <div class="custom-controls-stacked">
-        <?php foreach ($tenancies as $row):
+        <?php foreach (TENANCIES as $row):
             $disabled = ($row['disabled'] == 1) ? 'disabled' : '';
             $checked = ($row['active'] == 1) ? 'checked' : '';
             ?>

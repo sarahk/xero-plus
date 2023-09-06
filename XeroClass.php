@@ -555,7 +555,8 @@ class XeroClass
     // using the short name of the tenancy, get the Xero TenantId
     public function getXeroTenantId($tenancy)
     {
-        $tenancies = $this->getTenancies();
+        $tenancies = $this->getTenancyList();
+
         foreach ($tenancies as $row) {
             if ($row['shortname'] == $tenancy) {
                 return $row['tenant_id'];

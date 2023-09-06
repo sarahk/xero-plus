@@ -15,7 +15,6 @@ class TenancyModel extends BaseModel
             $output[] = $row;
         }
         return $output;
-
     }
 
 }

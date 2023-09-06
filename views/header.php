@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+<head>
 <title>Cabin King Addons</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -12,13 +13,23 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
+<?php
+//create constants for the xerotenant_id info
+require_once 'JsonClass.php';
+$json1 = new JsonClass();
+//echo $json1->getOrganisationList(true);
+define("TENANCIES", $json1->getOrganisationList(true));
+?>
+    <script>
+        const tenancies = <?php echo json_encode(TENANCIES);?>;
+    </script>
 </head>
 
 <body class="app sidebar-mini ltr light-mode">
 
     <!-- GLOBAL-LOADER -->
     <div id="global-loader">
-        <img src="assets/images/loader.svg" class="loader-img" alt="Loader">
+        <img src="/assets/images/loader.svg" class="loader-img" alt="Loader">
     </div>
     <!-- /GLOBAL-LOADER -->
 

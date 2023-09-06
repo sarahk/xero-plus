@@ -1,4 +1,5 @@
-$(function () {
+//$(function () {
+$(document).ready(function () {
     'use strict'
 
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -45,37 +46,102 @@ $(function () {
     /*
     Listen to the input fields and see if there's a matching customer that already exists
      */
-    $('#first_name').change(doYouMean());
+    let dymDraw = 0;
+    let dymLastDraw = 0;
+
+    $('#first_name').on('change', doYouMean);
+    $('#last_name').on('change', doYouMean);
+    $('#phone').on('change', doYouMean);
+    $('#email').on('change', doYouMean);
 
 
-    let dymDraw = 0
+    function doYouMean(event) {
 
-    function doYouMean() {
-        if ($('#id').val() == '') {
+        //console.log(event.data);
+        let newValue = $(this).val();
+        if ($('#id').val() == '' && newValue.length >= 3) {
+
             dymDraw++;
-
-            let postData = {
-                first_name: $('#first_name'),
-                last_name: $('#last_name'),
-                email: $('#email'),
-                phone: $('#phone'),
+            // needs to split out the first digits
+            let phone_area_code = $('#phone').val();
+            let phone_number = $('#phone').val();
+            let getData = {
+                endpoint: 'contacts',
+                action: 'search',
+                first_name: $('#first_name').val(),
+                last_name: $('#last_name').val(),
+                email_address: $('#email').val(),
+                phone_area_code: phone_area_code,
+                phone_number: phone_number,
                 draw: dymDraw
             };
-            $.getJSON("/json.php?endpoint=contacts&action=search", postData, function (data) {
-                if (data.draw === dymDraw) {
+
+            $.getJSON("/json.php", getData, function (data) {
+
+                if (data.draw == dymDraw && data.count > 0) {
                     let items = [];
-                    $.each(data, function (key, val) {
-                        items.push("<li id='" + key + "'>" + val + "</li>");
+                    // get rid of the previous results
+
+                    $('#doyoumeanheading' + dymLastDraw).remove();
+                    $('.dymButton' + dymLastDraw).remove();
+
+                    $.each(data.data, function (key, val) {
+                        let border = "border-color: var(--bs-" + val['colour'] + ");";
+                        let attributes = [
+                            "id='dymButton" + key + "'",
+                            "class='btn btn-outline overflow-hidden dymButton" + data.draw + "'",
+                            "style='border-color: var(--bs-" + val['colour'] + "); width: 100%;'",
+                            "data-id='" + val['id'] + "'",
+                            "data-contact_id='" + val['contact_id'] + "'",
+                            "data-contact_status='" + val['contact_status'] + "'",
+                            "data-xerotenant_id='" + val['xerotenant_id'] + "'",
+                            "data-first_name='" + val['first_name'] + "'",
+                            "data-last_name='" + val['last_name'] + "'",
+                            "data-email='" + val['email_address'] + "'",
+                            "data-phone='" + val['phone_area_code'] + " " + val['phone_number'] + "'"
+                        ];
+
+                        items.push("<a " + attributes.join(' ') + ">"
+                            + val['first_name'] + ' ' + val['last_name'] + '<br>'
+                            + val['email_address'] ?? '' + '<br>'
+                            + val['phone_area_code'] ?? '' + ' ' + val['phone_number'] ?? '' + "</a>");
                     });
 
-                    $("<ul/>", {
-                        "class": "my-new-list",
+                    $("<div/>", {
+                        class: "form-label",
+                        html: "Do you mean?",
+                        id: 'doyoumeanheading' + data.draw
+                    }).appendTo($("#doyoumean"));
+
+                    $("#doyoumeanheading" + data.draw).after($("<div/>", {
+                        class: "btn-list",
                         html: items.join("")
-                    }).appendTo("doyoumean");
+                    }));
+
+                    $(".dymButton" + data.draw).on('click', useDYMSuggestion);
+
+                    dymLastDraw = data.draw;
                 }
             });
         }
     }
 
+    function useDYMSuggestion() {
 
+        let data = $(this).data();
+
+        $('#first_name').val(data.first_name);
+        $('#last_name').val(data.last_name);
+        if (data.phone !== 'null null') {
+            $('#phone').val(data.phone);
+        }
+        $('#email').val(data.email);
+        $('#xerotenant_id').val(data.xerotenant_id);
+
+        $.each(tenancies, function (key, val) {
+            if (val.tenant_id === data.xerotenant_id) {
+                $('#xerotenant_id' + key).click();
+            }
+        });
+    }
 });

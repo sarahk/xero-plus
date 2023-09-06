@@ -17,6 +17,7 @@ require $path;
 require_once('storage.php');
 require_once('XeroClass.php');
 require_once('config.php');
+require_once('utilities.php');
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
@@ -27,14 +28,15 @@ $xeroTenantId = (string)$storage->getSession()['tenant_id'];
 // Check if Access Token is expired
 // if so - refresh token
 if ($storage->getHasExpired()) {
-    $provider = new \League\OAuth2\Client\Provider\GenericProvider([
+    $provider = getProvider();
+   /* $provider = new \League\OAuth2\Client\Provider\GenericProvider([
         'clientId' => $clientId,
         'clientSecret' => $clientSecret,
         'redirectUri' => $redirectUri,
         'urlAuthorize' => 'https://login.xero.com/identity/connect/authorize',
         'urlAccessToken' => 'https://identity.xero.com/connect/token',
         'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
-    ]);
+    ]);*/
 
     $newAccessToken = $provider->getAccessToken('refresh_token', [
         'refresh_token' => $storage->getRefreshToken()
@@ -58,7 +60,7 @@ $apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
 // ALL methods are demonstrated using this class
 $xero = new XeroClass($apiInstance, $xeroTenantId);
 //$json = new JsonClass();
-//$json->setup($apiInstance);
+//$xero->setup($apiInstance);
 
 $endpoint = filter_input(INPUT_GET, 'endpoint', FILTER_DEFAULT);
 $action = filter_input(INPUT_GET, 'action', FILTER_DEFAULT);
@@ -78,10 +80,10 @@ try {
         case "Cabins":
             switch ($action) {
                 case "Read":
-                    echo $json->getCabins();
+                    echo $xero->getCabins();
                     break;
                 case 'Single':
-                    echo $json->getCabinSingle();
+                    echo $xero->getCabinSingle();
                     break;
             }
             break;
@@ -89,20 +91,20 @@ try {
         case "Accounts":
             switch ($action) {
                 case "Create":
-                    echo $json->createAccount($xeroTenantId, $apiInstance);
+                    echo $xero->createAccount($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getAccount($xeroTenantId, $apiInstance);
+                    echo $xero->getAccount($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateAccount($xeroTenantId, $apiInstance);
+                    echo $xero->updateAccount($xeroTenantId, $apiInstance);
                     break;
 
                 case "Archive":
-                    echo $json->archiveAccount($xeroTenantId, $apiInstance);
+                    echo $xero->archiveAccount($xeroTenantId, $apiInstance);
                     break;
                 case "Attachment":
-                    echo $json->attachmentAccount($xeroTenantId, $apiInstance);
+                    echo $xero->attachmentAccount($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -115,28 +117,28 @@ try {
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
-                    $json->getContactRefresh();
+                    $xero->getContactRefresh();
                     break;
                 case "Create":
-                    echo $json->createContact($xeroTenantId, $apiInstance);
+                    echo $xero->createContact($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createContacts($xeroTenantId, $apiInstance);
+                    echo $xero->createContacts($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getContact($xeroTenantId, $apiInstance);
+                    echo $xero->getContact($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateContact($xeroTenantId, $apiInstance);
+                    echo $xero->updateContact($xeroTenantId, $apiInstance);
                     break;
                 case "Archive":
-                    echo $json->archiveContact($xeroTenantId, $apiInstance);
+                    echo $xero->archiveContact($xeroTenantId, $apiInstance);
                     break;
                 case 'Single':
-                    echo $json->getContactSingle();
+                    echo $xero->getContactSingle();
                 case 'Search':
                 case 'search';
-                    echo $json->getSearchContacts();
+                    echo $xero->getSearchContacts();
                     break;
                 default:
                     echo "[{$endpoint}] {$action}: action not supported in API";
@@ -146,20 +148,20 @@ try {
         case "ContactGroups":
             switch ($action) {
                 case "Create":
-                    echo $json->createContactGroup($xeroTenantId, $apiInstance);
+                    echo $xero->createContactGroup($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getContactGroup($xeroTenantId, $apiInstance);
+                    echo $xero->getContactGroup($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateContactGroup($xeroTenantId, $apiInstance);
+                    echo $xero->updateContactGroup($xeroTenantId, $apiInstance);
                     break;
                 case "Archive":
-                    echo $json->archiveContactGroup($xeroTenantId, $apiInstance);
+                    echo $xero->archiveContactGroup($xeroTenantId, $apiInstance);
                     break;
 
                 case "AddContact":
-                    echo $json->createContactGroupContacts($xeroTenantId, $apiInstance);
+                    echo $xero->createContactGroupContacts($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -169,26 +171,26 @@ try {
         case "CreditNotes":
             switch ($action) {
                 case "Create":
-                    echo $json->createCreditNote($xeroTenantId, $apiInstance);
+                    echo $xero->createCreditNote($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createCreditNotes($xeroTenantId, $apiInstance);
+                    echo $xero->createCreditNotes($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getCreditNote($xeroTenantId, $apiInstance);
+                    echo $xero->getCreditNote($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateCreditNote($xeroTenantId, $apiInstance);
+                    echo $xero->updateCreditNote($xeroTenantId, $apiInstance);
                     break;
                 case "Allocate":
-                    echo $json->allocateCreditNote($xeroTenantId, $apiInstance);
+                    //echo $xero->allocateCreditNote($xeroTenantId, $apiInstance);
                     break;
                 case "Refund":
-                    echo $json->refundCreditNote($xeroTenantId, $apiInstance);
+                    //echo $xero->refundCreditNote($xeroTenantId, $apiInstance);
                     break;
 
                 case "Void":
-                    echo $json->voidCreditNote($xeroTenantId, $apiInstance);
+                    echo $xero->voidCreditNote($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -198,13 +200,13 @@ try {
         case "ExpenseClaims":
             switch ($action) {
                 case "Create":
-                    echo $json->createExpenseClaim($xeroTenantId, $apiInstance);
+                    echo $xero->createExpenseClaim($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getExpenseClaim($xeroTenantId, $apiInstance);
+                    echo $xero->getExpenseClaim($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateExpenseClaim($xeroTenantId, $apiInstance);
+                    echo $xero->updateExpenseClaim($xeroTenantId, $apiInstance);
                     //echo $action . " action is supported in API but not SDK (no setStatus)";
                     break;
                 default:
@@ -221,20 +223,20 @@ try {
                     $xero->getInvoiceRefresh($tenancy);
                     break;
                 case "Create":
-                    echo $json->createInvoice($xeroTenantId, $apiInstance);
+                    echo $xero->createInvoice($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createInvoices($xeroTenantId, $apiInstance);
+                    echo $xero->createInvoices($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getInvoice();
+                    echo $xero->getInvoice();
                     break;
                 case "Update":
-                    echo $json->updateInvoice($xeroTenantId, $apiInstance);
+                    echo $xero->updateInvoice($xeroTenantId, $apiInstance);
                     break;
 
                 case "Void":
-                    echo $json->voidInvoice($xeroTenantId, $apiInstance);
+                    echo $xero->voidInvoice($xeroTenantId, $apiInstance);
                     break;
 
                 default:
@@ -245,7 +247,7 @@ try {
         case "InvoiceReminders":
             switch ($action) {
                 case "Read":
-                    echo $json->getInvoiceReminder($xeroTenantId, $apiInstance);
+                    echo $xero->getInvoiceReminder($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -255,16 +257,16 @@ try {
         case "Items":
             switch ($action) {
                 case "Create":
-                    echo $json->createItem($xeroTenantId, $apiInstance);
+                    echo $xero->createItem($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createItems($xeroTenantId, $apiInstance);
+                    echo $xero->createItems($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getItem($xeroTenantId, $apiInstance);
+                    echo $xero->getItem($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateItem($xeroTenantId, $apiInstance);
+                    echo $xero->updateItem($xeroTenantId, $apiInstance);
                     break;
 
                 default:
@@ -275,7 +277,7 @@ try {
         case "Journals":
             switch ($action) {
                 case "Read":
-                    echo $json->getJournal($xeroTenantId, $apiInstance);
+                    echo $xero->getJournal($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -285,13 +287,13 @@ try {
         case "LinkedTransactions":
             switch ($action) {
                 case "Create":
-                    echo $json->createLinkedTransaction($xeroTenantId, $apiInstance);
+                    echo $xero->createLinkedTransaction($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getLinkedTransaction($xeroTenantId, $apiInstance);
+                    echo $xero->getLinkedTransaction($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateLinkedTransaction($xeroTenantId, $apiInstance);
+                    echo $xero->updateLinkedTransaction($xeroTenantId, $apiInstance);
                     break;
 
                 default:
@@ -302,16 +304,16 @@ try {
         case "ManualJournals":
             switch ($action) {
                 case "Create":
-                    echo $json->createManualJournal($xeroTenantId, $apiInstance);
+                    echo $xero->createManualJournal($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createManualJournals($xeroTenantId, $apiInstance);
+                    echo $xero->createManualJournals($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getManualJournal($xeroTenantId, $apiInstance);
+                    echo $xero->getManualJournal($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateManualJournal($xeroTenantId, $apiInstance);
+                    echo $xero->updateManualJournal($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -322,11 +324,11 @@ try {
         case 'organisations':
             switch ($action) {
                 case "Read":
-                    echo $json->getOrganisation($xeroTenantId, $apiInstance);
+                    echo $xero->getOrganisation($xeroTenantId, $apiInstance);
                     break;
                 case 'List':
                 case 'list':
-                    echo $json->getOrganisationList();
+                    echo $xero->getOrganisationList();
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -336,19 +338,19 @@ try {
         case "Overpayments":
             switch ($action) {
                 case "Read":
-                    echo $json->getOverpayment($xeroTenantId, $apiInstance);
+                    //echo $xero->getOverpayment($xeroTenantId, $apiInstance);
                     break;
                 case "Create":
-                    echo $json->createOverpayment($xeroTenantId, $apiInstance);
+                    //echo $xero->createOverpayment($xeroTenantId, $apiInstance);
                     break;
                 case "Allocate":
-                    echo $json->allocateOverpayment($xeroTenantId, $apiInstance);
+                    //echo $xero->allocateOverpayment($xeroTenantId, $apiInstance);
                     break;
                 case "AllocateMulti":
-                    echo $json->allocateOverpayments($xeroTenantId, $apiInstance);
+                    //echo $xero->allocateOverpayments($xeroTenantId, $apiInstance);
                     break;
                 case "Refund":
-                    echo $json->refundOverpayment($xeroTenantId, $apiInstance);
+                    //echo $xero->refundOverpayment($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -358,16 +360,16 @@ try {
         case "Payments":
             switch ($action) {
                 case "Create":
-                    echo $json->createPayment($xeroTenantId, $apiInstance);
+                    echo $xero->createPayment($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createPayments($xeroTenantId, $apiInstance);
+                    echo $xero->createPayments($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getPayment($xeroTenantId, $apiInstance);
+                    echo $xero->getPayment($xeroTenantId, $apiInstance);
                     break;
                 case "Delete":
-                    echo $json->deletePayment($xeroTenantId, $apiInstance);
+                    echo $xero->deletePayment($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -377,16 +379,16 @@ try {
         case "Prepayments":
             switch ($action) {
                 case "Read":
-                    echo $json->getPrepayment($xeroTenantId, $apiInstance);
+                    echo $xero->getPrepayment($xeroTenantId, $apiInstance);
                     break;
                 case "Create":
-                    echo $json->createPrepayment($xeroTenantId, $apiInstance);
+                    echo $xero->createPrepayment($xeroTenantId, $apiInstance);
                     break;
                 case "Allocate":
-                    echo $json->allocatePrepayment($xeroTenantId, $apiInstance);
+                    echo $xero->allocatePrepayment($xeroTenantId, $apiInstance);
                     break;
                 case "Refund":
-                    echo $json->refundPrepayment($xeroTenantId, $apiInstance);
+                    echo $xero->refundPrepayment($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -396,19 +398,19 @@ try {
         case "PurchaseOrders":
             switch ($action) {
                 case "Create":
-                    echo $json->createPurchaseOrder($xeroTenantId, $apiInstance);
+                    //echo $xero->createPurchaseOrder($xeroTenantId, $apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $json->createPurchaseOrders($xeroTenantId, $apiInstance);
+                    //echo $xero->createPurchaseOrders($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getPurchaseOrder($xeroTenantId, $apiInstance);
+                    //echo $xero->getPurchaseOrder($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updatePurchaseOrder($xeroTenantId, $apiInstance);
+                    //echo $xero->updatePurchaseOrder($xeroTenantId, $apiInstance);
                     break;
                 case "Delete":
-                    echo $json->deletePurchaseOrder($xeroTenantId, $apiInstance);
+                    //echo $xero->deletePurchaseOrder($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -418,13 +420,13 @@ try {
         case "Receipts":
             switch ($action) {
                 case "Create":
-                    echo $json->createReceipt($xeroTenantId, $apiInstance);
+                    echo $xero->createReceipt($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getReceipt($xeroTenantId, $apiInstance);
+                    echo $xero->getReceipt($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
-                    echo $json->updateReceipt($xeroTenantId, $apiInstance);
+                    echo $xero->updateReceipt($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -434,7 +436,7 @@ try {
         case "RepeatingInvoices":
             switch ($action) {
                 case "Read":
-                    echo $json->getRepeatingInvoice($xeroTenantId, $apiInstance);
+                    echo $xero->getRepeatingInvoice($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -444,34 +446,34 @@ try {
         case "Reports":
             switch ($action) {
                 case "TenNinetyNine":
-                    echo $json->getTenNinetyNine($xeroTenantId, $apiInstance);
+                    //echo $xero->getTenNinetyNine($xeroTenantId, $apiInstance);
                     break;
                 case "AgedPayablesByContact":
-                    echo $json->getAgedPayablesByContact($xeroTenantId, $apiInstance);
+                    //echo $xero->getAgedPayablesByContact($xeroTenantId, $apiInstance);
                     break;
                 case "AgedReceivablesByContact":
-                    echo $json->getAgedReceivablesByContact($xeroTenantId, $apiInstance);
+                   // echo $xero->getAgedReceivablesByContact($xeroTenantId, $apiInstance);
                     break;
                 case "BalanceSheet":
-                    echo $json->getBalanceSheet($xeroTenantId, $apiInstance);
+                    //echo $xero->getBalanceSheet($xeroTenantId, $apiInstance);
                     break;
                 case "BankStatement":
-                    echo $json->getBankStatement($xeroTenantId, $apiInstance);
+                    //echo $xero->getBankStatement($xeroTenantId, $apiInstance);
                     break;
                 case "BankSummary":
-                    echo $json->getBankSummary($xeroTenantId, $apiInstance);
+                    //echo $xero->getBankSummary($xeroTenantId, $apiInstance);
                     break;
                 case "BudgetSummary":
-                    echo $json->getBudgetSummary($xeroTenantId, $apiInstance);
+                    //echo $xero->getBudgetSummary($xeroTenantId, $apiInstance);
                     break;
                 case "ExecutiveSummary":
-                    echo $json->getExecutiveSummary($xeroTenantId, $apiInstance);
+                    //echo $xero->getExecutiveSummary($xeroTenantId, $apiInstance);
                     break;
                 case "ProfitAndLoss":
-                    echo $json->getProfitAndLoss($xeroTenantId, $apiInstance);
+                    //echo $xero->getProfitAndLoss($xeroTenantId, $apiInstance);
                     break;
                 case "TrialBalance":
-                    echo $json->getTrialBalance($xeroTenantId, $apiInstance);
+                    echo $xero->getTrialBalance($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";
@@ -483,7 +485,7 @@ try {
             switch ($action) {
                 case 'Read':
                 default:
-                    echo $json->getVehiclesLogList();
+                    echo $xero->getVehiclesLogList();
                     break;
             }
             break;
@@ -492,7 +494,7 @@ try {
         case "Users":
             switch ($action) {
                 case "Read":
-                    echo $json->getUser($xeroTenantId, $apiInstance);
+                    echo $xero->getUser($xeroTenantId, $apiInstance);
                     break;
                 default:
                     echo $action . " action not supported in API";

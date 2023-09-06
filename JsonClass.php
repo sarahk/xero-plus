@@ -25,7 +25,7 @@ class JsonClass
 
     public $addressOptions = ['address_line1', 'address_line2', 'city', 'postal_code'];
 
-    function __construct($apiInstance, $xeroTenantId)
+    function __construct($apiInstance='', $xeroTenantId='')
     {
 
         $this->apiInstance = $apiInstance;
@@ -435,9 +435,13 @@ class JsonClass
         return $k;
     }
 
+    /*
+     * used by the enquiry form to see if the contact already exists
+     */
     public function getSearchContacts(){
-        $contact = new \models\ContactModel();
+        $contact = new ContactModel();
         $result = $contact->search();
+
         return json_encode($result);
     }
 
