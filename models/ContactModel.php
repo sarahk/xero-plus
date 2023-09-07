@@ -2,6 +2,8 @@
 
 require_once(SITE_ROOT . '/models/BaseModel.php');
 require_once(SITE_ROOT . '/models/AddressModel.php');
+require_once(SITE_ROOT . '/models/ContractModel.php');
+require_once(SITE_ROOT . '/models/NoteModel.php');
 require_once(SITE_ROOT . '/models/PhoneModel.php');
 
 class ContactModel extends BaseModel
@@ -15,8 +17,11 @@ class ContactModel extends BaseModel
                     updated_date_utc = :updated_date_utc, xerotenant_id = :xerotenant_id)";
     protected $addresses;
     protected $phones;
+    protected $contracts;
+    protected $notes;
+
     protected $table = 'contacts';
-    protected $hasMany = ['phones','addresses','contracts'];
+    protected $hasMany = ['phones','addresses','contracts', 'notes'];
 
 
     function __construct()
@@ -24,7 +29,10 @@ class ContactModel extends BaseModel
         parent::__construct();
 
         $this->addresses = new AddressModel();
+        $this->contracts = new ContractModel();
+        $this->notes = new NoteModel();
         $this->phones = new PhoneModel();
+
     }
 
 

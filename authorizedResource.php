@@ -15,7 +15,7 @@ $dbh = getDbh();
 $message = "no API calls";
 
 $action = filter_input(INPUT_GET, 'action');
-$id = intval($_GET['id']);
+$id = (array_key_exists('id',$_GET))?intval($_GET['id']):0;
 
 switch ($action) {
     case 1:
@@ -179,6 +179,12 @@ switch ($action) {
         //exit;
         break;
 
+    case 11:
+        // map of cabin locations
+        // do nothing?
+
+        break;
+
     default:
         // nothing to do
 }
@@ -203,6 +209,9 @@ require_once('views/header.php');
                 break;
             case 10:
                 include 'views/enquiry-edit.php';
+                break;
+            case 11:
+                include 'views/cabin-locations.php';
                 break;
         }
         ?>

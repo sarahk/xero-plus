@@ -10,7 +10,7 @@ $provider = new \League\OAuth2\Client\Provider\GenericProvider([
     'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
   ]);
 
-
+const GOOGLE_MAPS_API = 'AIzaSyB32Z6abVU4CzDmYdxfGX1kW4H6slcLjUw';
 
   /*
   run this when I need composer to update the /vendor/ files

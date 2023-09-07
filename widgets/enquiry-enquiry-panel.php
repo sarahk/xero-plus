@@ -9,6 +9,14 @@
     FormBuilder::hidden('contact_status');
 
     ?>
+    <input  type="hidden" id="address_line1" name="data[contract][address_line1]" />
+    <input type="hidden" id="address_line2"  name="data[contract][address_line2]"/>
+    <input type="hidden" id="postal_code" name="data[contract][postal_code]" />
+    <input type="hidden" id="city" name="data[contract][city]">
+    <input type="hidden" id="lat" name="data[contract][lat]">
+    <input type="hidden" id="long" name="data[contract][long]">
+    <input type="hidden" id="place_id" name="data[contract][place_id]">
+
     <div class="row row-sm">
         <div class="col-md-6">
 
@@ -16,22 +24,26 @@
                 ['name' => 'first_name', 'type' => 'text', 'value' => $data['contacts']['first_name']],
                 ['name' => 'last_name', 'type' => 'text', 'value' => $data['contacts']['last_name']]
             ], true); ?>
-            <?php FormBuilder::input('phone', 'Phone', true, 'tel', $data['phones'][0]['phone']); ?>
-            <?php FormBuilder::input('email', 'Email', false, 'email', $data['contacts']['email_address']); ?>
-            <?php FormBuilder::textarea('notes', 'Notes', $data['contacts']['notes']); ?>
+            <?php
+
+            foreach ($data['phones'] as $k => $row) {
+                if (!empty($row['phone_number']) || $row['phone_type'] === 'MOBILE'||$row['phone_type'] === 'DEFAULT') {
+                    $label = ($row['phone_type'] === 'DEFAULT')?'Phone':ucfirst(strtolower($row['phone_type']));
+                    FormBuilder::input(strtolower($row['phone_type']), $label, false, 'tel', $row['phone']);
+                }
+            }
+            FormBuilder::input('email', 'Email', false, 'email', $data['contacts']['email_address']);
+            FormBuilder::textarea('notes', 'Notes'); ?>
 
         </div>
+
         <div class="col-md-3">
             <?php
             FormBuilder::select('status', 'Status', FormBuilder::getStatusOptions());
             ?>
             <div id="doyoumean"></div>
-
-
-            <div class=''>
-                <?= date('Y-m-d H:i'); ?>
-            </div>
         </div>
+
         <div class="col-md-3">
             <?php FormBuilder::radio('best_way_to_contact', 'Best way to contact', [
                 ['name' => 'phone', 'label' => 'Phone'],
@@ -98,25 +110,29 @@
                     </div>
 
                 </div>
-               <?php
-               function getBestAddress($addresses)
-               {
-                   $best = 0;
-                   foreach($addresses as $k => $row){
-                       if (!empty($row['address_line1'])){
-                           $best = $k;
-                       }
-                   }
-                   return $addresses[$best]['address'];
-               }
-               ?>
+                <?php
+                function getBestAddress($addresses)
+                {
+                    $best = 0;
+                    foreach ($addresses as $k => $row) {
+                        if (!empty($row['address_line1'])) {
+                            $best = $k;
+                        }
+                    }
+                    return $addresses[$best]['address'];
+                }
+
+                ?>
                 <div class='form-group'>
                     <label class='form-label' for='name'>Delivery Address</label>
                     <div class='input-group'>
-                        <input class="form-control" id='name' name='data[address]'
+                        <input class="form-control" id='deliver-to' name='data[address]'
                                placeholder="Delivery Address" type="text"
+                               xautocomplete="chrome-off"
                                value="<?= getBestAddress($data['contracts']); ?>">
                         <span id='open-in-maps' class="input-group-text btn btn-info">Maps</span>
+
+
                     </div>
                 </div>
 

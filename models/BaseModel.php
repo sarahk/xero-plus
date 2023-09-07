@@ -55,7 +55,14 @@ class BaseModel
 
         $statement = $this->pdo->prepare($sql);
 
-        $statement->execute(['id1' => $parentId, 'id2' => $parentId]);
+        $varCount = substr_count($this->joins[$parent],':');
+        $vars = [];
+        //['id1' => $parentId, 'id2' => $parentId]
+        for($i = 0; $i < $varCount; $i++){
+            $vars['id'.($i+1)] = $parentId;
+        }
+
+        $statement->execute($vars);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         if (count($data)) {

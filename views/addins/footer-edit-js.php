@@ -57,3 +57,7 @@
 
 <!-- CUSTOM JS -->
 <script src="/assets/js/custom.js"></script>
+
+<!-- FOR THE ADDRESSES -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?=GOOGLE_MAPS_API;?>&libraries=places"></script>
+

@@ -11,15 +11,18 @@
             <!-- LOGO -->
         </div>
         <div class="main-sidemenu">
-            <div class="slide-left disabled" id="slide-left"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191"
-                    width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z" />
-                </svg></div>
+            <div class="slide-left disabled" id="slide-left">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191"
+                     width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"/>
+                </svg>
+            </div>
             <ul class="side-menu">
                 <?php include 'widgets/tenancy-picker.php'; ?>
 
-                <li class="slide"><a href="javascript:void(0);"
-                        class="btn btn-md btn-block m-3 btn-lime tracking-wide"><strong>Add An Enquiry</strong></a></li>
+                <li class="slide"><a href="/authorizedResource.php?action=10"
+                                     class="btn btn-md btn-block m-3 btn-lime tracking-wide">
+                        <strong>Add An Enquiry</strong></a></li>
 
 
                 <li class="sub-category">
@@ -27,35 +30,37 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="index.php"><i
-                            class="side-menu__icon fe fe-home"></i><span class="side-menu__label">Dashboard</span></a>
+                                class="side-menu__icon fe fe-home"></i><span
+                                class="side-menu__label">Dashboard</span></a>
                 </li>
                 <li class="sub-category">
                     <h3>Widgets</h3>
                 </li>
                 <li>
                     <a class="side-menu__item" href="widgets.php"><i class="side-menu__icon fe fe-grid"></i><span
-                            class="side-menu__label">Widgets</span></a>
+                                class="side-menu__label">Widgets</span></a>
                 </li>
                 <li class="sub-category">
                     <h3>Xero Examples</h3>
                 </li>
-                <li><a class="side-menu__item" href="authorizedResource.php?action=2">Create one Contact</a></li>
-                <li><a class="side-menu__item" href="authorizedResource.php?action=1">Get Organisation Name</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=2">Create one Contact</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
 
-                <li><a class="side-menu__item" href="authorizedResource.php?action=9">Get Invoices</a></li>
-                <li><a class="side-menu__item" href="authorizedResource.php?action=4">Create multiple contacts and
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Get Invoices</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=4">Create multiple contacts and
                         summarizeErrors</a></li>
-                <li><a class="side-menu__item" href="authorizedResource.php?action=5">Get Contact List with Filters</a>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=5">Get Contact List with Filters</a>
                 </li>
-                <li><a class="side-menu__item" href="authorizedResource.php?action=6">Get JWT Claims</a></li>
-                <li><a class="side-menu__item" href="vehicleLog.php?action=1">Vehicle Log</a></li>
-                <li><a class="side-menu__item" href="vehicleLog.php?action=2">Add Trip</a></li>
-                <li><a class="side-menu__item" href="index.php?action='logoff'">Log Off</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=6">Get JWT Claims</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=11">Cabin Locations</a></li>
+                <li><a class="side-menu__item" href="/vehicleLog.php?action=1">Vehicle Log</a></li>
+                <li><a class="side-menu__item" href="/vehicleLog.php?action=2">Add Trip</a></li>
+                <li><a class="side-menu__item" href="/index.php?action='logoff'">Log Off</a></li>
 
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-database"></i><span
-                            class="side-menu__label">Components</span><i class="angle fa fa-angle-right"></i></a>
+                                class="side-menu__icon fe fe-database"></i><span
+                                class="side-menu__label">Components</span><i class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
 
 
@@ -77,8 +82,8 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-package"></i><span class="side-menu__label">Elements</span><i
-                            class="angle fa fa-angle-right"></i></a>
+                                class="side-menu__icon fe fe-package"></i><span class="side-menu__label">Elements</span><i
+                                class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Elements</a></li>
                         <li><a href="alerts.php" class="slide-item"> Alerts</a></li>
@@ -101,7 +106,7 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-file"></i><span class="side-menu__label">Advanced
+                                class="side-menu__icon fe fe-file"></i><span class="side-menu__label">Advanced
                             Elements</span><i class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Advanced Elements</a></li>
@@ -125,8 +130,8 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-pie-chart"></i><span class="side-menu__label">Charts</span><i
-                            class="angle fa fa-angle-right"></i></a>
+                                class="side-menu__icon fe fe-pie-chart"></i><span class="side-menu__label">Charts</span><i
+                                class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Charts</a></li>
                         <li><a href="chart-chartist.php" class="slide-item">Chart Js</a></li>
@@ -142,9 +147,10 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-clipboard"></i><span
-                            class="side-menu__label">Tables</span><span class="badge bg-secondary side-badge">2</span><i
-                            class="angle fa fa-angle-right hor-rightangle"></i></a>
+                                class="side-menu__icon fe fe-clipboard"></i><span
+                                class="side-menu__label">Tables</span><span
+                                class="badge bg-secondary side-badge">2</span><i
+                                class="angle fa fa-angle-right hor-rightangle"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Tables</a></li>
                         <li><a href="tables.php" class="slide-item">Default table</a></li>
@@ -156,8 +162,8 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-layers"></i><span class="side-menu__label">Pages</span><i
-                            class="angle fa fa-angle-right"></i></a>
+                                class="side-menu__icon fe fe-layers"></i><span class="side-menu__label">Pages</span><i
+                                class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Pages</a></li>
                         <li><a href="profile.php" class="slide-item"> Profile</a></li>
@@ -176,8 +182,8 @@
                         <li><a href="switcher.php" class="slide-item"> Theme Style</a></li>
                         <li class="sub-slide">
                             <a class="sub-side-menu__item" data-bs-toggle="sub-slide" href="javascript:void(0);"><span
-                                    class="sub-side-menu__label">Blog</span><i
-                                    class="sub-angle fa fa-angle-right"></i></a>
+                                        class="sub-side-menu__label">Blog</span><i
+                                        class="sub-angle fa fa-angle-right"></i></a>
                             <ul class="sub-slide-menu">
                                 <li><a href="blog.php" class="sub-slide-item">Blog</a></li>
                                 <li><a href="blog-details.php" class="sub-slide-item">Blog Details</a></li>
@@ -186,8 +192,8 @@
                         </li>
                         <li class="sub-slide">
                             <a class="sub-side-menu__item" data-bs-toggle="sub-slide" href="javascript:void(0);"><span
-                                    class="sub-side-menu__label">Maps</span><i
-                                    class="sub-angle fa fa-angle-right"></i></a>
+                                        class="sub-side-menu__label">Maps</span><i
+                                        class="sub-angle fa fa-angle-right"></i></a>
                             <ul class="sub-slide-menu">
                                 <li><a href="maps1.php" class="sub-slide-item">Leaflet Maps</a></li>
                                 <li><a href="maps2.php" class="sub-slide-item">Mapel Maps</a></li>
@@ -196,8 +202,8 @@
                         </li>
                         <li class="sub-slide">
                             <a class="sub-side-menu__item" data-bs-toggle="sub-slide" href="javascript:void(0);"><span
-                                    class="sub-side-menu__label">E-Commerce</span><i
-                                    class="sub-angle fa fa-angle-right"></i></a>
+                                        class="sub-side-menu__label">E-Commerce</span><i
+                                        class="sub-angle fa fa-angle-right"></i></a>
                             <ul class="sub-slide-menu">
                                 <li><a href="shop.php" class="sub-slide-item">Shop</a></li>
                                 <li><a href="shop-description.php" class="sub-slide-item">Shopping Details</a></li>
@@ -208,8 +214,8 @@
                         </li>
                         <li class="sub-slide">
                             <a class="sub-side-menu__item" data-bs-toggle="sub-slide" href="javascript:void(0);"><span
-                                    class="sub-side-menu__label">File Manager</span><i
-                                    class="sub-angle fa fa-angle-right"></i></a>
+                                        class="sub-side-menu__label">File Manager</span><i
+                                        class="sub-angle fa fa-angle-right"></i></a>
                             <ul class="sub-slide-menu">
                                 <li><a href="file-manager.php" class="sub-slide-item">File Manager</a></li>
                                 <li><a href="filemanager-list.php" class="sub-slide-item">File Manager List</a></li>
@@ -224,7 +230,7 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-settings"></i><span class="side-menu__label">Custom
+                                class="side-menu__icon fe fe-settings"></i><span class="side-menu__label">Custom
                             Pages</span><i class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Custom Pages</a></li>
@@ -234,8 +240,8 @@
                         <li><a href="lockscreen.php" class="slide-item"> Lock screen</a></li>
                         <li class="sub-slide">
                             <a class="sub-side-menu__item" data-bs-toggle="sub-slide" href="javascript:void(0);"><span
-                                    class="sub-side-menu__label">Error Pages</span><i
-                                    class="sub-angle fa fa-angle-right"></i></a>
+                                        class="sub-side-menu__label">Error Pages</span><i
+                                        class="sub-angle fa fa-angle-right"></i></a>
                             <ul class="sub-slide-menu">
                                 <li><a class="sub-slide-item" href="400.php">400</a></li>
                                 <li><a class="sub-slide-item" href="401.php">401</a></li>
@@ -256,16 +262,16 @@
                         <li><a href="javascript:void(0);" class="slide-item">Level-1</a></li>
                         <li class="sub-slide">
                             <a class="sub-side-menu__item" data-bs-toggle="sub-slide" href="javascript:void(0);"><span
-                                    class="sub-side-menu__label">Level-2</span><i
-                                    class="sub-angle fa fa-angle-right"></i></a>
+                                        class="sub-side-menu__label">Level-2</span><i
+                                        class="sub-angle fa fa-angle-right"></i></a>
                             <ul class="sub-slide-menu">
                                 <li><a class="sub-slide-item" href="javascript:void(0);">Level-2.1</a></li>
                                 <li><a class="sub-slide-item" href="javascript:void(0);">Level-2.2</a></li>
                                 <li class="sub-slide2">
                                     <a class="sub-side-menu__item2" href="javascript:void(0);"
-                                        data-bs-toggle="sub-slide2"><span
-                                            class="sub-side-menu__label2">Level-2.3</span><i
-                                            class="sub-angle2 fa fa-angle-right"></i></a>
+                                       data-bs-toggle="sub-slide2"><span
+                                                class="sub-side-menu__label2">Level-2.3</span><i
+                                                class="sub-angle2 fa fa-angle-right"></i></a>
                                     <ul class="sub-slide-menu2">
                                         <li><a href="javascript:void(0);" class="sub-slide-item2">Level-2.3.1</a></li>
                                         <li><a href="javascript:void(0);" class="sub-slide-item2">Level-2.3.2</a></li>
@@ -283,9 +289,10 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-file-text"></i><span class="side-menu__label">Forms</span><span
-                            class="badge bg-success side-badge">5</span><i
-                            class="angle fa fa-angle-right hor-rightangle"></i></a>
+                                class="side-menu__icon fe fe-file-text"></i><span
+                                class="side-menu__label">Forms</span><span
+                                class="badge bg-success side-badge">5</span><i
+                                class="angle fa fa-angle-right hor-rightangle"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Forms</a></li>
                         <li><a href="form-elements.php" class="slide-item"> Form Elements</a></li>
@@ -297,8 +304,8 @@
                 </li>
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i
-                            class="side-menu__icon fe fe-command"></i><span class="side-menu__label">Icons</span><i
-                            class="angle fa fa-angle-right"></i></a>
+                                class="side-menu__icon fe fe-command"></i><span class="side-menu__label">Icons</span><i
+                                class="angle fa fa-angle-right"></i></a>
                     <ul class="slide-menu">
                         <li class="side-menu-label1"><a href="javascript:void(0)">Icons</a></li>
                         <li><a href="icons.php" class="slide-item"> Font Awesome</a></li>
@@ -316,13 +323,13 @@
                 </li>
             </ul>
 
-            
 
-
-            <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24"
-                    height="24" viewBox="0 0 24 24">
-                    <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z" />
-                </svg></div>
+            <div class="slide-right" id="slide-right">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24"
+                     height="24" viewBox="0 0 24 24">
+                    <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"/>
+                </svg>
+            </div>
         </div>
     </aside>
 </div>
