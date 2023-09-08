@@ -175,8 +175,10 @@ switch ($action) {
         // enquiries
         $contact = new ContactModel();
         $data = $contact->get($id);
-        //debug($data);
-        //exit;
+        if (array_key_exists('debug',$_GET)) {
+            debug($data);
+            exit;
+        }
         break;
 
     case 11:

@@ -2,13 +2,13 @@
 
 class FormBuilder
 {
-    static function input($name, $label, $required = false, $type = 'text', $value = '')
+    static function input($id, $name, $label, $required = false, $type = 'text', $value = '')
     {
         ?>
         <div class='form-group'>
-            <label class='form-label' for='<?= $name; ?>'><?= $label; ?></label>
-            <input class="form-control" id='<?= $name; ?>'
-                   name='data[<?= $name; ?>]' placeholder="<?= $label; ?>"
+            <label class='form-label' for='<?= $id; ?>'><?= $label; ?></label>
+            <input class="form-control" id='<?= $id; ?>'
+                   name='<?= $name; ?>' placeholder="<?= $label; ?>"
                    type="<?= $type; ?>" value="<?= $value; ?>" <?= ($required ? 'required' : ''); ?>>
         </div>
         <?php
@@ -46,10 +46,16 @@ class FormBuilder
         ];
     }
 
-    static function hidden($name, $value = '')
+    /**
+     * @param $id String
+     * @param $name String
+     * @param $value String the starting value of the hidden field
+     * @return void
+     */
+    static function hidden($id, $name, $value = '')
     {
         ?>
-        <input type="hidden" id="<?=$name; ?>" name="data[<?= $name; ?>]" value="<?= $value; ?>">
+        <input type="hidden" id="<?= $id; ?>" name="<?= $name; ?>" value="<?= $value; ?>">
         <?php
     }
 
@@ -61,8 +67,8 @@ class FormBuilder
             <?php foreach ($fields as $row): ?>
                 <div class='form-group col-md-6'>
                     <div class="form-group">
-                        <input class="form-control" id='<?= $row['name']; ?>'
-                               name='data[<?= $row['name']; ?>]'
+                        <input class="form-control" id='<?= $row['id']; ?>'
+                               name='<?= $row['name']; ?>'
                                placeholder="<?= $row['name']; ?>"
                                type="<?= $row['type']; ?>"
                                value="<?= $row['value'] ?? ''; ?>"
@@ -74,12 +80,12 @@ class FormBuilder
         <?php
     }
 
-    static function textarea($name, $label, $value = '')
+    static function textarea($id, $name, $label, $value = '')
     {
         ?>
         <div class="form-group">
-            <label class="form-label" for="<?= $name; ?>"><?= $label; ?></label>
-            <textarea class="form-control" id='<?= $name; ?>' name='data[<?= $name; ?>]'
+            <label class="form-label" for="<?= $id; ?>"><?= $label; ?></label>
+            <textarea class="form-control" id='<?= $id; ?>' name='<?= $name; ?>'
                       placeholder="<?= $label; ?>" rows="3"
                       spellcheck="false"><?= $value; ?></textarea>
         </div>
@@ -95,7 +101,7 @@ class FormBuilder
             <div class="custom-controls-stacked">
                 <?php foreach ($choices as $row): ?>
                     <label class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" name="data[<?= $name; ?>]"
+                        <input type="radio" class="custom-control-input" name="<?= $name; ?>"
                                value="<?= $row['name']; ?>"
                             <?= ($row['name'] == $value ? 'checked=""' : ''); ?>>
                         <span class="custom-control-label"><?= (array_key_exists('label', $row) ? $row['label'] : $row['name']); ?></span>
@@ -106,12 +112,12 @@ class FormBuilder
         <?php
     }
 
-    static function select($name, $label, $choices, $value = '')
+    static function select($id, $name, $label, $choices, $value = '')
     {
         ?>
         <div class='form-group'>
-            <label class="form-label" for='status'><?= $label; ?></label>
-            <select class="form-control" id='<?= $name; ?>' name='data[<?= $name; ?>]'
+            <label class="form-label" for='<?= $id; ?>'><?= $label; ?></label>
+            <select class="form-control" id='<?= $id; ?>' name='<?= $name; ?>'
                     data-bs-placeholder="Choose One" tabindex="-1">
                 <option label="Choose one"></option>
                 <?php foreach ($choices as $row): ?>
@@ -122,6 +128,22 @@ class FormBuilder
             </select>
 
         </div>
+        <?php
+    }
+
+
+    static function checkbox($id, $name, $label, $valueWhenChecked, $value)
+    {
+        $checked = ($value === $valueWhenChecked) ? ' checked="checked" ' : '';
+        ?>
+        <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input"
+                   name="<?= $name; ?>"
+                   id="<?= $id; ?>"
+                   value="<?= $valueWhenChecked; ?>"
+                <?= $checked; ?>>
+            <span class="custom-control-label"><?= $label; ?></span>
+        </label>
         <?php
     }
 }

@@ -14,7 +14,7 @@
 		<title>Cabin King Management - Private</title>
 
 		<!-- BOOTSTRAP CSS -->
-		<link id="style" href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link id="style" href="/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
 		<!-- STYLE CSS -->
 		<link href="/assets/css/style.css" rel="stylesheet">
@@ -22,4 +22,5 @@
 
 		<!--- FONT-ICONS CSS -->
 		<link href="/assets/css/icons.css" rel="stylesheet">
-		
+
+        <link href="/css/ckm-styles.css" rel="stylesheet">

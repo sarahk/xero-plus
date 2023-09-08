@@ -11,4 +11,13 @@ class PhoneModel extends BaseModel
     protected $table = 'phones';
     protected $joins = ['contacts' => "`phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2"];
     protected $virtualFields = ['phone' => "CONCAT(`phone_area_code`,' ',`phone_number`)"];
+
+    public function getDefaults()
+    {
+        $phones = parent::getDefaults();
+        $default = $phones[0];
+        $default['phone_type'] = 'DEFAULT';
+        $phones[] = $default;
+        return $phones;
+    }
 }

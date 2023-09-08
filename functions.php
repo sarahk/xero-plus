@@ -47,7 +47,7 @@ function showValue($k, $val)
         }
         echo '</li></ul>';
     } else {
-        echo (strlen($k) ? "{$k}: " : ''), $val;
+        echo (strlen($k) ? "{$k}: " : ''), is_string($val)?'"'.$val.'"':$val;
     }
     echo "</li>";
 }

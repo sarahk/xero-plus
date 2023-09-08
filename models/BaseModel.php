@@ -10,7 +10,8 @@ class BaseModel
     protected $hasMany = [];
     protected $joins = [];
     protected $virtualFields = [];
-
+    // orderBy is used when getting the child records
+    protected $orderBy = '';
 
 
     function __construct()
@@ -49,17 +50,30 @@ class BaseModel
         return $output;
     }
 
+    protected function getVirtuals()
+    {
+        $output = [];
+        if (count($this->virtualFields)) {
+            foreach ($this->virtualFields as $k => $val) {
+                $output[] = "{$val} as {$k}";
+            }
+            return ', ' . implode(', ', $output);
+        }
+        return '';
+    }
+
     public function getChildren($parent, $parentId)
     {
-        $sql = "SELECT * " . $this->getVirtuals() . " FROM `{$this->table}` WHERE {$this->joins[$parent]}";
+        $orderBy = (!empty($this->orderBy)) ? ' order by ' . $this->orderBy : '';
+        $sql = "SELECT * " . $this->getVirtuals() . " FROM `{$this->table}` WHERE {$this->joins[$parent]} {$orderBy}";
 
         $statement = $this->pdo->prepare($sql);
 
-        $varCount = substr_count($this->joins[$parent],':');
+        $varCount = substr_count($this->joins[$parent], ':');
         $vars = [];
         //['id1' => $parentId, 'id2' => $parentId]
-        for($i = 0; $i < $varCount; $i++){
-            $vars['id'.($i+1)] = $parentId;
+        for ($i = 0; $i < $varCount; $i++) {
+            $vars['id' . ($i + 1)] = $parentId;
         }
 
         $statement->execute($vars);
@@ -69,8 +83,14 @@ class BaseModel
             return $data;
         }
 
-        return [0=>$this->getDefaults()];
+        return $this->getDefaults();
     }
+
+    /*
+     * Default values belong in mysql
+     */
+
+    //https://dev.mysql.com/doc/refman/8.0/en/insert-on-duplicate.html
 
     public function getDefaults()
     {
@@ -83,23 +103,43 @@ class BaseModel
         foreach ($result as $row) {
             $data[$row['Field']] = $row['Default'];
         }
-        if (count($this->virtualFields)){
-            foreach($this->virtualFields as $k => $val){
+        if (count($this->virtualFields)) {
+            foreach ($this->virtualFields as $k => $val) {
                 $data[$k] = '';
             }
         }
-        return $data;
+        return [$data];
     }
-
-    /*
-     * Default values belong in mysql
-     */
 
     public function save($values)
     {
-        $this->statement = $this->pdo->prepare($this->insert);
-        $this->statement->execute($values);
+        try {
+            $this->statement = $this->pdo->prepare($this->insert);
+            $this->statement->execute($values);
+
+            // this will be zero if it was an update
+            return $this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+            $this->parms($this->insert, $values);
+        }
+        return null;
     }
+
+    function parms($string, $data)
+    {
+        $indexed = $data == array_values($data);
+        foreach ($data as $k => $v) {
+            debug([$k,$v]);
+            if (is_string($v)) $v = "'$v'";
+            if ($indexed) $string = preg_replace('/\?/', $v, $string, 2);
+            else $string = str_replace(":$k", $v, $string);
+        }
+        echo "<hr><p>parms</p><p>{$string}</p></hr>";
+    }
+
+    // debug code from https://www.php.net/manual/en/pdostatement.debugdumpparams.php
 
     public function getCookieValue($val)
     {
@@ -109,16 +149,7 @@ class BaseModel
         return null;
     }
 
-    protected function getVirtuals()
+    public function prepAndSave($data)
     {
-        $output = [];
-        if (count($this->virtualFields)) {
-            foreach ($this->virtualFields as $k => $val) {
-                $output[] = "{$val} as {$k}";
-            }
-            return ', '.implode(', ',$output);
-        }
-        return '';
     }
-
 }
