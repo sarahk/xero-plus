@@ -22,20 +22,23 @@ class AddressModel extends BaseModel
         parent::prepAndSave($data);
 
         if (array_key_exists('address', $data)) {
-            return $this->save($data['address']);
-        } else {
-            if (array_key_exists('contact', $data) && array_key_exists('contract', $data)){
-                $data['address'] = [
-                    'ckcontact_id' => intval($data['contact']['id']),
-                    'contact_id' => $data['contact']['contact_id'],
-                    'address_type' => 'STREET',
-                    'address_line1' => $data['contract']['address_line1'],
-                    'address_line2' => $data['contract']['address_line2'],
-                    'city' => $data['contract']['city'],
-                    'postal_code' => $data['contract']['postal_code'],
-                ];
-
+            if (!empty($data['address']['address_line1'])) {
                 return $this->save($data['address']);
+            }
+        } else {
+            if (array_key_exists('contact', $data) && array_key_exists('contract', $data)) {
+                if (!empty($data['contract']['address_line1'])) {
+                    $data['address'] = [
+                        'ckcontact_id' => intval($data['contact']['id']),
+                        'contact_id' => $data['contact']['contact_id'],
+                        'address_type' => 'STREET',
+                        'address_line1' => $data['contract']['address_line1'],
+                        'address_line2' => $data['contract']['address_line2'],
+                        'city' => $data['contract']['city'],
+                        'postal_code' => $data['contract']['postal_code'],
+                    ];
+                    return $this->save($data['address']);
+                }
             }
         }
         return null;

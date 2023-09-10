@@ -21,6 +21,10 @@
     FormBuilder::hidden('long', 'data[contract][long]', $data['contracts'][0]['long']);
     FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['contracts'][0]['place_id']);
 
+
+    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['notes'][0]['foreign_id']);
+    FormBuilder::hidden('note_parent', 'data[note][parent]', 'contacts');
+    FormBuilder::hidden('note_createdby', 'data[note][createdby]', $userName);
     ?>
 
     <div class="row row-sm">
@@ -39,7 +43,7 @@
                 }
             }
             FormBuilder::input('email', 'data[contact][email]', 'Email', false, 'email', $data['contacts']['email_address']);
-            FormBuilder::textarea('notes', 'data[notes][note]', 'Notes', ''); ?>
+            FormBuilder::textarea('notes', 'data[note][note]', 'Notes', ''); ?>
 
         </div>
 

@@ -50,7 +50,12 @@ class ContactModel extends BaseModel
 
         debug($data['contact']['id']);
 
+        
         $this->addresses->prepAndSave($data);
+
+        $data['note']['foreign_id'] = $data['contact']['id'];
+        $data['note']['parent'] = 'contacts';
+        $this->notes->prepAndSave($data);
 
         return ($id);
     }
