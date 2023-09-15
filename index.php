@@ -1,14 +1,31 @@
 <?php
-if (array_key_exists('action',$_GET) && $_GET['action'] == 'logoff'){
+if (array_key_exists('action', $_GET) && $_GET['action'] == 'logoff') {
     session_destroy();
 }
-
+$loggedOut = true;
 $nosidebar = true;
 require_once('views/header.php');
 ?>
-<div class="container">
-    <h1>xero-php-oauth2-starter</h1>
-    <a href="authorization.php"><img src="images/connect-blue.svg"></a>
-</div>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Cabin King Management Tools</h1>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="card">
+                    <!-- <div class="card-header">
+                         <h3 class="card-title">Enquiry</h3>
+                     </div>-->
+                    <div class="card-body">
+                        <p>Log into Xero to get started</p>
+                        <a href="authorization.php"><img src="images/connect-blue.svg" alt="Xero Login Button"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php
 require_once('views/footer.php');

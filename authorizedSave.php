@@ -11,17 +11,17 @@ require_once('storage.php');
 require_once('utilities.php');
 require_once('functions.php');
 
-require_once ('models/ContactModel.php');
-require_once ('models/ContractModel.php');
-require_once ('models/NotesModel.php');
-require_once ('models/PhoneModel.php');
+require_once('models/ContactModel.php');
+require_once('models/ContractModel.php');
+require_once('models/NoteModel.php');
+require_once('models/PhoneModel.php');
 
 
-require_once ('authorizedXero.php');
+require_once('authorizedXero.php');
 
 $message = "no API calls";
 
-$action = (array_key_exists('action', $_GET)?$_GET['action']:0 );
+$action = (array_key_exists('action', $_GET) ? $_GET['action'] : 0);
 
 switch ($action) {
 

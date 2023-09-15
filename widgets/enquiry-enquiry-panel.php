@@ -7,10 +7,10 @@
 
     FormBuilder::hidden('action', 'action', '10');
     /** @var Array $data */
-    FormBuilder::hidden('id', 'data[contact][id]', $data['contacts']['id']);
-    FormBuilder::hidden('contact_id', 'data[contact][contact_id]', $data['contacts']['contact_id']);
-    FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status']);
-    FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status']);
+    FormBuilder::hidden('id', 'data[contact][id]', $data['contacts']['id'] ?? '');
+    FormBuilder::hidden('contact_id', 'data[contact][contact_id]', $data['contacts']['contact_id'] ?? '');
+    FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status'] ?? '');
+    //FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status']);
 
     FormBuilder::hidden('contract_id', 'data[contract][contract_id]', $data['contracts'][0]['contract_id']);
     FormBuilder::hidden('address_line1', 'data[contract][address_line1]', $data['contracts'][0]['address_line1']);
@@ -22,17 +22,17 @@
     FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['contracts'][0]['place_id']);
 
 
-    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['notes'][0]['foreign_id']);
+    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['note'][0]['foreign_id'] ?? '');
     FormBuilder::hidden('note_parent', 'data[note][parent]', 'contacts');
-    FormBuilder::hidden('note_createdby', 'data[note][createdby]', $userName);
+    FormBuilder::hidden('note_createdby', 'data[note][createdby]', $user['id']);
     ?>
 
     <div class="row row-sm">
         <div class="col-md-6">
 
             <?php FormBuilder::inputs('Name', [
-                ['id' => 'first_name', 'name' => 'data[contact][first_name]', 'type' => 'text', 'value' => $data['contacts']['first_name']],
-                ['id' => 'last_name', 'name' => 'data[contact][last_name]', 'type' => 'text', 'value' => $data['contacts']['last_name']]
+                ['id' => 'first_name', 'name' => 'data[contact][first_name]', 'type' => 'text', 'value' => $data['contacts']['first_name'] ?? ''],
+                ['id' => 'last_name', 'name' => 'data[contact][last_name]', 'type' => 'text', 'value' => $data['contacts']['last_name'] ?? '']
             ], true); ?>
             <?php
 
@@ -42,7 +42,7 @@
                     FormBuilder::input('phone_type', 'data[phone][' . strtolower($row['phone_type']) . ']', $label, false, 'tel', $row['phone']);
                 }
             }
-            FormBuilder::input('email', 'data[contact][email]', 'Email', false, 'email', $data['contacts']['email_address']);
+            FormBuilder::input('email_address', 'data[contact][email_address]', 'Email', false, 'email', $data['contacts']['email_address'] ?? '');
             FormBuilder::textarea('notes', 'data[note][note]', 'Notes', ''); ?>
 
         </div>
@@ -60,7 +60,7 @@
                 ['name' => 'email', 'label' => 'Email'],
                 ['name' => 'text', 'label' => 'Text/SMS'],
                 ['name' => 'nopref', 'label' => 'Whatever is easiest']
-            ], $data['contacts']['best_way_to_contact']
+            ], $data['contacts']['best_way_to_contact'] ?? ''
             );
             FormBuilder::radio('data[contract][winz]', 'WINZ Form',
                 [['name' => 'No'], ['name' => 'Requested'], ['name' => 'Sent']],
@@ -71,7 +71,7 @@
                     ['name' => 'facebook', 'label' => 'Facebook'],
                     ['name' => 'wom', 'label' => 'Word of Mouth'],
                     ['name' => 'other', 'label' => 'Other']],
-                $data['contacts']['how_did_you_hear']);
+                $data['contacts']['how_did_you_hear'] ?? '');
             ?>
 
         </div>
@@ -104,8 +104,9 @@
                         </style>
                         <?php
                         // tenancies should still be a variable from the sidebar
+                        $xerotenant_id = (array_key_exists('xerotenant_id', $data['contacts'])) ? $data['contacts']['xerotenant_id'] : '';
                         foreach (TENANCIES as $k => $row):
-                            $checked = ($data['contacts']['xerotenant_id'] === $row['tenant_id'] ? ' checked="true" ' : '');
+                            $checked = ($xerotenant_id === $row['tenant_id'] ? ' checked="true" ' : '');
                             ?>
                             <label class="selectgroup-item">
                                 <input type="radio" name="data[contact][xerotenant_id]"
@@ -141,8 +142,6 @@
                                autocomplete="chrome-off"
                                value="<?= getBestAddress($data['contracts']); ?>">
                         <span id='open-in-maps' class="input-group-text btn btn-info">Maps</span>
-
-
                     </div>
                 </div>
 
@@ -186,6 +185,7 @@
                     ['name' => 'std-left', 'label' => 'Standard, Left'],
                     ['name' => 'std-right', 'label' => 'Standard, Right'],
                     ['name' => 'large', 'label' => 'Large'],
+                    ['name' => 'xl', 'label' => 'Extra Large']
                 ],
                     $data['contracts'][0]['cabin_type']); ?>
 

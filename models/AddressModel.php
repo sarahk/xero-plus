@@ -11,7 +11,9 @@ class AddressModel extends BaseModel
                  ON DUPLICATE KEY 
                  UPDATE 
                      `address_line1` = :address_line1, `address_line2` = :address_line2, `city` = :city, `postal_code` = :postal_code";
-
+    protected $nullable = ['address_id', 'contact_id'];
+    protected $saveKeys = ['address_id', 'ckcontact_id', 'contact_id', 'address_type',
+        'address_line1', 'address_line2', 'city', 'postal_code'];
 
     protected $table = 'addresses';
     protected $joins = ['contacts' => "`addresses`.`ckcontact_id` = :id1"];
@@ -26,7 +28,7 @@ class AddressModel extends BaseModel
                 return $this->save($data['address']);
             }
         } else {
-            if (array_key_exists('contact', $data) && array_key_exists('contract', $data)) {
+            if (array_key_exists('contract', $data) && array_key_exists('contract', $data)) {
                 if (!empty($data['contract']['address_line1'])) {
                     $data['address'] = [
                         'ckcontact_id' => intval($data['contact']['id']),
@@ -37,7 +39,10 @@ class AddressModel extends BaseModel
                         'city' => $data['contract']['city'],
                         'postal_code' => $data['contract']['postal_code'],
                     ];
-                    return $this->save($data['address']);
+                    $data['address'] = $this->checkNullableValues($data['address']);
+                    $save = $this->getSaveValues($data['address']);
+                    debug($save);
+                    return $this->save($save);
                 }
             }
         }

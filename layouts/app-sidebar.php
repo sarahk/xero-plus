@@ -55,7 +55,7 @@
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=11">Cabin Locations</a></li>
                 <li><a class="side-menu__item" href="/vehicleLog.php?action=1">Vehicle Log</a></li>
                 <li><a class="side-menu__item" href="/vehicleLog.php?action=2">Add Trip</a></li>
-                <li><a class="side-menu__item" href="/index.php?action='logoff'">Log Off</a></li>
+                <li><a class="side-menu__item" href="/index.php?action=logoff">Log Off</a></li>
 
                 <li class="slide">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0);"><i

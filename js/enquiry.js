@@ -32,13 +32,16 @@ $(document).ready(function () {
         beforeShowDay: $.datepicker.noWeekends
     });
 
-    $('#mark-as-delivered').click(function () {
+    $('#mark-as-delivered').on('click', function () {
         alert('delivered, already?');
     });
 
-    $('#open-in-maps').click(function () {
-        alert('placeholder that will open google maps');
+    $('#open-in-maps').on('click', function () {
+        let url = 'https://www.google.com/maps/place/?zoom=13&q=place_id:' + $('#place_id').val();
+        console.log(url);
+        window.open(url, '_blank');
     });
+
 
     //$('#phone').mask('000 0000 0000');
     // $('#phone').mask('000 0000 0000',{autoclear: false});

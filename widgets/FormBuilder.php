@@ -64,14 +64,17 @@ class FormBuilder
         ?>
         <label class='form-label' for='<?= $fields[0]['name']; ?>'><?= $label; ?></label>
         <div class="form-row">
-            <?php foreach ($fields as $row): ?>
+            <?php foreach ($fields as $row):
+                // assume the id is a good indicator of what the placeholder should be
+                $placeholder = ucfirst(str_replace('_', ' ', $row['id']));
+                ?>
                 <div class='form-group col-md-6'>
                     <div class="form-group">
                         <input class="form-control" id='<?= $row['id']; ?>'
                                name='<?= $row['name']; ?>'
-                               placeholder="<?= $row['name']; ?>"
+                               placeholder="<?= $placeholder; ?>"
                                type="<?= $row['type']; ?>"
-                               value="<?= $row['value'] ?? ''; ?>"
+                               value="<?= $row['value']; ?>"
                             <?= ($required ? 'required' : ''); ?> >
                     </div>
                 </div>

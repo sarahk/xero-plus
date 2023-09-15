@@ -16,6 +16,7 @@
     <link rel="manifest" href="/site.webmanifest">
     <?php
     //create constants for the xerotenant_id info
+    if (!isset($loggedOut) || !$loggedOut){
     require_once 'JsonClass.php';
     $json1 = new JsonClass();
     //echo $json1->getOrganisationList(true);
@@ -24,6 +25,8 @@
     <script>
         const tenancies = <?php echo json_encode(TENANCIES);?>;
     </script>
+    <?php
+    } ?>
 </head>
 
 <body class="app sidebar-mini ltr light-mode">

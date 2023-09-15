@@ -5,17 +5,21 @@ require __DIR__ . '/vendor/autoload.php';
 require_once('storage.php');
 require_once('utilities.php');
 require_once('functions.php');
-
-require_once ('models/ContactModel.php');
-
-require_once ('authorizedXero.php');
+require_once('models/ContactModel.php');
+require_once('models/UserModel.php');
+require_once('authorizedXero.php');
 
 $dbh = getDbh();
 
 $message = "no API calls";
 
 $action = filter_input(INPUT_GET, 'action');
-$id = (array_key_exists('id',$_GET))?intval($_GET['id']):0;
+$id = (array_key_exists('id', $_GET)) ? intval($_GET['id']) : 0;
+
+if (!isset($userId) || empty($userId)) {
+    $user = new UserModel();
+    $userId = $_SESSION['user_id'] = $user->getId('user_id', $xeroUserId);
+}
 
 switch ($action) {
     case 1:
@@ -175,7 +179,7 @@ switch ($action) {
         // enquiries
         $contact = new ContactModel();
         $data = $contact->get($id);
-        if (array_key_exists('debug',$_GET)) {
+        if (array_key_exists('debug', $_GET)) {
             debug($data);
             exit;
         }
@@ -196,28 +200,28 @@ require_once('views/header.php');
 
 ?>
 
-    <div>
-        <?php
+<div>
+    <?php
 
-        switch ($action) {
-            case 1:
-                include 'views/organisations_list.php';
-                break;
-            case 5:
-                include 'views/contacts_index.php';
-                break;
-            case 9:
-                include 'views/invoices_index.php';
-                break;
-            case 10:
-                include 'views/enquiry-edit.php';
-                break;
-            case 11:
-                include 'views/cabin-locations.php';
-                break;
-        }
-        ?>
-    </div>
+    switch ($action) {
+        case 1:
+            include 'views/organisations_list.php';
+            break;
+        case 5:
+            include 'views/contacts_index.php';
+            break;
+        case 9:
+            include 'views/invoices_index.php';
+            break;
+        case 10:
+            include 'views/enquiry-edit.php';
+            break;
+        case 11:
+            include 'views/cabin-locations.php';
+            break;
+    }
+    ?>
+</div>
 <?php
 require_once('views/footer.php');
 ?>

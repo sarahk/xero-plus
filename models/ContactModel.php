@@ -8,15 +8,23 @@ require_once(SITE_ROOT . '/models/PhoneModel.php');
 
 class ContactModel extends BaseModel
 {
-    protected $insert = "INSERT into `contacts` (`id`,`contact_id`, `contact_status`, `name`, `first_name`, `last_name`, `email_address`,
+    protected $insert = "INSERT into `contacts` 
+                    (`id`,`contact_id`, `contact_status`, `name`, `first_name`, `last_name`, `email_address`,
                         `best_way_to_contact`,`how_did_you_hear`,
                 `is_supplier`, `is_customer`, `updated_date_utc`, `xerotenant_id`) 
-                VALUES (:id, :contact_id, :contact_status, :name, :first_name, :last_name, :email_address, :best_way_to_contact, :how_did_you_hear, 0, 1, 
+                VALUES (:id, :contact_id, :contact_status, :name, :first_name, :last_name, :email_address, :best_way_to_contact, 
+                        :how_did_you_hear, 0, 1, 
                         :updated_date_utc, :xerotenant_id)
                 ON DUPLICATE KEY UPDATE
                 `name` = :name, `first_name` = :first_name, `last_name` = :last_name, `email_address` = :email_address, 
-                    `best_way_to_contact` = :best_way_to_contact, `how_did_you_hear` = :how_did_you_hear,
-                    `updated_date_utc` = :updated_date_utc";
+                    `best_way_to_contact` = :best_way_to_contact, `how_did_you_hear` = :how_did_you_hear";
+
+    protected $nullable = ['id', 'contact_id', 'updated_date_utc'];
+    protected $saveKeys = [
+        'id', 'contact_id', 'contact_status',
+        'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
+        'how_did_you_hear',
+        'updated_date_utc', 'xerotenant_id'];
     protected $addresses;
     protected $phones;
     protected $contracts;
@@ -41,23 +49,29 @@ class ContactModel extends BaseModel
     {
         $id = intval($data['contact']['id']);
         $oldVals = $this->get($id);
-        $contact = array_merge($oldVals['contacts'], $data['contact']);
+        $contact = array_merge($oldVals['contacts'][0], $data['contact']);
         $contact['name'] = $contact['first_name'] . ' ' . $contact['last_name'];
 
+        // these can't be empty strings, either a value or null
+        $contact = $this->checkNullableValues($contact);
+
         debug($contact);
-        $newId = $this->save($contact);
+        // we can't pass extra variables
+
+        $save = $this->getSaveValues($contact);
+        $newId = $this->save($save);
         if ($newId > 0) $data['contact']['id'] = $newId;
 
         debug($data['contact']['id']);
 
-        
+
         $this->addresses->prepAndSave($data);
 
         $data['note']['foreign_id'] = $data['contact']['id'];
         $data['note']['parent'] = 'contacts';
         $this->notes->prepAndSave($data);
 
-        return ($id);
+        return $data['contact']['id'];
     }
 
     /*

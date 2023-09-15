@@ -7,21 +7,24 @@
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
 use XeroAPI\XeroPHP\ApiException;
 
+require_once(SITE_ROOT . '/models/UserModel.php');
+
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
 $xeroTenantId = (string)$storage->getSession()['tenant_id'];
+$objUser = new UserModel();
+
 if (array_key_exists('user_name', $_SESSION)) {
+    // stop using these
     $userName = $_SESSION['user_name'];
+    $userId = $_SESSION['xero_user_id'] ?? '';
+    // and use this
+
+    $user = $_SESSION['user'] ?? $user = $objUser->getJWTValues($storage);
 } else {
     try {
-        $jwt = new XeroAPI\XeroPHP\JWTClaims();
-        $jwt->setTokenId((string)$storage->getIdToken());
-        // Set access token in order to get authentication event id
-        $jwt->setTokenAccess((string)$storage->getAccessToken());
-        $jwt->decode();
-
-        $userName = $_SESSION['user_name'] = $jwt->getGivenName();
-        $userEmail = $_SESSION['user_email'] = $jwt->getEmail();
+        $user = $objUser->getJWTValues($storage);
+        $_SESSION['user'] = $user;
     } catch (Exception $e) {
         echo 'Message: ' . $e->getMessage();
     }

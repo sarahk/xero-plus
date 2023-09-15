@@ -5,6 +5,8 @@ class BaseModel
 {
     protected $pdo;
     protected $insert;
+    protected $nullable = [];
+    protected $saveKeys = [];
     protected $statement;
     protected $table;
     protected $hasMany = [];
@@ -131,8 +133,9 @@ class BaseModel
     {
         $indexed = $data == array_values($data);
         foreach ($data as $k => $v) {
-            debug([$k,$v]);
+            debug([$k, $v]);
             if (is_string($v)) $v = "'$v'";
+            if (is_null($v)) $v = "null";
             if ($indexed) $string = preg_replace('/\?/', $v, $string, 2);
             else $string = str_replace(":$k", $v, $string);
         }
@@ -151,5 +154,27 @@ class BaseModel
 
     public function prepAndSave($data)
     {
+    }
+
+    protected function checkNullableValues($data)
+    {
+        if (count($this->nullable) == 0) {
+            return $data;
+        }
+        foreach ($this->nullable as $v) {
+            if (!array_key_exists($v, $data)) $data[$v] = NULL;
+            if (empty($data[$v])) $data[$v] = NULL;
+        }
+        return $data;
+    }
+
+    protected function getSaveValues($data)
+    {
+        $save = [];
+        foreach ($this->saveKeys as $v) {
+            if (!array_key_exists($v, $data)) $data[$v] = NULL;
+            else $save[$v] = $data[$v];
+        }
+        return $save;
     }
 }
