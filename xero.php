@@ -20,42 +20,7 @@ require_once('config.php');
 require_once('utilities.php');
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
-$storage = new StorageClass();
-
-
-$xeroTenantId = (string)$storage->getSession()['tenant_id'];
-
-// Check if Access Token is expired
-// if so - refresh token
-if ($storage->getHasExpired()) {
-    $provider = getProvider();
-   /* $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-        'clientId' => $clientId,
-        'clientSecret' => $clientSecret,
-        'redirectUri' => $redirectUri,
-        'urlAuthorize' => 'https://login.xero.com/identity/connect/authorize',
-        'urlAccessToken' => 'https://identity.xero.com/connect/token',
-        'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
-    ]);*/
-
-    $newAccessToken = $provider->getAccessToken('refresh_token', [
-        'refresh_token' => $storage->getRefreshToken()
-    ]);
-    // Save my token, expiration and refresh token
-    $storage->setToken(
-        $newAccessToken->getToken(), $newAccessToken->getExpires(),
-        $xeroTenantId, $newAccessToken->getRefreshToken(), $newAccessToken->getValues()["id_token"]
-    );
-}
-
-$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
-
-$config->setHost("https://api.xero.com/api.xro/2.0");
-
-$apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
-    new GuzzleHttp\Client(),
-    $config
-);
+require_once('authorizedXero.php');
 
 // ALL methods are demonstrated using this class
 $xero = new XeroClass($apiInstance, $xeroTenantId);
@@ -117,7 +82,7 @@ try {
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
-                    $xero->getContactRefresh();
+                    $xero->getContactRefresh($xeroTenantId);
                     break;
                 case "Create":
                     echo $xero->createContact($xeroTenantId, $apiInstance);
@@ -452,7 +417,7 @@ try {
                     //echo $xero->getAgedPayablesByContact($xeroTenantId, $apiInstance);
                     break;
                 case "AgedReceivablesByContact":
-                   // echo $xero->getAgedReceivablesByContact($xeroTenantId, $apiInstance);
+                    // echo $xero->getAgedReceivablesByContact($xeroTenantId, $apiInstance);
                     break;
                 case "BalanceSheet":
                     //echo $xero->getBalanceSheet($xeroTenantId, $apiInstance);

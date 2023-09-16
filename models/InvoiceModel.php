@@ -4,6 +4,31 @@ require_once(SITE_ROOT . '/models/BaseModel.php');
 
 class InvoiceModel extends BaseModel
 {
+    protected string $table = 'invoices';
+    protected array $saveKeys = [
+        'invoice_id', 'contact_id', 'status',
+        'invoice_number', 'reference', 'total',
+        'amount_due', 'amount_paid',
+        'date', 'due_date', 'updated_date_utc'
+    ];
+    protected array $updateKeys = ['status', 'total', 'amount_due', 'amount_paid', 'updated_date_utc'];
+
+    function __construct()
+    {
+        parent::__construct();
+        $this->insert = "INSERT INTO `invoices` (
+            `invoice_id`, `" . implode("`, `", $this->saveKeys) . "`, `xerotenant_id`)
+             VALUES (:invoice_id, :" . implode(', :', $this->updateKeys) . ", '{$this->xeroTenantId}')
+             ON DUPLICATE KEY UPDATE";
+    }
+
+    public function prepAndSave($data)
+    {
+        parent::prepAndSave($data);
+
+    }
+
+
     public function list($params)
     {
 

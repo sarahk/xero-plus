@@ -227,9 +227,9 @@
 
         // refresh data from Xero
         // but only for one tenancy
-        function loadFromXero(tenancy) {
+        function loadInvoicesFromXero(tenancy) {
             //The load button
-            console.log('loadFromXero: ' + tenancy);
+            console.log('loadInvoicesFromXero: ' + tenancy);
             $('#loadfromxerospinner').show();//Load button clicked show spinner
             $.ajax({
                 url: "/xero.php?endpoint=Invoices&action=refresh&tenancy=" + tenancy,
@@ -242,6 +242,15 @@
             });
         }
 
+        function loadContactsFromXero(tenancy) {
+            console.log('loadContactsFromXero: ' + tenancy);
+            $.ajax({
+                url: "/xero.php?endpoint=Contacts&action=refresh&tenancy=" + tenancy,
+                type: 'GET',
+                dataType: 'json',
+            });
+        }
+
         //$("#loadfromxero").click(loadFromXero);
 
 
@@ -250,8 +259,9 @@
             const tenancies = ['auckland', 'waikato', 'bop'];
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {
-                    console.log('setInterval loadFromXero: ' + tenancies[i]);
-                    loadFromXero(tenancies[i]);
+                    console.log('setInterval loadInvoicesFromXero: ' + tenancies[i]);
+                    loadInvoicesFromXero(tenancies[i]);
+                    loadContactsFromXero(tenancies[i]);
                 }
             }
         }, 60 * 1000);
@@ -273,15 +283,15 @@
 
 // set checkboxes to how they were last time
         // this should be set up in TenancyModel
-     /*   if (Cookies.get('auckland') === 'true') {
-            $("#tenancy-auckland").prop("checked", true);
-        }
-        if (Cookies.get('waikato') === 'true') {
-            $("#tenancy-waikato").prop("checked", true);
-        }
-        if (Cookies.get('bop') === 'true') {
-            $("#tenancy-bop").prop("checked", true);
-        }*/
+        /*   if (Cookies.get('auckland') === 'true') {
+               $("#tenancy-auckland").prop("checked", true);
+           }
+           if (Cookies.get('waikato') === 'true') {
+               $("#tenancy-waikato").prop("checked", true);
+           }
+           if (Cookies.get('bop') === 'true') {
+               $("#tenancy-bop").prop("checked", true);
+           }*/
     });
 </script>
 </body>

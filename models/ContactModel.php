@@ -8,7 +8,7 @@ require_once(SITE_ROOT . '/models/PhoneModel.php');
 
 class ContactModel extends BaseModel
 {
-    protected $insert = "INSERT into `contacts` 
+    protected string $insert = "INSERT into `contacts` 
                     (`id`,`contact_id`, `contact_status`, `name`, `first_name`, `last_name`, `email_address`,
                         `best_way_to_contact`,`how_did_you_hear`,
                 `is_supplier`, `is_customer`, `updated_date_utc`, `xerotenant_id`) 
@@ -19,8 +19,8 @@ class ContactModel extends BaseModel
                 `name` = :name, `first_name` = :first_name, `last_name` = :last_name, `email_address` = :email_address, 
                     `best_way_to_contact` = :best_way_to_contact, `how_did_you_hear` = :how_did_you_hear";
 
-    protected $nullable = ['id', 'contact_id', 'updated_date_utc'];
-    protected $saveKeys = [
+    protected array $nullable = ['id', 'contact_id', 'updated_date_utc'];
+    protected array $saveKeys = [
         'id', 'contact_id', 'contact_status',
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
         'how_did_you_hear',
@@ -30,8 +30,8 @@ class ContactModel extends BaseModel
     protected $contracts;
     protected $notes;
 
-    protected $table = 'contacts';
-    protected $hasMany = ['phones', 'addresses', 'contracts', 'notes'];
+    protected string $table = 'contacts';
+    protected array $hasMany = ['phones', 'addresses', 'contracts', 'notes'];
 
 
     function __construct()
@@ -55,21 +55,25 @@ class ContactModel extends BaseModel
         // these can't be empty strings, either a value or null
         $contact = $this->checkNullableValues($contact);
 
-        debug($contact);
         // we can't pass extra variables
-
         $save = $this->getSaveValues($contact);
+
         $newId = $this->save($save);
         if ($newId > 0) $data['contact']['id'] = $newId;
 
         debug($data['contact']['id']);
-
-
+        
         $this->addresses->prepAndSave($data);
 
         $data['note']['foreign_id'] = $data['contact']['id'];
         $data['note']['parent'] = 'contacts';
         $this->notes->prepAndSave($data);
+
+        $phone = [];
+        if (!empty($data))
+            $data['phone']['ckcontact_id'] = $data['contact']['id'];
+        $data['phone']['contact_id'] = $data['contact']['contact_id'];
+        $this->phones->prepAndSave($data);
 
         return $data['contact']['id'];
     }

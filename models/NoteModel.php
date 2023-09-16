@@ -4,13 +4,13 @@ require_once(SITE_ROOT . '/models/BaseModel.php');
 
 class NoteModel extends BaseModel
 {
-    protected $table = 'notes';
-    protected $joins = ['contacts' => "`notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts'"];
-    protected $insert = "INSERT INTO `notes` (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+    protected string $table = 'notes';
+    protected array $joins = ['contacts' => "`notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts'"];
+    protected string $insert = "INSERT INTO `notes` (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
                 VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
                 ON DUPLICATE KEY UPDATE note = :note";
-    protected $saveKeys = ['id', 'foreign_id', 'parent', 'note', 'createdby', 'created'];
-    protected $nullable = ['id'];
+    protected array $saveKeys = ['id', 'foreign_id', 'parent', 'note', 'createdby', 'created'];
+    protected array $nullable = ['id'];
 
 
     public function prepAndSave($data)

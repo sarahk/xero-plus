@@ -4,16 +4,16 @@ require_once(SITE_ROOT . '/utilities.php');
 class BaseModel
 {
     protected $pdo;
-    protected $insert;
-    protected $nullable = [];
-    protected $saveKeys = [];
+    protected string $insert;
+    protected array $nullable = [];
+    protected array $saveKeys = [];
     protected $statement;
-    protected $table;
-    protected $hasMany = [];
-    protected $joins = [];
-    protected $virtualFields = [];
+    protected string $table;
+    protected array $hasMany = [];
+    protected array $joins = [];
+    protected array $virtualFields = [];
     // orderBy is used when getting the child records
-    protected $orderBy = '';
+    protected string $orderBy = '';
 
 
     function __construct()
@@ -29,7 +29,7 @@ class BaseModel
     public function get($id)
     {
         if ($id > 0) {
-            $sql = "SELECT * " . $this->getVirtuals() . " FROM {$this->table} WHERE id = :id";
+            $sql = "SELECT * " . $this->getVirtuals() . " FROM {$this->table} WHERE `id` = :id";
 
             $statement = $this->pdo->prepare($sql);
             $statement->execute(['id' => $id]);
@@ -113,10 +113,22 @@ class BaseModel
         return [$data];
     }
 
+    public function getStatement($sql = '')
+    {
+        if (empty($sql)) $sql = $this->insert;
+        try {
+            $this->statement = $this->pdo->prepare($sql);
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
+        return null;
+    }
+
     public function save($values)
     {
         try {
-            $this->statement = $this->pdo->prepare($this->insert);
+            $this->getStatement();
             $this->statement->execute($values);
 
             // this will be zero if it was an update
@@ -176,5 +188,23 @@ class BaseModel
             else $save[$v] = $data[$v];
         }
         return $save;
+    }
+
+    public function getUpdatedDate($xeroTenantId)
+    {
+        $updated_date_utc = '2017-10-10 00:00:00';
+
+        $this->getStatement("SELECT max(`updated_date_utc`) as `updated_date_utc` 
+                FROM `{$this->table}` 
+                WHERE `xerotenant_id` = :xerotenant_id");
+        try {
+            $this->statement->execute(['xerotenant_id' => $xeroTenantId]);
+            return $this->statement->fetchColumn();
+
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
+        return $updated_date_utc;
     }
 }

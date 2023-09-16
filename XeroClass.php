@@ -4,6 +4,7 @@ require_once('functions.php');
 require_once('models/AddressModel.php');
 require_once('models/ContactModel.php');
 require_once('models/PhoneModel.php');
+require_once('models/SettingModel.php');
 require_once('models/TenancyModel.php');
 
 class XeroClass
@@ -33,7 +34,7 @@ class XeroClass
         try {
             $this->pdo = getDbh();
         } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int) $e->getCode());
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
 
@@ -116,10 +117,8 @@ class XeroClass
             WHERE " . implode(' AND ', $conditions))->fetchColumn();
 
 
-
         if (count($cabins)) {
             foreach ($cabins as $k => $row) {
-
 
 
                 $output['data'][] = [
@@ -248,7 +247,6 @@ class XeroClass
     }
 
 
-
     public function attachmentAccount($xeroTenantId, $apiInstance)
     {
         $str = '';
@@ -288,10 +286,6 @@ class XeroClass
     }
 
 
-
-
-
-
     public function getBankTransfer($xeroTenantId, $apiInstance)
     {
         $str = '';
@@ -305,8 +299,6 @@ class XeroClass
 
         return $str;
     }
-
-
 
 
     public function getOutput()
@@ -382,9 +374,8 @@ class XeroClass
 
     public function getXeroTimestamp($category)
     {
-        $sql = "SELECT `value` FROM `settings` WHERE `category` = '{$category}' AND `key` = 'xerocheck' AND `xerotenant_id` = '{$this->xeroTenantId}' LIMIT 1";
-        $timeCheck = $this->pdo->query($sql)->fetchColumn();
-
+        $objSetting = new SettingModel();
+        $timeCheck = $objSetting->getKeyValue($this->xeroTenantId, $category, 'xerocheck');
         if ($timeCheck) {
             $minutes = (time() - $timeCheck) / 60;
         } else {
@@ -395,46 +386,42 @@ class XeroClass
 
     public function saveXeroTimestamp($category, $xeroTenantId)
     {
-        $sql = "INSERT INTO `settings` (`xerotenant_id`,`category`,`key`,`value`) 
-            VALUES (:xeroTenantId, :category, 'xerocheck', :xerotime)
-            ON DUPLICATE KEY UPDATE `value` = :xerotime2";
-
-        $vals = [
+        $objSetting = new SettingModel();
+        $objSetting->save([
             'xeroTenantId' => $xeroTenantId,
             'category' => $category,
-            'xerotime' => time(),
-            'xerotime2' => time()
-        ];
-        $this->pdo->prepare($sql)->execute($vals);
+            'key' => 'xerocheck',
+            'value' => time() // should this be time or something else?
+        ]);
+
     }
 
-    public function getContactRefresh($tenancy)
+    public function getContactRefresh(): void// auckland,waikato,bop
     {
+        $objContact = new ContactModel();
 
         $k = 1;
-        $xeroTenantId = $this->getXeroTenantId($tenancy);
+        $tenantName = $_GET['tenancy'];
+        $xeroTenantId = $this->getXeroTenantId($tenantName);
         //      public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
 
-        if ($this->getXeroTimestamp('Contact', $xeroTenantId) > 10) {
-            $updated_date_utc = $this->getUpdatedDate('Contact');
+        $updated_date_utc = $objContact->getUpdatedDate($xeroTenantId);
+        debug([$tenantName, $xeroTenantId]);
+        $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, null, null, null, 1, true);
+        $data = $result->getContacts();
 
-            $this->initPDOContact();
-
-            $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, null, null, null, 1, true);
-            $data = $result->getContacts();
-
-            if (count($data)) {
-                foreach ($data as $k => $row) {
-                    $this->saveContactRow($row);
-                }
+        if (count($data)) {
+            foreach ($data as $k => $row) {
+                debug($row);
+                $this->saveContactRow($row);
             }
-            $this->saveXeroTimestamp('Contact', $xeroTenantId);
         }
+        $this->saveXeroTimestamp('Contact', $xeroTenantId);
 
-        return $k;
     }
 
-    public function getSearchContacts(){
+    public function getSearchContacts()
+    {
         $contact = new \models\ContactModel();
         $result = $contact->search();
         return json_encode($result);
@@ -442,61 +429,42 @@ class XeroClass
 
     public function saveContactRow($row)
     {
-
-        $valuesContact = [
-            'contact_id' => $row->getContactId(),
-            'contact_status' => $row->getContactStatus(),
-            'name' => $row->getName(),
-            'first_name' => $row->getFirstName(),
-            'last_name' => $row->getLastName(),
-            'email_address' => $row->getEmailAddress(),
-            'is_supplier' => $row->getIsSupplier(),
-            'is_customer' => $row->getIsCustomer(),
-            'updated_date_utc' => getDateFromXero($row['updated_date_utc'])
+        $values = [
+            'contact' => [
+                'id' => null,
+                'contact_id' => $row->getContactId(),
+                'contact_status' => $row->getContactStatus(),
+                'name' => $row->getName(),
+                'first_name' => $row->getFirstName(),
+                'last_name' => $row->getLastName(),
+                'email_address' => $row->getEmailAddress(),
+                'is_supplier' => $row->getIsSupplier(),
+                'is_customer' => $row->getIsCustomer(),
+                'updated_date_utc' => getDateFromXero($row['updated_date_utc'])
+            ]
         ];
-        foreach ($this->colContact as $v) {
-            $valuesContact["upd8{$v}"] = $valuesContact[$v];
-        }
-
-        $this->statements['contact']->execute($valuesContact);
-
-
         foreach ($row['addresses'] as $addy) {
-            $valuesAddress = [
-                'contact_id' => $valuesContact['contact_id'],
+            $values['addresses'][] = [
+                'ckcontact_id' => $values['contact']['id'],
+                'contact_id' => $values['contact']['contact_id'],
                 'address_type' => $addy->getAddressType(),
                 'address_line1' => $addy->getAddressLine1(),
                 'address_line2' => $addy->getAddressLine2(),
-                'address_line3' => $addy->getAddressLine3(),
-                'address_line4' => $addy->getAddressLine4(),
                 'city' => $addy->getCity(),
-                'region' => $addy->getRegion(),
                 'postal_code' => $addy->getPostalCode(),
-                'country' => $addy->getCountry(),
-                'attention_to' => $addy->getAttentionTo()
             ];
-            foreach ($this->colAddress as $v) {
-                $valuesAddress["upd8{$v}"] = $valuesAddress[$v];
-            }
-
-            $this->statements['address']->execute($valuesAddress);
         }
-
         foreach ($row['phones'] as $phone) {
-            $valuesPhone = [
-                'contact_id' => $valuesContact['contact_id'],
+            $values['phones'][] = [
+                'contact_id' => $values['contact']['contact_id'],
                 'phone_type' => $phone->getPhoneType(),
                 'phone_number' => $phone->getPhoneNumber(),
                 'phone_area_code' => $phone->getPhoneAreaCode(),
                 'phone_country_code' => $phone->getPhoneCountryCode()
             ];
-            foreach ($this->colPhone as $v) {
-                $valuesPhone["upd8{$v}"] = $valuesPhone[$v];
-            }
-
-            $this->statements['phone']->execute($valuesPhone);
         }
-
+        $objContact = new ContactModel();
+        $objContact->prepAndSave($values);
     }
 
 
@@ -513,6 +481,7 @@ class XeroClass
             $apiResponse = $this->apiInstance->getContacts($this->xeroTenantId, $if_modified_since, $where, $order, $ids, $page, $include_archived);
             if (count($apiResponse->getContacts()) > 0) {
                 $message = 'Total contacts found: ' . count($apiResponse->getContacts());
+                debug($apiResponse->getContacts());
             } else {
                 $message = "No contacts found matching filter criteria";
             }
@@ -528,7 +497,7 @@ class XeroClass
         if (count($this->tenancies) == 0) {
             $tenancies = new TenancyModel();
             $this->tenancies = $tenancies->list();
-         }
+        }
         $output = [];
         foreach ($this->tenancies as $row) {
             if ($row['active']) {
@@ -564,7 +533,8 @@ class XeroClass
         }
         return null;
     }
-    // use the list of tenancies to create the where sql 
+
+    // use the list of tenancies to create the where sql
     public function getXeroTenantClause()
     {
         //debug($this->xeroTenantId);
@@ -584,6 +554,7 @@ class XeroClass
         }
         return "{$prefix}black";
     }
+
     /*
      * calls
      * public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
@@ -591,7 +562,6 @@ class XeroClass
     public function getContact($xeroTenantId, $apiInstance, $returnObj = false)
     {
         $output = $this->getOutput();
-
 
 
         // $refreshContact = $this->getContactRefresh();
@@ -649,7 +619,6 @@ class XeroClass
         }
 
 
-
         $sql = "SELECT " . implode(', ', $fields)
             . " FROM `contacts` "
             . " LEFT JOIN vAmountDue ON (contacts.contact_id = vAmountDue.contact_id) "
@@ -673,7 +642,6 @@ class XeroClass
             . " WHERE " . implode(' AND ', $conditions)
         )->fetchColumn();
         //$output['refreshContact'] = $refreshContact;
-
 
 
         $invList = [];
@@ -733,7 +701,6 @@ class XeroClass
             }
             $output['row'] = $row;
         }
-
 
 
         if ($returnObj) {
@@ -1191,9 +1158,6 @@ class XeroClass
     }
 
 
-
-
-
     public function voidCreditNote($xeroTenantId, $apiInstance, $returnObj = false)
     {
         $str = '';
@@ -1212,8 +1176,6 @@ class XeroClass
 
         return $str;
     }
-
-
 
 
     public function getEmployee($xeroTenantId, $apiInstance, $returnObj = false)
@@ -1237,9 +1199,6 @@ class XeroClass
             return $str;
         }
     }
-
-
-
 
 
     public function updateEmployee($xeroTenantId, $apiInstance)
@@ -1408,24 +1367,6 @@ class XeroClass
         return true;
     }
 
-    public function initPDOInvoice()
-    {
-
-        $sql = 'INSERT INTO `invoices` ('
-            . '`invoice_id`, `' . implode('`, `', $this->colInvoice) . '`, `xerotenant_id`)'
-            . ' VALUES (:invoice_id, :' . implode(', :', $this->colInvoice) . ", '{$this->xeroTenantId}')"
-            . " ON DUPLICATE KEY UPDATE ";
-
-        // this is the on duplicate part of the statement
-        foreach ($this->colInvoice as $k => $v) {
-            if ($k > 0) {
-                $sql .= ', ';
-            }
-            $sql .= "`{$v}` = :upd8{$v}";
-        }
-
-        $this->statements['invoice'] = $this->pdo->prepare($sql);
-    }
 
     // https://cabinkingmanagement:8890/json.php?endpoint=Invoices&action=refresh&tenancy=auckland
     public function getInvoiceRefresh($tenancy)
@@ -1437,7 +1378,8 @@ class XeroClass
 
             $updated_date_utc = $this->getUpdatedDate('invoices', $xeroTenantId);
 
-            $this->initPDOInvoice();
+            $objInvoice = new InvoiceModel();
+            $objInvoice->getStatement();
 
             //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_i_ds = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
             $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, null, null, null, null, null, null, 1);
@@ -1462,16 +1404,7 @@ class XeroClass
                     'due_date' => getDateFromXero($row['due_date']),
                     'updated_date_utc' => getDateFromXero($row['updated_date_utc'])
                 ];
-
-                // give the values to the on duplicate part of the statement
-                foreach ($this->colInvoice as $v) {
-                    $values["upd8{$v}"] = $values[$v];
-                }
-
-
-                $x = $this->statements['invoice']->execute($values);
-
-                //$this->statements['invoice']->debugDumpParams();
+                $x = $objInvoice->save($values);
             }
 
             $this->saveXeroTimestamp('Invoice', $xeroTenantId);
@@ -1577,7 +1510,6 @@ class XeroClass
         WHERE " . implode(' AND ', $conditions) . "
         ORDER BY {$order} 
         LIMIT {$output['start']}, {$output['length']}";
-
 
 
         $invoices = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -2215,10 +2147,10 @@ class XeroClass
             }
             $tenancies[$k]['disabled'] = $disabled;
         }
-        if($returnObj){
+        if ($returnObj) {
             return $tenancies;
         }
-        
+
         echo json_encode($tenancies);
     }
 
@@ -2265,8 +2197,6 @@ class XeroClass
             return $str;
         }
     }
-
-
 
 
     public function getPayment($xeroTenantId, $apiInstance, $returnObj = false)
@@ -2560,7 +2490,6 @@ class XeroClass
             return $str;
         }
     }
-
 
 
     public function updatePurchaseOrder($xeroTenantId, $apiInstance)
