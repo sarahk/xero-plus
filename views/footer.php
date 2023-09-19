@@ -261,7 +261,7 @@
                 if (Cookies.get(tenancies[i]) === 'true') {
                     console.log('setInterval loadInvoicesFromXero: ' + tenancies[i]);
                     loadInvoicesFromXero(tenancies[i]);
-                    loadContactsFromXero(tenancies[i]);
+                    //loadContactsFromXero(tenancies[i]);
                 }
             }
         }, 60 * 1000);

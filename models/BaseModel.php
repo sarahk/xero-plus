@@ -7,6 +7,7 @@ class BaseModel
     protected string $insert;
     protected array $nullable = [];
     protected array $saveKeys = [];
+    protected array $updateKeys = [];
     protected $statement;
     protected string $table;
     protected array $hasMany = [];
@@ -31,10 +32,14 @@ class BaseModel
         if ($id > 0) {
             $sql = "SELECT * " . $this->getVirtuals() . " FROM {$this->table} WHERE `id` = :id";
 
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute(['id' => $id]);
-            $data = $statement->fetchAll(PDO::FETCH_ASSOC);
-
+            $this->statement->prepare($sql);
+            try {
+                $this->statement->execute(['id' => $id]);
+                $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                echo "Error Message: " . $e->getMessage() . "\n";
+                $this->statement->debugDumpParams();
+            }
             $output = ['contacts' => $data[0]];
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
@@ -125,7 +130,7 @@ class BaseModel
         return null;
     }
 
-    public function save($values)
+    public function save($values): int
     {
         try {
             $this->getStatement();
@@ -136,22 +141,30 @@ class BaseModel
         } catch (PDOException $e) {
             echo "Error Message: " . $e->getMessage() . "\n";
             $this->statement->debugDumpParams();
-            $this->parms($this->insert, $values);
+            $this->params($this->insert, $values);
         }
-        return null;
+        return 0;
     }
 
-    function parms($string, $data)
+    protected function buildInsertSQL()
     {
-        $indexed = $data == array_values($data);
+        $this->insert = "INSERT into `{$this->table}` 
+                    (`" . implode('`, `', $this->saveKeys) . "`) 
+                VALUES (" . implode(', :', $this->saveKeys) . ")
+                ON DUPLICATE KEY UPDATE " . $this->updateImplode();
+    }
+
+    function params($string, $data)
+    {
+        $indexed = array_values($data);
         foreach ($data as $k => $v) {
-            debug([$k, $v]);
+
             if (is_string($v)) $v = "'$v'";
             if (is_null($v)) $v = "null";
             if ($indexed) $string = preg_replace('/\?/', $v, $string, 2);
             else $string = str_replace(":$k", $v, $string);
         }
-        echo "<hr><p>parms</p><p>{$string}</p></hr>";
+        echo "<hr><p>params</p><p>{$string}</p></hr>";
     }
 
     // debug code from https://www.php.net/manual/en/pdostatement.debugdumpparams.php
@@ -164,7 +177,7 @@ class BaseModel
         return null;
     }
 
-    public function prepAndSave($data)
+    public function prepAndSave($data): int
     {
     }
 
@@ -206,5 +219,35 @@ class BaseModel
             $this->statement->debugDumpParams();
         }
         return $updated_date_utc;
+    }
+
+    protected function updateImplode(): string
+    {
+        $output = [];
+        foreach ($this->updateKeys as $v) {
+            $output[] = "`{$v}` = :{$v}";
+        }
+        return implode(', ', $output);
+    }
+
+    public function getIdFromXeroContactId($xerotenant_id, $xerocontact_id, $row): int
+    {
+        $sql = "SELECT `id` FROM `{$this->table}` WHERE `contact_id` = :contact_id";
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute(['contact_id' => $xerocontact_id]);
+            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            if (count($list)) {
+                $row['contact']['id'] = $list[0]['id'];
+            }
+            if (!array_key_exists('xerotenant_id', $row)) {
+                $row['xerotenant_id'] = $xerotenant_id;
+            }
+            return $this->prepAndSave($row);
+
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
     }
 }

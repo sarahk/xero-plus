@@ -8,16 +8,6 @@ require_once(SITE_ROOT . '/models/PhoneModel.php');
 
 class ContactModel extends BaseModel
 {
-    protected string $insert = "INSERT into `contacts` 
-                    (`id`,`contact_id`, `contact_status`, `name`, `first_name`, `last_name`, `email_address`,
-                        `best_way_to_contact`,`how_did_you_hear`,
-                `is_supplier`, `is_customer`, `updated_date_utc`, `xerotenant_id`) 
-                VALUES (:id, :contact_id, :contact_status, :name, :first_name, :last_name, :email_address, :best_way_to_contact, 
-                        :how_did_you_hear, 0, 1, 
-                        :updated_date_utc, :xerotenant_id)
-                ON DUPLICATE KEY UPDATE
-                `name` = :name, `first_name` = :first_name, `last_name` = :last_name, `email_address` = :email_address, 
-                    `best_way_to_contact` = :best_way_to_contact, `how_did_you_hear` = :how_did_you_hear";
 
     protected array $nullable = ['id', 'contact_id', 'updated_date_utc'];
     protected array $saveKeys = [
@@ -25,18 +15,26 @@ class ContactModel extends BaseModel
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
         'how_did_you_hear',
         'updated_date_utc', 'xerotenant_id'];
-    protected $addresses;
-    protected $phones;
-    protected $contracts;
-    protected $notes;
+    protected array $updateKeys = [
+        'contact_status',
+        'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
+        'how_did_you_hear',
+        'updated_date_utc'];
+    protected AddressModel $addresses;
+    protected PhoneModel $phones;
+    protected ContractModel $contracts;
+    protected NoteModel $notes;
 
     protected string $table = 'contacts';
+
     protected array $hasMany = ['phones', 'addresses', 'contracts', 'notes'];
 
 
     function __construct()
     {
         parent::__construct();
+
+        $this->buildInsertSQL();
 
         $this->addresses = new AddressModel();
         $this->contracts = new ContractModel();
@@ -45,24 +43,27 @@ class ContactModel extends BaseModel
     }
 
 
-    public function prepAndSave($data)
+    public function prepAndSave($data): int
     {
-        $id = intval($data['contact']['id']);
-        $oldVals = $this->get($id);
-        $contact = array_merge($oldVals['contacts'][0], $data['contact']);
-        $contact['name'] = $contact['first_name'] . ' ' . $contact['last_name'];
+        if (array_key_exists('firstname', $data['contact']) && array_key_exists('last_name', $data['contact'])) {
+            $data['contact']['name'] = $data['contact']['first_name'] . ' ' . $data['contact']['last_name'];
+        }
+        if (array_key_exists('id', $data['contact'])) {
+            $id = intval($data['contact']['id']);
+            $oldVals = $this->get($id);
+            $contact = array_merge($oldVals['contacts'][0], $data['contact']);
+        } else $contact = $data['contact'];
 
         // these can't be empty strings, either a value or null
         $contact = $this->checkNullableValues($contact);
 
         // we can't pass extra variables
         $save = $this->getSaveValues($contact);
-
+        debug($contact);
+        debug($save);
         $newId = $this->save($save);
         if ($newId > 0) $data['contact']['id'] = $newId;
 
-        debug($data['contact']['id']);
-        
         $this->addresses->prepAndSave($data);
 
         $data['note']['foreign_id'] = $data['contact']['id'];
@@ -70,11 +71,11 @@ class ContactModel extends BaseModel
         $this->notes->prepAndSave($data);
 
         $phone = [];
-        if (!empty($data))
+        if (!empty($data)) {
             $data['phone']['ckcontact_id'] = $data['contact']['id'];
-        $data['phone']['contact_id'] = $data['contact']['contact_id'];
-        $this->phones->prepAndSave($data);
-
+            $data['phone']['contact_id'] = $data['contact']['contact_id'];
+            $this->phones->prepAndSave($data);
+        }
         return $data['contact']['id'];
     }
 
@@ -107,14 +108,20 @@ class ContactModel extends BaseModel
               AND (" . implode(' AND ', $conditions) .
             ') LIMIT 10';
 
-        $statement = $this->pdo->prepare($sql);
-        $statement->execute($values);
-        $list = $statement->fetchAll(PDO::FETCH_ASSOC);
-
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute($values);
+            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
         return [
             'count' => count($list),
             'draw' => $_GET['draw'],
             'data' => $list
         ];
     }
+
+
 }

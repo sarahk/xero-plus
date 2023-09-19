@@ -39,7 +39,7 @@
             foreach ($data['phones'] as $k => $row) {
                 if (!empty($row['phone_number']) || $row['phone_type'] === 'MOBILE' || $row['phone_type'] === 'DEFAULT') {
                     $label = ($row['phone_type'] === 'DEFAULT') ? 'Phone' : ucfirst(strtolower($row['phone_type']));
-                    FormBuilder::input('phone_type', 'data[phone][' . strtolower($row['phone_type']) . ']', $label, false, 'tel', $row['phone']);
+                    FormBuilder::input('phone_type', "data[phone][{$k}][" . strtolower($row['phone_type']) . ']', $label, false, 'tel', $row['phone']);
                 }
             }
             FormBuilder::input('email_address', 'data[contact][email_address]', 'Email', false, 'email', $data['contacts']['email_address'] ?? '');

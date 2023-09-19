@@ -3,6 +3,7 @@ require_once('utilities.php');
 require_once('functions.php');
 require_once('models/AddressModel.php');
 require_once('models/ContactModel.php');
+require_once('models/InvoiceModel.php');
 require_once('models/PhoneModel.php');
 require_once('models/SettingModel.php');
 require_once('models/TenancyModel.php');
@@ -14,28 +15,13 @@ class XeroClass
     public $xeroTenantId;
 
     public $tenancies = [];
-    public $pdo;
-
-    private $colInvoice = ['contact_id', 'status', 'invoice_number', 'reference', 'total', 'amount_due', 'amount_paid', 'date', 'due_date', 'updated_date_utc'];
-    private $colContact = ['contact_status', 'name', 'first_name', 'last_name', 'email_address', 'is_supplier', 'is_customer', 'updated_date_utc'];
-    private $colAddress = ['address_line1', 'address_line2', 'address_line3', 'address_line4', 'city', 'region', 'postal_code', 'country', 'attention_to'];
-    private $colPhone = ['phone_number', 'phone_area_code', 'phone_country_code'];
 
     private $statements = [];
 
-    public $addressOptions = ['address_line1', 'address_line2', 'city', 'postal_code'];
 
-    function __construct($apiInstance, $xeroTenantId)
+    function __construct($apiInstance, $xeroTenantId = '')
     {
-
         $this->apiInstance = $apiInstance;
-        $this->xeroTenantId = $xeroTenantId;
-
-        try {
-            $this->pdo = getDbh();
-        } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
-        }
     }
 
     public function init($arg)
@@ -43,129 +29,6 @@ class XeroClass
         $apiInstance = $arg;
     }
 
-    public function getCabins()
-    {
-        $output = $this->getOutput();
-
-
-        $order = null;
-
-        switch ($output['order'][0]['column']) {
-            case 2:
-                $order = "contacts.last_name {$output['order'][0]['dir']}, contacts.first_name ASC";
-                break;
-
-            case 4: // amount due
-                $order = "cabins.cabinnumber {$output['order'][0]['dir']}";
-                break;
-
-            case 6:
-            default:
-                $order = "cabins.cabinnumber {$output['order'][0]['dir']}";
-                break;
-
-        }
-
-        $conditions = ["`cabins`.`xerotenant_id` = '{$this->xeroTenantId}'"];
-        if (!empty($output['search']['value'])) {
-            $choice = ["`cabins`.`cabinnumber` = '{$output['search']['value']}'"];
-            $choice[] = "`contacts`.`name` LIKE '%{$output['search']['value']}%'";
-            $choice[] = "`addresses`.`address_line1` LIKE '%{$output['search']['value']}%'";
-            $choice[] = "`addresses`.`address_line2` LIKE '%{$output['search']['value']}%'";
-            $conditions[] = '(' . implode(' OR ', $choice) . ')';
-        }
-        if (!empty($output['button'])) {
-            $status = strtoupper($output['button']);
-            $conditions[] = "`cabins`.`status` = '{$status}'";
-        } else {
-            $conditions[] = "`cabins`.`status` = 'ACTIVE'";
-        }
-
-
-        $fields = [
-            'cabins.cabin_id',
-            'cabins.cabinnumber',
-            'cabins.status',
-            'cabins.style',
-            'cabins.paintgrey',
-            'cabins.paintinside'
-            ,
-            'contracts.deliverydate',
-            'contracts.pickupdate',
-            'contracts.scheduledpickupdate'
-            ,
-            'contacts.name'
-        ];
-
-
-        $sql = "SELECT " . implode(',', $fields) . " FROM `cabins` 
-            LEFT JOIN `contracts` ON (cabins.cabin_id = contracts.cabin_id) 
-            LEFT JOIN `contacts` ON (contracts.contact_id = contacts.contact_id) 
-            LEFT JOIN `addresses` ON (contacts.contact_id = addresses.contact_id AND addresses.address_type = 'STREET')
-        WHERE " . implode(' AND ', $conditions) . "
-        ORDER BY {$order} 
-        LIMIT {$output['start']}, {$output['length']}";
-
-
-        $cabins = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM cabins WHERE `cabins`.`xerotenant_id` = '{$this->xeroTenantId}'")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query("SELECT count(*) FROM cabins 
-            LEFT JOIN `contracts` ON (cabins.cabin_id = contracts.cabin_id) 
-            LEFT JOIN `contacts` ON (contracts.contact_id = contacts.contact_id) 
-            LEFT JOIN `addresses` ON (contacts.contact_id = addresses.contact_id AND addresses.address_type = 'STREET')
-            WHERE " . implode(' AND ', $conditions))->fetchColumn();
-
-
-        if (count($cabins)) {
-            foreach ($cabins as $k => $row) {
-
-
-                $output['data'][] = [
-                    'number' => "<a href='#' data-toggle='modal' data-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>"
-                    ,
-                    'style' => $row['style']
-                    ,
-                    'status' => $row['status']
-                    ,
-                    'contact' => "{$row['name']} <a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}' class='text-right'><i class='fas fa-edit'></i></a>"
-                    ,
-                    'paintgrey' => $row['paintgrey']
-                    ,
-                    'paintinside' => $row['paintinside']
-                    ,
-                    'actions' => "<a href='/get.php?endpoint=Contracts&action=Read&key={$row['cabin_id']}'><i class='fas fa-th-list' data-key=''></i></a>"
-
-                ];
-            }
-            //$output['row'] = $row;
-        }
-
-        return json_encode($output);
-
-    }
-
-    public function getCabinSingle()
-    {
-        $output = $this->getOutput();
-
-        $sql = "select * from cabins where cabin_id = {$output['key']}";
-        $cabin = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-        switch ($cabin['style']) {
-            case 'R':
-            case 'r':
-                $cabin['style'] = 'Right';
-                break;
-
-            case 'L':
-            case 'l':
-                $cabin['style'] = 'Left';
-        }
-
-
-        return json_encode($cabin);
-    }
 
     public function getAccount($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -396,6 +259,32 @@ class XeroClass
 
     }
 
+    // internal call
+    public function getSingleContact($xeroTenantId, $contact_id): int
+    {
+        $ids = [$contact_id];
+        // public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
+
+        // shown in full for readability
+        $updated_date_utc = null;
+        $where = $order = null;
+        $page = 1;
+        $include_archived = true;
+
+        $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, $where, $order, $ids, $page, $include_archived);
+        $data = $result->getContacts();
+
+        if (count($data)) {
+            $objContact = new ContactModel();
+            $row = (array)$data[0];
+            var_dump(array_keys($row));
+            var_dump($row['*container']);
+            debug(['contact' => $row['*container']]);
+            return $objContact->getIdFromXeroContactId($xeroTenantId, $contact_id, ['contact' => $row]);
+        }
+        return 0;
+    }
+
     public function getContactRefresh(): void// auckland,waikato,bop
     {
         $objContact = new ContactModel();
@@ -403,29 +292,30 @@ class XeroClass
         $k = 1;
         $tenantName = $_GET['tenancy'];
         $xeroTenantId = $this->getXeroTenantId($tenantName);
-        //      public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
+        // public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
 
+        // shown in full for readability
         $updated_date_utc = $objContact->getUpdatedDate($xeroTenantId);
-        debug([$tenantName, $xeroTenantId]);
-        $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, null, null, null, 1, true);
+        $where = $order = $ids = null;
+        $page = 1;
+        $include_archived = true;
+        // unused $summary_only = false, $search_term = null)
+
+
+        $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, $where, $order, $ids, $page, $include_archived);
         $data = $result->getContacts();
 
         if (count($data)) {
             foreach ($data as $k => $row) {
-                debug($row);
+                //if ($row->getIsCustomer() || true) {
                 $this->saveContactRow($row);
+                //}
             }
         }
         $this->saveXeroTimestamp('Contact', $xeroTenantId);
 
     }
 
-    public function getSearchContacts()
-    {
-        $contact = new \models\ContactModel();
-        $result = $contact->search();
-        return json_encode($result);
-    }
 
     public function saveContactRow($row)
     {
@@ -463,6 +353,7 @@ class XeroClass
                 'phone_country_code' => $phone->getPhoneCountryCode()
             ];
         }
+        debug([$values['contact']['name'], $values['contact']['first_name'], $values['contact']['last_name'], $values['contact']['contact_id']]);
         $objContact = new ContactModel();
         $objContact->prepAndSave($values);
     }
@@ -555,241 +446,11 @@ class XeroClass
         return "{$prefix}black";
     }
 
-    /*
-     * calls
-     * public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
-     */
-    public function getContact($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $output = $this->getOutput();
-
-
-        // $refreshContact = $this->getContactRefresh();
-        //checkboxes are column 0
-        switch ($output['order'][0]['column']) {
-            case 1:
-                $order = "`total_due` {$output['order'][0]['dir']}";
-                break;
-            case 2:
-                $order = "`last_name` {$output['order'][0]['dir']}, `first_name` ASC";
-                break;
-            case 4:
-                $order = "`email_address` {$output['order'][0]['dir']}";
-                break;
-            default:
-                $order = "`name` {$output['order'][0]['dir']}";
-        }
-
-
-        $fields = [
-            'contacts.xerotenant_id',
-            'contacts.contact_id',
-            'contacts.name',
-            'contacts.email_address',
-            'contacts.contact_status',
-            'contacts.is_supplier',
-            'contacts.is_customer',
-            'address_line1',
-            'address_line2',
-            'city',
-            'postal_code',
-            'phones.phone_number',
-            'phones.phone_area_code',
-            'vAmountDue.total_due'
-        ];
-
-
-        $conditions = [
-            $this->getXeroTenantClause(),
-            "contacts.is_customer = TRUE"
-        ];
-
-        if (!empty($output['search'])) {
-            $subconditions = [
-                "`contacts`.`name` LIKE '%{$output['search']}%'",
-                "`contacts`.`email_address` LIKE '%{$output['search']}%'",
-                "`addresses`.`address_line1` LIKE '%{$output['search']}%'",
-                "`phones`.`phone_number` LIKE '%{$output['search']}%'"
-            ];
-            $conditions[] = ' (' . implode(' OR ', $subconditions) . ') ';
-        }
-        if (!empty($output['button'])) {
-            $status = strtoupper($output['button']);
-            $conditions[] = "`contacts`.`contact_status` = '{$status}'";
-        }
-
-
-        $sql = "SELECT " . implode(', ', $fields)
-            . " FROM `contacts` "
-            . " LEFT JOIN vAmountDue ON (contacts.contact_id = vAmountDue.contact_id) "
-            . " LEFT JOIN addresses ON (contacts.contact_id = addresses.contact_id and addresses.address_type = 'STREET') "
-            . " LEFT JOIN phones ON (contacts.contact_id = phones.contact_id and phones.phone_type = 'MOBILE') "
-            . " WHERE " . implode(' AND ', $conditions)
-            . " ORDER BY {$order} "
-            . " LIMIT {$output['start']}, {$output['length']}";
-
-        $output['sql'] = $sql;
-
-
-        $contacts = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM contacts WHERE {$conditions[0]}")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query(
-            "SELECT count(*) FROM contacts "
-            . " LEFT JOIN vAmountDue ON (contacts.contact_id = vAmountDue.contact_id) "
-            . " LEFT JOIN addresses ON (contacts.contact_id = addresses.contact_id and addresses.address_type = 'STREET') "
-            . " LEFT JOIN phones ON (contacts.contact_id = phones.contact_id and phones.phone_type = 'MOBILE') "
-            . " WHERE " . implode(' AND ', $conditions)
-        )->fetchColumn();
-        //$output['refreshContact'] = $refreshContact;
-
-
-        $invList = [];
-        $now = new DateTime('NOW');
-        $overdueCutOff = new DateTime('NOW');
-        $overdueCutOff->sub(new DateInterval('P14D'));
-
-        $meters = [];
-        //<i class="fas fa-square"></i>
-        //<i class="fas fa-rectangle-portrait"></i>
-        //<i class="fas fa-tint"></i>
-        $meters[] = ['name' => 'low', 'min' => 0, 'class' => 'text-success'];
-        $meters[] = ['name' => 'med', 'min' => 51, 'class' => 'text-info'];
-        $meters[] = ['name' => 'high', 'min' => 101, 'class' => 'text-warning'];
-        $meters[] = ['name' => 'med', 'min' => 301, 'class' => 'text-danger'];
-
-        // create the json
-        //$fmt = new NumberFormatter( 'nz_NZ', NumberFormatter::CURRENCY );
-        // $fmt->formatCurrency($invList[$row['contact_id']]['due'], "NZD")
-        if (count($contacts)) {
-            foreach ($contacts as $k => $row) {
-
-                //if ($k >= $output['start'] && $k < ($output['start'] + $output['length'])) {
-                $address = [];
-                foreach ($this->addressOptions as $key) {
-                    if (!empty($row[$key])) {
-                        $address[] = $row[$key];
-                    }
-                }
-
-                $phone = '';
-
-                if (!empty($row['phone_number'])) {
-                    $phone_number = str_replace(' ', '&nbsp;', $row['phone_number']);
-                    $phone = "<a href='tel:{$row['phone_area_code']}{$row['phone_number']}'>{$row['phone_area_code']}&nbsp;{$phone_number}</a>";
-                }
-
-
-                foreach ($meters as $meter) {
-                    if ($row['total_due'] >= $meter['min']) {
-                        $class = $meter['class'];
-                    }
-                }
-
-                $actionClass = ($row['contact_status'] === 'ACTIVE') ? 'text-success' : '';
-
-                $output['data'][] = [
-                    'DT_RowClass' => $this->getTenancyColour('bar-', $row['xerotenant_id']),
-                    'checkbox' => "<input name='select{$row['contact_id']}' type='checkbox' value=''>",
-                    'theyowe' => "<span class='{$class}'>$ " . intval($row['total_due']) . "</span>",
-                    'name' => "<a href='https://go.xero.com/Contacts/View/{$row['contact_id']}' target='_blank'>{$row['name']}</a>",
-                    'phone' => $phone,
-                    'email' => $row['email_address'],
-                    'address' => "<address>" . implode(', ', $address) . "</address>",
-                    'action' => "<small class='{$actionClass}'>{$row['contact_status']}</span>"
-                ];
-            }
-            $output['row'] = $row;
-        }
-
-
-        if ($returnObj) {
-            return $output;
-        } else {
-            return json_encode($output);
-        }
-    }
 
     /*
      * calls
      * public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
      */
-    public function getContactSingle()
-    {
-        $this->initPDOContact();
-        $output = $this->getOutput();
-
-        //check the age of the record first?
-
-        $result = $this->apiInstance->getContacts($this->xeroTenantId, null, null, null, $output['key'], null, true);
-        $data = $result->getContacts();
-
-
-        if (count($data)) {
-            foreach ($data as $k => $row) {
-                $this->saveContactRow($row);
-            }
-        }
-
-        $fields = [
-            'contacts.contact_id',
-            'contacts.name',
-            'contacts.email_address',
-            'contacts.contact_status',
-            'contacts.is_supplier',
-            'contacts.is_customer'
-            ,
-            'contacts.email_address'
-            ,
-            'address_line1',
-            'address_line2',
-            'city',
-            'postal_code'
-            ,
-            'phones.phone_number',
-            'phones.phone_area_code'
-            ,
-            'contacts.updated_date_utc'
-        ];
-        $fields[] = "SUM(invoices.amount_due) as amount_due";
-
-        $conditions = [
-            "contacts.xerotenant_id = '{$this->xeroTenantId}'"
-            ,
-            "contacts.contact_id = '{$output['key']}'"
-        ];
-
-        $sql = "SELECT " . implode(', ', $fields)
-            . " FROM `contacts` "
-            . " LEFT JOIN invoices ON (contacts.contact_id = invoices.contact_id) "
-            . " LEFT JOIN addresses ON (contacts.contact_id = addresses.contact_id and addresses.address_type = 'STREET') "
-            . " LEFT JOIN phones ON (contacts.contact_id = phones.contact_id and phones.phone_type = 'MOBILE') "
-            . " WHERE " . implode(' AND ', $conditions) . " LIMIT 1";
-
-        $contact = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-        $address = [];
-        foreach ($this->addressOptions as $key) {
-            if (!empty($contact[$key])) {
-                $address[] = $contact[$key];
-            }
-        }
-        $contact['address'] = implode(', ', $address);
-
-        $phone = '';
-
-        if (!empty($contact['phone_number'])) {
-            $phone_number = str_replace(' ', '&nbsp;', $contact['phone_number']);
-            $phone = "<a href='tel:{$contact['phone_area_code']}{$row['phone_number']}'>{$contact['phone_area_code']}&nbsp;{$phone_number}</a>";
-        }
-        $contact['phone'] = $phone;
-
-        $contact['email'] = "<a href='mailto:{$contact['email_address']}' target='_blank'>{$contact['email_address']}</a>";
-
-        echo json_encode($contact);
-        exit;
-
-    }
 
     public function createContact($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -1372,16 +1033,19 @@ class XeroClass
     public function getInvoiceRefresh($tenancy)
     {
         $testing = true;
+        $live = true;
         $k = 0;
-        if ($this->getXeroTimestamp('Invoice') > 10 || $testing) {
+        if ($live || $testing) {
             $xeroTenantId = $this->getXeroTenantId($tenancy);
 
-            $updated_date_utc = $this->getUpdatedDate('invoices', $xeroTenantId);
+            //$updated_date_utc = $this->getUpdatedDate('invoices', $xeroTenantId);
 
             $objInvoice = new InvoiceModel();
+
+            $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
             $objInvoice->getStatement();
 
-            //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_i_ds = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
+            //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
             $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, null, null, null, null, null, null, 1);
 
             $data = $result->getInvoices();
@@ -1390,6 +1054,7 @@ class XeroClass
 
                 $contact = $row->getContact();
 
+                $this->getSingleContact($xeroTenantId, $contact['contact_id']);
 
                 $values = [
                     'invoice_id' => $row['invoice_id'],
@@ -1404,10 +1069,8 @@ class XeroClass
                     'due_date' => getDateFromXero($row['due_date']),
                     'updated_date_utc' => getDateFromXero($row['updated_date_utc'])
                 ];
-                $x = $objInvoice->save($values);
+                $x = $objInvoice->prepAndSave($values);
             }
-
-            $this->saveXeroTimestamp('Invoice', $xeroTenantId);
         }
 
         return $k;

@@ -13,23 +13,42 @@ class InvoiceModel extends BaseModel
     ];
     protected array $updateKeys = ['status', 'total', 'amount_due', 'amount_paid', 'updated_date_utc'];
 
+    protected ContactModel $contacts;
+    protected ContractModel $contracts;
+
     function __construct()
     {
         parent::__construct();
-        $this->insert = "INSERT INTO `invoices` (
-            `invoice_id`, `" . implode("`, `", $this->saveKeys) . "`, `xerotenant_id`)
-             VALUES (:invoice_id, :" . implode(', :', $this->updateKeys) . ", '{$this->xeroTenantId}')
-             ON DUPLICATE KEY UPDATE";
+        $this->buildInsertSQL();
+        $this->contacts = new ContactModel();
+        $this->contracts = new ContractModel();
     }
 
-    public function prepAndSave($data)
+
+    public function prepAndSave($data): int
     {
         parent::prepAndSave($data);
 
+        $contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
+        if ($contract_id === false) {
+            $ckcontact_id = $this->contacts->getIdFromXeroContactId($data['contact_id']);
+            if ($ckcontact_id === false) {
+                $ckcontact_id = $this->contacts->newContact($data['contact_id']);
+                $contract_id = false;
+            } else {
+                $contract_id = $this->contracts->getIdFromXeroContactId($ckcontact_id);
+            }
+            if ($contract_id === false) {
+                $contract = [];
+                $this->contracts->prepAndSave($contract);
+            }
+        }
+        // todo return invoice id
+        return 0;
     }
 
 
-    public function list($params)
+    public function list($params): array
     {
 
         $where = $statuses = null;

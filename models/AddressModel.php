@@ -19,7 +19,7 @@ class AddressModel extends BaseModel
     protected array $joins = ['contacts' => "`addresses`.`ckcontact_id` = :id1"];
     protected array $virtualFields = ['address' => "CONCAT(address_line1,', ', address_line2,', ', city, ' ', postal_code)"];
 
-    public function prepAndSave($data)
+    public function prepAndSave($data): int
     {
         parent::prepAndSave($data);
 
@@ -66,6 +66,6 @@ class AddressModel extends BaseModel
                 }
             }
         }
-        return null;
+        return 0;
     }
 }

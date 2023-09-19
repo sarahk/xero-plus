@@ -23,7 +23,7 @@ class PhoneModel extends BaseModel
         return $phones;
     }
 
-    public function prepAndSave($data)
+    public function prepAndSave($data): int
     {
         parent::prepAndSave($data);
         if (array_key_exists('phone', $data)) {
@@ -39,7 +39,7 @@ class PhoneModel extends BaseModel
                     $row = array_merge($phones[$search], $row);
                 }
                 $save = $this->getSaveValues($row);
-                $this->save($save);
+                return $this->save($save);
             }
         }
     }
