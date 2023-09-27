@@ -25,24 +25,35 @@ class InvoiceModel extends BaseModel
     }
 
 
+    // I N V O I C E
+    // check we have a contract id and a ckcontact id
+    // we WILL have a repeating invoice id
+    // invoices are always imported from xero
     public function prepAndSave($data): int
     {
-        parent::prepAndSave($data);
+        debug($data);
+        //$contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
+        $contract = $this->contracts->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
+        $contract_id = $contract['contracts']['contract_id'];
 
-        $contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
         if ($contract_id === false) {
-            $ckcontact_id = $this->contacts->getIdFromXeroContactId($data['contact_id']);
+            $contact = $this->contacts->get('contact_id', $data['contact_id']);
+            $ckcontact_id = $contact['contact_id'];
             if ($ckcontact_id === false) {
                 $ckcontact_id = $this->contacts->newContact($data['contact_id']);
                 $contract_id = false;
             } else {
-                $contract_id = $this->contracts->getIdFromXeroContactId($ckcontact_id);
+                $contract_id = $this->contracts->get($ckcontact_id);
             }
             if ($contract_id === false) {
                 $contract = [];
                 $this->contracts->prepAndSave($contract);
             }
         }
+        $checked = $this->checkNullableValues($data);
+        $save = $this->getSaveValues($checked);
+        return $this->save($save);
+
         // todo return invoice id
         return 0;
     }

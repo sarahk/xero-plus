@@ -10,6 +10,7 @@ class BaseModel
     protected array $updateKeys = [];
     protected $statement;
     protected string $table;
+    protected string $primaryKey = '';
     protected array $hasMany = [];
     protected array $joins = [];
     protected array $virtualFields = [];
@@ -27,30 +28,41 @@ class BaseModel
 
     }
 
-    public function get($id)
+    // just to ensure the mysql connection is closed
+    function x__destruct()
     {
-        if ($id > 0) {
-            $sql = "SELECT * " . $this->getVirtuals() . " FROM {$this->table} WHERE `id` = :id";
+        $this->pdo = null;
+    }
 
-            $this->statement->prepare($sql);
+    public function get($key, $keyVal): array
+    {
+        $data = [];
+
+        if ($keyVal > 0) {
+            $sql = "SELECT * " . $this->getVirtuals() . " FROM {$this->table} WHERE `{$key}` = :keyVal";
+            $this->getStatement($sql);
             try {
-                $this->statement->execute(['id' => $id]);
+                $this->statement->execute(['keyVal' => $keyVal]);
                 $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
                 echo "Error Message: " . $e->getMessage() . "\n";
                 $this->statement->debugDumpParams();
             }
-            $output = ['contacts' => $data[0]];
+        }
+        // either we didn't have a value or there isn't a record in the database
+        if (count($data)) {
+
+            $output = ["{$this->table}" => $data[0]];
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getChildren($this->table, $id);
+                    $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey]);
                 }
             }
         } else {
             $output = [$this->table => $this->getDefaults()];
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getDefaults($id);
+                    $output[$val] = $this->{$val}->getDefaults();
                 }
             }
         }
@@ -99,7 +111,7 @@ class BaseModel
 
     //https://dev.mysql.com/doc/refman/8.0/en/insert-on-duplicate.html
 
-    public function getDefaults()
+    public function getDefaults(): array
     {
         $sql = "SHOW FULL COLUMNS FROM `{$this->table}`";
 
@@ -150,7 +162,7 @@ class BaseModel
     {
         $this->insert = "INSERT into `{$this->table}` 
                     (`" . implode('`, `', $this->saveKeys) . "`) 
-                VALUES (" . implode(', :', $this->saveKeys) . ")
+                VALUES (:" . implode(', :', $this->saveKeys) . ")
                 ON DUPLICATE KEY UPDATE " . $this->updateImplode();
     }
 
@@ -179,6 +191,7 @@ class BaseModel
 
     public function prepAndSave($data): int
     {
+        return 0;
     }
 
     protected function checkNullableValues($data)
@@ -197,7 +210,7 @@ class BaseModel
     {
         $save = [];
         foreach ($this->saveKeys as $v) {
-            if (!array_key_exists($v, $data)) $data[$v] = NULL;
+            if (!array_key_exists($v, $data)) $save[$v] = NULL;
             else $save[$v] = $data[$v];
         }
         return $save;

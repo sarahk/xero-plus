@@ -1,4 +1,7 @@
 <?php
+
+use XeroAPI\XeroPHP\AccountingObjectSerializer;
+
 require_once('utilities.php');
 require_once('functions.php');
 require_once('models/AddressModel.php');
@@ -10,14 +13,9 @@ require_once('models/TenancyModel.php');
 
 class XeroClass
 {
-
     public $apiInstance;
-    public $xeroTenantId;
-
-    public $tenancies = [];
-
-    private $statements = [];
-
+    public string $xeroTenantId;
+    public array $tenancies = [];
 
     function __construct($apiInstance, $xeroTenantId = '')
     {
@@ -51,85 +49,6 @@ class XeroClass
         }
     }
 
-    public function createAccount($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        //[Accounts:Create]
-        $account = new XeroAPI\XeroPHP\Models\Accounting\Account;
-        $account->setCode($this->getRandNum());
-        $account->setName("Foo" . $this->getRandNum());
-        $account->setType("EXPENSE");
-        $account->setDescription("Hello World");
-        $result = $apiInstance->createAccount($xeroTenantId, $account);
-        //[/Accounts:Create]
-
-        $str = $str . "Create Account: " . $result->getAccounts()[0]->getName() . "<br>";
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function updateAccount($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $new = $this->createAccount($xeroTenantId, $apiInstance, true);
-        $guid = $new->getAccounts()[0]->getAccountId();
-
-        //[Accounts:Update]
-        $account = new XeroAPI\XeroPHP\Models\Accounting\Account;
-        $account->setStatus(NULL);
-        $account->setDescription("Goodbye World");
-        $result = $apiInstance->updateAccount($xeroTenantId, $guid, $account);
-        //[/Accounts:Update]
-
-        $str = $str . "Update Account: " . $result->getAccounts()[0]->getName() . "<br>";
-
-        return $str;
-    }
-
-    public function archiveAccount($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $new = $this->createAccount($xeroTenantId, $apiInstance, true);
-        $guid = $new->getAccounts()[0]->getAccountId();
-
-        //[Accounts:Archive]
-        $account = new XeroAPI\XeroPHP\Models\Accounting\Account;
-        $account->setStatus("ARCHIVED");
-        $result = $apiInstance->updateAccount($xeroTenantId, $guid, $account);
-        //[/Accounts:Archive]
-
-        $str = $str . "Archive Account: " . $result->getAccounts()[0]->getName() . "<br>";
-
-        return $str;
-    }
-
-
-    public function attachmentAccount($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $account = $this->getAccount($xeroTenantId, $apiInstance, true);
-        //[Accounts:Attachment]
-        $guid = $account->getAccounts()[2]->getAccountId();
-
-        $filename = "./helo-heros.jpg";
-        $handle = fopen($filename, "r");
-        $contents = fread($handle, filesize($filename));
-        fclose($handle);
-
-        $result = $apiInstance->createAccountAttachmentByFileName($xeroTenantId, $guid, "helo-heros.jpg", $contents);
-        //[/Accounts:Attachment]
-        $str = "Account (" . $result->getAttachments()[0]->getFileName() . ") attachment url:";
-        $str = $str . $result->getAttachments()[0]->getUrl();
-
-        return $str;
-    }
 
     public function getBankTransaction($xeroTenantId, $apiInstance)
     {
@@ -164,7 +83,7 @@ class XeroClass
     }
 
 
-    public function getOutput()
+    public function getOutput(): array
     {
         $output = ['data' => []];
 
@@ -187,66 +106,6 @@ class XeroClass
         return $output;
     }
 
-    public function initPDOContact()
-    {
-        $statements = [];
-
-
-        $sqlContact = 'INSERT INTO `contacts` ('
-            . '`contact_id`, `' . implode('`,`', $this->colContact) . '`, `xerotenant_id`)'
-            . ' values (:contact_id, :' . implode(',:', $this->colContact) . ", '{$this->xeroTenantId}')"
-            . " ON DUPLICATE KEY UPDATE ";
-        foreach ($this->colContact as $k => $v) {
-            $join = ($k > 0) ? ', ' : '';
-
-            $sqlContact .= "{$join}`{$v}` = :upd8{$v}";
-        }
-        $this->statements['contact'] = $this->pdo->prepare($sqlContact);
-
-        /* ==================== */
-
-
-        $sqlAddress = 'INSERT INTO `addresses` ('
-            . '`contact_id`, `address_type`, `' . implode('`,`', $this->colAddress) . '`)'
-            . ' values (:contact_id, :address_type, :' . implode(',:', $this->colAddress) . ")"
-            . " ON DUPLICATE KEY UPDATE ";
-        foreach ($this->colAddress as $k => $v) {
-            $join = ($k > 0) ? ', ' : '';
-
-            $sqlAddress .= "{$join}`{$v}` = :upd8{$v}";
-        }
-        $this->statements['Address'] = $this->pdo->prepare($sqlAddress);
-
-        /* ==================== */
-
-        $colPhone = ['phone_number', 'phone_area_code', 'phone_country_code'];
-
-        $sqlPhone = 'INSERT INTO `phones` ('
-            . '`contact_id`, `phone_type`, `' . implode('`,`', $colPhone) . '`)'
-            . ' values (:contact_id, :phone_type, :' . implode(',:', $colPhone) . ")"
-            . " ON DUPLICATE KEY UPDATE ";
-        foreach ($colPhone as $k => $v) {
-            $join = ($k > 0) ? ', ' : '';
-
-            $sqlPhone .= "{$join}`{$v}` = :upd8{$v}";
-        }
-
-        $this->statements['Phone'] = $this->pdo->prepare($sqlPhone);
-
-    }
-
-    public function getXeroTimestamp($category)
-    {
-        $objSetting = new SettingModel();
-        $timeCheck = $objSetting->getKeyValue($this->xeroTenantId, $category, 'xerocheck');
-        if ($timeCheck) {
-            $minutes = (time() - $timeCheck) / 60;
-        } else {
-            return 60;
-        }
-        return $minutes;
-    }
-
     public function saveXeroTimestamp($category, $xeroTenantId)
     {
         $objSetting = new SettingModel();
@@ -259,11 +118,48 @@ class XeroClass
 
     }
 
+    protected function getAddressesFromXeroObject($list): array
+    {
+        $addresses = [];
+        foreach ($list as $address) {
+            $address_line_1 = $address->getAddressLine1();
+
+            if (!empty($address_line_1)) {
+                $addresses[] = [
+                    'address_type' => $address->getAddressType(),
+                    'address_line_1' => $address_line_1,
+                    'address_line_2' => $address->getAddressLine2(),
+                    'city' => $address->getCity(),
+                    'postal_code' => $address->getPostalCode()
+                ];
+            }
+        }
+        return $addresses;
+    }
+
+    protected function getPhonesFromXeroObject($list): array
+    {
+        $phones = [];
+        foreach ($list as $phone) {
+            $number = $phone->getPhoneNumber();
+            if (!empty($number)) {
+                $phones[] = [
+                    'phone_type' => $phone->getPhoneType(),
+                    'phone_number' => $number,
+                    'phone_area_code' => $phone->getPhoneAreaCode(),
+                    'phone_country_code' => $phone->getPhoneCountryCode()
+                ];
+            }
+        }
+        return $phones;
+    }
+
     // internal call
     public function getSingleContact($xeroTenantId, $contact_id): int
     {
         $ids = [$contact_id];
         // public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
+        $objContact = new ContactModel();
 
         // shown in full for readability
         $updated_date_utc = null;
@@ -275,12 +171,22 @@ class XeroClass
         $data = $result->getContacts();
 
         if (count($data)) {
-            $objContact = new ContactModel();
-            $row = (array)$data[0];
-            var_dump(array_keys($row));
-            var_dump($row['*container']);
-            debug(['contact' => $row['*container']]);
-            return $objContact->getIdFromXeroContactId($xeroTenantId, $contact_id, ['contact' => $row]);
+
+            $row = $result->getContacts();
+            $addresses = $this->getAddressesFromXeroObject($row[0]->getAddresses());
+            $phones = $this->getPhonesFromXeroObject($row[0]->getPhones());
+
+            $save = ['contact_id' => $contact_id,
+                'first_name' => $row[0]->getFirstName(),
+                'last_name' => $row[0]->getLastName(),
+                'email_address' => $row[0]->getFirstName(),
+                'xero_status' => $row[0]->getContactStatus(),
+                'addresses' => $addresses,
+                'phones' => $phones,
+                'xerotenant_id' => $xeroTenantId
+            ];
+
+            return $objContact->prepAndSave(['contact' => $save]);
         }
         return 0;
     }
@@ -573,128 +479,6 @@ class XeroClass
         }
     }
 
-    public function createContactGroup($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $new = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $new->getContacts()[0]->getContactId();
-
-        //[ContactGroups:Create]
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        $contact->setContactID($contactId);
-        $contacts = [];
-        array_push($contacts, $contact);
-
-        $contactgroup = new XeroAPI\XeroPHP\Models\Accounting\ContactGroup;
-        $contactgroup->setName('Rebels-' . $this->getRandNum())
-            ->setContacts($contacts);
-
-        $result = $apiInstance->createContactGroup($xeroTenantId, $contactgroup);
-        //[/ContactGroups:Create]
-
-        $str = $str . "Create ContactGroups: " . $result->getContactGroups()[0]->getName() . "<br>";
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function updateContactGroup($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $new = $this->createContactGroup($xeroTenantId, $apiInstance, true);
-        $contactgroupId = $new->getContactGroups()[0]->getContactGroupId();
-
-        //[ContactGroups:Update]
-        $contactgroup = new XeroAPI\XeroPHP\Models\Accounting\ContactGroup;
-        $contactgroup->setName("Goodbye" . $this->getRandNum());
-        $result = $apiInstance->updateContactGroup($xeroTenantId, $contactgroupId, $contactgroup);
-        //[/ContactGroups:Update]
-
-        $str = $str . "Update ContactGroup: " . $result->getContactGroups()[0]->getName() . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function archiveContactGroup($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $new = $this->createContactGroup($xeroTenantId, $apiInstance, true);
-        $contactgroupId = $new->getContactGroups()[0]->getContactGroupID();
-
-        //[ContactGroups:Archive]
-        $contactgroup = new XeroAPI\XeroPHP\Models\Accounting\ContactGroup;
-        $contactgroup->setStatus(XeroAPI\XeroPHP\Models\Accounting\ContactGroup::STATUS_DELETED);
-        $result = $apiInstance->updateContactGroup($xeroTenantId, $contactgroupId, $contactgroup);
-        //[/ContactGroups:Archive]
-
-        $str = $str . "Set Status to DELETE for ContactGroup: " . $new->getContactGroups()[0]->getName() . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function createContactGroupContacts($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $new = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $new->getContacts()[0]->getContactId();
-
-        $newContactGroup = $this->getContactGroup($xeroTenantId, $apiInstance, true);
-        $contactgroupId = $newContactGroup->getContactGroups()[0]->getContactGroupId();
-
-        //[ContactGroups:AddContact]
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        $contact->setContactID($contactId);
-        $arr_contacts = [];
-        array_push($arr_contacts, $contact);
-        $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
-        $contacts->setContacts($arr_contacts);
-
-        $result = $apiInstance->createContactGroupContacts($xeroTenantId, $contactgroupId, $contacts);
-        //[/ContactGroups:AddContact]
-
-        $str = $str . "Add " . count($result->getContacts()) . " Contacts <br>";
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function removeContactFromContactGroup($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-        $getContactGroup = $this->getContactGroup($xeroTenantId, $apiInstance, true);
-        $contactgroupId = $getContactGroup->getContactGroups()[0]->getContactGroupID();
-
-        //[ContactGroups:Remove]
-        $result = $apiInstance->deleteContactGroupContact($xeroTenantId, $contactgroupId, $contactId);
-        //[/ContactGroups:Remove]
-
-        $str = $str . "Deleted Contact from Group<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
 
     public function getCreditNote($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -1029,36 +813,46 @@ class XeroClass
     }
 
 
-    // https://cabinkingmanagement:8890/json.php?endpoint=Invoices&action=refresh&tenancy=auckland
-    public function getInvoiceRefresh($tenancy)
+    // https://cabinkingmanagement:8890/xero.php?endpoint=Invoices&action=refresh&tenancy=auckland
+    // does the return value get used?
+    public function getInvoiceRefresh($tenancy): int
     {
-        $testing = true;
-        $live = true;
+        $xeroTenantId = $this->getXeroTenantId($tenancy);
+        $objInvoice = new InvoiceModel();
+
+        $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
+        $objInvoice->getStatement();
+
+        //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
+        // xero: getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $ids = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null, $summary_only = false)
+        // https://developer.xero.com/documentation/api/accounting/invoices
+        $where = $order = $ids = $invoice_numbers = $contact_ids = $statuses = $unitdp = null;
+        $summary_only = $include_archived = true;
+        $created_by_my_app = false;
+        $page = 1;
+
+        $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only);
+
+        $data = $result->getInvoices();
         $k = 0;
-        if ($live || $testing) {
-            $xeroTenantId = $this->getXeroTenantId($tenancy);
 
-            //$updated_date_utc = $this->getUpdatedDate('invoices', $xeroTenantId);
+        foreach ($data as $k => $row) {
 
-            $objInvoice = new InvoiceModel();
+            $repeating_invoice_id = $row->getRepeatingInvoiceId();
 
-            $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
-            $objInvoice->getStatement();
+            // only save the repeating_invoices
+            if ($repeating_invoice_id) {
+                // these don't return anything, they just ensure we have the records in our
+                // local database
+                $contact_id = $row->getContact()->getContactId();
+                $ckcontact_id = $this->getSingleContact($xeroTenantId, $contact_id);
+                $contract_id = $this->getSingleRepeatingInvoice($xeroTenantId, $row->getRepeatingInvoiceId());
 
-            //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
-            $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, null, null, null, null, null, null, 1);
-
-            $data = $result->getInvoices();
-
-            foreach ($data as $k => $row) {
-
-                $contact = $row->getContact();
-
-                $this->getSingleContact($xeroTenantId, $contact['contact_id']);
-
+                // values for this specific invoice
                 $values = [
                     'invoice_id' => $row['invoice_id'],
-                    'contact_id' => $contact['contact_id'],
+                    'contact_id' => $contact_id,
+                    'ckcontact_id' => $ckcontact_id,
                     'status' => $row['status'],
                     'invoice_number' => $row['invoice_number'],
                     'reference' => substr($row['reference'], 0, 20),
@@ -1067,229 +861,17 @@ class XeroClass
                     'amount_paid' => $row['amount_paid'],
                     'date' => getDateFromXero($row['date']),
                     'due_date' => getDateFromXero($row['due_date']),
+                    'repeating_invoice_id' => $repeating_invoice_id,
+                    'contract_id' => $contract_id,
+                    'xero_status' => $row['status'],
                     'updated_date_utc' => getDateFromXero($row['updated_date_utc'])
                 ];
-                $x = $objInvoice->prepAndSave($values);
+                $x = $objInvoice->prepAndSave(['contract' => $values]);
             }
         }
-
         return $k;
     }
 
-    public function getInvoice($returnObj = false)
-    {
-
-        //$refreshInvoice = $this->getInvoiceRefresh();
-        //$refreshContact = $this->getContactRefresh();
-        // turn this into a loop, $num should be <100 when finished
-
-        $output = $this->getOutput();
-
-        //[Invoices:Read]
-// READ ALL 
-        //$result1 = $apiInstance->getInvoices($xeroTenantId);
-
-        /*
-          "VOIDED"
-          "PAID"
-          "AUTHORISED"
-          "DRAFT"
-         */
-        // READ only ACTIVE
-        $where = $statuses = null;
-        /*
-        <th>#</th>
-        <th>Contact</th>
-        <th>Ref</th>
-        <th>Total</th>
-        <th>Due</th>
-        <th>Date</th>
-*/
-        $order = null;
-        if (is_array($output['order'])) {
-            switch ($output['order'][0]['column']) {
-                case 0:
-                    $order = "invoices.invoice_number {$output['order'][0]['dir']}";
-                    break;
-                case 1:
-                    $order = "contacts.last_name {$output['order'][0]['dir']}, contacts.first_name ASC";
-                    break;
-
-                case 2:
-                    $order = "invoices.reference {$output['order'][0]['dir']}";
-                    break;
-
-                case 3:
-                    $order = "invoices.total {$output['order'][0]['dir']}";
-                    break;
-
-                case 4: // amount due
-                    $order = "invoices.amount_due {$output['order'][0]['dir']}";
-                    break;
-
-                case 5:
-                default:
-                    $order = "invoices.due_date {$output['order'][0]['dir']}";
-                    break;
-            }
-        } else {
-            $order = "invoices.due_date DESC";
-        }
-
-        $conditions = ["`invoices`.`xerotenant_id` = '{$this->xeroTenantId}'"];
-        if (!empty($output['search'])) {
-            $search = [
-                "`contacts`.`name` like '%{$output['search']}%'",
-                "`contacts`.`last_name` like '%{$output['search']}%'",
-                "`contacts`.`first_name` like '%{$output['search']}%'",
-                "`invoices`.`invoice_number` like '%{$output['search']}%'"
-            ];
-            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
-        }
-        if (!empty($output['button'])) {
-            $status = strtoupper($output['button']);
-            $conditions[] = "`invoices`.`status` = '{$status}'";
-        } else {
-            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";
-        }
-
-
-        $fields = [
-            'invoices.invoice_id',
-            'invoices.status',
-            'invoices.invoice_number',
-            'invoices.reference',
-            'invoices.total',
-            'invoices.amount_paid',
-            'invoices.amount_due',
-            'invoices.due_date',
-            'invoices.contact_id',
-            'contacts.name'
-        ];
-
-
-        $sql = "SELECT " . implode(',', $fields) . " FROM `invoices` 
-        LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
-        WHERE " . implode(' AND ', $conditions) . "
-        ORDER BY {$order} 
-        LIMIT {$output['start']}, {$output['length']}";
-
-
-        $invoices = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM invoices WHERE `invoices`.`xerotenant_id` = '{$this->xeroTenantId}'")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query("SELECT count(*) FROM invoices LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) WHERE " . implode(' AND ', $conditions))->fetchColumn();
-        //$output['refreshInvoice'] = $refreshInvoice;
-        // $output['refreshContact'] = $refreshContact;
-
-
-        if (count($invoices)) {
-            foreach ($invoices as $k => $row) {
-                if (empty($row['name'])) {
-                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['contact_id']}</a>";
-                } else {
-                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
-                }
-                $output['data'][] = [
-                    'number' => $row['invoice_number'],
-                    'reference' => $row['reference'],
-                    'contact' => $contactName,
-                    'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
-                    'total' => $row['total'],
-                    'amount_paid' => $row['amount_paid'],
-                    'amount_due' => $row['amount_due'],
-                    'due_date' => $row['due_date']
-                ];
-            }
-            $output['row'] = $row;
-        }
-
-        if ($returnObj) {
-            return $returnObj->getInvoices()[0];
-        } else {
-            return json_encode($output);
-        }
-    }
-
-
-    public function getVehiclesLogList($returnObj = false)
-    {
-        $output = $this->getOutput();
-
-        if (is_array($output['order'])) {
-            switch ($output['order'][0]['column']) {
-                case 2:
-                    $order = "contacts.last_name {$output['order'][0]['dir']}, contacts.first_name ASC";
-                    break;
-
-                case 4: // amount due
-                    $order = "invoices.amount_due {$output['order'][0]['dir']}";
-                    break;
-
-                case 6:
-                default:
-                    $order = "invoices.due_date {$output['order'][0]['dir']}";
-                    break;
-            }
-        } else {
-            $order = "vehicle_log.start_time DESC";
-        }
-
-        $conditions = [];
-        if (!empty($output['search']['value'])) {
-            $conditions[] = "`vehicles`.`numberplate` like '%{$output['search']['value']}%'";
-        }
-        if (!empty($output['button'])) {
-            $status = strtoupper($output['button']);
-            $conditions[] = "`vehicles`.`status` = '{$status}'";
-        } else {
-            $conditions[] = "`vehicles`.`status` = 'Active'";
-        }
-
-        $fields = [
-            'vehicle_log.id',
-            'vehicles.numberplate',
-            'vehicle_log.user_id',
-            'vehicle_log.start_time',
-            'vehicle_log.start_kilometres',
-            'vehicle_log.end_time',
-            'vehicle_log.end_kilometres',
-            'vehicle_log.used_for',
-            'vehicle_log.notes'
-        ];
-
-        $sql = "SELECT " . implode(',', $fields) . " FROM `vehicles` 
-        LEFT JOIN `vehicle_log` ON (vehicles.id = vehicle_log.vehicle_id) 
-        WHERE " . implode(' AND ', $conditions) . "
-        ORDER BY {$order} 
-        LIMIT {$output['start']}, {$output['length']}";
-
-        $vehicle_log = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM vehicle_log")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query("SELECT count(*) FROM vehicles left join vehicle_log on vehicles.id= vehicle_log.vehicle_id WHERE " . implode(' AND ', $conditions))->fetchColumn();
-
-
-        if (count($vehicle_log)) {
-            foreach ($vehicle_log as $k => $row) {
-
-                $output['data'][] = [
-                    'id' => $row['id'],
-                    'numberplate' => $row['numberplate'],
-                    'user_id' => $row['user_id'],
-                    'start_time' => $row['start_time'],
-                    'start_kilometres' => $row['start_kilometres'],
-                    'end_time' => $row['end_time'],
-                    'end_kilometres' => $row['end_kilometres'],
-                    'used_for' => $row['used_for'],
-                    'notes' => $row['notes']
-                ];
-            }
-            $output['row'] = $row;
-        }
-
-        return json_encode($output);
-    }
 
     public function createInvoice($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -1994,202 +1576,6 @@ class XeroClass
         }
     }
 
-    public function createPrepayment($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $lineitem = $this->getLineItemForPrepayment($xeroTenantId, $apiInstance);
-        $lineitems = [];
-        array_push($lineitems, $lineitem);
-
-        $getAccount = $this->getBankAccount($xeroTenantId, $apiInstance);
-        $accountId = $getAccount->getAccounts()[0]->getAccountId();
-        $accountCode = $getAccount->getAccounts()[0]->getCode();
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-
-        if (count($getAccount->getAccounts())) {
-
-            //[Prepayments:Create]
-            $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-            $contact->setContactId($contactId);
-
-            $bankAccount = new XeroAPI\XeroPHP\Models\Accounting\Account;
-            $bankAccount->setCode($accountCode)
-                ->setAccountId($accountId);
-
-            $prepayment = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
-            $prepayment->setReference('Ref-' . $this->getRandNum())
-                ->setDate(new DateTime('2017-01-02'))
-                ->setType(XeroAPI\XeroPHP\Models\Accounting\BankTransaction::TYPE_RECEIVE_PREPAYMENT)
-                ->setLineItems($lineitems)
-                ->setContact($contact)
-                ->setLineAmountTypes("NoTax")
-                ->setBankAccount($bankAccount)
-                ->setReference("Sid Prepayment 2");
-
-            $result = $apiInstance->createBankTransaction($xeroTenantId, $prepayment);
-            //[/Prepayments:Create]
-        }
-
-        $str = $str . "Created prepayment ID: " . $result->getBankTransactions()[0]->getPrepaymentId() . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function allocatePrepayment($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $invNew = $this->createInvoiceAccRec($xeroTenantId, $apiInstance, true);
-        $invoiceId = $invNew->getInvoices()[0]->getInvoiceID();
-        $newPrepayement = $this->createPrepayment($xeroTenantId, $apiInstance, true);
-        $prepaymentId = $newPrepayement->getBankTransactions()[0]->getPrepaymentId();
-
-        //[Prepayments:Allocate]
-        $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
-        $invoice->setInvoiceID($invoiceId);
-
-        $prepayment = new XeroAPI\XeroPHP\Models\Accounting\Prepayment;
-        $prepayment->setPrepaymentID($prepaymentId);
-
-        $allocation = new XeroAPI\XeroPHP\Models\Accounting\Allocation;
-        $allocation->setInvoice($invoice)
-            ->setAmount("1.00");
-        $arr_allocation = [];
-        array_push($arr_allocation, $allocation);
-
-        $allocations = new XeroAPI\XeroPHP\Models\Accounting\Allocations;
-        $allocations->setAllocations($arr_allocation);
-
-        $result = $apiInstance->createPrepaymentAllocation($xeroTenantId, $prepaymentId, $allocation);
-        //[/Prepayments:Allocate]
-
-        $str = $str . "Allocate Prepayment amount: " . $result->getAllocations()[0]->getAmount() . "<br>";
-
-        return $str;
-    }
-
-    public function refundPrepayment($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $account = $this->getBankAccount($xeroTenantId, $apiInstance);
-        $accountId = $account->getAccounts()[0]->getAccountId();
-        $newPrepayment = $this->createPrepayment($xeroTenantId, $apiInstance, true);
-        $prepaymentId = $newPrepayment->getBankTransactions()[0]->getPrepaymentID();
-
-        //[Prepayments:Refund]
-        $bankaccount = new XeroAPI\XeroPHP\Models\Accounting\Account;
-        $bankaccount->setAccountId($accountId);
-
-        $prepayment = new XeroAPI\XeroPHP\Models\Accounting\Prepayment;
-        $prepayment->setPrepaymentId($prepaymentId);
-
-        $payment = new XeroAPI\XeroPHP\Models\Accounting\Payment;
-        $payment->setPrepayment($prepayment)
-            ->setAccount($bankaccount)
-            ->setAmount("2.00");
-
-        $result = $apiInstance->createPayment($xeroTenantId, $payment);
-        //[/Prepayments:Refund]
-
-        $str = $str . "Create Prepayment Refund (Payments ID): " . $result->getPayments()[0]->getPaymentId() . " <br>";
-
-        return $str;
-    }
-
-    public function getPurchaseOrder($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        //[PurchaseOrders:Read]
-// READ ALL
-        $result = $apiInstance->getPurchaseOrders($xeroTenantId);
-        //[/PurchaseOrders:Read]
-
-        $str = $str . "Total purchase orders: " . count($result->getPurchaseOrders()) . "<br>";
-
-        if ($returnObj) {
-            return $result->getPurchaseOrders()[0];
-        } else {
-            return $str;
-        }
-    }
-
-    public function createPurchaseOrder($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $lineitem = $this->getLineItemForPurchaseOrder($xeroTenantId, $apiInstance);
-        $lineitems = [];
-        array_push($lineitems, $lineitem);
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-
-        //[PurchaseOrders:Create]
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        $contact->setContactId($contactId);
-
-        $purchaseorder = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrder;
-        $purchaseorder->setReference('Ref original -' . $this->getRandNum())
-            ->setContact($contact)
-            ->setLineItems($lineitems);
-
-        $result = $apiInstance->createPurchaseOrder($xeroTenantId, $purchaseorder);
-        //[/PurchaseOrders:Create]
-
-        $str = $str . "Created PurchaseOrder Number: " . $result->getPurchaseOrders()[0]->getPurchaseOrderNumber() . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-
-    public function updatePurchaseOrder($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $new = $this->createPurchaseOrder($xeroTenantId, $apiInstance, true);
-        $purchaseorderId = $new->getPurchaseOrders()[0]->getPurchaseOrderID();
-
-        //[PurchaseOrders:Update]
-        $purchaseorder = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrder;
-        $purchaseorder->setReference('New Ref -' . $this->getRandNum());
-        $result = $apiInstance->updatePurchaseOrder($xeroTenantId, $purchaseorderId, $purchaseorder);
-        //[/PurchaseOrders:Update]
-
-        $str = $str . "Updated Purchase Order: " . $result->getPurchaseOrders()[0]->getReference() . "<br>";
-
-        return $str;
-    }
-
-    public function deletePurchaseOrder($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $new = $this->createPurchaseOrder($xeroTenantId, $apiInstance, true);
-        $purchaseorderId = $new->getPurchaseOrders()[0]->getPurchaseOrderID();
-
-        //[PurchaseOrders:Delete]
-        $purchaseorder = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrder;
-        $purchaseorder->setStatus(XeroAPI\XeroPHP\Models\Accounting\PurchaseOrder::STATUS_DELETED);
-        $result = $apiInstance->updatePurchaseOrder($xeroTenantId, $purchaseorderId, $purchaseorder);
-        //[/PurchaseOrders:Delete]
-
-        $str = $str . "Deleted PurchaseOrder: " . $result->getPurchaseOrders()[0]->getReference() . "<br>";
-
-        return $str;
-    }
 
     public function getReceipt($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -2285,11 +1671,15 @@ class XeroClass
         $str = '';
 
         //[RepeatingInvoices:Read]
-// READ ALL
-        $result = $apiInstance->getRepeatingInvoices($xeroTenantId);
+        // getRepeatingInvoices($xero_tenant_id, $where = null, $order = null)
+        //
+        $where = '';
+        $order = null;
+
+        $result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where, $order);
         //[/RepeatingInvoices:Read]
         $str = $str . "Get RepeatingInvoices: " . count($result->getRepeatingInvoices()) . "<br>";
-
+        debug($result->getRepeatingInvoices());
         if ($returnObj) {
             return $result->getRepeatingInvoices()[0];
         } else {
@@ -2297,336 +1687,45 @@ class XeroClass
         }
     }
 
-    // REPORTS
-    public function getTenNinetyNine($xeroTenantId, $apiInstance)
+    /*
+     * "Schedule": {
+        "Period": 1,
+        "Unit": "MONTHLY",
+        "DueDate": 20,
+        "DueDateType": "OFFOLLOWINGMONTH",
+        "StartDate": "\/Date(1406851200000+0000)\/",
+        "NextScheduledDate": "\/Date(1696118400000+0000)\/",
+        "NextScheduledDateString": "2023-10-01"
+      }
+     */
+    protected function getScheduleFromXeroObject($schedule): array
     {
-        $str = '';
-
-        //[Reports:TenNinetyNine]
-        $result = $apiInstance->getReportTenNinetyNine($xeroTenantId, 2018);
-        //[/Reports:TenNinetyNine]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportName();
-
-        return $str;
+        // for now we only need the unit
+        $output = [
+            'schedule_unit' => $schedule->getUnit()
+        ];
+        return $output;
     }
 
-    public function getAgedPayablesByContact($xeroTenantId, $apiInstance)
+    public function getSingleRepeatingInvoice($xeroTenantId, $repeating_invoice_id): int
     {
-        $str = '';
+        $result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
+        //[/RepeatingInvoices:Read]
+        $contact_id = $result[0]->getContact()->getContactId();
 
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-        //[Reports:AgedPayablesByContact]
-        $result = $apiInstance->getReportAgedPayablesByContact($xeroTenantId, $contactId);
-        //[/Reports:AgedPayablesByContact]
+        $contract = [
+            'repeating_invoice_id' => $repeating_invoice_id,
+            'contact_id' => $contact_id,
+            'ckcontact_id' => $this->getSingleContact($xeroTenantId, $contact_id),
+            'reference' => $result[0]->getReference(),
+            'total' => $result[0]->getTotal()
+        ];
+        $contract = array_merge($contract, $this->getScheduleFromXeroObject($result[0]['schedule']));
 
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
+        $objContract = new ContractModel();
+        return $objContract->prepAndSave(['contract' => $contract]);
     }
 
-    public function getAgedReceivablesByContact($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-
-        //[Reports:AgedReceivablesByContact]
-        $result = $apiInstance->getReportAgedReceivablesByContact($xeroTenantId, $contactId);
-        //[/Reports:AgedReceivablesByContact]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
-    }
-
-    public function getBalanceSheet($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        //[Reports:BalanceSheet]
-        $result = $apiInstance->getReportBalanceSheet($xeroTenantId);
-        //[/Reports:BalanceSheet]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
-    }
-
-    public function getBankSummary($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        //[Reports:BankSummary]
-        $result = $apiInstance->getReportBankSummary($xeroTenantId);
-        //[/Reports:BankSummary]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-
-        return $str;
-    }
-
-    public function getBudgetSummary($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        //[Reports:BudgetSummary]
-        $result = $apiInstance->getReportBudgetSummary($xeroTenantId);
-        //[/Reports:BudgetSummary]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
-    }
-
-    public function getExecutiveSummary($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        //[Reports:ExecutiveSummary]
-        $result = $apiInstance->getReportExecutiveSummary($xeroTenantId);
-        //[/Reports:ExecutiveSummary]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
-    }
-
-    public function getProfitAndLoss($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        //[Reports:ProfitAndLoss]
-        $result = $apiInstance->getReportProfitandLoss($xeroTenantId);
-        //[/Reports:ProfitAndLoss]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
-    }
-
-    public function getTrialBalance($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        //[Reports:TrialBalance]
-        $result = $apiInstance->getReportTrialBalance($xeroTenantId);
-        //[/Reports:TrialBalance]
-
-        $str = $str . "Report ID: " . $result->getReports()[0]->getReportId();
-
-        return $str;
-    }
-
-    public function getTaxRate($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        //[TaxRates:Read]
-// READ ALL
-        $result = $apiInstance->getTaxRates($xeroTenantId);
-        //[/TaxRates:Read]
-        $str = $str . "Get TaxRates: " . count($result->getTaxRates()) . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function createTaxRates($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        //[TaxRates:Create]
-        $taxcomponent = new XeroAPI\XeroPHP\Models\Accounting\TaxComponent;
-        $taxcomponent->setName('Tax-' . $this->getRandNum())
-            ->setRate(5);
-
-        $arr_taxcomponent = [];
-        array_push($arr_taxcomponent, $taxcomponent);
-
-        $taxrate = new XeroAPI\XeroPHP\Models\Accounting\TaxRate;
-        $taxrate->setName('Rate -' . $this->getRandNum())
-            ->setTaxComponents($arr_taxcomponent);
-
-        $result = $apiInstance->createTaxRates($xeroTenantId, $taxrate);
-        //[/TaxRates:Create]
-
-        $str = $str . "Create TaxRate: " . $result->getTaxRates()[0]->getName() . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function updateTaxRate($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $newTaxRate = $this->createTaxRates($xeroTenantId, $apiInstance, true);
-        $taxName = $newTaxRate->getTaxRates()[0]->getName();
-
-        //[TaxRates:Update]
-        $taxrate = new XeroAPI\XeroPHP\Models\Accounting\TaxRate;
-        $taxrate->setName($taxName)
-            ->setStatus(XeroAPI\XeroPHP\Models\Accounting\TaxRate::STATUS_DELETED);
-        $result = $apiInstance->updateTaxRate($xeroTenantId, $taxrate);
-        //[/TaxRates:Update]
-        $str = $str . "Update TaxRate: " . $result->getTaxRates()[0]->getName() . "<br>";
-        return $str;
-    }
-
-    public function getTrackingCategory($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        //[TrackingCategories:Read]
-// READ ALL
-        $result = $apiInstance->getTrackingCategories($xeroTenantId);
-        //[/TrackingCategories:Read]
-        $str = $str . "Get TrackingCategories: " . count($result->getTrackingCategories()) . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function createTrackingCategory($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        //[TrackingCategories:Create]
-        $trackingcategory = new XeroAPI\XeroPHP\Models\Accounting\TrackingCategory;
-        $trackingcategory->setName('Avengers -' . $this->getRandNum());
-        $result = $apiInstance->createTrackingCategory($xeroTenantId, $trackingcategory);
-        //[/TrackingCategories:Create]
-
-        $str = $str . "Create TrackingCategory: " . $result->getTrackingCategories()[0]->getName() . "<br>";
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function updateTrackingCategory($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $trackingCategories = $this->getTrackingCategory($xeroTenantId, $apiInstance, true);
-        $trackingCategory = $trackingCategories->getTrackingCategories()[0];
-        $trackingCategoryId = $trackingCategory->getTrackingCategoryId();
-
-        //[TrackingCategories:Update]
-        $trackingCategory->setName('Foobar' . $this->getRandNum());
-        $result = $apiInstance->updateTrackingCategory($xeroTenantId, $trackingCategoryId, $trackingCategory);
-        //[/TrackingCategories:Update]
-
-        $str = $str . "Update TrackingCategory: " . $result->getTrackingCategories()[0]->getName() . "<br>";
-
-        return $str;
-    }
-
-    // WEIRD VALIDATION
-    //https://api-admin.hosting.xero.com/History/Detail?id=abdb9c2b-1f4c-42d3-bf3e-0665c4a4974c
-    public function archiveTrackingCategory($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $getTrackingCategories = $this->getTrackingCategory($xeroTenantId, $apiInstance, true);
-        $getTrackingCategory = $getTrackingCategories->getTrackingCategories()[0];
-        $trackingCategoryId = $getTrackingCategory->getTrackingCategoryId();
-
-        //[TrackingCategories:Archive]
-        $trackingcategory = new XeroAPI\XeroPHP\Models\Accounting\TrackingCategory;
-        $trackingcategory->setStatus(\XeroAPI\XeroPHP\Models\Accounting\TrackingCategory::STATUS_ARCHIVED);
-        $result = $apiInstance->updateTrackingCategory($xeroTenantId, $trackingCategoryId, $trackingcategory);
-        //[/TrackingCategories:Archive]
-
-        $str = $str . "Archive TrackingCategory: " . $result->getTrackingCategories()[0]->getName() . "<br>";
-
-        return $str;
-    }
-
-    public function deleteTrackingCategory($xeroTenantId, $apiInstance)
-    {
-        $str = '';
-
-        $trackingCategories = $this->getTrackingCategory($xeroTenantId, $apiInstance, true);
-        $trackingCategory = $trackingCategories->getTrackingCategories()[0];
-        $trackingCategoryId = $trackingCategory->getTrackingCategoryId();
-
-        //[TrackingCategories:Delete]
-        $result = $apiInstance->deleteTrackingCategory($xeroTenantId, $trackingCategoryId);
-        //[/TrackingCategories:Delete]
-        $str = $str . "Delete TrackingCategory: " . $result->getTrackingCategories()[0]->getName() . "<br>";
-
-        return $str;
-    }
-
-    public function createTrackingOptions($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-        $trackingCategories = $this->getTrackingCategory($xeroTenantId, $apiInstance, true);
-        $trackingCategory = $trackingCategories->getTrackingCategories()[0];
-        $trackingCategoryId = $trackingCategory->getTrackingCategoryId();
-
-        //[TrackingOptions:Create]
-        $option = new XeroAPI\XeroPHP\Models\Accounting\TrackingOption;
-        $option->setName('IronMan -' . $this->getRandNum());
-        $result = $apiInstance->createTrackingOptions($xeroTenantId, $trackingCategoryId, $option);
-        //[/TrackingOptions:Create]
-
-        $str = $str . "Create TrackingOptions now Total: " . count($result->getOptions()) . "<br>";
-
-        return $str;
-    }
-
-    public function deleteTrackingOptions($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-        $trackingCategories = $this->getTrackingCategory($xeroTenantId, $apiInstance, true);
-        $trackingCategory = $trackingCategories->getTrackingCategories()[0];
-        $trackingCategoryId = $trackingCategory->getTrackingCategoryId();
-        $optionId = $trackingCategory->getOptions()[3]->getTrackingOptionId();
-
-        //[TrackingOptions:Delete]
-        $result = $apiInstance->deleteTrackingOptions($xeroTenantId, $trackingCategoryId, $optionId);
-        //[/TrackingOptions:Delete]
-        $str = $str . "Delete TrackingOptions Name: " . $result->getOptions()[0]->getName() . "<br>";
-
-        return $str;
-    }
-
-    public function updateTrackingOptions($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $trackingCategories = $this->getTrackingCategory($xeroTenantId, $apiInstance, true);
-        $trackingCategory = $trackingCategories->getTrackingCategories()[0];
-        $trackingCategoryId = $trackingCategory->getTrackingCategoryId();
-        $optionId = $trackingCategory->getOptions()[0]->getTrackingOptionId();
-
-        //[TrackingOptions:Update]
-        $option = new XeroAPI\XeroPHP\Models\Accounting\TrackingOption;
-        $option->setName('Hello' . $this->getRandNum());
-        $result = $apiInstance->updateTrackingOptions($xeroTenantId, $trackingCategoryId, $optionId, $option);
-        //[/TrackingOptions:Update]
-
-        $str = $str . "Update TrackingOptions Name: " . $result->getOptions()[0]->getName() . "<br>";
-
-        return $str;
-    }
 
     public function getUser($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -2815,84 +1914,4 @@ class XeroClass
             return $str;
         }
     }
-
-    public function createInvoiceAccRec($xeroTenantId, $apiInstance, $returnObj = false)
-    {
-        $str = '';
-
-        $lineitems = [];
-        array_push($lineitems, $this->getLineItem());
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contactId = $getContact->getContacts()[0]->getContactId();
-
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        $contact->setContactId($contactId);
-
-        $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
-
-        $invoice->setReference('Ref-' . $this->getRandNum())
-            ->setDueDate(new DateTime('2017-01-02'))
-            ->setContact($contact)
-            ->setLineItems($lineitems)
-            ->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
-            ->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC)
-            ->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);
-        $result = $apiInstance->createInvoice($xeroTenantId, $invoice);
-
-        if ($returnObj) {
-            return $result;
-        } else {
-            return $str;
-        }
-    }
-
-    public function getJournalLineCredit()
-    {
-        $journalline = new XeroAPI\XeroPHP\Models\Accounting\ManualJournalLine;
-        $journalline->setLineAmount("20.00")
-            ->setAccountCode("400");
-        return $journalline;
-    }
-
-    public function getJournalLineDebit()
-    {
-        $journalline = new XeroAPI\XeroPHP\Models\Accounting\ManualJournalLine;
-        $journalline->setLineAmount("-20.00")
-            ->setAccountCode("620");
-        return $journalline;
-    }
-
-    public function createCreditNoteAuthorised($xeroTenantId, $apiInstance)
-    {
-
-        $str = '';
-
-        $lineitems = [];
-        array_push($lineitems, $this->getLineItem());
-
-        $getContact = $this->getContact($xeroTenantId, $apiInstance, true);
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-        $contact->setContactId($getContact->getContacts()[0]->getContactId());
-
-        $creditnote = new XeroAPI\XeroPHP\Models\Accounting\CreditNote;
-
-        $creditnote->setDate(new DateTime('2017-01-02'))
-            ->setContact($contact)
-            ->setLineItems($lineitems)
-            ->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
-            ->setType(XeroAPI\XeroPHP\Models\Accounting\CreditNote::TYPE_ACCPAYCREDIT);
-        $result = $apiInstance->createCreditNote($xeroTenantId, $creditnote);
-
-        return $result;
-    }
-
-    public function getTaxComponent($xeroTenantId, $apiInstance)
-    {
-        $taxcomponent = new \XeroPHP\Models\Accounting\TaxRate\TaxComponent($xeroTenantId, $apiInstance);
-        $taxcomponent->setName('Tax-' . $this->getRandNum())
-            ->setRate(5);
-        return $taxcomponent;
-    }
-
 }

@@ -8,27 +8,58 @@ class ContractModel extends \BaseModel
     protected array $joins = ['contacts' => "`contracts`.`ckcontact_id` = :id1 OR `contracts`.`contact_id` = :id2"];
     protected array $virtualFields = ['address' => "CONCAT(address_line1,', ', address_line2,', ', city, ' ', postal_code)"];
     protected string $orderBy = "delivery_date DESC";
+    protected array $saveKeys = [
+        'contract_id', 'repeating_invoice_id', 'cabin_id',
+        'contact_id', 'ckcontact_id', 'reference', 'total', 'schedule_unit',
+        'status', 'cabin_type', 'hiab', 'painted', 'winz',
+        'delivery_date', 'scheduled_delivery_date', 'delivery_time',
+        'pickup_date', 'scheduled_pickup_date',
+        'address_line1', 'address_line2', 'city', 'postal_code',
+        'lat', 'long', 'place_id', 'updated'
+    ];
+    protected array $updateKeys = [
+        'cabin_id', 'reference', 'total', 'schedule_unit', 'status',
+        'cabin_type', 'hiab', 'painted', 'winz',
+        'delivery_date', 'scheduled_delivery_date', 'delivery_time',
+        'pickup_date', 'scheduled_pickup_date',
+        'address_line1', 'address_line2', 'city', 'postal_code',
+        'lat', 'long', 'place_id', 'updated'];
+    protected array $nullable = ['contract_id', 'repeating_invoice_id', 'cabin_id', 'contact_id'];
+    protected ContractModel $contract;
 
-    public function getBestMatch($contact_id, $invoice_date)
+    function __construct()
     {
-        $sql = "SELECT `contract_id`, `delivery_date`, `pickup_date`,
-            SUM(CASE WHEN DATEDIFF(contracts.delivery_date, :invoice_date) < 0 THEN 1 ELSE 0 END  
-            + CASE WHEN DATEDIFF(contracts.pickup_date, :invoice_date) > 0 THEN 1 ELSE 0 END) as `tests`
-            FROM `contracts` 
-            WHERE `contact_id` = :contact_id
-            ORDER BY `tests` DESC";
-
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['contact_id' => $contact_id, 'invoice_date' => $invoice_date]);
-            $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-        if (count($data)) {
-            return $data[0]['contract_id'];
-        }
-        return false;
+        parent::__construct();
+        $this->buildInsertSQL();
+        $this->contract = new ContractModel();
     }
+
+    //  C O N T R A C T
+    public function prepAndSave($data): int
+    {
+        $contract = $data['contracts'];
+        debug($contract);
+        //return parent::prepAndSave($data);
+        if (!array_key_exists('contract_id', $invoice) || $invoice['contract_id']) {
+            $contract = $this->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
+        } else $contract['contracts'] = $this->contracts->getDefaults()['contracts'][0];
+
+        debug($data);
+        debug($contract);
+        debug($invoice);
+
+        $merged = array_merge(
+            $contract['contracts'],
+            $invoice,
+            ['updated' => date('Y-m-d H:i:s')]
+        );
+
+        $checked = $this->checkNullableValues($merged);
+        $save = $this->getSaveValues($checked);
+        $contract_id = $this->save($save);
+
+        return $contract_id;
+    }
+
+
 }

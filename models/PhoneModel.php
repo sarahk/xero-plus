@@ -14,7 +14,7 @@ class PhoneModel extends BaseModel
     protected array $joins = ['contacts' => "`phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2"];
     protected array $virtualFields = ['phone' => "CONCAT(`phone_area_code`,' ',`phone_number`)"];
 
-    public function getDefaults()
+    public function getDefaults(): array
     {
         $phones = parent::getDefaults();
         $default = $phones[0];

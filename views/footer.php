@@ -260,7 +260,7 @@
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {
                     console.log('setInterval loadInvoicesFromXero: ' + tenancies[i]);
-                    loadInvoicesFromXero(tenancies[i]);
+                    //loadInvoicesFromXero(tenancies[i]);
                     //loadContactsFromXero(tenancies[i]);
                 }
             }

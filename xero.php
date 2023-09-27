@@ -401,6 +401,7 @@ try {
         case "RepeatingInvoices":
             switch ($action) {
                 case "Read":
+                    // https://cabinkingmanagement:8890/xero.php?endpoint=RepeatingInvoices&action=Read
                     echo $xero->getRepeatingInvoice($xeroTenantId, $apiInstance);
                     break;
                 default:

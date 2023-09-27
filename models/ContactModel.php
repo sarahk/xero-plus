@@ -26,6 +26,7 @@ class ContactModel extends BaseModel
     protected NoteModel $notes;
 
     protected string $table = 'contacts';
+    protected string $primaryKey = 'id';
 
     protected array $hasMany = ['phones', 'addresses', 'contracts', 'notes'];
 
@@ -48,9 +49,13 @@ class ContactModel extends BaseModel
         if (array_key_exists('firstname', $data['contact']) && array_key_exists('last_name', $data['contact'])) {
             $data['contact']['name'] = $data['contact']['first_name'] . ' ' . $data['contact']['last_name'];
         }
-        if (array_key_exists('id', $data['contact'])) {
+        if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
             $id = intval($data['contact']['id']);
-            $oldVals = $this->get($id);
+            $oldVals = $this->get('id', $id);
+            
+            $contact = array_merge($oldVals['contacts'], $data['contact']);
+        } else if (array_key_exists('contact_id', $data['contact']) && $data['contact']['contact_id']) {
+            $oldVals = $this->get('contact_id', $data['contact']['contact_id']);
             $contact = array_merge($oldVals['contacts'][0], $data['contact']);
         } else $contact = $data['contact'];
 
@@ -59,8 +64,7 @@ class ContactModel extends BaseModel
 
         // we can't pass extra variables
         $save = $this->getSaveValues($contact);
-        debug($contact);
-        debug($save);
+
         $newId = $this->save($save);
         if ($newId > 0) $data['contact']['id'] = $newId;
 
@@ -71,10 +75,14 @@ class ContactModel extends BaseModel
         $this->notes->prepAndSave($data);
 
         $phone = [];
-        if (!empty($data)) {
-            $data['phone']['ckcontact_id'] = $data['contact']['id'];
-            $data['phone']['contact_id'] = $data['contact']['contact_id'];
-            $this->phones->prepAndSave($data);
+        if (array_key_exists('phones', $data) && count($data['phones'])) {
+            foreach ($data['phones'] as $phone) {
+                if (!empty($phone['phone_number'])) {
+                    $phone['ckcontact_id'] = $data['contact']['id'];
+                    $phone['contact_id'] = $data['contact']['contact_id'];
+                    $this->phones->prepAndSave(['phone' => $phone]);
+                }
+            }
         }
         return $data['contact']['id'];
     }
