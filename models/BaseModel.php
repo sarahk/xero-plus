@@ -3,12 +3,12 @@ require_once(SITE_ROOT . '/utilities.php');
 
 class BaseModel
 {
-    protected $pdo;
+    protected PDO $pdo;
     protected string $insert;
     protected array $nullable = [];
     protected array $saveKeys = [];
     protected array $updateKeys = [];
-    protected $statement;
+    protected PDOStatement $statement;
     protected string $table;
     protected string $primaryKey = '';
     protected array $hasMany = [];
@@ -18,20 +18,21 @@ class BaseModel
     protected string $orderBy = '';
 
 
-    function __construct()
+    function __construct($pdo)
     {
-        try {
+        $this->pdo = $pdo;
+        /*try {
             $this->pdo = getDbh();
         } catch (PDOException $e) {
             throw new PDOException($e->getMessage(), (int)$e->getCode());
-        }
-
+        }*/
+        debug($this->table);
     }
 
     // just to ensure the mysql connection is closed
-    function x__destruct()
+    function __destruct()
     {
-        $this->pdo = null;
+        unset($this->pdo);
     }
 
     public function get($key, $keyVal): array
@@ -39,7 +40,7 @@ class BaseModel
         $data = [];
 
         if ($keyVal > 0) {
-            $sql = "SELECT * " . $this->getVirtuals() . " FROM {$this->table} WHERE `{$key}` = :keyVal";
+            $sql = "SELECT * " . $this->getVirtuals() . " FROM $this->table WHERE `$key` = :keyVal";
             $this->getStatement($sql);
             try {
                 $this->statement->execute(['keyVal' => $keyVal]);
@@ -52,7 +53,7 @@ class BaseModel
         // either we didn't have a value or there isn't a record in the database
         if (count($data)) {
 
-            $output = ["{$this->table}" => $data[0]];
+            $output = ["$this->table" => $data[0]];
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
                     $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey]);
@@ -69,22 +70,20 @@ class BaseModel
         return $output;
     }
 
-    protected function getVirtuals()
+    protected function getVirtuals(): string
     {
         $output = [];
         if (count($this->virtualFields)) {
-            foreach ($this->virtualFields as $k => $val) {
-                $output[] = "{$val} as {$k}";
-            }
+            foreach ($this->virtualFields as $k => $val) $output[] = "$val as $k";
             return ', ' . implode(', ', $output);
         }
         return '';
     }
 
-    public function getChildren($parent, $parentId)
+    public function getChildren($parent, $parentId): array
     {
-        $orderBy = (!empty($this->orderBy)) ? ' order by ' . $this->orderBy : '';
-        $sql = "SELECT * " . $this->getVirtuals() . " FROM `{$this->table}` WHERE {$this->joins[$parent]} {$orderBy}";
+        $orderBy = (!empty($this->orderBy) ? " order by $this->orderBy" : '');
+        $sql = "SELECT * " . $this->getVirtuals() . " FROM `$this->table` WHERE {$this->joins[$parent]} $orderBy";
 
         $statement = $this->pdo->prepare($sql);
 
@@ -113,7 +112,7 @@ class BaseModel
 
     public function getDefaults(): array
     {
-        $sql = "SHOW FULL COLUMNS FROM `{$this->table}`";
+        $sql = "SHOW FULL COLUMNS FROM `$this->table`";
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute();
@@ -130,7 +129,7 @@ class BaseModel
         return [$data];
     }
 
-    public function getStatement($sql = '')
+    public function getStatement($sql = ''): void
     {
         if (empty($sql)) $sql = $this->insert;
         try {
@@ -139,7 +138,6 @@ class BaseModel
             echo "Error Message: " . $e->getMessage() . "\n";
             $this->statement->debugDumpParams();
         }
-        return null;
     }
 
     public function save($values): int
@@ -158,15 +156,15 @@ class BaseModel
         return 0;
     }
 
-    protected function buildInsertSQL()
+    protected function buildInsertSQL(): void
     {
-        $this->insert = "INSERT into `{$this->table}` 
+        $this->insert = "INSERT into `$this->table` 
                     (`" . implode('`, `', $this->saveKeys) . "`) 
                 VALUES (:" . implode(', :', $this->saveKeys) . ")
                 ON DUPLICATE KEY UPDATE " . $this->updateImplode();
     }
 
-    function params($string, $data)
+    function params($string, $data): void
     {
         $indexed = array_values($data);
         foreach ($data as $k => $v) {
@@ -176,7 +174,7 @@ class BaseModel
             if ($indexed) $string = preg_replace('/\?/', $v, $string, 2);
             else $string = str_replace(":$k", $v, $string);
         }
-        echo "<hr><p>params</p><p>{$string}</p></hr>";
+        echo "<hr><p>params</p><p>$string</p></hr>";
     }
 
     // debug code from https://www.php.net/manual/en/pdostatement.debugdumpparams.php
@@ -206,7 +204,7 @@ class BaseModel
         return $data;
     }
 
-    protected function getSaveValues($data)
+    protected function getSaveValues($data): array
     {
         $save = [];
         foreach ($this->saveKeys as $v) {
@@ -221,7 +219,7 @@ class BaseModel
         $updated_date_utc = '2017-10-10 00:00:00';
 
         $this->getStatement("SELECT max(`updated_date_utc`) as `updated_date_utc` 
-                FROM `{$this->table}` 
+                FROM `$this->table` 
                 WHERE `xerotenant_id` = :xerotenant_id");
         try {
             $this->statement->execute(['xerotenant_id' => $xeroTenantId]);
@@ -237,15 +235,13 @@ class BaseModel
     protected function updateImplode(): string
     {
         $output = [];
-        foreach ($this->updateKeys as $v) {
-            $output[] = "`{$v}` = :{$v}";
-        }
+        foreach ($this->updateKeys as $v) $output[] = "`$v` = :$v";
         return implode(', ', $output);
     }
 
     public function getIdFromXeroContactId($xerotenant_id, $xerocontact_id, $row): int
     {
-        $sql = "SELECT `id` FROM `{$this->table}` WHERE `contact_id` = :contact_id";
+        $sql = "SELECT `id` FROM `$this->table` WHERE `contact_id` = :contact_id";
         $this->getStatement($sql);
         try {
             $this->statement->execute(['contact_id' => $xerocontact_id]);
@@ -262,5 +258,6 @@ class BaseModel
             echo "Error Message: " . $e->getMessage() . "\n";
             $this->statement->debugDumpParams();
         }
+        return 0;
     }
 }

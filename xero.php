@@ -22,8 +22,8 @@ require_once('utilities.php');
 // Storage Class uses sessions for storing token > extend to your DB of choice
 require_once('authorizedXero.php');
 
-// ALL methods are demonstrated using this class
-$xero = new XeroClass($apiInstance, $xeroTenantId);
+$pdo = getPDO();
+$xero = new XeroClass($pdo, $apiInstance);
 //$json = new JsonClass();
 //$xero->setup($apiInstance);
 
@@ -42,41 +42,6 @@ $loadGet = ["xero-php-oauth2-app", "disconnect.php", "json.php", $endpoint, $act
 
 try {
     switch ($endpoint) {
-        case "Cabins":
-            switch ($action) {
-                case "Read":
-                    echo $xero->getCabins();
-                    break;
-                case 'Single':
-                    echo $xero->getCabinSingle();
-                    break;
-            }
-            break;
-
-        case "Accounts":
-            switch ($action) {
-                case "Create":
-                    echo $xero->createAccount($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $xero->getAccount($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $xero->updateAccount($xeroTenantId, $apiInstance);
-                    break;
-
-                case "Archive":
-                    echo $xero->archiveAccount($xeroTenantId, $apiInstance);
-                    break;
-                case "Attachment":
-                    echo $xero->attachmentAccount($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-
         case "Contacts":
         case 'contacts':
             switch ($action) {
@@ -133,34 +98,6 @@ try {
             }
             break;
 
-        case "CreditNotes":
-            switch ($action) {
-                case "Create":
-                    echo $xero->createCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "CreateMulti":
-                    echo $xero->createCreditNotes($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $xero->getCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $xero->updateCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "Allocate":
-                    //echo $xero->allocateCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "Refund":
-                    //echo $xero->refundCreditNote($xeroTenantId, $apiInstance);
-                    break;
-
-                case "Void":
-                    echo $xero->voidCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "ExpenseClaims":
             switch ($action) {
@@ -293,7 +230,7 @@ try {
                     break;
                 case 'List':
                 case 'list':
-                    echo $xero->getOrganisationList();
+                    $xero->getOrganisationList();
                     break;
                 default:
                     echo $action . " action not supported in API";

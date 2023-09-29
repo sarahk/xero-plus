@@ -16,14 +16,13 @@ class InvoiceModel extends BaseModel
     protected ContactModel $contacts;
     protected ContractModel $contracts;
 
-    function __construct()
+    function __construct($pdo)
     {
-        parent::__construct();
+        parent::__construct($pdo);
         $this->buildInsertSQL();
-        $this->contacts = new ContactModel();
-        $this->contracts = new ContractModel();
+        $this->contacts = new ContactModel($pdo);
+        $this->contracts = new ContractModel($pdo);
     }
-
 
     // I N V O I C E
     // check we have a contract id and a ckcontact id

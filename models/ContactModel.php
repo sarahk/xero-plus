@@ -31,16 +31,16 @@ class ContactModel extends BaseModel
     protected array $hasMany = ['phones', 'addresses', 'contracts', 'notes'];
 
 
-    function __construct()
+    function __construct($pdo)
     {
-        parent::__construct();
+        parent::__construct($pdo);
 
         $this->buildInsertSQL();
 
-        $this->addresses = new AddressModel();
-        $this->contracts = new ContractModel();
-        $this->notes = new NoteModel();
-        $this->phones = new PhoneModel();
+        $this->addresses = new AddressModel($pdo);
+        $this->contracts = new ContractModel($pdo);
+        $this->notes = new NoteModel($pdo);
+        $this->phones = new PhoneModel($pdo);
     }
 
 
@@ -52,7 +52,7 @@ class ContactModel extends BaseModel
         if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
             $id = intval($data['contact']['id']);
             $oldVals = $this->get('id', $id);
-            
+
             $contact = array_merge($oldVals['contacts'], $data['contact']);
         } else if (array_key_exists('contact_id', $data['contact']) && $data['contact']['contact_id']) {
             $oldVals = $this->get('contact_id', $data['contact']['contact_id']);

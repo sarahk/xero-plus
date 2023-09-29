@@ -9,7 +9,7 @@ require_once('models/ContactModel.php');
 require_once('models/UserModel.php');
 require_once('authorizedXero.php');
 
-$dbh = getDbh();
+$pdo = getPDO();
 
 $message = "no API calls";
 
@@ -177,7 +177,7 @@ switch ($action) {
 
     case 10:
         // enquiries
-        $contact = new ContactModel();
+        $contact = new ContactModel($pdo);
         $data = $contact->get($id);
         if (array_key_exists('debug', $_GET)) {
             debug($data);

@@ -21,6 +21,8 @@ require_once('authorizedXero.php');
 
 $message = "no API calls";
 
+$pdo = getPDO();
+
 $action = (array_key_exists('action', $_GET) ? $_GET['action'] : 0);
 
 switch ($action) {
@@ -32,13 +34,13 @@ switch ($action) {
 
             // address needs to be duplicated
 
-            $contact = new ContactModel();
+            $contact = new ContactModel($pdo);
             $id = $contact->prepAndSave($data);
             debug($_GET);
 
             debug($id);
             exit;
-            $contact = new ContactModel();
+            $contact = new ContactModel($pdo);
             $id = $contact->prepAndSave($_GET['data']);
         }
         break;

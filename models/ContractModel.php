@@ -2,7 +2,7 @@
 
 require_once(SITE_ROOT . '/models/BaseModel.php');
 
-class ContractModel extends \BaseModel
+class ContractModel extends BaseModel
 {
     protected string $table = 'contracts';
     protected array $joins = ['contacts' => "`contracts`.`ckcontact_id` = :id1 OR `contracts`.`contact_id` = :id2"];
@@ -27,11 +27,11 @@ class ContractModel extends \BaseModel
     protected array $nullable = ['contract_id', 'repeating_invoice_id', 'cabin_id', 'contact_id'];
     protected ContractModel $contract;
 
-    function __construct()
+    function __construct($pdo)
     {
-        parent::__construct();
+        parent::__construct($pdo);
         $this->buildInsertSQL();
-        $this->contract = new ContractModel();
+        $this->contract = new ContractModel($pdo);
     }
 
     //  C O N T R A C T
@@ -40,13 +40,13 @@ class ContractModel extends \BaseModel
         $contract = $data['contracts'];
         debug($contract);
         //return parent::prepAndSave($data);
-        if (!array_key_exists('contract_id', $invoice) || $invoice['contract_id']) {
+        if (!array_key_exists('contract_id', $contract) || $contract['contract_id']) {
             $contract = $this->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
         } else $contract['contracts'] = $this->contracts->getDefaults()['contracts'][0];
 
         debug($data);
         debug($contract);
-        debug($invoice);
+        
 
         $merged = array_merge(
             $contract['contracts'],

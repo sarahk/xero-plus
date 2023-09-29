@@ -9,10 +9,12 @@ use XeroAPI\XeroPHP\ApiException;
 
 require_once(SITE_ROOT . '/models/UserModel.php');
 
+$pdo = getPDO();
+
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
 $xeroTenantId = (string)$storage->getSession()['tenant_id'];
-$objUser = new UserModel();
+$objUser = new UserModel($pdo);
 
 if (array_key_exists('user_name', $_SESSION)) {
     // stop using these
