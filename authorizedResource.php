@@ -7,41 +7,24 @@ require_once('utilities.php');
 require_once('functions.php');
 require_once('models/ContactModel.php');
 require_once('models/UserModel.php');
-require_once('authorizedXero.php');
+
 
 $pdo = getPDO();
+$storage = getStorage();
 
 $message = "no API calls";
 
-$action = filter_input(INPUT_GET, 'action');
+$action = array_key_exists('action', $_GET) ? intval($_GET['action']) : 0;
+$debug = array_key_exists('debug', $_GET);
 $id = (array_key_exists('id', $_GET)) ? intval($_GET['id']) : 0;
 
-if (!isset($userId) || empty($userId)) {
-    $user = new UserModel();
-    $userId = $_SESSION['user_id'] = $user->getId('user_id', $xeroUserId);
-}
+//$userId = $_SESSION['user']['user_id'];
 
 switch ($action) {
     case 1:
         // Get Organisation details
-        $apiResponse = $apiInstance->getOrganisations($xeroTenantId);
-        $message = '<p>Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
-        $message .= '<p>' . $xeroTenantId;
-
-        $accessToken = $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $storage->getRefreshToken()
-        ]);
-        $options = [
-            'scope' => ['openid email profile offline_access accounting.transactions accounting.settings']
-        ];
-        $connectionsResponse = $provider->getAuthenticatedRequest(
-            'GET',
-            'https://api.xero.com/Connections',
-            $accessToken->getToken(),
-            $options
-        );
-
-        $xeroTenantIdArray = $provider->getParsedResponse($connectionsResponse);
+        $xero = new XeroClass();
+        $xeroTenantIdArray = $xero->getTenantIdArray();
 
 
         // https://api.xero.com/connections
@@ -153,33 +136,11 @@ switch ($action) {
         break;
 
 
-    case 6:
-
-        $jwt = new XeroAPI\XeroPHP\JWTClaims();
-        $jwt->setTokenId((string)$storage->getIdToken());
-        // Set access token in order to get authentication event id
-        $jwt->setTokenAccess((string)$storage->getAccessToken());
-        $jwt->decode();
-
-        echo("sub:" . $jwt->getSub() . "<br>");
-        echo("sid:" . $jwt->getSid() . "<br>");
-        echo("iss:" . $jwt->getIss() . "<br>");
-        echo("exp:" . $jwt->getExp() . "<br>");
-        echo("given name:" . $jwt->getGivenName() . "<br>");
-        echo("family name:" . $jwt->getFamilyName() . "<br>");
-        echo("email:" . $jwt->getEmail() . "<br>");
-        echo("user id:" . $jwt->getXeroUserId() . "<br>");
-        echo("username:" . $jwt->getPreferredUsername() . "<br>");
-        echo("session id:" . $jwt->getGlobalSessionId() . "<br>");
-        echo("authentication_event_id:" . $jwt->getAuthenticationEventId() . "<br>");
-
-        break;
-
     case 10:
         // enquiries
         $contact = new ContactModel($pdo);
-        $data = $contact->get($id);
-        if (array_key_exists('debug', $_GET)) {
+        $data = $contact->get('id', $id);
+        if ($debug) {
             debug($data);
             exit;
         }

@@ -17,16 +17,12 @@ class BaseModel
     // orderBy is used when getting the child records
     protected string $orderBy = '';
 
+    protected array $defaults = [];
+
 
     function __construct($pdo)
     {
         $this->pdo = $pdo;
-        /*try {
-            $this->pdo = getDbh();
-        } catch (PDOException $e) {
-            throw new PDOException($e->getMessage(), (int)$e->getCode());
-        }*/
-        debug($this->table);
     }
 
     // just to ensure the mysql connection is closed
@@ -112,6 +108,8 @@ class BaseModel
 
     public function getDefaults(): array
     {
+        if (count($this->defaults)) return $this->defaults;
+
         $sql = "SHOW FULL COLUMNS FROM `$this->table`";
 
         $statement = $this->pdo->prepare($sql);
@@ -119,14 +117,15 @@ class BaseModel
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         $data = [];
         foreach ($result as $row) {
-            $data[$row['Field']] = $row['Default'];
+            $this->defaults[$row['Field']] = $row['Default'];
         }
         if (count($this->virtualFields)) {
             foreach ($this->virtualFields as $k => $val) {
-                $data[$k] = '';
+                $this->defaults[$k] = '';
             }
         }
-        return [$data];
+
+        return $this->defaults;
     }
 
     public function getStatement($sql = ''): void
@@ -162,6 +161,7 @@ class BaseModel
                     (`" . implode('`, `', $this->saveKeys) . "`) 
                 VALUES (:" . implode(', :', $this->saveKeys) . ")
                 ON DUPLICATE KEY UPDATE " . $this->updateImplode();
+
     }
 
     function params($string, $data): void
@@ -221,6 +221,7 @@ class BaseModel
         $this->getStatement("SELECT max(`updated_date_utc`) as `updated_date_utc` 
                 FROM `$this->table` 
                 WHERE `xerotenant_id` = :xerotenant_id");
+        
         try {
             $this->statement->execute(['xerotenant_id' => $xeroTenantId]);
             return $this->statement->fetchColumn();

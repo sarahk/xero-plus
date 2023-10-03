@@ -10,37 +10,46 @@ class PhoneModel extends BaseModel
                 ON DUPLICATE KEY UPDATE phone_number = :phone_number, :phone_area_code = :phone_area_code";
 
     protected string $table = 'phones';
-    protected array $saveKeys = ['contact_id', 'phone_type', 'phone_number', 'phone_area_code'];
+    protected array $saveKeys = ['ckcontact_id', 'contact_id', 'phone_type', 'phone_number', 'phone_area_code'];
+    protected array $updateKeys = ['phone_number', 'phone_area_code'];
     protected array $joins = ['contacts' => "`phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2"];
     protected array $virtualFields = ['phone' => "CONCAT(`phone_area_code`,' ',`phone_number`)"];
+
+    function __construct($pdo)
+    {
+        parent::__construct($pdo);
+
+        $this->buildInsertSQL();
+    }
 
     public function getDefaults(): array
     {
         $phones = parent::getDefaults();
-        $default = $phones[0];
-        $default['phone_type'] = 'DEFAULT';
-        $phones[] = $default;
+        $default = [0 => $phones, 1 => $phones];
+        $default[0]['phone_type'] = 'DEFAULT';
+        $this->defaults = $default;
+
         return $phones;
     }
 
     public function prepAndSave($data): int
     {
         parent::prepAndSave($data);
+
         if (array_key_exists('phone', $data)) {
             // todo
-        } else if (array_key_exists('phones', $data)) {
             $phones = $this->getChildren('contacts', $data['contact']['id']);
-            foreach ($data['phones'] as $row) {
-                $search = array_search($row['phone_number'], $phones);
+
+            foreach ($phones as $row) {
+                $search = array_search($data['phone']['phone_type'], $row);
                 if ($search !== false) {
-                    debug($row);
-                    debug($phones);
-                    debug($search);
-                    $row = array_merge($phones[$search], $row);
+                    $row = array_merge($row, $data['phone']);
                 }
                 $save = $this->getSaveValues($row);
-                return $this->save($save);
+                if ($save['phone_number'])
+                    return $this->save($save);
             }
         }
+        return 0;
     }
 }

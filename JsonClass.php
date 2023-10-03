@@ -9,33 +9,35 @@ require_once('models/TenancyModel.php');
 
 class JsonClass
 {
-
     public $apiInstance;
     public $xeroTenantId;
 
-    public $tenancies = [];
-    public $pdo;
+    public array $tenancies = [];
+    public PDO $pdo;
 
-    private $colInvoice = ['contact_id', 'status', 'invoice_number', 'reference', 'total', 'amount_due', 'amount_paid', 'date', 'due_date', 'updated_date_utc'];
-    private $colContact = ['contact_status', 'name', 'first_name', 'last_name', 'email_address', 'is_supplier', 'is_customer', 'updated_date_utc'];
-    private $colAddress = ['address_line1', 'address_line2', 'address_line3', 'address_line4', 'city', 'region', 'postal_code', 'country', 'attention_to'];
-    private $colPhone = ['phone_number', 'phone_area_code', 'phone_country_code'];
+    private array $colInvoice = ['contact_id', 'status', 'invoice_number', 'reference', 'total', 'amount_due', 'amount_paid', 'date', 'due_date', 'updated_date_utc'];
+    private array $colContact = ['contact_status', 'name', 'first_name', 'last_name', 'email_address', 'is_supplier', 'is_customer', 'updated_date_utc'];
+    private array $colAddress = ['address_line1', 'address_line2', 'address_line3', 'address_line4', 'city', 'region', 'postal_code', 'country', 'attention_to'];
+    private array $colPhone = ['phone_number', 'phone_area_code', 'phone_country_code'];
 
-    private $statements = [];
+    private array $statements = [];
 
     public $addressOptions = ['address_line1', 'address_line2', 'city', 'postal_code'];
 
-    function __construct($apiInstance='', $xeroTenantId='')
+    function __construct($apiInstance = '', $xeroTenantId = '')
     {
+        $storage = getStorage();
+        $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
+        $this->apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
+            new GuzzleHttp\Client(),
+            $config
+        );
 
-        $this->apiInstance = $apiInstance;
+        //$this->apiInstance = $apiInstance;
+        $pdo = getPDO();
+        $this->pdo = $pdo;
+
         $this->xeroTenantId = $xeroTenantId;
-
-        try {
-            $this->pdo = getDbh();
-        } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int) $e->getCode());
-        }
     }
 
     public function init($arg)
@@ -117,10 +119,8 @@ class JsonClass
             WHERE " . implode(' AND ', $conditions))->fetchColumn();
 
 
-
         if (count($cabins)) {
             foreach ($cabins as $k => $row) {
-
 
 
                 $output['data'][] = [
@@ -249,7 +249,6 @@ class JsonClass
     }
 
 
-
     public function attachmentAccount($xeroTenantId, $apiInstance)
     {
         $str = '';
@@ -289,10 +288,6 @@ class JsonClass
     }
 
 
-
-
-
-
     public function getBankTransfer($xeroTenantId, $apiInstance)
     {
         $str = '';
@@ -306,8 +301,6 @@ class JsonClass
 
         return $str;
     }
-
-
 
 
     public function getParams()
@@ -438,7 +431,8 @@ class JsonClass
     /*
      * used by the enquiry form to see if the contact already exists
      */
-    public function getSearchContacts(){
+    public function getSearchContacts()
+    {
         $contact = new ContactModel();
         $result = $contact->search();
 
@@ -530,23 +524,26 @@ class JsonClass
     // and return the ones that are active
     public function getTenancies()
     {
+        
         if (count($this->tenancies) == 0) {
-            $tenancies = new TenancyModel();
+            $tenancies = new TenancyModel($this->pdo);
             $this->tenancies = $tenancies->list();
-         }
+        }
+
         $output = [];
         foreach ($this->tenancies as $row) {
             if ($row['active']) {
                 $output[] = $row['tenant_id'];
             }
         }
+
         return $output;
     }
 
     // get all the tenancies and show if they're active or not
     public function getTenancyList()
     {
-        $tenancies = new TenancyModel();
+        $tenancies = new TenancyModel($this->pdo);
         $this->tenancies = $tenancies->list();
         return $this->tenancies;
     }
@@ -568,7 +565,8 @@ class JsonClass
         }
         return null;
     }
-    // use the list of tenancies to create the where sql 
+
+    // use the list of tenancies to create the where sql
     public function getXeroTenantClause()
     {
         //debug($this->xeroTenantId);
@@ -588,6 +586,7 @@ class JsonClass
         }
         return "{$prefix}black";
     }
+
     /*
      * calls
      * public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
@@ -595,7 +594,6 @@ class JsonClass
     public function getContact($xeroTenantId, $apiInstance, $returnObj = false)
     {
         $output = $this->getOutput();
-
 
 
         // $refreshContact = $this->getContactRefresh();
@@ -653,7 +651,6 @@ class JsonClass
         }
 
 
-
         $sql = "SELECT " . implode(', ', $fields)
             . " FROM `contacts` "
             . " LEFT JOIN vAmountDue ON (contacts.contact_id = vAmountDue.contact_id) "
@@ -677,7 +674,6 @@ class JsonClass
             . " WHERE " . implode(' AND ', $conditions)
         )->fetchColumn();
         //$output['refreshContact'] = $refreshContact;
-
 
 
         $invList = [];
@@ -737,7 +733,6 @@ class JsonClass
             }
             $output['row'] = $row;
         }
-
 
 
         if ($returnObj) {
@@ -1195,9 +1190,6 @@ class JsonClass
     }
 
 
-
-
-
     public function voidCreditNote($xeroTenantId, $apiInstance, $returnObj = false)
     {
         $str = '';
@@ -1216,8 +1208,6 @@ class JsonClass
 
         return $str;
     }
-
-
 
 
     public function getEmployee($xeroTenantId, $apiInstance, $returnObj = false)
@@ -1241,9 +1231,6 @@ class JsonClass
             return $str;
         }
     }
-
-
-
 
 
     public function updateEmployee($xeroTenantId, $apiInstance)
@@ -1487,9 +1474,9 @@ class JsonClass
     public function getInvoiceList($returnObj = false)
     {
         $params = $this->getParams();
-        $invoice = new InvoiceModel();
+        $invoice = new InvoiceModel($this->pdo);
         $output = $invoice->list($params);
-            return json_encode($output);
+        return json_encode($output);
 
     }
 
@@ -2092,10 +2079,10 @@ class JsonClass
             }
             $tenancies[$k]['disabled'] = $disabled;
         }
-        if($returnObj){
+        if ($returnObj) {
             return $tenancies;
         }
-        
+
         echo json_encode($tenancies);
     }
 
@@ -2142,8 +2129,6 @@ class JsonClass
             return $str;
         }
     }
-
-
 
 
     public function getPayment($xeroTenantId, $apiInstance, $returnObj = false)
@@ -2437,7 +2422,6 @@ class JsonClass
             return $str;
         }
     }
-
 
 
     public function updatePurchaseOrder($xeroTenantId, $apiInstance)

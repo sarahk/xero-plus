@@ -9,26 +9,26 @@ require_once(SITE_ROOT . '/models/PhoneModel.php');
 class ContactModel extends BaseModel
 {
 
-    protected array $nullable = ['id', 'contact_id', 'updated_date_utc'];
+    protected array $nullable = ['id', 'contact_id', 'updated_date_utc', 'stub'];
     protected array $saveKeys = [
         'id', 'contact_id', 'contact_status',
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
         'how_did_you_hear',
-        'updated_date_utc', 'xerotenant_id'];
+        'updated_date_utc', 'xerotenant_id', 'stub'];
     protected array $updateKeys = [
         'contact_status',
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
         'how_did_you_hear',
-        'updated_date_utc'];
+        'updated_date_utc', 'stub'];
     protected AddressModel $addresses;
     protected PhoneModel $phones;
-    protected ContractModel $contracts;
+
     protected NoteModel $notes;
 
     protected string $table = 'contacts';
     protected string $primaryKey = 'id';
 
-    protected array $hasMany = ['phones', 'addresses', 'contracts', 'notes'];
+    protected array $hasMany = ['phones', 'addresses', 'notes'];
 
 
     function __construct($pdo)
@@ -38,7 +38,6 @@ class ContactModel extends BaseModel
         $this->buildInsertSQL();
 
         $this->addresses = new AddressModel($pdo);
-        $this->contracts = new ContractModel($pdo);
         $this->notes = new NoteModel($pdo);
         $this->phones = new PhoneModel($pdo);
     }
@@ -46,41 +45,55 @@ class ContactModel extends BaseModel
 
     public function prepAndSave($data): int
     {
+
         if (array_key_exists('firstname', $data['contact']) && array_key_exists('last_name', $data['contact'])) {
             $data['contact']['name'] = $data['contact']['first_name'] . ' ' . $data['contact']['last_name'];
         }
-        if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
-            $id = intval($data['contact']['id']);
-            $oldVals = $this->get('id', $id);
 
-            $contact = array_merge($oldVals['contacts'], $data['contact']);
-        } else if (array_key_exists('contact_id', $data['contact']) && $data['contact']['contact_id']) {
-            $oldVals = $this->get('contact_id', $data['contact']['contact_id']);
-            $contact = array_merge($oldVals['contacts'][0], $data['contact']);
+
+        if (array_keys_exist(['id', 'contact_id'], $data['contact'], 'any')) {
+            if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
+                $oldVals = $this->get('id', $data['contact']['id']);
+                $contact = array_merge($oldVals['contacts'], $data['contact']);
+
+            } else if (array_key_exists('contact_id', $data['contact']) && $data['contact']['contact_id']) {
+                // probably just getting the default values
+                $oldVals = $this->get('contact_id', $data['contact']['contact_id']);
+
+                $contact = array_merge($oldVals['contacts'], $data['contact']);
+                $data['contact']['id'] = $contact['id'];
+            }
         } else $contact = $data['contact'];
 
         // these can't be empty strings, either a value or null
-        $contact = $this->checkNullableValues($contact);
+        $checked = $this->checkNullableValues($contact);
 
         // we can't pass extra variables
-        $save = $this->getSaveValues($contact);
+        $save = $this->getSaveValues($checked);
 
         $newId = $this->save($save);
+
+        // save the id back to the data array and save the child records
         if ($newId > 0) $data['contact']['id'] = $newId;
 
         $this->addresses->prepAndSave($data);
 
+        // add key info to the note so we know where it came from
         $data['note']['foreign_id'] = $data['contact']['id'];
         $data['note']['parent'] = 'contacts';
         $this->notes->prepAndSave($data);
 
-        $phone = [];
-        if (array_key_exists('phones', $data) && count($data['phones'])) {
-            foreach ($data['phones'] as $phone) {
+
+        if (array_key_exists('phones', $data['contact']) && count($data['contact']['phones'])) {
+            foreach ($data['contact']['phones'] as $phone) {
                 if (!empty($phone['phone_number'])) {
                     $phone['ckcontact_id'] = $data['contact']['id'];
                     $phone['contact_id'] = $data['contact']['contact_id'];
-                    $this->phones->prepAndSave(['phone' => $phone]);
+
+                    $this->phones->prepAndSave([
+                        'contact' => ['id' => $data['contact']['id']],
+                        'phone' => $phone
+                    ]);
                 }
             }
         }

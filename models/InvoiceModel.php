@@ -6,12 +6,16 @@ class InvoiceModel extends BaseModel
 {
     protected string $table = 'invoices';
     protected array $saveKeys = [
-        'invoice_id', 'contact_id', 'status',
+        'invoice_id', 'contact_id', 'contract_id', 'status',
+        'repeating_invoice_id',
         'invoice_number', 'reference', 'total',
         'amount_due', 'amount_paid',
-        'date', 'due_date', 'updated_date_utc'
+        'date', 'due_date', 'updated_date_utc', 'xerotenant_id'
     ];
-    protected array $updateKeys = ['status', 'total', 'amount_due', 'amount_paid', 'updated_date_utc'];
+    protected array $updateKeys = [
+        'repeating_invoice_id', 'status', 'total', 'amount_due', 'amount_paid',
+        'updated_date_utc', 'xerotenant_id'
+    ];
 
     protected ContactModel $contacts;
     protected ContractModel $contracts;
@@ -30,27 +34,21 @@ class InvoiceModel extends BaseModel
     // invoices are always imported from xero
     public function prepAndSave($data): int
     {
-        debug($data);
-        //$contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
-        $contract = $this->contracts->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
-        $contract_id = $contract['contracts']['contract_id'];
 
-        if ($contract_id === false) {
-            $contact = $this->contacts->get('contact_id', $data['contact_id']);
-            $ckcontact_id = $contact['contact_id'];
-            if ($ckcontact_id === false) {
-                $ckcontact_id = $this->contacts->newContact($data['contact_id']);
-                $contract_id = false;
-            } else {
-                $contract_id = $this->contracts->get($ckcontact_id);
-            }
-            if ($contract_id === false) {
-                $contract = [];
-                $this->contracts->prepAndSave($contract);
+        if (!array_key_exists('contract_id', $data['invoice']) || !$data['invoice']['contract_id']) {
+            //$contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
+            $contract = $this->contracts->get('repeating_invoice_id', $data['invoice']['repeating_invoice_id']);
+            $data['invoice']['contract_id'] = $contract['contracts']['contract_id'];
+
+
+            if (!array_key_exists('contact_id', $data['invoice'])) {
+                $data['contract']['contact_id'] = $contract['contracts']['contact_id'];
             }
         }
-        $checked = $this->checkNullableValues($data);
+
+        $checked = $this->checkNullableValues($data['invoice']);
         $save = $this->getSaveValues($checked);
+
         return $this->save($save);
 
         // todo return invoice id
@@ -70,6 +68,7 @@ class InvoiceModel extends BaseModel
         <th>Due</th>
         <th>Date</th>
 */
+
         $tenancies = '(';
         foreach ($params['tenancies'] as $k => $val) {
             if ($k > 0) {
@@ -144,6 +143,7 @@ class InvoiceModel extends BaseModel
             ORDER BY {$order} 
             LIMIT {$params['start']}, {$params['length']}";
 
+      
         $invoices = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $output = $params;

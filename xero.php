@@ -14,16 +14,18 @@ error_reporting(E_ALL);
 $path = 'vendor/autoload.php';
 require $path;
 
-require_once('storage.php');
+//require_once('storage.php');
 require_once('XeroClass.php');
 require_once('config.php');
 require_once('utilities.php');
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
-require_once('authorizedXero.php');
+//require_once('authorizedXero.php');
 
-$pdo = getPDO();
-$xero = new XeroClass($pdo, $apiInstance);
+$storage = getStorage();
+
+
+$xero = new XeroClass();
 //$json = new JsonClass();
 //$xero->setup($apiInstance);
 
@@ -47,22 +49,22 @@ try {
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
-                    $xero->getContactRefresh($xeroTenantId);
+                    $xero->getContactRefresh();
                     break;
                 case "Create":
-                    echo $xero->createContact($xeroTenantId, $apiInstance);
+                    echo $xero->createContact($apiInstance);
                     break;
                 case "CreateMulti":
-                    echo $xero->createContacts($xeroTenantId, $apiInstance);
+                    echo $xero->createContacts($apiInstance);
                     break;
                 case "Read":
-                    echo $xero->getContact($xeroTenantId, $apiInstance);
+                    echo $xero->getContact($apiInstance);
                     break;
                 case "Update":
-                    echo $xero->updateContact($xeroTenantId, $apiInstance);
+                    echo $xero->updateContact($apiInstance);
                     break;
                 case "Archive":
-                    echo $xero->archiveContact($xeroTenantId, $apiInstance);
+                    echo $xero->archiveContact($apiInstance);
                     break;
                 case 'Single':
                     echo $xero->getContactSingle();

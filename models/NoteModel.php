@@ -21,7 +21,7 @@ class NoteModel extends BaseModel
             $data['note']['created'] = date('Y-m-d H:i:s');
             $data['note'] = $this->checkNullableValues($data['note']);
             $save = $this->getSaveValues($data['note']);
-            debug($save);
+
             return $this->save($save);
         }
         return 0;

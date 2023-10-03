@@ -42,6 +42,7 @@ function showValue($k, $val)
     echo '<li>';
     if (is_array($val)) {
         echo $k . '<ul>';
+        
         foreach ($val as $key => $row) {
             showValue($key, $row);
         }
@@ -49,18 +50,44 @@ function showValue($k, $val)
     } else if (is_object($val)) {
         echo $k . '<ul>';
 
-        foreach (array($val) as $key => $row) {
+        foreach ((array)$val as $key => $row) {
             showValue($key, $row);
         }
         $methods = get_class_methods($val);
         foreach ($methods as $v) {
-            echo "<li>$v</li>";
+            echo "<li><i>$v</i></li>";
         }
         echo '</ul></li>';
     } else {
         echo(strlen($k) ? "{$k}: " : ''), is_string($val) ? '"' . $val . '"' : $val;
     }
     echo "</li>";
+}
+
+/**
+ * @param array $keys
+ * @param array $array
+ * @param string $match
+ * @return bool
+ */
+function array_keys_exist(array $keys, array $array, string $match = 'any'): bool
+{
+    if (!array($keys) || !array($array)) {
+        return false;
+    }
+
+    $arrayKeys = array_keys($array);
+    foreach ($keys as $v) {
+        // is the key in there? does it have a value?
+        if (in_array($v, $arrayKeys) && $array[$v]) {
+            if ($match === 'any') {
+                return true;
+            }
+        } else if ($match === 'all') {
+            return false;
+        }
+    }
+    return true;
 }
 
 // sample repeating invoice data
