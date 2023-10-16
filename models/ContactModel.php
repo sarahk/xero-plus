@@ -29,7 +29,7 @@ class ContactModel extends BaseModel
     protected string $primaryKey = 'id';
 
     protected array $hasMany = ['phones', 'addresses', 'notes'];
-
+    protected bool $hasStub = true;
 
     function __construct($pdo)
     {
@@ -45,14 +45,29 @@ class ContactModel extends BaseModel
 
     public function prepAndSave($data): int
     {
+        var_dump($data);
+        if (array_keys_exist(['id', 'contact_id', 'xeroRefresh'], $data['contact'], 'any')) {
+            if (array_key_exists('xeroRefresh', $data['contact']) && $data['contact']['xeroRefresh'] == true) {
+                // we don't want to get the old $oldVals = ['contracts' => []];
+                // we're saving fewer columns
+                $this->insert = "UPDATE `contacts` SET 
+                       `stub` = 0, 
+                       `first_name` = :first_name,
+                       `last_name` = :last_name,
+                       `email_address` = :email_address,
+                       `xero_status` = :xero_status
+                       WHERE contact_id = :contact_id";
 
-        if (array_key_exists('firstname', $data['contact']) && array_key_exists('last_name', $data['contact'])) {
-            $data['contact']['name'] = $data['contact']['first_name'] . ' ' . $data['contact']['last_name'];
-        }
+                $save = ['contact_id' => $data['contact']['contact_id'],
+                    'first_name' => $data['contact']['first_name'],
+                    'last_name' => $data['contact']['first_name'],
+                    'email_address' => $data['contact']['first_name'],
+                    'xero_status' => $data['contact']['first_name'],
+                ];
 
+                return $this->save($save);
 
-        if (array_keys_exist(['id', 'contact_id'], $data['contact'], 'any')) {
-            if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
+            } else if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
                 $oldVals = $this->get('id', $data['contact']['id']);
                 $contact = array_merge($oldVals['contacts'], $data['contact']);
 
@@ -64,6 +79,14 @@ class ContactModel extends BaseModel
                 $data['contact']['id'] = $contact['id'];
             }
         } else $contact = $data['contact'];
+
+        $first_name = array_key_exists('firstname', $data['contact']) ? $data['contact']['first_name'] : '';
+        $last_name = array_key_exists('lastname', $data['contact']) ? $data['contact']['last_name'] : '';
+        $name = array_key_exists('name', $data['contact']) ? $data['contact']['name'] : '';
+
+        if (empty($name) && (!empty($first_name) || !empty($last_name))) {
+            $data['contact']['name'] = $first_name . ' ' . $last_name;
+        }
 
         // these can't be empty strings, either a value or null
         $checked = $this->checkNullableValues($contact);
@@ -98,6 +121,22 @@ class ContactModel extends BaseModel
             }
         }
         return $data['contact']['id'];
+    }
+
+
+    protected function getFromXero($data): void
+    {
+        debug($data);
+        parent::getFromXero($data); // should be nothing there but let's check
+        if (empty($data['contact_id'])) {
+            return;
+        }
+
+        $xero = new XeroClass();
+        $contact_id = $data['contact_id'];
+        $xeroTenantId = $data['xerotenant_id'];
+
+        $xero->getSingleContact($xeroTenantId, $contact_id);
     }
 
     /*

@@ -1,5 +1,7 @@
 <?php
-require_once(SITE_ROOT . '/utilities.php');
+include_once(SITE_ROOT . '/utilities.php');
+include_once(SITE_ROOT . '/XeroClass.php');
+
 
 class BaseModel
 {
@@ -18,6 +20,7 @@ class BaseModel
     protected string $orderBy = '';
 
     protected array $defaults = [];
+    protected bool $hasStub = false;
 
 
     function __construct($pdo)
@@ -31,7 +34,38 @@ class BaseModel
         unset($this->pdo);
     }
 
-    public function get($key, $keyVal): array
+    public function get($key, $keyVal, $defaults = true): array
+    {
+        $data = $this->getRecord($key, $keyVal);
+        // either we didn't have a value or there isn't a record in the database
+        if (count($data)) {
+
+            // refresh the data and run the query again
+            if ($this->hasStub && $data[0]['stub'] == 1) {
+                $this->getFromXero($data[0]);
+                $data = $this->getRecord($key, $keyVal);
+            }
+
+            $output = ["$this->table" => $data[0]];
+
+            if (count($this->hasMany)) {
+                foreach ($this->hasMany as $val) {
+                    $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey]);
+                }
+            }
+        } else if (!$defaults) $output = [];
+        else {
+            $output = [$this->table => $this->getDefaults()];
+            if (count($this->hasMany)) {
+                foreach ($this->hasMany as $val) {
+                    $output[$val] = $this->{$val}->getDefaults();
+                }
+            }
+        }
+        return $output;
+    }
+
+    protected function getRecord($key, $keyVal): array
     {
         $data = [];
 
@@ -46,24 +80,12 @@ class BaseModel
                 $this->statement->debugDumpParams();
             }
         }
-        // either we didn't have a value or there isn't a record in the database
-        if (count($data)) {
+        return $data;
+    }
 
-            $output = ["$this->table" => $data[0]];
-            if (count($this->hasMany)) {
-                foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey]);
-                }
-            }
-        } else {
-            $output = [$this->table => $this->getDefaults()];
-            if (count($this->hasMany)) {
-                foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getDefaults();
-                }
-            }
-        }
-        return $output;
+    protected function getFromXero($data): void
+    {
+
     }
 
     protected function getVirtuals(): string
@@ -134,7 +156,7 @@ class BaseModel
         try {
             $this->statement = $this->pdo->prepare($sql);
         } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
+            echo "[getStatement] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
             $this->statement->debugDumpParams();
         }
     }
@@ -221,7 +243,7 @@ class BaseModel
         $this->getStatement("SELECT max(`updated_date_utc`) as `updated_date_utc` 
                 FROM `$this->table` 
                 WHERE `xerotenant_id` = :xerotenant_id");
-        
+
         try {
             $this->statement->execute(['xerotenant_id' => $xeroTenantId]);
             return $this->statement->fetchColumn();
@@ -261,4 +283,24 @@ class BaseModel
         }
         return 0;
     }
+
+
+    protected function getWhereInSQL($tenancies, $label): array
+    {
+        $values = [];
+        $keys = [];
+
+        foreach ($tenancies as $k => $val) {
+            $key = $label . $k;
+            $keys[] = ':' . $key;
+            $values[$key] = $val; // collecting values into key-value array
+        }
+
+        return [
+            'sql' => implode(', ', $keys),
+            'bind_vars' => $values
+        ];
+    }
+
+
 }

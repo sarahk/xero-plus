@@ -1,10 +1,12 @@
 <?php
 
-require_once (SITE_ROOT.'/models/BaseModel.php');
+require_once(SITE_ROOT . '/models/BaseModel.php');
 
 class TenancyModel extends BaseModel
 {
-    function list()
+    protected string $table = 'tenancies';
+
+    function list(): array
     {
         $sql = "SELECT * from `tenancies` order by `sortorder`";
         $result = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);

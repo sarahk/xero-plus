@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-print-1.6.1/r-2.2.3/sp-1.0.1/sl-1.3.1/datatables.min.css"/>
     <?php include 'layouts/styles.php'; ?>
+    <link rel="stylesheet" type="text/css" href="node_modules/sweetalert2/dist/sweetalert2.css"></link>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -16,25 +17,22 @@
     <link rel="manifest" href="/site.webmanifest">
     <?php
     //create constants for the xerotenant_id info
-    if (!isset($loggedOut) || !$loggedOut){
-    require_once 'JsonClass.php';
-    $json1 = new JsonClass();
-    //echo $json1->getOrganisationList(true);
-    define("TENANCIES", $json1->getOrganisationList(true));
-    ?>
-    <script>
-        const tenancies = <?php echo json_encode(TENANCIES);?>;
-    </script>
-    <?php
+
+    if (!isset($loggedOut) || !$loggedOut) {
+        ?>
+        <script>
+            const tenancies = <?php echo TENANCIES;?>;
+        </script>
+        <?php
     } ?>
 </head>
 
 <body class="app sidebar-mini ltr light-mode">
 
 <!-- GLOBAL-LOADER -->
-<div id="global-loader">
+<!--<div id="global-loader">
     <img src="/assets/images/loader.svg" class="loader-img" alt="Loader">
-</div>
+</div>-->
 <!-- /GLOBAL-LOADER -->
 
 <!-- PAGE -->
@@ -43,17 +41,17 @@
 
         <!-- APP-HEADER -->
         <?php
-        if (!isset($nosidebar) || !$nosidebar) {
-            include 'layouts/app-header.php';
+        if (SIDE_BAR) {
+            include SITE_ROOT . '/layouts/app-header.php';
         }
         ?>
-
         <!-- /APP-HEADER -->
 
         <!--APP-SIDEBAR-->
         <?php
-        if (!isset($nosidebar) || !$nosidebar) {
-            include 'layouts/app-sidebar.php';
+
+        if (SIDE_BAR) {
+            include SITE_ROOT . '/layouts/app-sidebar.php';
         }
         ?>
 

@@ -1,9 +1,13 @@
 <?php
+error_reporting(E_ALL);
+require_once('utilities.php');
+require_once('functions.php');
+
 if (array_key_exists('action', $_GET) && $_GET['action'] == 'logoff') {
     session_destroy();
 }
 $loggedOut = true;
-$nosidebar = true;
+
 require_once('views/header.php');
 ?>
     <div class="container">

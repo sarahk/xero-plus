@@ -5,6 +5,8 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+header('Access-Control-Allow-Origin: *');
+header("Content-type: application/json; charset=utf-8");
 
 //$path = '/var/www/vhosts/caravanforhire.co.nz/httpdocs/git/xero/vendor/autoload.php';
 $path = 'vendor/autoload.php';
@@ -73,6 +75,7 @@ try {
                 case 'Single':
                     echo $json->getCabinSingle();
                     break;
+
             }
             break;
 
@@ -213,6 +216,10 @@ try {
                     echo $json->createInvoices($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
+                    echo $json->getInvoiceList();
+                    break;
+                case 'Contract':
+                case 'contract':
                     echo $json->getInvoiceList();
                     break;
                 case "Update":
@@ -464,6 +471,13 @@ try {
             }
             break;
 
+        case 'Tasks':
+            switch ($action) {
+                case 'Close':
+                    echo $json->closeTask();
+                    break;
+            }
+            break;
 
         case "Vehicles":
             switch ($action) {

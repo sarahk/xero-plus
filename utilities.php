@@ -4,6 +4,9 @@ use League\OAuth2\Client\Provider\GenericProvider;
 
 session_start();
 const SITE_ROOT = __DIR__;
+const SIDE_BAR = true;
+const GOOGLE_MAPS_API = 'AIzaSyB32Z6abVU4CzDmYdxfGX1kW4H6slcLjUw';
+
 include_once 'storage.php';
 include_once SITE_ROOT . '/models/UserModel.php';
 
@@ -122,5 +125,48 @@ function getPDO(): PDO
     } catch (PDOException $e) {
         print "Error!: " . $e->getMessage() . "<br/>";
         die();
+    }
+}
+
+class lists
+{
+    static function getOwners(): array
+    {
+        return $owners = [
+            '---' => '',
+            'jk' => 'Jeremy',
+            'ck' => 'Charlotte'
+        ];
+    }
+
+    static function getCabinStyles(): array
+    {
+        return [
+            ['name' => 'std', 'label' => 'Standard'],
+            ['name' => 'std-left', 'label' => 'Standard, Left'],
+            ['name' => 'std-right', 'label' => 'Standard, Right'],
+            ['name' => 'large', 'label' => 'Large'],
+            ['name' => 'xl', 'label' => 'Extra Large']
+        ];
+    }
+
+    static function getCabinStyle($name): string
+    {
+        $styles = lists::getCabinStyles();
+        foreach ($styles as $row) {
+            if ($row['name'] === $name) {
+                return $row['label'];
+            }
+        }
+        return 'uknown: ' . $name;
+    }
+
+    static function getTaskTypes(): array
+    {
+        return [
+            'wof' => ['name' => 'wof', 'label' => 'Electrical WOF', 'repeats' => true, 'years' => 4, 'delete' => false],
+            'buy' => ['name' => 'buy', 'label' => 'Shopping', 'repeats' => false, 'delete' => true],
+            'repair' => ['name' => 'repair', 'label' => 'Repairs', 'repeats' => false, 'delete' => true]
+        ];
     }
 }

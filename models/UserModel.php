@@ -1,5 +1,5 @@
 <?php
-require_once(SITE_ROOT . '/models/BaseModel.php');
+include_once(SITE_ROOT . '/models/BaseModel.php');
 
 // Use this class to deserialize error caught
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
@@ -9,23 +9,29 @@ class UserModel extends BaseModel
 {
     protected string $table = 'users';
 
-    /**
-     * @throws Exception
-     */
     public function getId($key, $value): int
     {
-        $sql = "SELECT `id` FROM `users` where {$key} = :{$key}";
+        $sql = 'SELECT `id` FROM `users` where :key = :value';
 
-        $statement = $this->pdo->prepare($sql);
-        $statement->execute([$key => $value]);
-        $list = $statement->fetchAll(PDO::FETCH_ASSOC);
-        if (count($list) == 0) {
-            throw new Exception("User not found: {$this->table} -> {$key} -> {$value}");
+        $this->getStatement($sql);
+
+        try {
+            $this->statement->execute(['key' => $key, 'value' => $value]);
+            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            // todo remove debug
+            debug($list);
+            $this->statement->debugDumpParams();
+
+            if (count($list) == 0) {
+                $this->statement->debugDumpParams();
+                throw new Exception("User not found: $this->table -> $key -> {$value}");
+                exit;
+            }
+        } catch (PDOException $e) {
+            echo "[getIdStatement] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+            $this->statement->debugDumpParams();
         }
+
         return $list[0]['id'];
     }
-
-    // the xero code has deprecated code, throws errors but does actually work
-    // ob_end_clean is to hide those errors
-    
 }

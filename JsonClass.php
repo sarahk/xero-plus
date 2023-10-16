@@ -2,9 +2,11 @@
 require_once('utilities.php');
 require_once('functions.php');
 require_once('models/AddressModel.php');
+require_once('models/CabinModel.php');
 require_once('models/ContactModel.php');
 require_once('models/InvoiceModel.php');
 require_once('models/PhoneModel.php');
+require_once('models/TasksModel.php');
 require_once('models/TenancyModel.php');
 
 class JsonClass
@@ -47,126 +49,40 @@ class JsonClass
 
     public function getCabins()
     {
-        $output = $this->getParams();
-
-
-        $order = null;
-
-        switch ($output['order'][0]['column']) {
-            case 2:
-                $order = "contacts.last_name {$output['order'][0]['dir']}, contacts.first_name ASC";
-                break;
-
-            case 4: // amount due
-                $order = "cabins.cabinnumber {$output['order'][0]['dir']}";
-                break;
-
-            case 6:
-            default:
-                $order = "cabins.cabinnumber {$output['order'][0]['dir']}";
-                break;
-
-        }
-
-        $conditions = ["`cabins`.`xerotenant_id` = '{$this->xeroTenantId}'"];
-        if (!empty($output['search']['value'])) {
-            $choice = ["`cabins`.`cabinnumber` = '{$output['search']['value']}'"];
-            $choice[] = "`contacts`.`name` LIKE '%{$output['search']['value']}%'";
-            $choice[] = "`addresses`.`address_line1` LIKE '%{$output['search']['value']}%'";
-            $choice[] = "`addresses`.`address_line2` LIKE '%{$output['search']['value']}%'";
-            $conditions[] = '(' . implode(' OR ', $choice) . ')';
-        }
-        if (!empty($output['button'])) {
-            $status = strtoupper($output['button']);
-            $conditions[] = "`cabins`.`status` = '{$status}'";
-        } else {
-            $conditions[] = "`cabins`.`status` = 'ACTIVE'";
-        }
-
-
-        $fields = [
-            'cabins.cabin_id',
-            'cabins.cabinnumber',
-            'cabins.status',
-            'cabins.style',
-            'cabins.paintgrey',
-            'cabins.paintinside'
-            ,
-            'contracts.deliverydate',
-            'contracts.pickupdate',
-            'contracts.scheduledpickupdate'
-            ,
-            'contacts.name'
-        ];
-
-
-        $sql = "SELECT " . implode(',', $fields) . " FROM `cabins` 
-            LEFT JOIN `contracts` ON (cabins.cabin_id = contracts.cabin_id) 
-            LEFT JOIN `contacts` ON (contracts.contact_id = contacts.contact_id) 
-            LEFT JOIN `addresses` ON (contacts.contact_id = addresses.contact_id AND addresses.address_type = 'STREET')
-        WHERE " . implode(' AND ', $conditions) . "
-        ORDER BY {$order} 
-        LIMIT {$output['start']}, {$output['length']}";
-
-
-        $cabins = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-        $output['recordsTotal'] = $this->pdo->query("SELECT count(*) FROM cabins WHERE `cabins`.`xerotenant_id` = '{$this->xeroTenantId}'")->fetchColumn();
-        $output['recordsFiltered'] = $this->pdo->query("SELECT count(*) FROM cabins 
-            LEFT JOIN `contracts` ON (cabins.cabin_id = contracts.cabin_id) 
-            LEFT JOIN `contacts` ON (contracts.contact_id = contacts.contact_id) 
-            LEFT JOIN `addresses` ON (contacts.contact_id = addresses.contact_id AND addresses.address_type = 'STREET')
-            WHERE " . implode(' AND ', $conditions))->fetchColumn();
-
-
-        if (count($cabins)) {
-            foreach ($cabins as $k => $row) {
-
-
-                $output['data'][] = [
-                    'number' => "<a href='#' data-toggle='modal' data-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>"
-                    ,
-                    'style' => $row['style']
-                    ,
-                    'status' => $row['status']
-                    ,
-                    'contact' => "{$row['name']} <a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}' class='text-right'><i class='fas fa-edit'></i></a>"
-                    ,
-                    'paintgrey' => $row['paintgrey']
-                    ,
-                    'paintinside' => $row['paintinside']
-                    ,
-                    'actions' => "<a href='/get.php?endpoint=Contracts&action=Read&key={$row['cabin_id']}'><i class='fas fa-th-list' data-key=''></i></a>"
-
-                ];
-            }
-            //$output['row'] = $row;
-        }
-
-        return json_encode($output);
-
+        $cabins = new CabinModel($this->pdo);
+        $params = $this->getParams();
+        return $cabins->list($params);
     }
 
     public function getCabinSingle()
     {
-        $output = $this->getOutput();
+        $cabins = new CabinModel($this->pdo);
+        $params = $this->getParams();
 
-        $sql = "select * from cabins where cabin_id = {$output['key']}";
-        $cabin = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+        $cabin = $cabins->get('cabin_id', $params['key'])['cabins'];
 
-        switch ($cabin['style']) {
-            case 'R':
-            case 'r':
-                $cabin['style'] = 'Right';
-                break;
+        $cabin['cabinstyle'] = lists::getCabinStyle($cabin['style']);
+        $cabin['ownername'] = lists::getOwners()[$cabin['owner']];
 
-            case 'L':
-            case 'l':
-                $cabin['style'] = 'Left';
-        }
+        $tenancies = new TenancyModel($this->pdo);
+        $tenancy = $tenancies->get('tenant_id', $cabin['xerotenant_id'])['tenancies'];
+        $cabin['tenancy'] = $tenancy['name'];
+        $cabin['tenancycolour'] = $tenancy['colour'];
+        $cabin['tenancyshortname'] = $tenancy['shortname'];
 
+        $tasks = new TasksModel($this->pdo);
+        $cabin['tasklist'] = $tasks->getCurrentCabin($params['key']);
+        $cabin['wof'] = $tasks->getLastWOFDate($params['key']);
+        // todo - add a wof status and a wof status colour
 
         return json_encode($cabin);
+    }
+
+    public function closeTask()
+    {
+        $params = $this->getParams();
+        $tasks = new TasksModel($this->pdo);
+        return $tasks->closeTask($params);
     }
 
     public function getAccount($xeroTenantId, $apiInstance, $returnObj = false)
@@ -524,7 +440,7 @@ class JsonClass
     // and return the ones that are active
     public function getTenancies()
     {
-        
+
         if (count($this->tenancies) == 0) {
             $tenancies = new TenancyModel($this->pdo);
             $this->tenancies = $tenancies->list();
@@ -2065,7 +1981,7 @@ class JsonClass
         }
     }
 
-    public function getOrganisationList($returnObj = false)
+    public function getOrganisationList(): string
     {
         $tenancies = $this->getTenancyList();
         $userTenancies = $this->getTenanciesforUser();
@@ -2079,11 +1995,8 @@ class JsonClass
             }
             $tenancies[$k]['disabled'] = $disabled;
         }
-        if ($returnObj) {
-            return $tenancies;
-        }
 
-        echo json_encode($tenancies);
+        return json_encode($tenancies);
     }
 
     // this needs to be saved in the session

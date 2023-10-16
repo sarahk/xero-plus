@@ -18,6 +18,13 @@
     </div>
 </footer>
 </div>
+<?php
+if (isset($modals) && is_array($modals) && count($modals)) {
+    foreach ($modals as $filename) {
+        include("views/modals/$filename");
+    }
+}
+?>
 
 <?php include 'layouts/scripts.php'; ?>
 
@@ -49,12 +56,18 @@
 <!-- APEXCHART JS -->
 <script src="/assets/js/apexcharts.js"></script>
 
+
+<!-- SWEET ALERT JS -->
+<script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
 <!-- INDEX JS -->
 <!--<script src="/assets/js/index1.js"></script>-->
 
 <!-- COOKIES JS -->
 <script src="/node_modules/js-cookie/dist/js.cookie.min.js"></script>
 
+<script type="text/javascript" src="/js/functions.js"></script>
+<script type="text/javascript" src="/js/cabins.js"></script>
 <script type="text/javascript" src="/js/invoices.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>
 
@@ -129,59 +142,6 @@
         });
 
 
-        var tCabins = $('#getCabinsTable').DataTable({
-            "ajax": {
-                "url": "/json.php?endpoint=Cabins&action=Read",
-            },
-            "processing": true,
-            "serverSide": true,
-            "columns": [
-                {data: "number"},
-                {data: "style"},
-                {data: "status"},
-                {data: "contact",},
-                {data: "paintgrey"},
-                {data: "paintinside"},
-            ],
-            "paging": true,
-            dom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
-
-            buttons: [{
-                text: 'All',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    //dt.ajax.reload();
-                    tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read').load();
-                }
-            }, {
-                text: 'New',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read&button=new').load();
-                }
-            }, {
-                text: 'Active',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read&button=active').load();
-                }
-            }, {
-                text: 'Repairs',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read&button=repairs').load();
-                }
-            }, {
-                text: 'Disposed',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read&button=disposed').load();
-                }
-            }]
-
-        });
-
-
         $('input[name="dates"]').mouseup(getInvoiceRedraw);
 
         function getInvoiceRedraw() {
@@ -221,8 +181,6 @@
 
     });
 
-</script>
-<script>
     $(document).ready(function () {
 
         // refresh data from Xero
@@ -251,16 +209,14 @@
             });
         }
 
-        //$("#loadfromxero").click(loadFromXero);
-
 
         // every minute
         setInterval(function () {
             const tenancies = ['auckland', 'waikato', 'bop'];
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {
-                    console.log('setInterval loadInvoicesFromXero: ' + tenancies[i]);
-                    //loadInvoicesFromXero(tenancies[i]);
+                    //console.log('setInterval loadInvoicesFromXero: ' + tenancies[i]);
+                    loadInvoicesFromXero(tenancies[i]);
                     //loadContactsFromXero(tenancies[i]);
                 }
             }
@@ -281,17 +237,6 @@
             console.log('bop cookie');
         });
 
-// set checkboxes to how they were last time
-        // this should be set up in TenancyModel
-        /*   if (Cookies.get('auckland') === 'true') {
-               $("#tenancy-auckland").prop("checked", true);
-           }
-           if (Cookies.get('waikato') === 'true') {
-               $("#tenancy-waikato").prop("checked", true);
-           }
-           if (Cookies.get('bop') === 'true') {
-               $("#tenancy-bop").prop("checked", true);
-           }*/
     });
 </script>
 </body>

@@ -18,8 +18,11 @@
                 </svg>
             </div>
             <ul class="side-menu">
-                <?php include 'widgets/tenancy-picker.php'; ?>
-
+                <?php
+                if (!$loggedOut) {
+                    include SITE_ROOT . '/widgets/tenancy-picker.php';
+                }
+                ?>
                 <li class="slide"><a href="/authorizedResource.php?action=10"
                                      class="btn btn-md btn-block m-3 btn-lime tracking-wide">
                         <strong>Add An Enquiry</strong></a></li>
@@ -47,6 +50,7 @@
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
 
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Get Invoices</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=4">Create multiple contacts and
                         summarizeErrors</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=5">Get Contact List with Filters</a>

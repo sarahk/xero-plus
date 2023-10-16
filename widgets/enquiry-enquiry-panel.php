@@ -39,11 +39,11 @@
             foreach ($data['phones'] as $k => $row) {
                 if (!empty($row['phone_number']) || $row['phone_type'] === 'MOBILE' || $row['phone_type'] === 'DEFAULT') {
                     $label = ($row['phone_type'] === 'DEFAULT') ? 'Phone' : ucfirst(strtolower($row['phone_type']));
-                    FormBuilder::input('phone_type', "data[phone][{$k}][" . strtolower($row['phone_type']) . ']', $label, false, 'tel', $row['phone']);
+                    FormBuilder::input('phone_type', "data[phone][$k][" . strtolower($row['phone_type']) . ']', $label, false, 'tel', $row['phone']);
                 }
             }
             FormBuilder::input('email_address', 'data[contact][email_address]', 'Email', false, 'email', $data['contacts']['email_address'] ?? '');
-            FormBuilder::textarea('notes', 'data[note][note]', 'Notes', ''); ?>
+            FormBuilder::textarea('notes', 'data[note][note]', 'Notes'); ?>
 
         </div>
 
@@ -90,22 +90,22 @@
                     </label>
                     <div class="selectgroup selectgroup-pills">
                         <style>
-                            <?php foreach(TENANCIES as $row):
+                            <?php
+                            foreach(json_decode(TENANCIES, true) as $row):
                             //https://blog.jim-nielsen.com/2021/css-relative-colors/
                             $colour = "var(--bs-{$row['colour']})";
-                            ?>
-                            .selectgroup-input.<?=$row['shortname'];?>:checked + .selectgroup-button {
-                                border-color: <?=$colour;?>;
-                                color: <?=$colour;?>;
-                                background-color: hsl(from <?=$colour; ?> h s l / .5);
-                            }
 
-                            <?php endforeach;?>
+                            echo " .selectgroup-input.{$row['shortname']}:checked + .selectgroup-button {
+                                border-color: $colour;
+                                color: $colour;
+                                background-color: hsl(from $colour; h s l / .5); \n";
+                             endforeach;
+                             ?>
                         </style>
                         <?php
                         // tenancies should still be a variable from the sidebar
                         $xerotenant_id = (array_key_exists('xerotenant_id', $data['contacts'])) ? $data['contacts']['xerotenant_id'] : '';
-                        foreach (TENANCIES as $k => $row):
+                        foreach (json_decode(TENANCIES, true) as $k => $row):
                             $checked = ($xerotenant_id === $row['tenant_id'] ? ' checked="true" ' : '');
                             ?>
                             <label class="selectgroup-item">
@@ -180,13 +180,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <?php FormBuilder::radio('data[contract][cabin_type]', 'Cabin Type', [
-                    ['name' => 'std', 'label' => 'Standard'],
-                    ['name' => 'std-left', 'label' => 'Standard, Left'],
-                    ['name' => 'std-right', 'label' => 'Standard, Right'],
-                    ['name' => 'large', 'label' => 'Large'],
-                    ['name' => 'xl', 'label' => 'Extra Large']
-                ],
+                <?php FormBuilder::radio('data[contract][cabin_type]', 'Cabin Type', lists::getCabinStyles(),
                     $data['contracts'][0]['cabin_type']); ?>
 
 

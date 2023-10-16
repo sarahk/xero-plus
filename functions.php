@@ -39,16 +39,17 @@ function debug($val)
 // don't call showValue directly, use debug
 function showValue($k, $val)
 {
+    $ul = "<ul style='list-style-type: disc; padding: 1em;'>";
     echo '<li>';
     if (is_array($val)) {
-        echo $k . '<ul>';
-        
+        echo $k . $ul;
+
         foreach ($val as $key => $row) {
             showValue($key, $row);
         }
         echo '</ul></li>';
     } else if (is_object($val)) {
-        echo $k . '<ul>';
+        echo $k . $ul;
 
         foreach ((array)$val as $key => $row) {
             showValue($key, $row);

@@ -6,11 +6,13 @@ require_once('storage.php');
 require_once('utilities.php');
 require_once('functions.php');
 require_once('models/ContactModel.php');
+require_once('models/InvoiceModel.php');
 require_once('models/UserModel.php');
-
+require_once('JsonClass.php');
 
 $pdo = getPDO();
 $storage = getStorage();
+$loggedOut = false;
 
 $message = "no API calls";
 
@@ -19,6 +21,11 @@ $debug = array_key_exists('debug', $_GET);
 $id = (array_key_exists('id', $_GET)) ? intval($_GET['id']) : 0;
 
 //$userId = $_SESSION['user']['user_id'];
+
+
+$json = new JsonClass();
+define("TENANCIES", $json->getOrganisationList());
+
 
 switch ($action) {
     case 1:
@@ -152,11 +159,37 @@ switch ($action) {
 
         break;
 
+    case 12:
+        $invoice = new InvoiceModel($pdo);
+        $contract = new ContractModel($pdo);
+        $contact = new ContactModel($pdo);
+
+        $inv = $invoice->get('invoice_id', $_GET['invoice_id'])['invoices'];
+        $data = [
+            'invoice' => $inv,
+            'contract' => $contract->get('repeating_invoice_id', $inv['repeating_invoice_id'])['contracts'],
+            'contact' => $contact->get('contact_id', $inv['contact_id'])['contacts']
+        ];
+        break;
+
+    case 13:
+        // list of cabins
+        $modals = ['cabin-single.php'];
+        break;
+
+    case 14:
+        // single cabin record
+        $cabin = new CabinModel($pdo);
+        $data = $cabin->get('cabin_id', $_GET['key']);
+        break;
+
+    case 15:
+        // single task record
+        break;
 
     default:
         // nothing to do
 }
-
 
 require_once('views/header.php');
 
@@ -180,6 +213,12 @@ require_once('views/header.php');
             break;
         case 11:
             include 'views/cabin-locations.php';
+            break;
+        case 12:
+            include 'views/invoice_single.php';
+            break;
+        case 13:
+            include 'views/cabins-index.php';
             break;
     }
     ?>

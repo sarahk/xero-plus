@@ -1,15 +1,15 @@
 <?php
-
 //use XeroAPI\XeroPHP\AccountingObjectSerializer;
-require_once 'config.php';
-require_once('utilities.php');
-require_once('functions.php');
-require_once('models/AddressModel.php');
-require_once('models/ContactModel.php');
-require_once('models/InvoiceModel.php');
-require_once('models/PhoneModel.php');
-require_once('models/SettingModel.php');
-require_once('models/TenancyModel.php');
+
+include_once('utilities.php');
+include_once('functions.php');
+include_once('models/AddressModel.php');
+include_once('models/ContactModel.php');
+include_once('models/InvoiceModel.php');
+include_once('models/PhoneModel.php');
+include_once('models/SettingModel.php');
+include_once('models/TenancyModel.php');
+
 
 class XeroClass
 {
@@ -215,7 +215,9 @@ class XeroClass
                 'xero_status' => $row[0]->getContactStatus(),
                 'addresses' => $addresses,
                 'phones' => $phones,
-                'xerotenant_id' => $xeroTenantId
+                'xerotenant_id' => $xeroTenantId,
+                'stub' => 0,
+                'xeroRefresh' => 1
             ];
 
             return $this->contact->prepAndSave(['contact' => $save]);
@@ -239,8 +241,6 @@ class XeroClass
 
     public function getContactRefresh(): void// auckland,waikato,bop
     {
-
-
         $k = 1;
         $tenantName = $_GET['tenancy'];
         $xeroTenantId = $this->getXeroTenantId($this->pdo, $tenantName);
@@ -630,7 +630,7 @@ class XeroClass
         $objInvoice = new InvoiceModel($this->pdo);
 
         $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
-        
+
         $objInvoice->getStatement();
 
         //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
@@ -1047,25 +1047,23 @@ class XeroClass
         return $str;
     }
 
-    public function getRepeatingInvoice($xeroTenantId, $apiInstance, $returnObj = false)
+    public function getRepeatingInvoice($xeroTenantId, $repeating_invoice_id)
     {
         $str = '';
 
         //[RepeatingInvoices:Read]
         // getRepeatingInvoices($xero_tenant_id, $where = null, $order = null)
         //
-        $where = '';
+        $where = '' . $repeating_invoice_id;
         $order = null;
 
-        $result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where, $order);
+        $result = $this->apiInstance->getRepeatingInvoices($xeroTenantId, $where, $order);
         //[/RepeatingInvoices:Read]
         $str = $str . "Get RepeatingInvoices: " . count($result->getRepeatingInvoices()) . "<br>";
         debug($result->getRepeatingInvoices());
-        if ($returnObj) {
-            return $result->getRepeatingInvoices()[0];
-        } else {
-            return $str;
-        }
+
+        return $result->getRepeatingInvoices()[0];
+
     }
 
     /*
@@ -1099,10 +1097,13 @@ class XeroClass
             'contact_id' => $contact_id,
             'ckcontact_id' => $this->getSingleContact($xeroTenantId, $contact_id),
             'reference' => $result[0]->getReference(),
-            'total' => $result[0]->getTotal()
+            'total' => $result[0]->getTotal(),
+            'xeroRefresh' => true,
+            'stub' => 0
         ];
         $contract = array_merge($contract, $this->getScheduleFromXeroObject($result[0]['schedule']));
 
+        debug($contract);
         return $this->contract->prepAndSave(['contract' => $contract]);
     }
 
