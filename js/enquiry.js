@@ -17,20 +17,24 @@ $(document).ready(function () {
 
 
     // jquery ui
-    $('#delivery-date').datepicker({
-        dateFormat: 'dd-mm-yy',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-        numberOfMonths: 2,
-        beforeShowDay: $.datepicker.noWeekends
-    });
-    $('#actual-delivery-date').datepicker({
-        dateFormat: 'dd-mm-yy',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-        numberOfMonths: 2,
-        beforeShowDay: $.datepicker.noWeekends
-    });
+    if ($('#delivery-date').length) {
+        $('#delivery-date').datepicker({
+            dateFormat: 'dd-mm-yy',
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            numberOfMonths: 2,
+            beforeShowDay: $.datepicker.noWeekends
+        });
+    }
+    if ($('#actual-delivery-date').length) {
+        $('#actual-delivery-date').datepicker({
+            dateFormat: 'dd-mm-yy',
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            numberOfMonths: 2,
+            beforeShowDay: $.datepicker.noWeekends
+        });
+    }
 
     $('#mark-as-delivered').on('click', function () {
         alert('delivered, already?');
@@ -148,58 +152,60 @@ $(document).ready(function () {
         });
     }
 
-    let autocompleteOptions = {
-        types: ['geocode'], // Optional: Specify the type of results you want (e.g., 'geocode' for addresses)
-        componentRestrictions: {country: 'NZ'} // Replace 'US' with the ISO 3166-1 country code of the country you want to limit the results to
-    };
-    let autocomplete = new google.maps.places.Autocomplete(document.getElementById('deliver-to'), autocompleteOptions);
-    autocomplete.setFields(['place_id', 'name', 'address_components', 'geometry']);
-    autocomplete.addListener('place_changed', function () {
-        const place = autocomplete.getPlace();
-        const components = place.address_components;
+    if ($('#address_line1').length) {
+        let autocompleteOptions = {
+            types: ['geocode'], // Optional: Specify the type of results you want (e.g., 'geocode' for addresses)
+            componentRestrictions: {country: 'NZ'} // Replace 'US' with the ISO 3166-1 country code of the country you want to limit the results to
+        };
+        let autocomplete = new google.maps.places.Autocomplete(document.getElementById('deliver-to'), autocompleteOptions);
+        autocomplete.setFields(['place_id', 'name', 'address_components', 'geometry']);
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            const components = place.address_components;
 
 
-        if (place.geometry && place.geometry.location) {
-            var latitude = place.geometry.location.lat();
-            var longitude = place.geometry.location.lng();
+            if (place.geometry && place.geometry.location) {
+                var latitude = place.geometry.location.lat();
+                var longitude = place.geometry.location.lng();
 
-            $('#lat').val(latitude);
-            $('#long').val(longitude);
-        }
-
-        $('#place_id').val(place.place_id);
-
-        if (typeof components !== 'undefined') {
-            let street_number;
-            let address_line1;
-
-            for (let component of components) {
-                //for (let i = 0; i < Object.keys(components).length(); i++) {
-                //let component = Object.keys(components)[i];
-
-                const type = component.types[0];
-                const longName = component.long_name;
-                const shortName = component.short_name;
-                console.log([type, shortName, longName]);
-                switch (type) {
-                    case 'street_number':
-                        street_number = longName;
-                        break;
-                    case 'route':
-                        address_line1 = shortName;
-                        break;
-                    case 'sublocality_level_1':
-                        $('#address_line2').val(shortName);
-                        break;
-                    case 'locality':
-                        $("#city").val(shortName);
-                        break;
-                    case 'postal_code':
-                        $('#postal_code').val(longName);
-                        break;
-                }
+                $('#lat').val(latitude);
+                $('#long').val(longitude);
             }
-            $('#address_line1').val(street_number + ' ' + address_line1);
-        }
-    });
+
+            $('#place_id').val(place.place_id);
+
+            if (typeof components !== 'undefined') {
+                let street_number;
+                let address_line1;
+
+                for (let component of components) {
+                    //for (let i = 0; i < Object.keys(components).length(); i++) {
+                    //let component = Object.keys(components)[i];
+
+                    const type = component.types[0];
+                    const longName = component.long_name;
+                    const shortName = component.short_name;
+                    console.log([type, shortName, longName]);
+                    switch (type) {
+                        case 'street_number':
+                            street_number = longName;
+                            break;
+                        case 'route':
+                            address_line1 = shortName;
+                            break;
+                        case 'sublocality_level_1':
+                            $('#address_line2').val(shortName);
+                            break;
+                        case 'locality':
+                            $("#city").val(shortName);
+                            break;
+                        case 'postal_code':
+                            $('#postal_code').val(longName);
+                            break;
+                    }
+                }
+                $('#address_line1').val(street_number + ' ' + address_line1);
+            }
+        });
+    }
 });

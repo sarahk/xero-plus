@@ -120,10 +120,10 @@ $(document).ready(function () {
                     $("#cabintasks tbody").append(newRow);
                 }
                 $('#cabinedit').on('click', function () {
-                    window.open('/authorisedResource.php?action=14&cabin_id=' + key);
+                    window.open('/authorizedResource.php?action=14&cabin_id=' + key);
                 });
                 $('#addtask').on('click', function () {
-                    window.open('/authorisedResource.php?action=15&cabin_id=' + key);
+                    window.open('/authorizedResource.php?action=15&cabin_id=' + key);
                 });
             });
             $('#modalSpinnerCabin').hide();

@@ -36,7 +36,11 @@ class BaseModel
 
     public function get($key, $keyVal, $defaults = true): array
     {
-        $data = $this->getRecord($key, $keyVal);
+        // pass 0 if you just want the defaults for the table
+        if ($keyVal != 0)
+            $data = $this->getRecord($key, $keyVal);
+        else $data = [];
+
         // either we didn't have a value or there isn't a record in the database
         if (count($data)) {
 
@@ -50,10 +54,12 @@ class BaseModel
 
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey]);
+                    $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey], $defaults);
+                    //var_export(['parent' => $this->table, 'child table:' => $val, 'data' => $output[$val]]);
                 }
             }
-        } else if (!$defaults) $output = [];
+            return $output;
+        } else if (!$defaults) return [];
         else {
             $output = [$this->table => $this->getDefaults()];
             if (count($this->hasMany)) {
@@ -61,16 +67,19 @@ class BaseModel
                     $output[$val] = $this->{$val}->getDefaults();
                 }
             }
+            return $output;
         }
-        return $output;
     }
+
 
     protected function getRecord($key, $keyVal): array
     {
         $data = [];
 
         if ($keyVal > 0) {
-            $sql = "SELECT * " . $this->getVirtuals() . " FROM $this->table WHERE `$key` = :keyVal";
+            $sql = "SELECT * " . $this->getVirtuals() . " 
+                FROM $this->table 
+                WHERE `$key` = :keyVal";
             $this->getStatement($sql);
             try {
                 $this->statement->execute(['keyVal' => $keyVal]);
@@ -90,18 +99,23 @@ class BaseModel
 
     protected function getVirtuals(): string
     {
-        $output = [];
         if (count($this->virtualFields)) {
+            $output = [];
             foreach ($this->virtualFields as $k => $val) $output[] = "$val as $k";
             return ', ' . implode(', ', $output);
         }
         return '';
     }
 
-    public function getChildren($parent, $parentId): array
+    public function getChildren($parent, $parentId, $defaults = true): array
     {
-        $orderBy = (!empty($this->orderBy) ? " order by $this->orderBy" : '');
-        $sql = "SELECT * " . $this->getVirtuals() . " FROM `$this->table` WHERE {$this->joins[$parent]} $orderBy";
+        $orderBy = (!empty($this->orderBy) ? " ORDER BY $this->orderBy" : '');
+        $sql = "SELECT * " . $this->getVirtuals() . " 
+            FROM `$this->table` 
+            WHERE {$this->joins[$parent]} 
+            $orderBy 
+            LIMIT 15";
+
 
         $statement = $this->pdo->prepare($sql);
 
@@ -111,15 +125,49 @@ class BaseModel
         for ($i = 0; $i < $varCount; $i++) {
             $vars['id' . ($i + 1)] = $parentId;
         }
-
         $statement->execute($vars);
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($data)) {
-            return $data;
+        $count = count($data);
+        /*
+        var_export([
+            'parent' => $parent, 'parent_id' => $parentId,
+            'defaults' => $defaults,
+            'sql' => $sql, 'vars' => $vars, 'count' => $count, 'data' => $data
+        ]);
+        */
+        switch ($count) {
+            case 0:
+                if ($defaults) return $this->getDefaults();
+                else return [];
+
+            case 1:
+                // needs testing
+                return [0 => $data];
+
+            default:
+                return $data;
+        }
+    }
+
+    protected function getTenanciesWhere($params)
+    {
+        $bits = [];
+        foreach ($params['tenancies'] as $val) {
+            $bits[] = " `{$this->table}`.`xerotenant_id` = '{$val}' ";
         }
 
-        return $this->getDefaults();
+        return '(' . implode(' OR ', $bits) . ' ) ';
+    }
+
+    protected function getCaseStatement($field, $array): string
+    {
+        $bits = [];
+        foreach ($array as $row) {
+            $bits[] = "WHEN `$field` = '{$row['name']}' THEN '{$row['icon']}' ";
+        }
+
+        return "CASE " . implode($bits) . ' END ';
     }
 
     /*
@@ -137,13 +185,13 @@ class BaseModel
         $statement = $this->pdo->prepare($sql);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $data = [];
+
         foreach ($result as $row) {
-            $this->defaults[$row['Field']] = $row['Default'];
+            $this->defaults[0][$row['Field']] = $row['Default'];
         }
         if (count($this->virtualFields)) {
             foreach ($this->virtualFields as $k => $val) {
-                $this->defaults[$k] = '';
+                $this->defaults[0][$k] = '';
             }
         }
 

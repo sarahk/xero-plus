@@ -5,8 +5,13 @@ require_once(SITE_ROOT . '/models/BaseModel.php');
 class ContractModel extends BaseModel
 {
     protected string $table = 'contracts';
-    protected array $joins = ['contacts' => "`contracts`.`ckcontact_id` = :id1 OR `contracts`.`contact_id` = :id2"];
+    protected array $joins = [
+        'contacts' => "`contracts`.`ckcontact_id` = :id1 OR `contracts`.`contact_id` = :id2",
+        'cabins' => "`contracts`.`cabin_id` = :id1"
+    ];
     protected array $virtualFields = ['address' => "CONCAT(address_line1,', ', address_line2,', ', city, ' ', postal_code)"];
+
+
     protected string $orderBy = "delivery_date DESC";
     protected array $saveKeys = [
         'contract_id', 'repeating_invoice_id', 'cabin_id',
@@ -93,7 +98,7 @@ class ContractModel extends BaseModel
         $xero = new XeroClass();
         $repeating_invoice_id = $data['repeating_invoice_id'];
         $xeroTenantId = $this->getTenantId($repeating_invoice_id);
-        
+
         $xero->getSingleRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
 
     }
@@ -114,4 +119,6 @@ class ContractModel extends BaseModel
 
         return $xeroTenantId;
     }
+
+    
 }

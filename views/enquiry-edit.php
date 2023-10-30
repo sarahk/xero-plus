@@ -26,9 +26,11 @@ function hasIdValue($name, $fld)
 
 function hasAnyValues($row)
 {
-    foreach ($row as $name => $fld) {
-        if (hasIdValue($name, $fld)) {
-            return true;
+    if (is_array($row)) {
+        foreach ($row as $name => $fld) {
+            if (hasIdValue($name, $fld)) {
+                return true;
+            }
         }
     }
     return false;
@@ -45,6 +47,7 @@ function getCount($array)
     }
     return '';
 }
+
 
 ?>
 <div class="row">

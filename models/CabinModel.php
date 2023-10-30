@@ -6,6 +6,18 @@ require_once(SITE_ROOT . '/models/BaseModel.php');
 class CabinModel extends BaseModel
 {
     protected string $table = 'cabins';
+    protected string $primaryKey = 'cabin_id';
+    protected array $hasMany = ['notes'];
+    protected NoteModel $notes;
+
+    function __construct($pdo)
+    {
+        parent::__construct($pdo);
+
+        //$this->buildInsertSQL();
+        $this->notes = new NoteModel($pdo);
+
+    }
 
     public function list($params): string
     {
@@ -163,6 +175,28 @@ class CabinModel extends BaseModel
             $this->statement->debugDumpParams();
         }
         return 0;
+    }
+
+    public function getCurrentContract($cabin_id): array
+    {
+        $sql = "SELECT `cabins`.`cabin_id`, `cabins`.`cabinnumber`, `contracts`.*
+            FROM `cabins`
+            LEFT JOIN `contracts` on `cabins`.`cabin_id` = `contracts`.`cabin_id`
+            WHERE cabins.cabin_id = :cabin_id
+            AND contracts.delivery_date <= now() 
+            AND (contracts.`pickup_date` >= now() OR contracts.`pickup_date` IS NULL)
+            LIMIT 1";
+
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute(['cabin_id' => $cabin_id]);
+            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            if (count($result) == 1) return $result[0];
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
+        return [];
     }
 }
 

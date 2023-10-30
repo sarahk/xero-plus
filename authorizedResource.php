@@ -145,9 +145,18 @@ switch ($action) {
 
     case 10:
         // enquiries
-        $contact = new ContactModel($pdo);
-        $data = $contact->get('id', $id);
+        $contacts = new ContactModel($pdo);
+        $data = $contacts->get('id', $id);
+
+        $contracts = new ContractModel($pdo);
+
+        $users = new UserModel($pdo);
+        $user = $users->get('user_id', $_SESSION['xero_user_id']);
+
+        $data['contracts'] = $contracts->getChildren('contacts', $id);
+
         if ($debug) {
+            debug($_SESSION);
             debug($data);
             exit;
         }
@@ -180,7 +189,19 @@ switch ($action) {
     case 14:
         // single cabin record
         $cabin = new CabinModel($pdo);
-        $data = $cabin->get('cabin_id', $_GET['key']);
+        $data = $cabin->get('cabin_id', $_GET['cabin_id'], false);
+
+        //$contracts = new ContractModel($pdo);
+        $data['contracts'] = $cabin->getCurrentContract($_GET['cabin_id']);
+        $contacts = new ContactModel($pdo);
+        $contact = $contacts->get('id', $data['contracts']['ckcontact_id'], false);
+
+        // contact will have a notes child record, we let the cabin notes overwrite it
+        $data = array_merge($contact, $data);
+
+        $tasks = new TasksModel($pdo);
+        $data['tasks'] = $tasks->getChildren('cabins', $_GET['cabin_id'], false);
+        $modals = ['task-single.php'];
         break;
 
     case 15:
@@ -188,7 +209,31 @@ switch ($action) {
         break;
 
     default:
-        // nothing to do
+        // main dash
+        // TODO
+        // replace dummy data with real data
+        $stock = [];
+        $start = new DateTime(date('Y-m-d', strtotime('Monday last week'))); // Your start date
+        $end = new DateTime(date('Y-m-d', strtotime('Friday next week')));   // Your end date
+
+        for ($date = $start; $date <= $end; $date->modify('+1 day')) {
+            $vals = [];
+            foreach (json_decode(TENANCIES, true) as $row) {
+                if ($row['active']) {
+                    $vals[] = [
+                        'shortname' => $row['shortname'],
+                        'data' => ['1', '2', '3'],
+                        'colour' => $row['colour']
+                    ];
+                }
+            }
+            $stock[] = [
+                'label' => $date->format('D j') . '<sup>' . $date->format('S') . '</sup>',
+                'vals' => $vals
+            ];
+        }
+
+        break;
 }
 
 require_once('views/header.php');
@@ -219,6 +264,12 @@ require_once('views/header.php');
             break;
         case 13:
             include 'views/cabins-index.php';
+            break;
+        case 14:
+            include 'views/forms/cabin-edit.php';
+            break;
+        default:
+            include 'views/home.php';
             break;
     }
     ?>

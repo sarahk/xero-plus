@@ -65,6 +65,28 @@ function showValue($k, $val)
     echo "</li>";
 }
 
+function getElapsedTime($start, $end = null): string
+{
+    $startDT = new DateTime($start);
+
+    if (is_null($end)) $endDT = new DateTime();
+    else $endDT = new DateTime($end);
+
+    $interval = $endDT->diff($startDT);
+
+    $elapsed = [];
+    if ($interval->y == 1) $elapsed[] = '1 year';
+    else if ($interval->y > 1) $elapsed[] = "{$interval->y}  years";
+
+    if ($interval->m == 1) $elapsed[] = '1 month';
+    else if ($interval->m > 1) $elapsed[] = "{$interval->m} months";
+
+    if ($interval->d == 1) $elapsed[] = '1 day';
+    else $elapsed[] = "{$interval->d} days";
+
+    return implode(', ', $elapsed);
+}
+
 /**
  * @param array $keys
  * @param array $array
@@ -91,6 +113,93 @@ function array_keys_exist(array $keys, array $array, string $match = 'any'): boo
     return true;
 }
 
+function getCard($filename, $label, $data): void
+{
+    ?>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><?= $label; ?></h3>
+        </div>
+        <div class="card-body">
+            <?php include SITE_ROOT . $filename; ?>
+        </div>
+    </div>
+    <?php
+}
+
+function getEmailDisplay($email): string
+{
+    if (preg_match("/^[\w\.-]+@[\w\.-]+\.\w+$/", $email)) {
+        return "<i class='fa-solid fa-at text-success'></i> <a href='mailto:$email'> $email</a>";
+    } else {
+        return "<i class='fa-solid fa-at text-danger'></i> <s class=' text-danger'>$email</s>";
+    }
+}
+
+function getPhoneDisplay($row)
+{
+    $area = $row['phone_area_code'];
+    if (left($area) !== '0') $area = "0{$area}";
+    return "<a href='tel:{$area}{$row['phone_number']}'>$area {$row['phone_number']}</a>";
+}
+
+function getAddressDisplay($row)
+{
+    $address = [];
+    if (!empty($row['address_line1']))
+        $address[] = $row['address_line1'];
+    if (!empty($row['address_line2']))
+        $address[] = $row['address_line2'];
+
+    if (!empty($row['city']))
+        $address[] = $row['city'];
+
+    if (!empty($row['region']))
+        $address[] = $row['region'] . ' ' . $row['postal_code'];
+
+    return implode('<br>', $address);
+}
+
+function getTabs($tabList, $active, $data): void
+{
+    ?>
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+
+            <div class="card-body">
+                <div class="card-pay">
+                    <ul class="nav tabs-menu">
+                        <?php
+                        foreach ($tabList as $tab) {
+                            $class = ($tab['name'] === $active) ? ' active ' : '';
+                            echo "<li>
+<a href='#tab-{$tab['name']}' class='{$class}' data-bs-toggle='tab'>{$tab['label']}</a>
+</li>";
+                        }
+                        ?>
+                    </ul>
+                </div>
+
+                <div class="panel-body tabs-menu-body">
+                    <div class="tab-content">
+                        <?php
+                        foreach ($tabList as $tab) {
+
+                            $class = ($tab['name'] === $active) ? ' active ' : '';
+                            echo "<div class='tab-pane {$class}' id='tab-{$tab['name']}'>";
+                            include(SITE_ROOT . $tab['filename']);
+                            echo '</div>';
+                        } ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+/*
 // sample repeating invoice data
 $list = [
     [
@@ -339,3 +448,4 @@ $list = [
         "CurrencyCode" => "NZD"
     ]
 ];
+*/

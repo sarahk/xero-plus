@@ -5,7 +5,12 @@ require_once(SITE_ROOT . '/models/BaseModel.php');
 class NoteModel extends BaseModel
 {
     protected string $table = 'notes';
-    protected array $joins = ['contacts' => "`notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts'"];
+    protected string $primaryKey = 'id';
+    protected string $orderBy = 'notes.created DESC';
+    protected array $joins = [
+        'contacts' => "`notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts'",
+        'cabins' => "`notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'cabins'"
+    ];
     protected string $insert = "INSERT INTO `notes` (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
                 VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
                 ON DUPLICATE KEY UPDATE note = :note";

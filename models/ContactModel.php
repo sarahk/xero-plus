@@ -20,6 +20,7 @@ class ContactModel extends BaseModel
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
         'how_did_you_hear',
         'updated_date_utc', 'stub'];
+    
     protected AddressModel $addresses;
     protected PhoneModel $phones;
 
@@ -45,7 +46,7 @@ class ContactModel extends BaseModel
 
     public function prepAndSave($data): int
     {
-        var_dump($data);
+
         if (array_keys_exist(['id', 'contact_id', 'xeroRefresh'], $data['contact'], 'any')) {
             if (array_key_exists('xeroRefresh', $data['contact']) && $data['contact']['xeroRefresh'] == true) {
                 // we don't want to get the old $oldVals = ['contracts' => []];
@@ -126,7 +127,7 @@ class ContactModel extends BaseModel
 
     protected function getFromXero($data): void
     {
-        debug($data);
+
         parent::getFromXero($data); // should be nothing there but let's check
         if (empty($data['contact_id'])) {
             return;
@@ -182,6 +183,4 @@ class ContactModel extends BaseModel
             'data' => $list
         ];
     }
-
-
 }

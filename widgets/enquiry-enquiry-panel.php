@@ -24,7 +24,7 @@
 
     FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['note'][0]['foreign_id'] ?? '');
     FormBuilder::hidden('note_parent', 'data[note][parent]', 'contacts');
-    FormBuilder::hidden('note_createdby', 'data[note][createdby]', $user['id']);
+    FormBuilder::hidden('note_createdby', 'data[note][createdby]', $_SESSION['user_id']);
     ?>
 
     <div class="row row-sm">

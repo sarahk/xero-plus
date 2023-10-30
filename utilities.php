@@ -2,7 +2,9 @@
 
 use League\OAuth2\Client\Provider\GenericProvider;
 
-session_start();
+if (!isset($_SESSION)) {
+    session_start();
+}
 const SITE_ROOT = __DIR__;
 const SIDE_BAR = true;
 const GOOGLE_MAPS_API = 'AIzaSyB32Z6abVU4CzDmYdxfGX1kW4H6slcLjUw';
@@ -22,28 +24,35 @@ function getProvider(): GenericProvider
     ]);
 }
 
-function setJWTValues($storage): array
+/**
+ * @throws Exception
+ */
+function setJWTValues($storage): void
 {
-    ob_start();
-    $jwt = new XeroAPI\XeroPHP\JWTClaims();
-    $jwt->setTokenId((string)$storage->getIdToken());
-    // Set access token in order to get authentication event id
-    $jwt->setTokenAccess((string)$storage->getAccessToken());
-    $jwt->decode();
+    if (!array_key_exists('user_id', $_SESSION)) {
+        ob_start();
+        $jwt = new XeroAPI\XeroPHP\JWTClaims();
+        $jwt->setTokenId((string)$storage->getIdToken());
+        // Set access token in order to get authentication event id
+        $jwt->setTokenAccess((string)$storage->getAccessToken());
+        $jwt->decode();
 
-    $user = [
-        'userName' => $_SESSION['user_name'] = $jwt->getGivenName(),
-        'xeroUserId' => $_SESSION['xero_user_id'] = $jwt->getXeroUserId(),
-        'userEmail' => $_SESSION['user_email'] = $jwt->getEmail()
-    ];
-    ob_end_clean();
-    $objUser = new UserModel(getPDO());
-    $user['id'] = $objUser->getId('user_id', $user['xeroUserId']);
-    return $user;
+        $_SESSION['user_name'] = $jwt->getGivenName();
+        $_SESSION['xero_user_id'] = $jwt->getXeroUserId();
+        $_SESSION['user_email'] = $jwt->getEmail();
+
+        ob_end_clean();
+        $users = new UserModel(getPDO());
+        $_SESSION['user_id'] = $users->getId('user_id', $_SESSION['xero_user_id']);
+
+    }
+
 }
+
 
 function getStorage(): StorageClass
 {
+
     $storage = new StorageClass();
     $xeroTenantId = (string)$storage->getSession()['tenant_id'];
 
@@ -67,11 +76,11 @@ function getStorage(): StorageClass
             $newAccessToken->getRefreshToken(),
             $newAccessToken->getValues()["id_token"]
         );
-
-        $_SESSION['user'] = setJWTValues($storage);
         setTenanciesforUser($provider, $storage);
     }
+    setJWTValues($storage);
 
+   
     return $storage;
 }
 
@@ -161,12 +170,60 @@ class lists
         return 'uknown: ' . $name;
     }
 
+    static function getCabinStatuses()
+    {
+        return [
+            ['name' => 'new', 'label' => 'New'],
+            ['name' => 'active', 'label' => 'Active'],
+            ['name' => 'repairs', 'label' => 'Needs Repairs'],
+            ['name' => 'sold', 'label' => 'Sold'],
+            ['name' => 'stolen', 'label' => 'Stolen'],
+            ['name' => 'write-off', 'label' => 'Write Off'],
+        ];
+    }
+
+    static function getCabinStatus($name): string
+    {
+        $types = lists::getCabinStatuses();
+        foreach ($types as $row) {
+            if ($row['name'] === $name) {
+                return $row['label'];
+            }
+        }
+        return 'uknown: ' . $name;
+    }
+
     static function getTaskTypes(): array
     {
         return [
-            'wof' => ['name' => 'wof', 'label' => 'Electrical WOF', 'repeats' => true, 'years' => 4, 'delete' => false],
-            'buy' => ['name' => 'buy', 'label' => 'Shopping', 'repeats' => false, 'delete' => true],
-            'repair' => ['name' => 'repair', 'label' => 'Repairs', 'repeats' => false, 'delete' => true]
+            'wof' => [
+                'name' => 'wof',
+                'label' => 'Electrical WOF',
+                'repeats' => true,
+                'years' => 4,
+                'delete' => false,
+                'icon' => 'bolt-lightning'
+            ],
+            'buy' => [
+                'name' => 'buy', 'label' => 'Shopping', 'repeats' => false, 'delete' => true,
+                'icon' => 'cart-shopping'
+            ],
+            'repair' => [
+                'name' => 'repair', 'label' => 'Repairs', 'repeats' => false, 'delete' => true,
+                'icon' => 'hammer'
+            ]
         ];
     }
+
+    static function getTaskType($name): string
+    {
+        $types = lists::getTaskTypes();
+        foreach ($types as $row) {
+            if ($row['name'] === $name) {
+                return $row['label'];
+            }
+        }
+        return 'uknown: ' . $name;
+    }
+
 }

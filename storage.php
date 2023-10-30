@@ -4,9 +4,7 @@ class StorageClass
 {
     function __construct()
     {
-        if (!isset($_SESSION)) {
-            $this->init_session();
-        }
+        $this->startSession();
     }
 
     public function getSession()
@@ -14,9 +12,11 @@ class StorageClass
         return $_SESSION['oauth2'] ?? null;
     }
 
-    public function startSession($token, $secret, $expires = null)
+    public function startSession()
     {
-        session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
     }
 
     public function setToken($token, $expires, $tenantId, $refreshToken, $idToken)

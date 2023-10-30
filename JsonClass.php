@@ -85,6 +85,42 @@ class JsonClass
         return $tasks->closeTask($params);
     }
 
+    public function ListTasksForCabin(): string
+    {
+        $params = $this->getParams();
+        $tasks = new TasksModel($this->pdo);
+        return json_encode($tasks->List($params));
+        //return json_encode($params);
+    }
+
+    public function getTaskSingle()
+    {
+        $tasks = new TasksModel($this->pdo);
+        $params = $this->getParams();
+
+        $task = $tasks->get('id', $params['key'])['tasks'];
+
+        $task['type'] = lists::getTaskType($task['task_type']);
+
+        $tenancies = new TenancyModel($this->pdo);
+        $tenancy = $tenancies->get('tenant_id', $task['xerotenant_id'])['tenancies'];
+        $task['tenancy'] = $tenancy['name'];
+        $task['tenancycolour'] = $tenancy['colour'];
+        $task['tenancyshortname'] = $tenancy['shortname'];
+
+        if (!empty($task['cabin_id'])) {
+            $cabins = new CabinModel($this->pdo);
+            $task['cabin'] = $cabins->getCurrentContract($task['cabin_id']);
+
+            if (!empty($task['cabin']['ckcontact_id'])) {
+                $contacts = new ContactModel($this->pdo);
+                $task['contact'] = $contacts->get('id', $task['cabin']['ckcontact_id'], false);
+            }
+        }
+        
+        return json_encode($task);
+    }
+
     public function getAccount($xeroTenantId, $apiInstance, $returnObj = false)
     {
 

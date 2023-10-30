@@ -199,10 +199,11 @@ class XeroClass
         $page = 1;
         $include_archived = true;
 
-        $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, $where, $order, $ids, $page, $include_archived);
-        $data = $result->getContacts();
 
-        if (count($data)) {
+        $result = $this->apiInstance->getContact($xeroTenantId, $contact_id);
+
+
+        if (count($result)) {
 
             $row = $result->getContacts();
             $addresses = $this->getAddressesFromXeroObject($row[0]->getAddresses());
@@ -591,7 +592,7 @@ class XeroClass
         $result = $apiInstance->updateEmployee($xeroTenantId, $employeeId, $employee);
         //[/Employees:Update]
 
-        var_dump($result);
+       
         //$str = $str . "Update Employee: " . $employee["FirstName"] . "  " . $employee["LastName"]   . "<br>" ;
 
         return $str;

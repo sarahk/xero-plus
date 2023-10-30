@@ -1,3 +1,6 @@
+@import url("/assets/iconfonts/font-awesome/css/font-awesome.min.css");
+
+
 .card-pay .tabs-menu li {
     width: 25%;
 }
@@ -8,4 +11,17 @@ select.form-control {
     background-repeat: no-repeat;
     background-position: right;
     color: var(--bs-primary);
+}
+
+/* if the colours for the tenancies change they need to be added here */
+.border-bottom-yellow {
+    border-bottom: 1px solid var(--bs-yellow);
+}
+
+.border-bottom-cyan {
+    border-bottom: 1px solid var(--bs-cyan);
+}
+
+.border-bottom-purple {
+    border-bottom: 1px solid var(--bs-purple);
 }

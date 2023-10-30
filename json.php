@@ -476,6 +476,11 @@ try {
                 case 'Close':
                     echo $json->closeTask();
                     break;
+                case 'List':
+                    echo $json->ListTasksForCabin();
+                    break;
+                case 'Single':
+                    echo $json->getTaskSingle();
             }
             break;
 

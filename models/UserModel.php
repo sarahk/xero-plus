@@ -11,17 +11,14 @@ class UserModel extends BaseModel
 
     public function getId($key, $value): int
     {
-        $sql = 'SELECT `id` FROM `users` where :key = :value';
+        $sql = "SELECT `id` FROM `users` where `{$key}` = :value";
 
         $this->getStatement($sql);
 
         try {
-            $this->statement->execute(['key' => $key, 'value' => $value]);
+            $this->statement->execute(['value' => $value]);
             $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            // todo remove debug
-            debug($list);
-            $this->statement->debugDumpParams();
-
+            
             if (count($list) == 0) {
                 $this->statement->debugDumpParams();
                 throw new Exception("User not found: $this->table -> $key -> {$value}");
