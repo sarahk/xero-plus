@@ -56,9 +56,16 @@ if (isset($modals) && is_array($modals) && count($modals)) {
 <!-- APEXCHART JS -->
 <script src="/assets/js/apexcharts.js"></script>
 
+<!-- Proper Font Awesome -->
+<script src="https://kit.fontawesome.com/816ff03c37.js" crossorigin="anonymous"></script>
+
+<!-- OWL CAROUSEL -->
+<script src="/assets/plugins/owl-carousel/owl.carousel.min.js"></script>
+<!-- SLICK SLIDER -->
+<script type="text/javascript" src="/assets/plugins/slick/slick.min.js"></script>
 
 <!-- SWEET ALERT JS -->
-<script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script src="/node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
 <!-- INDEX JS -->
 <!--<script src="/assets/js/index1.js"></script>-->
@@ -135,7 +142,66 @@ switch ($action) {
             //modal.find('.modal-title').text('Contact: ' + $('#modalContactName').text());
 
         });
-
+        if ($('.owl-carousel').length) {
+            let homeScreen = getScreenBreakpoint();
+            let homeCarousel = (homeScreen === 'xs' || homeScreen === 'sm') ? 1 : 5;
+//items: homeCarousel,
+            $(".owl-carousel").owlCarousel({
+                URLhashListener: true,
+                margin: 5,
+                startPosition: '#today',
+                responsiveClass: true,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    400: {
+                        items: 2
+                    },
+                    740: {
+                        items: 5
+                    },
+                    940: {
+                        items: 5
+                    }
+                },
+                nav: true,
+                stagePadding: 50,
+            });
+        }
+        if ($('.slick-stock').length) {
+            $('.slick-stock').slick({
+                dots: false,
+                arrows: true,
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                centerMode: true,
+                initialSlide: daysSincePreviousMonday(),
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 3,
+                            dots: true
+                        }
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 2
+                        }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }],
+            });
+        }
 
         // refresh data from Xero
         // but only for one tenancy

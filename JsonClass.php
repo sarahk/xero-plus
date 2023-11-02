@@ -85,6 +85,13 @@ class JsonClass
         return $tasks->closeTask($params);
     }
 
+    public function ListsTasks($for)
+    {
+        $params = $this->getParams();
+        $tasks = new TasksModel($this->pdo);
+        return json_encode($tasks->list($params));
+    }
+
     public function ListTasksForCabin(): string
     {
         $params = $this->getParams();
@@ -117,7 +124,7 @@ class JsonClass
                 $task['contact'] = $contacts->get('id', $task['cabin']['ckcontact_id'], false);
             }
         }
-        
+
         return json_encode($task);
     }
 

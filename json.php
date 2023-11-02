@@ -479,6 +479,8 @@ try {
                 case 'List':
                     echo $json->ListTasksForCabin();
                     break;
+                case 'ListHome':
+                    echo $json->ListTasks('home');
                 case 'Single':
                     echo $json->getTaskSingle();
             }

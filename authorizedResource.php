@@ -215,6 +215,7 @@ switch ($action) {
         $stock = [];
         $start = new DateTime(date('Y-m-d', strtotime('Monday last week'))); // Your start date
         $end = new DateTime(date('Y-m-d', strtotime('Friday next week')));   // Your end date
+        $today = date('Y-m-d');
 
         for ($date = $start; $date <= $end; $date->modify('+1 day')) {
             $vals = [];
@@ -227,10 +228,18 @@ switch ($action) {
                     ];
                 }
             }
-            $stock[] = [
-                'label' => $date->format('D j') . '<sup>' . $date->format('S') . '</sup>',
-                'vals' => $vals
-            ];
+            if ($date->format('Y-m-d') === $today)
+                $stock[] = [
+                    'label' => 'Today',
+                    'vals' => $vals,
+                    'id' => 'today'
+                ];
+            else
+                $stock[] = [
+                    'label' => $date->format('D j') . '<sup>' . $date->format('S') . '</sup>',
+                    'vals' => $vals,
+                    'id' => $date->format('Ymd')
+                ];
         }
 
         break;

@@ -33,5 +33,10 @@
 
 <link href="/css/ckm-styles.css" rel="stylesheet">
 
-<!-- Proper Font Awesome -->
-<script src="https://kit.fontawesome.com/816ff03c37.js" crossorigin="anonymous"></script>
+<!-- OWL CAROUSEL -->
+<link href="/assets/plugins/owl-carousel/owl.carousel.min.css" rel="stylesheet">
+
+<!-- SLICK SLIDER -->
+<link rel="stylesheet" type="text/css" href="/assets/plugins/slick/slick.css"/>
+// Add the new slick-theme.css if you want the default styling
+<link rel="stylesheet" type="text/css" href="/assets/plugins/slick/slick-theme.css"/>
