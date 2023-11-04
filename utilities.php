@@ -80,7 +80,7 @@ function getStorage(): StorageClass
     }
     setJWTValues($storage);
 
-   
+
     return $storage;
 }
 
@@ -226,4 +226,8 @@ class lists
         return 'uknown: ' . $name;
     }
 
+    static function getTaskStatus(): array
+    {
+        return ['open', 'complete', 'cancelled'];
+    }
 }

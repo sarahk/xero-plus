@@ -10,15 +10,16 @@
                 <div class="text-center">
 
                     <div class="progress h-1 mt-0 mb-2">
-                        <div class="progress-bar progress-bar-striped bg-primary w-75" role="progressbar"></div>
+                        <div class="progress-bar progress-bar-striped bg-primary" role="progressbar"
+                             id="tasksProgressBar"></div>
                     </div>
                     <div class="row mt-4">
                         <div class="col text-center"><span class="text-muted">Overdue</span> <h4
-                                    class="fw-normal mt-2 mb-0 number-font1">8</h4></div>
+                                    class="fw-normal mt-2 mb-0 number-font1" id="tasksOverdue"></h4></div>
                         <div class="col text-center"><span class="text-muted">Due</span> <h4
-                                    class="fw-normal mt-2 mb-0 number-font2">23</h4></div>
-                        <div class="col text-center"><span class="text-muted">Done</span> <h4
-                                    class="fw-normal mt-2 mb-0 number-font2">5</h4></div>
+                                    class="fw-normal mt-2 mb-0 number-font2" id="tasksDue"></h4></div>
+                        <div class="col text-center"><span class="text-muted">Complete</span> <h4
+                                    class="fw-normal mt-2 mb-0 number-font2" id="tasksComplete"></h4></div>
 
                     </div>
                 </div>

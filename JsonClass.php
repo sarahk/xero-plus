@@ -85,9 +85,10 @@ class JsonClass
         return $tasks->closeTask($params);
     }
 
-    public function ListsTasks($for)
+    public function ListTasks($for)
     {
         $params = $this->getParams();
+        $params['specialise'] = $for;
         $tasks = new TasksModel($this->pdo);
         return json_encode($tasks->list($params));
     }
@@ -95,6 +96,7 @@ class JsonClass
     public function ListTasksForCabin(): string
     {
         $params = $this->getParams();
+        $params['specialise'] = 'cabin';
         $tasks = new TasksModel($this->pdo);
         return json_encode($tasks->List($params));
         //return json_encode($params);
@@ -126,6 +128,13 @@ class JsonClass
         }
 
         return json_encode($task);
+    }
+
+    public function getTaskCounts(): string
+    {
+        $tasks = new TasksModel($this->pdo);
+        $counts = $tasks->getCounts();
+        return json_encode($counts);
     }
 
     public function getAccount($xeroTenantId, $apiInstance, $returnObj = false)

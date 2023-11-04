@@ -350,5 +350,19 @@ class BaseModel
         ];
     }
 
+    protected function getOrderBy($params, $orders, $default = 0): string
+    {
+        if (is_array($params['order'])) {
+            $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
+
+            $column = $params['order'][0]['column'];
+            foreach ($orders as $k => $v) {
+                if ($k == $column) {
+                    return str_replace('XXX', $direction, $v);
+                }
+            }
+        }
+        return str_replace('XXX', 'DESC', $orders[$default]);
+    }
 
 }

@@ -74,6 +74,7 @@ if (isset($modals) && is_array($modals) && count($modals)) {
 <script src="/node_modules/js-cookie/dist/js.cookie.min.js"></script>
 
 <script type="text/javascript" src="/js/functions.js"></script>
+<script type="text/javascript" src="/js/home.js"></script>
 <script type="text/javascript" src="/js/cabins.js"></script>
 <script type="text/javascript" src="/js/contacts.js"></script>
 <script type="text/javascript" src="/js/enquiry.js"></script>

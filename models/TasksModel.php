@@ -98,6 +98,7 @@ class TasksModel extends BaseModel
         } else return 'already closed';
     }
 
+
     public function list($params): array
     {
 
@@ -112,38 +113,30 @@ class TasksModel extends BaseModel
         $searchValues = [];
 
         $tenancies = $this->getTenanciesWhere($params);
+        $conditions = [$tenancies];
 
-        if (is_array($params['order'])) {
-            $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
-
-            switch ($params['order'][0]['column']) {
-
-                case 1:
-                    $order = "tasks.id {$direction}";
+        if (array_key_exists('specialise', $params)) {
+            switch ($params['specialise']) {
+                case  'cabin':
+                    $conditions[] = "`tasks`.`cabin_id` = :cabin_id";
+                    $searchValues['cabin_id'] = $params['key'];
                     break;
-                case 2:
-                    $order = "tasks.name {$direction}";
-                    break;
-                case 3:
-                    $order = "tasks.due_date {$direction}";
-                    break;
-                case 4: // amount due
-                    $order = "tasks.status {$direction}";
-                    break;
-
-                default:
-                    $order = "tasks.due_date {$direction}";
-                    break;
+                case 'home':
+                    $now = date('Y-m-d');
+                    $nextweek = date('Y-m-d', strtotime('14 days after today'));
+                    $conditions[] = "(
+                    (`tasks`.`due_date` >= '$now' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < $nextweek)";
             }
-        } else {
-            $order = "tasks.due_date DESC";
         }
 
-        $conditions = [
-            $tenancies,
-            "`tasks`.`cabin_id` = :cabin_id"
+        $orders = [
+            1 => "tasks.id XXX",
+            2 => "tasks.name XXX",
+            3 => "tasks.due_date XXX",
+            4 => "tasks.status XXX"
         ];
-        $searchValues['cabin_id'] = $params['key'];
+        $order = $this->getOrderBy($params, $orders, 3);
 
         if (!empty($params['search'])) {
             $search = [
@@ -216,4 +209,27 @@ class TasksModel extends BaseModel
         return $output;
     }
 
+    public function getCounts(): array
+    {
+        $sql = "SELECT 
+SUM(CASE WHEN `due_date` < '2023-11-03' AND `status` = 'open' THEN 1 ELSE 0 END) AS `overdue`,
+SUM(CASE WHEN `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'open' THEN 1 ELSE 0 END) AS `due`,
+SUM(CASE WHEN `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'complete' THEN 1 ELSE 0 END) AS `complete`
+FROM `tasks`";
+        $stmt = $this->pdo->query($sql);
+        $output = $stmt->fetch();
+
+        $progress = $this->quarter($output['complete'], $output['complete'] + $output['due']);
+        $output['progressBarClass'] = "w-$progress";
+        return $output;
+    }
+
+    /*
+     * bootstrap class w-0, w-25, w-50, w-75, w-100
+     * this function gets the quarter amount
+     */
+    protected function quarter($num, $total): int
+    {
+        return round(($num / $total) * 4) / 0.04;
+    }
 }

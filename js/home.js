@@ -18,4 +18,13 @@ $(document).ready(function () {
             paging: true,
         });
     }
+
+    if ($('#tasksOverdue').length) {
+        $.get("/json.php?endpoint=Tasks&action=Counts", function (data) {
+            $('#tasksOverdue').text(data.overdue);
+            $('#tasksDue').text(data.due);
+            $('#tasksComplete').text(data.complete);
+            $('#tasksProgressBar').addClass(data.progressBarClass);
+        });
+    }
 });

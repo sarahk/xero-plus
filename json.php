@@ -481,8 +481,13 @@ try {
                     break;
                 case 'ListHome':
                     echo $json->ListTasks('home');
+                    break;
                 case 'Single':
                     echo $json->getTaskSingle();
+                    break;
+                case 'Counts':
+                    echo $json->getTaskCounts();
+                    break;
             }
             break;
 
