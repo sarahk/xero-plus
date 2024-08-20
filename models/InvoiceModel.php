@@ -16,6 +16,16 @@ class InvoiceModel extends BaseModel
         'repeating_invoice_id', 'status', 'total', 'amount_due', 'amount_paid',
         'updated_date_utc', 'xerotenant_id'
     ];
+    protected array $orderByColumns = [
+        0 => "invoices.invoice_number DIR",
+        1 => "contacts.last_name DIR, contacts.first_name ASC",
+        2 => "invoices.reference DIR",
+        3 => "invoices.total DIR",
+        4 => "invoices.amount_due DIR",
+        5 => "invoices.date DIR",
+
+    ];
+    protected int $orderByDefault = 5;
 
     protected ContactModel $contacts;
     protected ContractModel $contracts;
@@ -80,33 +90,7 @@ class InvoiceModel extends BaseModel
         }
         $tenancies .= ') ';
 
-        if (is_array($params['order'])) {
-            $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
-
-            switch ($params['order'][0]['column']) {
-                case 0:
-                    $order = "invoices.invoice_number {$direction}";
-                    break;
-                case 1:
-                    $order = "contacts.last_name {$direction}, contacts.first_name ASC";
-                    break;
-                case 2:
-                    $order = "invoices.reference {$direction}";
-                    break;
-                case 3:
-                    $order = "invoices.total {$direction}";
-                    break;
-                case 4: // amount due
-                    $order = "invoices.amount_due {$direction}";
-                    break;
-                case 5:
-                default:
-                    $order = "invoices.due_date {$direction}";
-                    break;
-            }
-        } else {
-            $order = "invoices.due_date DESC";
-        }
+        $order = $this->getOrderBy($params);
 
         $conditions = [$tenancies];
         if (!empty($params['search'])) {
@@ -125,7 +109,7 @@ class InvoiceModel extends BaseModel
             $searchValues['status'] = strtoupper($params['button']);
             $conditions[] = "`invoices`.`status` = :status";
         } else {
-            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";
+            $conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
         }
 
         if (isset($_GET['repeating_invoice_id'])) {
@@ -154,6 +138,7 @@ class InvoiceModel extends BaseModel
             ORDER BY {$order} 
             LIMIT {$params['start']}, {$params['length']}";
 
+
         $this->getStatement($sql);
         try {
             $this->statement->execute($searchValues);
@@ -166,8 +151,10 @@ class InvoiceModel extends BaseModel
         }
 
         $output = $params;
+        $output['mainquery'] = $sql;
+        $output['mainsearchvals'] = $searchValues;
         // adds in tenancies because it doesn't use $conditions
-        $recordsTotal = "SELECT count(*) FROM invoices 
+        $recordsTotal = "SELECT count(*) FROM `invoices` 
                 WHERE $tenancies";
 
         $recordsFiltered = "SELECT count(*) as `filtered` FROM `invoices` 

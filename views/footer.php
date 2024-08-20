@@ -84,6 +84,7 @@ if (isset($modals) && is_array($modals) && count($modals)) {
 
 <?php
 $action = intval($_GET['action'] ?? 0);
+// switch will be expanded over time
 switch ($action) {
     case 10:
         include_once 'addins/footer-edit-js.php';
@@ -110,7 +111,7 @@ switch ($action) {
         $('input[name="dates"]').mouseup(getInvoiceRedraw);
 
         function getInvoiceRedraw() {
-            var getInvoiceTable = $('#getInvoiceTable').DataTable();
+            let getInvoiceTable = $('#getInvoiceTable').DataTable();
 
             setTimeout(function () {
                 getInvoiceTable.draw(false);
@@ -119,8 +120,8 @@ switch ($action) {
 
 
         $('#contactSingle').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var contactid = button.data('contactid') // Extract info from data-* attributes
+            let button = $(event.relatedTarget) // Button that triggered the modal
+            let contactid = button.data('contactid') // Extract info from data-* attributes
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
             // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
 
@@ -136,7 +137,7 @@ switch ($action) {
                 $('#contactSingleLabel').text('Contact: ' + data.name);
             });
             $('#goXero').unbind();
-            $('#goXero').on('click', function (event) {
+            $('#goXero').on('click', function () {
                 window.open('https://go.xero.com/Contacts/View/' + contactid, '_blank');
             });
             //var modal = $(this);
@@ -233,6 +234,7 @@ switch ($action) {
 
         // every minute
         setInterval(function () {
+            console.log('setInterval');
             const tenancies = ['auckland', 'waikato', 'bop'];
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {

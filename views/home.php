@@ -30,4 +30,5 @@
 
 <div class="row">
     <?php include SITE_ROOT . '/widgets/home-tasks.php'; ?>
+    <?php include SITE_ROOT . '/widgets/home-debts.php'; ?>
 </div>

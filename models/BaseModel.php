@@ -18,6 +18,9 @@ class BaseModel
     protected array $virtualFields = [];
     // orderBy is used when getting the child records
     protected string $orderBy = '';
+    protected array $orderByColumns = [];
+    protected int $orderByDefault = 0;
+    protected string $orderByDefaultDirection = 'DESC';
 
     protected array $defaults = [];
     protected bool $hasStub = false;
@@ -350,19 +353,50 @@ class BaseModel
         ];
     }
 
-    protected function getOrderBy($params, $orders, $default = 0): string
+    protected function getRecordsTotal($tenancies): int
+    {
+        $recordsTotal = "SELECT count(*) FROM `{$this->table}` 
+                WHERE $tenancies";
+        return $this->pdo->query($recordsTotal)->fetchColumn();
+    }
+
+    protected function getRecordsFiltered($conditions, $searchValues): int
+    {
+        $recordsFiltered = "SELECT count(*) as `filtered` FROM `{$this->table}` 
+                WHERE  " . implode(' AND ', $conditions);
+
+        try {
+            $this->getStatement($recordsFiltered);
+            $this->statement->execute($searchValues);
+            return $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
+        } catch (PDOException $e) {
+            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
+            $this->statement->debugDumpParams();
+        }
+        return 0;
+    }
+
+    protected function getOrderBy($params): string
     {
         if (is_array($params['order'])) {
             $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
-
             $column = $params['order'][0]['column'];
-            foreach ($orders as $k => $v) {
+            foreach ($this->orderByColumns as $k => $v) {
                 if ($k == $column) {
-                    return str_replace('XXX', $direction, $v);
+                    return str_replace('DIR', $direction, $v);
                 }
             }
         }
-        return str_replace('XXX', 'DESC', $orders[$default]);
+        return str_replace('DIR', $this->orderByDefaultDirection, $this->orderByColumns[$this->orderByDefault]);
     }
-
 }
+
+
+https://ckm:8825/json.php?endpoint=Invoices&action=Read
+//&button=paid&draw=2&columns%5B0%5D%5Bdata%5D=number
+//&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true
+//&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false
+//&columns%5B1%5D%5Bdata%5D=contact&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=reference&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=total&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=amount_due&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=due_date&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true
+//&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false
+//&order%5B0%5D%5Bcolumn%5D=0
+//&order%5B0%5D%5Bdir%5D=asc&order%5B0%5D%5Bname%5D=&start=0&length=10&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1724116125416

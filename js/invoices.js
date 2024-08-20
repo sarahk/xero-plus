@@ -8,6 +8,7 @@ $(document).ready(function () {
     });
 
     if ($('#tInvoices').length) {
+
         var tInvoices = $('#tInvoices').DataTable({
             "ajax": {
                 "url": "/json.php?endpoint=Invoices&action=Read",
@@ -23,48 +24,51 @@ $(document).ready(function () {
                 {data: "amount_due"},
                 {data: "due_date"},
             ],
-            dom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
-
-            buttons: [{
-                text: 'All',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    //dt.ajax.reload();
-                    tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
+            xdom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
+            layout: {
+                topStart: {
+                    buttons: ['copy', 'excel', 'pdf', 'print', {
+                        text: 'All',
+                        className: 'btn mr-1',
+                        action: function (e, dt, node, config) {
+                            //dt.ajax.reload();
+                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
+                        }
+                    }, {
+                        text: 'Overdue',
+                        className: 'btn mr-1',
+                        action: function (e, dt, node, config) {
+                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
+                        }
+                    }, {
+                        text: 'Authorised',
+                        className: 'btn mr-1',
+                        action: function (e, dt, node, config) {
+                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
+                        }
+                    }, {
+                        text: 'Paid',
+                        className: 'btn mr-1',
+                        action: function (e, dt, node, config) {
+                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
+                        }
+                    }, {
+                        text: 'Draft',
+                        className: 'btn mr-1',
+                        action: function (e, dt, node, config) {
+                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
+                        }
+                    }, {
+                        text: 'Void',
+                        className: 'btn mr-1',
+                        action: function (e, dt, node, config) {
+                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
+                        }
+                    }]
                 }
-            }, {
-                text: 'Overdue',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
-                }
-            }, {
-                text: 'Authorised',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
-                }
-            }, {
-                text: 'Paid',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
-                }
-            }, {
-                text: 'Draft',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
-                }
-            }, {
-                text: 'Void',
-                className: 'btn mr-1',
-                action: function (e, dt, node, config) {
-                    tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
-                }
-            }]
-
+            },
         });
+
     }
 
     if ($('#tInv4Contract').length) {

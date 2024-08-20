@@ -13,10 +13,12 @@ include_once('models/TenancyModel.php');
 
 class XeroClass
 {
-    public $apiInstance;
+    protected $apiInstance;
     public string $xeroTenantId;
     public array $tenancies = [];
     protected PDO $pdo;
+
+    protected $storage;
 
     protected ContactModel $contact;
     protected ContractModel $contract;
@@ -26,6 +28,8 @@ class XeroClass
     function __construct($apiInstance = '')
     {
         $storage = getStorage();
+        $this->storage = $storage;
+
         $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
         $this->apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
             new GuzzleHttp\Client(),
@@ -43,12 +47,14 @@ class XeroClass
 
     public function getTenantIdArray()
     {
-        $apiResponse = $this->apiInstance->getOrganisations($xeroTenantId);
-        $message = '<p>Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
-        $message .= '<p>' . $xeroTenantId;
+        $provider = getProvider();
+
+        //$apiResponse = $this->apiInstance->getOrganisations($xeroTenantId);
+        //$message = '<p>Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
+        //$message .= '<p>' . $xeroTenantId;
 
         $accessToken = $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $storage->getRefreshToken()
+            'refresh_token' => $this->storage->getRefreshToken()
         ]);
         $options = [
             'scope' => ['openid email profile offline_access accounting.transactions accounting.settings']
@@ -592,7 +598,7 @@ class XeroClass
         $result = $apiInstance->updateEmployee($xeroTenantId, $employeeId, $employee);
         //[/Employees:Update]
 
-       
+
         //$str = $str . "Update Employee: " . $employee["FirstName"] . "  " . $employee["LastName"]   . "<br>" ;
 
         return $str;

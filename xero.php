@@ -22,6 +22,7 @@ require_once('utilities.php');
 // Storage Class uses sessions for storing token > extend to your DB of choice
 //require_once('authorizedXero.php');
 
+
 $storage = getStorage();
 
 

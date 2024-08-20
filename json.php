@@ -17,6 +17,8 @@ require_once('JsonClass.php');
 require_once('config.php');
 require_once('utilities.php');
 
+$provider = getProvider();
+
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
 

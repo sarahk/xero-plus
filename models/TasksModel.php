@@ -12,6 +12,15 @@ class TasksModel extends BaseModel
     protected array $joins = ['cabins' => "`tasks`.`cabin_id` = :id1"];
     protected string $orderBy = 'tasks.due_date DESC';
 
+    protected array $orderByColumns = [
+        1 => "tasks.id DIR",
+        2 => "tasks.name DIR",
+        3 => "tasks.due_date DIR",
+        4 => "tasks.status DIR"
+    ];
+
+    protected int $orderByDefault = 3;
+
     // TODO assign a colour to the tasks by their amount of overdueness
     protected array $virtualFields = [
         'date_status' => "CASE WHEN datediff(due_date, now()) < -90 THEN 'overdue' 
@@ -130,13 +139,7 @@ class TasksModel extends BaseModel
             }
         }
 
-        $orders = [
-            1 => "tasks.id XXX",
-            2 => "tasks.name XXX",
-            3 => "tasks.due_date XXX",
-            4 => "tasks.status XXX"
-        ];
-        $order = $this->getOrderBy($params, $orders, 3);
+        $order = $this->getOrderBy($params);
 
         if (!empty($params['search'])) {
             $search = [
