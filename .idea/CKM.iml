@@ -70,6 +70,12 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/ta-tikoma/phpunit-architecture-test" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/xeroapi/xero-php-oauth2-old" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/clicksend/clicksend-php" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/clicksend/docs" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/clicksend/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/clicksend/test" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/tinymce/tinymce" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

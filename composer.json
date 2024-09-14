@@ -1,24 +1,37 @@
 {
-    "name": "xeroapi/xero-php-oauth2-starter",
-    "description": "Xero Starter oAuth2 app for PHP",
-    "type": "project",
-    "require": {
-        "xeroapi/xero-php-oauth2": ">=2.5.4",
-        "monolog/monolog": ">=1.0"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Xero API Team",
-            "email": "api@xero.com"
-        }
-    ],
-    "require-dev": {
-        "pestphp/pest": "^2.20"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+  "name": "xeroapi/xero-php-oauth2-starter",
+  "description": "Xero Starter oAuth2 app for PHP",
+  "type": "project",
+  "require": {
+    "xeroapi/xero-php-oauth2": ">=2.5.4",
+    "monolog/monolog": ">=1.0",
+    "guzzlehttp/guzzle": "^7.9",
+    "clicksend/clicksend-php": "^5.0",
+    "tinymce/tinymce": "^7.3"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Xero API Team",
+      "email": "api@xero.com"
     }
+  ],
+  "require-dev": {
+    "pestphp/pest": "^2.20"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/ClickSend/clicksend-php.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/guzzle/guzzle.git"
+    }
+  ]
 }

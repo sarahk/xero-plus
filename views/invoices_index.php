@@ -1,27 +1,27 @@
 <div class="row row-sm">
-  <div class="col-lg-12">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Invoices</h3>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-bordered text-nowrap border-bottom w-100" id="tInvoices">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Contact</th>
-                <th>Ref</th>
-                <th>Total</th>
-                <th>Due</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-          </table>
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Invoices</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-nowrap border-bottom w-100" id="tInvoices">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Contact</th>
+                            <th>Ref</th>
+                            <th>Total</th>
+                            <th>$ Due</th>
+                            <th>Due Date</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <?php /*
@@ -36,4 +36,4 @@ target='_blank'>AUTHORISED<\ /a>",
 "amount_paid": "0.00",
 "amount_due": "55.00",
 "due_date": "2020-05-15 00:00:00"
-*/?>
+*/ ?>

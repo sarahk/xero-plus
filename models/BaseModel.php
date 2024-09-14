@@ -155,12 +155,11 @@ class BaseModel
 
     protected function getTenanciesWhere($params)
     {
-        $bits = [];
-        foreach ($params['tenancies'] as $val) {
-            $bits[] = " `{$this->table}`.`xerotenant_id` = '{$val}' ";
+        if (count($params['tenancies']) == 1) {
+            return "`{$this->table}`.`xerotenant_id` = '{$params['tenancies'][0]}'";
+        } else {
+            return "`{$this->table}`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
         }
-
-        return '(' . implode(' OR ', $bits) . ' ) ';
     }
 
     protected function getCaseStatement($field, $array): string

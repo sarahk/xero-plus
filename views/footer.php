@@ -26,7 +26,10 @@ if (isset($modals) && is_array($modals) && count($modals)) {
 }
 ?>
 
-<?php include 'layouts/scripts.php'; ?>
+<?php
+// scripts not specified by the theme
+include 'layouts/scripts.php';
+?>
 
 <!-- SPARKLINE JS-->
 <script src="/assets/js/jquery.sparkline.min.js"></script>
@@ -44,11 +47,6 @@ if (isset($modals) && is_array($modals) && count($modals)) {
 
 <!-- INTERNAL SELECT2 JS -->
 <script src="/assets/plugins/select2/select2.full.min.js"></script>
-
-<!-- INTERNAL DATA TABLES JS -->
-<script src="/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
-<script src="/assets/plugins/datatable/js/dataTables.bootstrap5.js"></script>
-<script src="/assets/plugins/datatable/dataTables.responsive.min.js"></script>
 
 <!-- ECHART JS-->
 <script src="/assets/plugins/echarts/echarts.js"></script>
@@ -79,6 +77,7 @@ if (isset($modals) && is_array($modals) && count($modals)) {
 <script type="text/javascript" src="/js/contacts.js"></script>
 <script type="text/javascript" src="/js/enquiry.js"></script>
 <script type="text/javascript" src="/js/invoices.js"></script>
+<script type="text/javascript" src="/js/bad_debts.js"></script>
 <script type="text/javascript" src="/js/tasks.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>
 
@@ -107,7 +106,6 @@ switch ($action) {
 
     $(document).ready(function () {
 
-
         $('input[name="dates"]').mouseup(getInvoiceRedraw);
 
         function getInvoiceRedraw() {
@@ -119,31 +117,6 @@ switch ($action) {
         }
 
 
-        $('#contactSingle').on('show.bs.modal', function (event) {
-            let button = $(event.relatedTarget) // Button that triggered the modal
-            let contactid = button.data('contactid') // Extract info from data-* attributes
-            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-
-            $.getJSON("/json.php?endpoint=Contacts&action=Single&key=" + contactid, function (data) {
-                console.log(data);
-                $('#modalContactStatus').text(data.contact_status);
-                $('#modalContactName').text(data.name);
-                $('#modalContactEmail').html(data.email);
-                $('#modalContactPhone').html(data.phone);
-                $('#modalContactAddress').html(data.address);
-                $('#modalContactUpdate').text(data.updated_date_utc);
-
-                $('#contactSingleLabel').text('Contact: ' + data.name);
-            });
-            $('#goXero').unbind();
-            $('#goXero').on('click', function () {
-                window.open('https://go.xero.com/Contacts/View/' + contactid, '_blank');
-            });
-            //var modal = $(this);
-            //modal.find('.modal-title').text('Contact: ' + $('#modalContactName').text());
-
-        });
         if ($('.owl-carousel').length) {
             let homeScreen = getScreenBreakpoint();
             let homeCarousel = (homeScreen === 'xs' || homeScreen === 'sm') ? 1 : 5;
@@ -209,7 +182,7 @@ switch ($action) {
         // but only for one tenancy
         function loadInvoicesFromXero(tenancy) {
             //The load button
-            console.log('loadInvoicesFromXero: ' + tenancy);
+            console.log(['loadInvoicesFromXero', tenancy]);
             $('#loadfromxerospinner').show();//Load button clicked show spinner
             $.ajax({
                 url: "/xero.php?endpoint=Invoices&action=refresh&tenancy=" + tenancy,
@@ -233,17 +206,19 @@ switch ($action) {
 
 
         // every minute
+        let frequency = 60 * 1000 * 100;
+        //let frequency = 60 * 1000;
+
         setInterval(function () {
             console.log('setInterval');
             const tenancies = ['auckland', 'waikato', 'bop'];
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {
-                    //console.log('setInterval loadInvoicesFromXero: ' + tenancies[i]);
                     loadInvoicesFromXero(tenancies[i]);
-                    //loadContactsFromXero(tenancies[i]);
                 }
             }
-        }, 60 * 1000 * 100);
+        }, frequency);
+
 
 // save the working with choices
 // https://github.com/js-cookie/js-cookie/tree/main

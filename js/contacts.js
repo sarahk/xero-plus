@@ -47,3 +47,30 @@ $('#getContactTable').on('draw.dt', function () {
         $(this).html(link);
     });
 });
+
+
+$('#contactSingle').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget) // Button that triggered the modal
+    let contactid = button.data('contactid') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+    $.getJSON("/json.php?endpoint=Contacts&action=Single&key=" + contactid, function (data) {
+        console.log(data);
+        $('#modalContactStatus').text(data.contact_status);
+        $('#modalContactName').text(data.name);
+        $('#modalContactEmail').html(data.email);
+        $('#modalContactPhone').html(data.phone);
+        $('#modalContactAddress').html(data.address);
+        $('#modalContactUpdate').text(data.updated_date_utc);
+
+        $('#contactSingleLabel').text('Contact: ' + data.name);
+    });
+    $('#goXero').unbind();
+    $('#goXero').on('click', function () {
+        window.open('https://go.xero.com/Contacts/View/' + contactid, '_blank');
+    });
+    //var modal = $(this);
+    //modal.find('.modal-title').text('Contact: ' + $('#modalContactName').text());
+
+});

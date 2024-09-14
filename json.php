@@ -220,6 +220,9 @@ try {
                 case "Read":
                     echo $json->getInvoiceList();
                     break;
+                case 'BadDebts':
+                    echo $json->getBadDebtsList();
+                    break;
                 case 'Contract':
                 case 'contract':
                     echo $json->getInvoiceList();

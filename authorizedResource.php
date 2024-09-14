@@ -2,7 +2,7 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 require_once('storage.php');
 require_once('utilities.php');
 require_once('functions.php');
@@ -209,6 +209,10 @@ switch ($action) {
         // single task record
         break;
 
+    case 16:
+        // bad debts management
+        break;
+
     default:
         // main dash
         // TODO
@@ -277,6 +281,9 @@ require_once('views/header.php');
             break;
         case 14:
             include 'views/forms/cabin-edit.php';
+            break;
+        case 16:
+            include 'views/bad_debts_index.php';
             break;
         default:
             include 'views/home.php';

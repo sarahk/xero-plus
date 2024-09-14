@@ -1448,6 +1448,13 @@ class JsonClass
 
     }
 
+    public function getBadDebtsList($returnObj = false): string
+    {
+        $params = $this->getParams();
+        $invoice = new InvoiceModel($this->pdo);
+        $output = $invoice->listBadDebts($params);
+        return json_encode($output);
+    }
 
     public function getVehiclesLogList($returnObj = false)
     {

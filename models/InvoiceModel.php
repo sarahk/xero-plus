@@ -81,15 +81,7 @@ class InvoiceModel extends BaseModel
 
         $searchValues = [];
 
-        $tenancies = '(';
-        foreach ($params['tenancies'] as $k => $val) {
-            if ($k > 0) {
-                $tenancies .= ' OR ';
-            }
-            $tenancies .= "`invoices`.`xerotenant_id` = '{$val}'";
-        }
-        $tenancies .= ') ';
-
+        $tenancies = $this->getTenanciesWhere($params);
         $order = $this->getOrderBy($params);
 
         $conditions = [$tenancies];
@@ -105,11 +97,17 @@ class InvoiceModel extends BaseModel
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
 
-        if (!empty($params['button'])) {
-            $searchValues['status'] = strtoupper($params['button']);
-            $conditions[] = "`invoices`.`status` = :status";
+        if (!empty($params['button']) && $params['button'] !== 'read') {
+            if ($params['button'] == 'overdue') {
+                $searchValues['overduedate'] = date('Y-m-d', strtotime('-7 days'));
+                $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
+
+            } else {
+                $searchValues['status'] = strtoupper($params['button']);
+                $conditions[] = "`invoices`.`status` = :status";
+            }
         } else {
-            $conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
+            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
         }
 
         if (isset($_GET['repeating_invoice_id'])) {
@@ -199,5 +197,137 @@ class InvoiceModel extends BaseModel
             $output['row'] = $row;
         }
         return $output;
+    }
+
+    protected function getOrderByBadDebts($params): string
+    {
+        $columns = [
+            'contacts.name DIR',
+            'due DIR', 'weeks_due DIR', 'total_weeks DIR'
+        ];
+        if (is_array($params['order'])) {
+            $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
+            $column = $params['order'][0]['column'];
+            foreach ($columns as $k => $v) {
+                if ($k == $column) {
+                    return str_replace('DIR', $direction, $v);
+                }
+            }
+        }
+        return str_replace('DIR', 'DESC', $columns[2]);
+    }
+
+    public function listBadDebts($params): array
+    {
+        $searchValues = [];
+        $tenancies = $this->getTenanciesWhere($params);
+        $order = $this->getOrderByBadDebts($params);
+
+        $conditions = [$tenancies];
+        if (!empty($params['search'])) {
+            $search = [
+                "`contacts`.`name` LIKE :search ",
+                "`contacts`.`last_name` LIKE :search ",
+                "`contacts`.`first_name` LIKE :search "
+            ];
+            $searchValues['search'] = '%' . $params['search'] . '%';
+
+            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
+        }
+
+        //TODO
+        // WHAT BUTTONS DO WE NEED
+        if (!empty($params['button']) && $params['button'] !== 'read') {
+            if ($params['button'] == 'overdue') {
+                $searchValues['overduedate'] = date('Y-m-d', strtotime('-7 days'));
+                $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
+
+            } else {
+                $searchValues['status'] = strtoupper($params['button']);
+                $conditions[] = "`invoices`.`status` = :status";
+            }
+        } else {
+            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
+        }
+
+        if (isset($_GET['repeating_invoice_id'])) {
+            $conditions[] = "`invoices`.`repeating_invoice_id` = :repeating_invoice_id";
+            $searchValues['repeating_invoice_id'] = $_GET['repeating_invoice_id'];
+        }
+
+        // this clause defines what a bad debt actually is
+        $conditions[] = "invoices.`amount_due` > 0 AND invoices.due_date < now()";
+
+        $sql = "SELECT invoices.contract_id,
+            SUM(invoices.amount_due) as due, 
+            COUNT(invoices.invoice_id) as weeks_due,
+            contacts.name, contacts.contact_id,
+            (SELECT count(i2.invoice_id) FROM invoices as i2 WHERE i2.contract_id = invoices.contract_id) AS total_weeks
+            FROM `invoices` 
+            LEFT JOIN `contacts` ON invoices.contact_id = contacts.`contact_id`
+            WHERE " . implode(' AND ', $conditions) . "
+            GROUP BY invoices.`contract_id`, contacts.contact_id, contacts.name
+            ORDER BY {$order} 
+            LIMIT {$params['start']}, {$params['length']}";
+
+
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute($searchValues);
+
+            //$invoices = $this->statement->fetchAll();
+            $badDebts = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+            $this->statement->debugDumpParams();
+        }
+
+        $output = $params;
+        $output['mainquery'] = $sql;
+        $output['mainsearchvals'] = $searchValues;
+        // adds in tenancies because it doesn't use $conditions
+        $recordsTotal = "SELECT count(invoices.contract_id) FROM `invoices` 
+                WHERE $tenancies AND {$conditions[count($conditions)-1]}
+                GROUP BY invoices.contract_id";
+
+        $recordsFiltered = "SELECT count(invoices.contract_id) as `filtered` FROM `invoices` 
+                LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
+                WHERE  " . implode(' AND ', $conditions);
+
+
+        $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
+
+        try {
+            $this->getStatement($recordsFiltered);
+            $this->statement->execute($searchValues);
+            $output['recordsFiltered'] = $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
+        } catch (PDOException $e) {
+            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
+            $this->statement->debugDumpParams();
+        }
+
+
+        //$output['refreshInvoice'] = $refreshInvoice;
+        // $output['refreshContact'] = $refreshContact;
+
+
+        if (count($badDebts) > 0) {
+            foreach ($badDebts as $k => $row) {
+                if (empty($row['name'])) {
+                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['contact_id']}</a>";
+                } else {
+                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
+                }
+                $output['data'][] = [
+                    'contact' => $contactName,
+                    'due' => $row['due'],
+                    'weeks_due' => $row['weeks_due'],
+                    'total_weeks' => $row['total_weeks']
+                ];
+            }
+            $output['row'] = $row;
+        }
+        return $output;
+
     }
 }

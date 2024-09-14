@@ -49,7 +49,8 @@
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=2">Create one Contact</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
 
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Get Invoices</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=16">Bad Debts</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=4">Create multiple contacts and
                         summarizeErrors</a></li>

@@ -13,7 +13,6 @@
   <component name="PhpIncludePathManager">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/ralouphie/getallheaders" />
-      <path value="$PROJECT_DIR$/vendor/xeroapi/xero-php-oauth2" />
       <path value="$PROJECT_DIR$/vendor/firebase/php-jwt" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
@@ -79,6 +78,13 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/exporter" />
       <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
       <path value="$PROJECT_DIR$/vendor/jean85/pretty-package-versions" />
+      <path value="$PROJECT_DIR$/vendor/xeroapi/xero-php-oauth2" />
+      <path value="$PROJECT_DIR$/vendor/xeroapi/xero-php-oauth2-old" />
+      <path value="$PROJECT_DIR$/vendor/clicksend/test" />
+      <path value="$PROJECT_DIR$/vendor/clicksend/docs" />
+      <path value="$PROJECT_DIR$/vendor/clicksend/lib" />
+      <path value="$PROJECT_DIR$/vendor/clicksend/clicksend-php" />
+      <path value="$PROJECT_DIR$/vendor/tinymce/tinymce" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
