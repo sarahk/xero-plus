@@ -129,8 +129,8 @@ function getPDO(): PDO
     try {
         $user = 'xeroplus';
         $pass = 'cabins4all';
-        return new PDO('mysql:host=localhost;dbname=xeroplus', $user, $pass);
-
+        return new PDO('mysql:host=localhost;dbname=xeroplus;charset=utf8mb4', $user, $pass);
+//"mysql:host=$host;dbname=$db;charset=utf8mb4"
     } catch (PDOException $e) {
         print "Error!: " . $e->getMessage() . "<br/>";
         die();

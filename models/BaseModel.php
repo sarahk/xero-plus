@@ -203,6 +203,7 @@ class BaseModel
     public function getStatement($sql = ''): void
     {
         if (empty($sql)) $sql = $this->insert;
+
         try {
             $this->statement = $this->pdo->prepare($sql);
         } catch (PDOException $e) {
@@ -216,7 +217,6 @@ class BaseModel
         try {
             $this->getStatement();
             $this->statement->execute($values);
-
             // this will be zero if it was an update
             return $this->pdo->lastInsertId();
         } catch (PDOException $e) {

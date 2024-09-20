@@ -23,6 +23,8 @@ class ClicksendModel
         $msg->setBody($message);
         $msg->setTo($to);
 
+        //$msg->set
+
         $sms_messages = new \ClickSend\Model\SmsMessageCollection();
         $sms_messages->setMessages([$msg]);
 

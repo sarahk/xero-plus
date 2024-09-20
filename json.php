@@ -17,6 +17,9 @@ require_once('JsonClass.php');
 require_once('config.php');
 require_once('utilities.php');
 
+
+require_once('models/TemplateModel.php');
+
 $provider = getProvider();
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
@@ -495,6 +498,26 @@ try {
                     break;
             }
             break;
+
+        case 'Templates':
+        {
+            switch ($action) {
+                case 'List':
+                case 'list':
+                    echo $json->getTemplateList();
+                    break;
+
+                case 'Single':
+                case 'single':
+                    echo $json->getTemplate(intval($_GET['id']) ?? 0);
+                    break;
+
+                case 'Save':
+                case 'save':
+                    echo $json->saveTemplate();
+            }
+            break;
+        }
 
         case "Vehicles":
             switch ($action) {

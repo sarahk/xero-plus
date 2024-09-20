@@ -78,6 +78,19 @@ class JsonClass
         return json_encode($cabin);
     }
 
+    public function getTemplateList(): string
+    {
+        $template = new TemplateModel($this->pdo);
+        return $template->search();
+    }
+
+    public function getTemplate($id): string
+    {
+        $template = new TemplateModel($this->pdo);
+        return json_encode($template->get('id', $id));
+    }
+
+
     public function closeTask()
     {
         $params = $this->getParams();

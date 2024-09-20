@@ -52,6 +52,7 @@
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=16">Bad Debts</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=17">Message Templates</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=4">Create multiple contacts and
                         summarizeErrors</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=5">Get Contact List with Filters</a>

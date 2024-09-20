@@ -342,17 +342,17 @@ CREATE TABLE `vehicles`
 
 CREATE TABLE `templates`
 (
-    `id`          int(11)      NOT NULL,
-    `status`      tinyint(3)   NOT NULL,
-    `messagetype` char(5)      NOT NULL,
-    `label`       varchar(30)  NOT NULL,
-    `subject`     varchar(150) NOT NULL,
-    `body`        text         NOT NULL,
-    `dateupdate`  datetime     NOT NULL,
+    `id`          int(11)                        NOT NULL AUTO_INCREMENT,
+    `status`      tinyint(3)                     NOT NULL,
+    `messagetype` char(5) CHARACTER SET utf8     NOT NULL,
+    `label`       varchar(30) CHARACTER SET utf8 NOT NULL,
+    `subject`     varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `body`        text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    `dateupdate`  datetime                       NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
+  AUTO_INCREMENT = 2
+  DEFAULT CHARSET = utf8mb4;
 # Dump of view vamountdue
 # ------------------------------------------------------------
 

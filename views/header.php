@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <?php
     include_once 'layouts/styles.php';
+
     //create constants for the xerotenant_id info
 
     if (!isset($loggedOut) || !$loggedOut) {
@@ -14,6 +15,10 @@
         </script>
         <?php
     } ?>
+
+    <script src="https://cdn.tiny.cloud/1/358b52j7udus5vp44svtm76psq44rezjrxzt0m3gwfosew62/tinymce/7/tinymce.min.js"
+            referrerpolicy="origin"></script>
+
 </head>
 
 <body class="app sidebar-mini ltr light-mode">

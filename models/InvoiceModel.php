@@ -330,4 +330,9 @@ class InvoiceModel extends BaseModel
         return $output;
 
     }
+
+    function getPDF($invoice_id)
+    {
+        //GET https://api.xero.com/api.xro/2.0/Invoices/acb4b8d6-e8bc-41c9-9a57-dccae7ad51de
+    }
 }

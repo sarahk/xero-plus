@@ -213,6 +213,10 @@ switch ($action) {
         // bad debts management
         break;
 
+    case 17:
+        // Message Templates
+        break;
+
     default:
         // main dash
         // TODO
@@ -284,6 +288,9 @@ require_once('views/header.php');
             break;
         case 16:
             include 'views/bad_debts_index.php';
+            break;
+        case 17:
+            include 'views/templates_index.php';
             break;
         default:
             include 'views/home.php';
