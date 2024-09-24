@@ -3,11 +3,11 @@
   "description": "Xero Starter oAuth2 app for PHP",
   "type": "project",
   "require": {
-    "xeroapi/xero-php-oauth2": ">=2.5.4",
-    "monolog/monolog": ">=1.0",
-    "guzzlehttp/guzzle": "^7.9",
-    "clicksend/clicksend-php": "^5.0",
-    "tinymce/tinymce": "^7.3"
+    "xeroapi/xero-php-oauth2": ">=7.3.0",
+    "monolog/monolog": ">=3.7.0",
+    "guzzlehttp/guzzle": "^7.9.2",
+    "tinymce/tinymce": "^7.3",
+    "ext-pdo": "*"
   },
   "license": "MIT",
   "authors": [
@@ -17,7 +17,7 @@
     }
   ],
   "require-dev": {
-    "pestphp/pest": "^2.20"
+    "pestphp/pest": "^3.1"
   },
   "config": {
     "allow-plugins": {
@@ -27,11 +27,17 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/ClickSend/clicksend-php.git"
-    },
-    {
-      "type": "git",
       "url": "https://github.com/guzzle/guzzle.git"
     }
-  ]
+  ],
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/functions.php",
+      "app/StorageClass.php",
+      "app/utilities.php"
+    ]
+  }
 }
