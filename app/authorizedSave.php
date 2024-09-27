@@ -8,7 +8,7 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 require __DIR__ . '/vendor/autoload.php';
 require_once('StorageClass.php');
-require_once('utilities.php');
+require_once('Utilities.php');
 require_once('functions.php');
 
 require_once('models/ContactModel.php');

@@ -18,7 +18,7 @@ function getDateFromXero($str)
     return date('Y-m-d H:i:s', $raw);
 }
 
-
+// if using one of the classes use $this->debug rather than this function
 function debug($val)
 {
     echo '<ul>';

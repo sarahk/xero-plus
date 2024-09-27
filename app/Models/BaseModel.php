@@ -2,22 +2,27 @@
 
 namespace App\Models;
 
-use App\Utilities;
-use App\XeroClass;
-
+use App\Models\Traits\DebugTrait;
+use App\Models\Traits\FunctionsTrait;
+use App\Models\Traits\LoggerTrait;
 use PDO;
 use PDOException;
 use PDOStatement;
+use App\XeroClass;
 
 class BaseModel
 {
+    use DebugTrait;
+    use LoggerTrait;
+    use FunctionsTrait;
+
     protected PDO $pdo;
     protected string $insert;
     protected array $nullable = [];
     protected array $saveKeys = [];
     protected array $updateKeys = [];
     protected PDOStatement $statement;
-    protected string $table;
+    protected string $table = '';
     protected string $primaryKey = '';
     protected array $hasMany = [];
     protected array $joins = [];
@@ -35,6 +40,7 @@ class BaseModel
     function __construct($pdo)
     {
         $this->pdo = $pdo;
+        $this->initLogger($this->table . 'Model');
     }
 
     // just to ensure the mysql connection is closed
@@ -42,6 +48,20 @@ class BaseModel
     {
         unset($this->pdo);
     }
+
+    protected function runQuery($sql, $searchValues): array
+    {
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute($searchValues);
+            return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+            $this->statement->debugDumpParams();
+        }
+        return [];
+    }
+
 
     public function get($key, $keyVal, $defaults = true): array
     {
@@ -54,8 +74,8 @@ class BaseModel
         if (count($data)) {
 
             // refresh the data and run the query again
-            if ($this->hasStub && $data[0]['stub'] == 1) {
-                $this->getFromXero($data[0]);
+            if ($this->hasStub && !empty($data[0]['stub'])) {
+                $xeroData = $this->getFromXero($data[0]);
                 $data = $this->getRecord($key, $keyVal);
             }
 
@@ -89,10 +109,13 @@ class BaseModel
             $sql = "SELECT * " . $this->getVirtuals() . " 
                 FROM $this->table 
                 WHERE `$key` = :keyVal";
+
             $this->getStatement($sql);
             try {
                 $this->statement->execute(['keyVal' => $keyVal]);
                 $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+                
+                $this->log('info', 'getRecord', ['sql' => $sql, 'data' => $data]);
             } catch (PDOException $e) {
                 echo "Error Message: " . $e->getMessage() . "\n";
                 $this->statement->debugDumpParams();
@@ -162,9 +185,9 @@ class BaseModel
     protected function getTenanciesWhere($params)
     {
         if (count($params['tenancies']) == 1) {
-            return "`{$this->table}`.`xerotenant_id` = '{$params['tenancies'][0]}'";
+            return "`$this->table`.`xerotenant_id` = '{$params['tenancies'][0]}'";
         } else {
-            return "`{$this->table}`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
+            return "`$this->table`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
         }
     }
 
@@ -317,6 +340,7 @@ class BaseModel
         foreach ($this->updateKeys as $v) $output[] = "`$v` = :$v";
         return implode(', ', $output);
     }
+
 
     public function getIdFromXeroContactId($xerotenant_id, $xerocontact_id, $row): int
     {

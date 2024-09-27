@@ -13,7 +13,7 @@ require '../vendor/autoload.php';
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
-$provider = getProvider();
+$provider = Utilities::getProvider();
 
 // If we don't have an authorization code then get one
 if (!isset($_GET['code'])) {

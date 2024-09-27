@@ -2,7 +2,7 @@
 ini_set('display_errors', 'On');
 require __DIR__ . '/vendor/autoload.php';
 require_once('StorageClass.php');
-require_once('utilities.php');
+require_once('Utilities.php');
 require_once('functions.php');
 
 

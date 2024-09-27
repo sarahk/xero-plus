@@ -2,19 +2,22 @@
 
 namespace App;
 
-//use App\StorageClass;
-//use App\Utilities;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 error_reporting(E_ALL);
-require_once('utilities.php');
-require_once('functions.php');
+
+require_once '../vendor/autoload.php';
+
+//$log = new Logger('Index');
+//$log->pushHandler(new StreamHandler('monolog.index.log', Level::Info));
+//$log->info('$_GET', $_GET);
 
 if (array_key_exists('action', $_GET) && $_GET['action'] == 'logoff') {
     session_destroy();
 }
 const LOGGEDOUT = true;
-//$storage = new StorageClass();
-//var_dump($storage->getAccessToken());
 
 require_once('Views/header.php');
 ?>

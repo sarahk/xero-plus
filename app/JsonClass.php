@@ -2,23 +2,30 @@
 
 namespace App;
 
-use App\Models\AddressModel;
-use App\Models\CabinModel;
-use App\Models\ContactModel;
-use App\Models\InvoiceModel;
-use App\Models\PhoneModel;
-use App\Models\TasksModel;
+//use App\Models\AddressModel;
+//use App\Models\CabinModel;
+//use App\Models\ContactModel;
+//use App\Models\InvoiceModel;
+//use App\Models\PhoneModel;
+//use App\Models\TasksModel;
+//use App\Models\TenancyModel;
+use App\Models\Enums\CabinStyle;
+
 use App\Models\TenancyModel;
-
+use App\Models\Traits\DebugTrait;
+use App\Models\Traits\LoggerTrait;
 use PDO;
+use DateTime;
 
-require_once('utilities.php');
-require_once('functions.php');
+use \XeroAPI\XeroPHP\Api\AccountingApi;
 
 class JsonClass
 {
-    public $apiInstance;
-    public $xeroTenantId;
+    use LoggerTrait;
+    use DebugTrait;
+
+    public \XeroAPI\XeroPHP\Api\AccountingApi $apiInstance;
+    public string $xeroTenantId;
 
     public array $tenancies = [];
     public PDO $pdo;
@@ -34,7 +41,7 @@ class JsonClass
 
     function __construct($apiInstance = '', $xeroTenantId = '')
     {
-        $storage = getStorage();
+        $storage = new StorageClass();
         $config = \XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
         $this->apiInstance = new \XeroAPI\XeroPHP\Api\AccountingApi(
             new \GuzzleHttp\Client(),
@@ -42,7 +49,7 @@ class JsonClass
         );
 
         //$this->apiInstance = $apiInstance;
-        $pdo = getPDO();
+        $pdo = Utilities::getPDO();
         $this->pdo = $pdo;
 
         $this->xeroTenantId = $xeroTenantId;
@@ -55,28 +62,29 @@ class JsonClass
 
     public function getCabins()
     {
-        $cabins = new CabinModel($this->pdo);
+        $cabins = new Models\CabinModel($this->pdo);
         $params = $this->getParams();
         return $cabins->list($params);
     }
 
     public function getCabinSingle()
     {
-        $cabins = new CabinModel($this->pdo);
+        $cabins = new Models\CabinModel($this->pdo);
         $params = $this->getParams();
 
         $cabin = $cabins->get('cabin_id', $params['key'])['cabins'];
 
-        $cabin['cabinstyle'] = lists::getCabinStyle($cabin['style']);
-        $cabin['ownername'] = lists::getOwners()[$cabin['owner']];
+        $cabin['cabinstyle'] = Models\Enums\CabinStyle::from($cabin['style']);
+        $cabin['ownername'] = Models\Enums\CabinOwners::from[$cabin['owner']];
 
-        $tenancies = new TenancyModel($this->pdo);
+
+        $tenancies = new Models\TenancyModel($this->pdo);
         $tenancy = $tenancies->get('tenant_id', $cabin['xerotenant_id'])['tenancies'];
         $cabin['tenancy'] = $tenancy['name'];
         $cabin['tenancycolour'] = $tenancy['colour'];
         $cabin['tenancyshortname'] = $tenancy['shortname'];
 
-        $tasks = new TasksModel($this->pdo);
+        $tasks = new Models\TasksModel($this->pdo);
         $cabin['tasklist'] = $tasks->getCurrentCabin($params['key']);
         $cabin['wof'] = $tasks->getLastWOFDate($params['key']);
         // todo - add a wof status and a wof status colour
@@ -86,13 +94,13 @@ class JsonClass
 
     public function getTemplateList(): string
     {
-        $template = new TemplateModel($this->pdo);
+        $template = new Models\TemplateModel($this->pdo);
         return $template->search();
     }
 
     public function getTemplate($id): string
     {
-        $template = new TemplateModel($this->pdo);
+        $template = new Models\TemplateModel($this->pdo);
         return json_encode($template->get('id', $id));
     }
 
@@ -100,7 +108,7 @@ class JsonClass
     public function closeTask()
     {
         $params = $this->getParams();
-        $tasks = new TasksModel($this->pdo);
+        $tasks = new Models\TasksModel($this->pdo);
         return $tasks->closeTask($params);
     }
 
@@ -108,7 +116,7 @@ class JsonClass
     {
         $params = $this->getParams();
         $params['specialise'] = $for;
-        $tasks = new TasksModel($this->pdo);
+        $tasks = new Models\TasksModel($this->pdo);
         return json_encode($tasks->list($params));
     }
 
@@ -116,19 +124,19 @@ class JsonClass
     {
         $params = $this->getParams();
         $params['specialise'] = 'cabin';
-        $tasks = new TasksModel($this->pdo);
+        $tasks = new Models\TasksModel($this->pdo);
         return json_encode($tasks->List($params));
         //return json_encode($params);
     }
 
     public function getTaskSingle()
     {
-        $tasks = new TasksModel($this->pdo);
+        $tasks = new Models\TasksModel($this->pdo);
         $params = $this->getParams();
 
         $task = $tasks->get('id', $params['key'])['tasks'];
 
-        $task['type'] = lists::getTaskType($task['task_type']);
+        $task['type'] = Models\Enums\TaskType::from($task['task_type']);
 
         $tenancies = new TenancyModel($this->pdo);
         $tenancy = $tenancies->get('tenant_id', $task['xerotenant_id'])['tenancies'];
@@ -137,11 +145,11 @@ class JsonClass
         $task['tenancyshortname'] = $tenancy['shortname'];
 
         if (!empty($task['cabin_id'])) {
-            $cabins = new CabinModel($this->pdo);
+            $cabins = new Models\CabinModel($this->pdo);
             $task['cabin'] = $cabins->getCurrentContract($task['cabin_id']);
 
             if (!empty($task['cabin']['ckcontact_id'])) {
-                $contacts = new ContactModel($this->pdo);
+                $contacts = new Models\ContactModel($this->pdo);
                 $task['contact'] = $contacts->get('id', $task['cabin']['ckcontact_id'], false);
             }
         }
@@ -151,7 +159,7 @@ class JsonClass
 
     public function getTaskCounts(): string
     {
-        $tasks = new TasksModel($this->pdo);
+        $tasks = new Models\TasksModel($this->pdo);
         $counts = $tasks->getCounts();
         return json_encode($counts);
     }
@@ -572,6 +580,16 @@ class JsonClass
             }
         }
         return "{$prefix}black";
+    }
+
+// https://ckm:8825/json.php?endpoint=Contacts&action=refreshSingle&tenancy=auckland&contact_id=59552109-942b-4de3-931d-5ae843f95d79
+    public function getRefreshContactSingle($tenancy_id, $contact_id)
+    {
+        $xero = new XeroClass();
+
+        $output = $xero->getSingleContact($tenancy_id, $contact_id);
+
+        return json_encode($output);
     }
 
     /*
@@ -1461,7 +1479,7 @@ class JsonClass
     public function getInvoiceList($returnObj = false)
     {
         $params = $this->getParams();
-        $invoice = new InvoiceModel($this->pdo);
+        $invoice = new Models\InvoiceModel($this->pdo);
         $output = $invoice->list($params);
         return json_encode($output);
 
@@ -1470,7 +1488,7 @@ class JsonClass
     public function getBadDebtsList($returnObj = false): string
     {
         $params = $this->getParams();
-        $invoice = new InvoiceModel($this->pdo);
+        $invoice = new Models\InvoiceModel($this->pdo);
         $output = $invoice->listBadDebts($params);
         return json_encode($output);
     }

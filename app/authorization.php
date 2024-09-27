@@ -4,14 +4,13 @@ namespace App;
 
 ini_set('display_errors', 'On');
 require '../vendor/autoload.php';
-require_once('StorageClass.php');
-require_once('utilities.php');
+
 
 // Storage Class uses sessions for storing access token (demo only)
 // you'll need to extend to your Database for a scalable solution
 $storage = new StorageClass();
 
-$provider = getProvider();
+$provider = Utilities::getProvider();
 
 // Scope defines the data your app has permission to access.
 // Learn more about scopes at https://developer.xero.com/documentation/oauth2/scopes

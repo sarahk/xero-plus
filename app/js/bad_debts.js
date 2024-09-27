@@ -8,6 +8,7 @@ if ($('#tBadDebts').length) {
         "serverSide": true,
         "paging": true,
         stateSave: true,
+        rowId: 'DT_RowId',
         "columns": [
             {
                 data: null,

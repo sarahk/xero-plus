@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
-use PDO;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
-class InvoiceModel extends \App\Models\BaseModel
+
+use PDO;
+use PDOException;
+
+class InvoiceModel extends BaseModel
 {
     protected string $table = 'invoices';
     protected array $saveKeys = [
@@ -29,15 +35,15 @@ class InvoiceModel extends \App\Models\BaseModel
     ];
     protected int $orderByDefault = 5;
 
-    protected ContactModel $contacts;
-    protected ContractModel $contracts;
+    // protected ContactModel $contacts;
+    // protected ContractModel $contracts;
 
     function __construct($pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();
-        $this->contacts = new ContactModel($pdo);
-        $this->contracts = new ContractModel($pdo);
+        //$this->contacts = new ContactModel($pdo);
+        //$this->contracts = new ContractModel($pdo);
     }
 
     // I N V O I C E
@@ -49,7 +55,8 @@ class InvoiceModel extends \App\Models\BaseModel
 
         if (!array_key_exists('contract_id', $data['invoice']) || !$data['invoice']['contract_id']) {
             //$contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
-            $contract = $this->contracts->get('repeating_invoice_id', $data['invoice']['repeating_invoice_id']);
+            $contracts = new ContractModel($this->pdo);
+            $contract = $contracts->get('repeating_invoice_id', $data['invoice']['repeating_invoice_id']);
             $data['invoice']['contract_id'] = $contract['contracts']['contract_id'];
 
             if (!array_key_exists('contact_id', $data['invoice'])) {
@@ -137,16 +144,7 @@ class InvoiceModel extends \App\Models\BaseModel
             LIMIT {$params['start']}, {$params['length']}";
 
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute($searchValues);
-
-            //$invoices = $this->statement->fetchAll();
-            $invoices = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
-        }
+        $invoices = $this->runQuery($sql, $searchValues);
 
         $output = $params;
         $output['mainquery'] = $sql;
@@ -193,8 +191,10 @@ class InvoiceModel extends \App\Models\BaseModel
                     'amount_due' => $row['amount_due'],
                     'due_date' => date('d F Y', strtotime($row['due_date']))
                 ];
+// for debugging
+                $output['row'] = $row;
             }
-            $output['row'] = $row;
+
         }
         return $output;
     }
@@ -261,8 +261,8 @@ class InvoiceModel extends \App\Models\BaseModel
 
         $sql = "SELECT `invoices`.`contract_id`,
             `invoices`.`contract_id` as `DT_RowId`,
-            SUM(invoices.amount_due) as due, 
-            COUNT(invoices.invoice_id) as weeks_due,
+            SUM(`invoices`.`amount_due`) as due, 
+            COUNT(`invoices`.`invoice_id`) as weeks_due,
             contacts.name, 
             contacts.contact_id,
             (SELECT COUNT(i2.invoice_id) FROM invoices as i2 WHERE i2.contract_id = invoices.contract_id) AS total_weeks
@@ -272,7 +272,7 @@ class InvoiceModel extends \App\Models\BaseModel
             GROUP BY `invoices`.`contract_id`, `contacts`.`contact_id`, `contacts`.`name`
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
-        echo $sql;
+
 
         //  (SELECT CONCAT(phones.phone_area_code, ' ', phones.phone_number) as `phone` from `phones` WHERE phones.ckcontact_id = contacts.id ORDER BY `phone_type` DESC LIMIT 1) AS phone,
 
@@ -295,7 +295,7 @@ class InvoiceModel extends \App\Models\BaseModel
         // adds in tenancies because it doesn't use $conditions
         $recordsTotal = "SELECT count(invoices.contract_id) FROM `invoices` 
                 WHERE $tenancies AND {$conditions[count($conditions)-1]}
-                GROUP BY invoices.contract_id";
+                GROUP BY `invoices`.`contract_id`";
 
         $recordsFiltered = "SELECT count(invoices.contract_id) as `filtered` FROM `invoices` 
                 LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
@@ -322,14 +322,19 @@ class InvoiceModel extends \App\Models\BaseModel
             foreach ($badDebts as $row) {
 
                 $output['data'][] = [
+                    'DT_RowId' => $row['DT_RowId'],
                     'contact' => $this->getFormattedContactCell($row),
                     'due' => $row['due'],
                     'weeks_due' => $row['weeks_due'],
                     'total_weeks' => $row['total_weeks'],
-                    'chart' => "<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' width='300' height='125'/>"
+                    'chart' => "<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' 
+                                    alt=\"Bad Debt history for {$row['name']}\" 
+                                    width='300' height='125'/>"
                 ];
+                // for debugging
+                $output['row'] = $row;
             }
-            $output['row'] = $row;
+
         }
         return $output;
     }
@@ -360,13 +365,18 @@ class InvoiceModel extends \App\Models\BaseModel
     {
         if (empty($row['name'])) $row['name'] = $row['contact_id'];
 
-        $email = $this->contacts->get('contact_id', $row['contact_id']);
-        $phones = $this->contacts->phones->getChildren('contacts', $row['contact_id'], false);
-        var_export($email);
-        var_export($phones);
+        $contacts = new ContactModel($this->pdo);
+        $email = $contacts->get('contact_id', $row['contact_id']);
+
         $output = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>
-                        <i class='fa-solid fa-at'></i> <a href='mailto:{$email['email_address']}'>{$email['email_address']}</a>
-                        <i class='fa-solid fa-phone'></i> <tel>{$row['phone']}</tel>";
+                        <br/><i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
+        foreach ($email['phones'] as $phone) {
+
+            if (!empty($phone['phone_number'])) {
+                $output .= "<br/><a href='tel:{$phone['phone_area_code']}{$phone['phone_number']}'>({$phone['phone_area_code']}) {$phone['phone_number']}</a>";
+            }
+        }
+
         return $output;
     }
 
@@ -413,5 +423,55 @@ class InvoiceModel extends \App\Models\BaseModel
     function getPDF($invoice_id)
     {
         //GET https://api.xero.com/api.xro/2.0/Invoices/acb4b8d6-e8bc-41c9-9a57-dccae7ad51de
+    }
+
+    /* Get One Bad Debtor
+       used for testing
+
+    */
+    function getOneBadDebtor(): string
+    {
+
+        $log = new Logger('InvoiceModel.getOneBadDebtor');
+        $log->pushHandler(new StreamHandler('monolog.log', Level::Info));
+
+
+        $sql = "SELECT i.contract_id, i.invoice_id, i.date,
+                    (SELECT sum(i2.amount_due) FROM invoices AS i2 WHERE i.contract_id = i2.contract_id) AS `total`
+                FROM 
+                    invoices i
+                INNER JOIN (
+                    SELECT 
+                        contract_id, 
+                        MAX(invoices.date) AS latest_invoice_date
+                    FROM 
+                        invoices
+                    GROUP BY 
+                        contract_id
+                ) as latest_invoices
+                ON i.contract_id = latest_invoices.contract_id
+                AND i.date = latest_invoices.latest_invoice_date
+                WHERE YEAR(i.date) = YEAR(NOW())
+                ORDER BY `total` DESC
+                LIMIT 3, 1;";
+
+        //$log->info('SQL',$sql);
+
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute();
+            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            $log->info('Query result', $result);
+            $log->info('Query count', [count($result)]);
+            $log->info('Will return', [$result[0]['contract_id']]);
+
+            return $result[0]['contract_id'];
+
+        } catch (PDOException $e) {
+            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+            $log->error("[list] Error Message for $this->table: " . $e->getMessage());
+            $this->statement->debugDumpParams();
+        }
+        return 0;
     }
 }

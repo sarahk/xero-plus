@@ -16,12 +16,12 @@ error_reporting(E_ALL);
 
 require_once '../vendor/autoload.php';
 //require_once('StorageClass.php');
-//require_once('utilities.php');
+//require_once('Utilities.php');
 require_once('functions.php');
 require_once('JsonClass.php');
 
-$pdo = getPDO();
-$storage = getStorage();
+$pdo = Utilities::getPDO();
+$storage = new StorageClass();
 const LOGGEDOUT = false;
 
 $message = "no API calls";

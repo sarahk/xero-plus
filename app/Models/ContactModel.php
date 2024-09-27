@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\XeroClass;
 use App\Models\BaseModel;
 use App\Models\AddressModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
 use App\Models\PhoneModel;
 
+use PDO;
 
 class ContactModel extends BaseModel
 {
@@ -25,7 +27,7 @@ class ContactModel extends BaseModel
         'updated_date_utc', 'stub'];
 
     protected AddressModel $addresses;
-    public PhoneModel $phones;
+    protected PhoneModel $phones;
 
     protected NoteModel $notes;
 
@@ -50,7 +52,10 @@ class ContactModel extends BaseModel
     public function prepAndSave($data): int
     {
 
+        // is this an update?
         if (array_keys_exist(['id', 'contact_id', 'xeroRefresh'], $data['contact'], 'any')) {
+            //
+            // we've done a refresh from xero, and we need to update the records
             if (array_key_exists('xeroRefresh', $data['contact']) && $data['contact']['xeroRefresh'] == true) {
                 // we don't want to get the old $oldVals = ['contracts' => []];
                 // we're saving fewer columns
@@ -64,29 +69,35 @@ class ContactModel extends BaseModel
 
                 $save = ['contact_id' => $data['contact']['contact_id'],
                     'first_name' => $data['contact']['first_name'],
-                    'last_name' => $data['contact']['first_name'],
-                    'email_address' => $data['contact']['first_name'],
-                    'xero_status' => $data['contact']['first_name'],
+                    'last_name' => $data['contact']['last_name'],
+                    'email_address' => $data['contact']['email_address'],
+                    'xero_status' => $data['contact']['xero_status'],
                 ];
 
                 return $this->save($save);
 
-            } else if (array_key_exists('id', $data['contact']) && $data['contact']['id']) {
-                $oldVals = $this->get('id', $data['contact']['id']);
-                $contact = array_merge($oldVals['contacts'], $data['contact']);
+            } else if (!empty($data['contact']['id'])) {
+                //todo do we need to refresh from xero?
+                $oldVals = $this->getRecord('id', $data['contact']['id']);
 
-            } else if (array_key_exists('contact_id', $data['contact']) && $data['contact']['contact_id']) {
+                //$this->debug(['oldvals' => $oldVals, 'data' => $data]);
+                $contact = $this->array_merge($oldVals[0], $data['contact']);
+
+            } else if (!empty($data['contact']['contact_id'])) {
                 // probably just getting the default values
-                $oldVals = $this->get('contact_id', $data['contact']['contact_id']);
-
-                $contact = array_merge($oldVals['contacts'], $data['contact']);
+                //todo do we need to refresh from xero?
+                $oldVals = $this->getRecord('contact_id', $data['contact']['contact_id']);
+                $contact = $this->array_merge($oldVals[0], $data['contact']);
                 $data['contact']['id'] = $contact['id'];
             }
-        } else $contact = $data['contact'];
+        } else {
+            // this is a new record
+            $contact = $data['contact'];
+        }
 
-        $first_name = array_key_exists('firstname', $data['contact']) ? $data['contact']['first_name'] : '';
-        $last_name = array_key_exists('lastname', $data['contact']) ? $data['contact']['last_name'] : '';
-        $name = array_key_exists('name', $data['contact']) ? $data['contact']['name'] : '';
+        $first_name = $data['contact']['first_name'] ?? '';
+        $last_name = $data['contact']['last_name'] ?? '';
+        $name = $data['contact']['name'] ?? '';
 
         if (empty($name) && (!empty($first_name) || !empty($last_name))) {
             $data['contact']['name'] = $first_name . ' ' . $last_name;
@@ -127,10 +138,29 @@ class ContactModel extends BaseModel
         return $data['contact']['id'];
     }
 
+    // contacts have 2 ids, one internal, one from xero
+    // this uses the xero id to get the internal id
+    public function getContactId($contact_id): int
+    {
+        $sql = "SELECT `id` FROM `contacts` WHERE `contact_id` = :contact_id";
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute(['contact_id' => $contact_id]);
+            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            if (count($result)) {
+                return $result[0]['id'];
+            }
+            return 0;
+
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
+        return 0;
+    }
 
     protected function getFromXero($data): void
     {
-
         parent::getFromXero($data); // should be nothing there but let's check
         if (empty($data['contact_id'])) {
             return;
@@ -185,5 +215,25 @@ class ContactModel extends BaseModel
             'draw' => $_GET['draw'],
             'data' => $list
         ];
+    }
+
+    // for use in the Pest Test Suite
+    public function getTestData($limit): array
+    {
+        $sql = "select contact_id, contacts.`xerotenant_id`,
+                    first_name, last_name, email_address 
+                    from contacts 
+                    order by rand() desc 
+                    limit 4";
+
+        $this->getStatement($sql);
+        try {
+            $this->statement->execute();
+            return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error Message: " . $e->getMessage() . "\n";
+            $this->statement->debugDumpParams();
+        }
+        return [];
     }
 }

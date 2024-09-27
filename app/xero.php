@@ -1,4 +1,12 @@
 <?php
+
+namespace App;
+
+use App\XeroClass;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 /*
  * Handles direct calls to Xero
  * Does not return json - saves the information into the mysql database
@@ -10,20 +18,20 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-//$path = '/var/www/vhosts/caravanforhire.co.nz/httpdocs/git/xero/vendor/autoload.php';
-$path = 'vendor/autoload.php';
-require $path;
+require_once '../vendor/autoload.php';
 
-//require_once('StorageClass.php');
-require_once('XeroClass.php');
-require_once('config.php');
-require_once('utilities.php');
+$log = new Logger('Index');
+$log->pushHandler(new StreamHandler('monolog.index.log', Level::Info));
+$log->info('New Xero Import', [date('d-m-Y-H-i-s')]);
+
+//require_once('config.php');
+
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
 //require_once('authorizedXero.php');
 
 
-$storage = getStorage();
+$storage = new StorageClass();
 
 
 $xero = new XeroClass();
@@ -124,6 +132,7 @@ try {
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
+                    // this is called automatically by the footer on every page
                     $tenancy = filter_input(INPUT_GET, 'tenancy');
                     $xero->getInvoiceRefresh($tenancy);
                     break;

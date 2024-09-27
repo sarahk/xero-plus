@@ -2,19 +2,25 @@
 //use XeroAPI\XeroPHP\AccountingObjectSerializer;
 namespace App;
 
-use App\Utilities;
+use App\Models\Traits\DebugTrait;
+use App\Models\Traits\FunctionsTrait;
+use App\Models\Traits\LoggerTrait;
 use App\Models\AddressModel;
 use App\Models\ContactModel;
+use App\Models\ContractModel;
 use App\Models\InvoiceModel;
 use App\Models\PhoneModel;
 use App\Models\SettingModel;
 use App\Models\TenancyModel;
-
-include_once('functions.php');
-
+use PDO;
+use Exception;
 
 class XeroClass
 {
+    use DebugTrait;
+    use FunctionsTrait;
+    use LoggerTrait;
+
     protected $apiInstance;
     public string $xeroTenantId;
     public array $tenancies = [];
@@ -22,29 +28,22 @@ class XeroClass
 
     protected $storage;
 
-    protected ContactModel $contact;
-    protected ContractModel $contract;
-    protected InvoiceModel $invoice;
-    protected TenancyModel $tenancy;
 
     function __construct($apiInstance = '')
     {
-        $storage = getStorage();
+        $storage = new StorageClass();
         $this->storage = $storage;
 
-        $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
-        $this->apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
-            new GuzzleHttp\Client(),
+        $config = \XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
+        $this->apiInstance = new \XeroAPI\XeroPHP\Api\AccountingApi(
+            new \GuzzleHttp\Client(),
             $config
         );
 
         //$this->apiInstance = $apiInstance;
-        $pdo = getPDO();
+        $pdo = Utilities::getPDO();
         $this->pdo = $pdo;
-        $this->contact = new ContactModel($pdo);
-        $this->contract = new ContractModel($pdo);
-        $this->invoice = new InvoiceModel($pdo);
-        $this->tenancy = new TenancyModel($pdo);
+
     }
 
     public function getTenantIdArray()
@@ -195,43 +194,50 @@ class XeroClass
     }
 
     // internal call
-    public function getSingleContact($xeroTenantId, $contact_id): int
+    // to see the result data
+    // https://api-explorer.xero.com/accounting/contacts/getcontact?path-contactid=e3e88c63-d089-4e4f-b665-a87e9796d66b
+    public function getSingleContact($xeroTenantId, $contact_id): array
     {
-        $ids = [$contact_id];
-        // public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
-
-
-        // shown in full for readability
-        $updated_date_utc = null;
-        $where = $order = null;
-        $page = 1;
-        $include_archived = true;
-
-
         $result = $this->apiInstance->getContact($xeroTenantId, $contact_id);
 
-
+        //$this->debug($result);
         if (count($result)) {
 
             $row = $result->getContacts();
             $addresses = $this->getAddressesFromXeroObject($row[0]->getAddresses());
             $phones = $this->getPhonesFromXeroObject($row[0]->getPhones());
 
+
             $save = ['contact_id' => $contact_id,
                 'first_name' => $row[0]->getFirstName(),
                 'last_name' => $row[0]->getLastName(),
-                'email_address' => $row[0]->getFirstName(),
+                'email_address' => $row[0]->getEmailAddress(),
                 'xero_status' => $row[0]->getContactStatus(),
                 'addresses' => $addresses,
                 'phones' => $phones,
                 'xerotenant_id' => $xeroTenantId,
                 'stub' => 0,
-                'xeroRefresh' => 1
+                'xeroRefresh' => true
             ];
+            //$this->debug(['save' => $save]);
+            $contact = new ContactModel($this->pdo);
+            $id = $contact->getContactId($contact_id);
+            if ($id) {
+                $save['id'] = $id;
+                $save['xeroRefresh'] = false;
+            }
 
-            return $this->contact->prepAndSave(['contact' => $save]);
+            $save['id'] = $contact->prepAndSave(['contact' => $save]);
+            return $save;
         }
-        return 0;
+        return ['id' => 0];
+    }
+
+
+    public function getSingleContactId($xeroTenantId, $contact_id): int
+    {
+        $result = $this->getSingleContact($xeroTenantId, $contact_id);
+        return $result['id'];
     }
 
     protected function getSingleContactStub($xeroTenantId, $row)
@@ -244,8 +250,8 @@ class XeroClass
             'xerotenant_id' => $xeroTenantId,
             'stub' => 1
         ];
-
-        return $this->contact->prepAndSave(['contact' => $save]);
+        $contact = new ContactModel($this->pdo);
+        return $contact->prepAndSave(['contact' => $save]);
     }
 
     public function getContactRefresh(): void// auckland,waikato,bop
@@ -256,7 +262,8 @@ class XeroClass
         // public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
 
         // shown in full for readability
-        $updated_date_utc = $this->contact->getUpdatedDate($xeroTenantId);
+        $contact = new ContactModel($this->pdo);
+        $updated_date_utc = $contact->getUpdatedDate($xeroTenantId);
         $where = $order = $ids = null;
         $page = 1;
         $include_archived = true;
@@ -314,9 +321,10 @@ class XeroClass
                 'phone_country_code' => $phone->getPhoneCountryCode()
             ];
         }
-        debug([$values['contact']['name'], $values['contact']['first_name'], $values['contact']['last_name'], $values['contact']['contact_id']]);
+        $this->debug([$values['contact']['name'], $values['contact']['first_name'], $values['contact']['last_name'], $values['contact']['contact_id']]);
 
-        $this->contact->prepAndSave($values);
+        $contact = new ContactModel($this->pdo);
+        $contact->prepAndSave($values);
     }
 
 
@@ -333,7 +341,7 @@ class XeroClass
             $apiResponse = $this->apiInstance->getContacts($this->xeroTenantId, $if_modified_since, $where, $order, $ids, $page, $include_archived);
             if (count($apiResponse->getContacts()) > 0) {
                 $message = 'Total contacts found: ' . count($apiResponse->getContacts());
-                debug($apiResponse->getContacts());
+                $this->debug($apiResponse->getContacts());
             } else {
                 $message = "No contacts found matching filter criteria";
             }
@@ -347,8 +355,8 @@ class XeroClass
     public function getTenancies(): array
     {
         if (count($this->tenancies) == 0) {
-
-            $this->tenancies = $this->tenancy->tenancies->list();
+            $tenancy = new TenancyModel($this->pdo);
+            $this->tenancies = $tenancy->list();
         }
         $output = [];
         foreach ($this->tenancies as $row) {
@@ -415,7 +423,7 @@ class XeroClass
         $str = '';
 
         //[Contacts:Create]
-        $person = new XeroAPI\XeroPHP\Models\Accounting\ContactPerson;
+        $person = new \XeroAPI\XeroPHP\Models\Accounting\ContactPerson;
         $person->setFirstName("John")
             ->setLastName("Smith")
             ->setEmailAddress("john.smith@24locks.com")
@@ -424,7 +432,7 @@ class XeroClass
         $persons = [];
         array_push($persons, $person);
 
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+        $contact = new \XeroAPI\XeroPHP\Models\Accounting\Contact;
         $contact->setName('FooBar' . $this->getRandNum())
             ->setFirstName("Foo" . $this->getRandNum())
             ->setLastName("Bar" . $this->getRandNum())
@@ -449,21 +457,21 @@ class XeroClass
         //[Contacts:CreateMulti]
         $arr_contacts = [];
 
-        $contact_1 = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+        $contact_1 = new \XeroAPI\XeroPHP\Models\Accounting\Contact;
         $contact_1->setName('FooBar' . $this->getRandNum())
             ->setFirstName("Foo" . $this->getRandNum())
             ->setLastName("Bar" . $this->getRandNum())
             ->setEmailAddress("ben.bowden@24locks.com");
         array_push($arr_contacts, $contact_1);
 
-        $contact_2 = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+        $contact_2 = new \XeroAPI\XeroPHP\Models\Accounting\Contact;
         $contact_2->setName('FooBar' . $this->getRandNum())
             ->setFirstName("Foo" . $this->getRandNum())
             ->setLastName("Bar" . $this->getRandNum())
             ->setEmailAddress("ben.bowden@24locks.com");
         array_push($arr_contacts, $contact_2);
 
-        $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
+        $contacts = new \XeroAPI\XeroPHP\Models\Accounting\Contacts;
         $contacts->setContacts($arr_contacts);
 
         $result = $apiInstance->createContacts($xeroTenantId, $contacts);
@@ -486,7 +494,7 @@ class XeroClass
         $contactId = $new->getContacts()[0]->getContactId();
 
         //[Contacts:Update]
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+        $contact = new \XeroAPI\XeroPHP\Models\Accounting\Contact;
         $contact->setName("Goodbye" . $this->getRandNum());
         $result = $apiInstance->updateContact($xeroTenantId, $contactId, $contact);
         //[/Contacts:Update]
@@ -504,7 +512,7 @@ class XeroClass
         $contactId = $new->getContacts()[0]->getContactId();
 
         //[Contacts:Archive]
-        $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+        $contact = new \XeroAPI\XeroPHP\Models\Accounting\Contact;
         $contact->setContactStatus(\XeroAPI\XeroPHP\Models\Accounting\Contact::CONTACT_STATUS_ARCHIVED);
         $result = $apiInstance->updateContact($xeroTenantId, $contactId, $contact);
         //[/Contacts:Archive]
@@ -589,10 +597,10 @@ class XeroClass
         $lastName = $new->getEmployees()[0]->getLastName();
 
         //[Employees:Update]
-        $external_link = new XeroAPI\XeroPHP\Models\Accounting\ExternalLink;
+        $external_link = new \XeroAPI\XeroPHP\Models\Accounting\ExternalLink;
         $external_link->setUrl("http://twitter.com/#!/search/Homer+Simpson");
 
-        $employee = new XeroAPI\XeroPHP\Models\Accounting\Employee;
+        $employee = new \XeroAPI\XeroPHP\Models\Accounting\Employee;
         $employee->setExternalLink($external_link);
         $employee->setFirstName($firstName);
         $employee->setLastName($lastName);
@@ -628,7 +636,10 @@ class XeroClass
         }
     }
 
+    public function getSingleInvoice($invoice_id)
+    {
 
+    }
 
 
     // https://cabinkingmanagement:8890/xero.php?endpoint=Invoices&action=refresh&tenancy=auckland
@@ -741,7 +752,7 @@ class XeroClass
         $str = '';
 
         //[Items:Create]
-        $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        $item = new \XeroAPI\XeroPHP\Models\Accounting\Item;
 
         $item->setName('My Item-' . $this->getRandNum())
             ->setCode($this->getRandNum())
@@ -766,21 +777,21 @@ class XeroClass
         //[Items:CreateMulti]
         $arr_items = [];
 
-        $item_1 = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        $item_1 = new \XeroAPI\XeroPHP\Models\Accounting\Item;
         $item_1->setName('My Item-' . $this->getRandNum())
             ->setCode($this->getRandNum())
             ->setDescription("This is my Item description.")
             ->setIsTrackedAsInventory(false);
         array_push($arr_items, $item_1);
 
-        $item_2 = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        $item_2 = new \XeroAPI\XeroPHP\Models\Accounting\Item;
         $item_2->setName('My Item-' . $this->getRandNum())
             ->setCode($this->getRandNum())
             ->setDescription("This is my Item description.")
             ->setIsTrackedAsInventory(false);
         array_push($arr_items, $item_2);
 
-        $items = new XeroAPI\XeroPHP\Models\Accounting\Items;
+        $items = new \XeroAPI\XeroPHP\Models\Accounting\Items;
         $items->setItems($arr_items);
 
         $result = $apiInstance->createItems($xeroTenantId, $items);
@@ -804,7 +815,7 @@ class XeroClass
         $code = $new->getItems()[0]->getCode();
 
         //[Items:Update]
-        $item = new XeroAPI\XeroPHP\Models\Accounting\Item;
+        $item = new \XeroAPI\XeroPHP\Models\Accounting\Item;
         $item->setName('Change Item-' . $this->getRandNum())
             ->setCode($code);
         $result = $apiInstance->updateItem($xeroTenantId, $itemId, $item);
@@ -883,7 +894,7 @@ class XeroClass
         }
     }
 
-    public function getOrganisationList($returnObj = false)
+    public function getOrganisationList($returnObj = false): void
     {
         $tenancies = $this->getTenancyList();
         $userTenancies = $this->getTenanciesforUser();
@@ -896,9 +907,6 @@ class XeroClass
                 }
             }
             $tenancies[$k]['disabled'] = $disabled;
-        }
-        if ($returnObj) {
-            return $tenancies;
         }
 
         echo json_encode($tenancies);
@@ -1069,7 +1077,7 @@ class XeroClass
         $result = $this->apiInstance->getRepeatingInvoices($xeroTenantId, $where, $order);
         //[/RepeatingInvoices:Read]
         $str = $str . "Get RepeatingInvoices: " . count($result->getRepeatingInvoices()) . "<br>";
-        debug($result->getRepeatingInvoices());
+        $this->debug($result->getRepeatingInvoices());
 
         return $result->getRepeatingInvoices()[0];
 
@@ -1101,19 +1109,20 @@ class XeroClass
         //[/RepeatingInvoices:Read]
         $contact_id = $result[0]->getContact()->getContactId();
 
-        $contract = [
+        $save = [
             'repeating_invoice_id' => $repeating_invoice_id,
             'contact_id' => $contact_id,
-            'ckcontact_id' => $this->getSingleContact($xeroTenantId, $contact_id),
+            'ckcontact_id' => $this->getSingleContactId($xeroTenantId, $contact_id),
             'reference' => $result[0]->getReference(),
             'total' => $result[0]->getTotal(),
             'xeroRefresh' => true,
             'stub' => 0
         ];
-        $contract = array_merge($contract, $this->getScheduleFromXeroObject($result[0]['schedule']));
+        $save = array_merge($save, $this->getScheduleFromXeroObject($result[0]['schedule']));
 
-        debug($contract);
-        return $this->contract->prepAndSave(['contract' => $contract]);
+        $this->debug($save);
+        $contract = new ContractModel($this->pdo);
+        return $contract->prepAndSave(['contract' => $contract]);
     }
 
     public function getSingleRepeatingInvoiceStub($xeroTenantId, $row): int

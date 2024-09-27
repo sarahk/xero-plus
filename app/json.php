@@ -6,6 +6,10 @@
 namespace App;
 
 use App\StorageClass;
+use App\JsonClass;
+use App\Models\TemplateModel;
+use \XeroAPI\XeroPHP\Configuration;
+use \XeroAPI\XeroPHP\Api\AccountingApi;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -13,30 +17,20 @@ error_reporting(E_ALL);
 header('Access-Control-Allow-Origin: *');
 header("Content-type: application/json; charset=utf-8");
 
-//$path = '/var/www/vhosts/caravanforhire.co.nz/httpdocs/git/xero/vendor/autoload.php';
 $path = '../vendor/autoload.php';
 require $path;
 
+//require_once('config.php');
 
-require_once('JsonClass.php');
-require_once('config.php');
-require_once('utilities.php');
-
-
-require_once('models/TemplateModel.php');
-
-$provider = getProvider();
-
-// Storage Class uses sessions for storing token > extend to your DB of choice
+$provider = Utilities::getProvider();
+// Storage Class uses sessions for storing token
 $storage = new StorageClass();
-
-
 $xeroTenantId = (string)$storage->getSession()['tenant_id'];
 
 // Check if Access Token is expired
 // if so - refresh token
 if ($storage->getHasExpired()) {
-    $provider = getProvider();
+    //$provider = Utilities::getProvider();
 
     $newAccessToken = $provider->getAccessToken('refresh_token', [
         'refresh_token' => $storage->getRefreshToken()
@@ -119,6 +113,12 @@ try {
                 case 'Refresh':
                 case 'refresh':
                     $json->getContactRefresh();
+                    break;
+                case 'RefreshSingle':
+                case 'refreshSingle':
+                    $contact_id = $_GET['contact_id'];
+
+                    echo $json->getRefreshContactSingle($xeroTenantId, $contact_id);
                     break;
                 case "Create":
                     echo $json->createContact($xeroTenantId, $apiInstance);

@@ -2,15 +2,13 @@
 
 namespace App;
 
+use App\Models\InvoiceModel;
+use App\Models\TemplateModel;
+
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-require_once('utilities.php');
-require_once('functions.php');
-
-//require_once './Models/ClicksendModel.php';
-require_once SITE_ROOT . '/Models/InvoiceModel.php';
-require_once SITE_ROOT . '/Models/TemplateModel.php';
+require_once '../vendor/autoload.php';
 
 //TODO add security
 
@@ -19,7 +17,7 @@ $action = array_key_exists('action', $_GET) ? intval($_GET['action']) : 0;
 
 $form = array_key_exists('form', $_GET) ?? '';
 
-$pdo = getPDO();
+$pdo = Utilities::getPDO();
 
 switch ($endpoint) {
     //case 'sendSMS':

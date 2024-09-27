@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\XeroClass;
 use App\Models\BaseModel;
+
+use PDO;
 
 class ContractModel extends BaseModel
 {
