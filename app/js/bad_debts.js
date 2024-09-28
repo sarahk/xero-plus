@@ -62,3 +62,43 @@ function sendSMS() {
         alert("sms sent");
     });
 }
+
+// M O D A L
+if ($('#contactSingle').length) {
+
+    $('#contactSingle').on('show.bs.modal', function (event) {
+        let complete = false;
+        setTimeout(function () {
+            if (!complete) {
+                $('#modalSpinnerContact').show();
+            }
+        }, 1000);
+
+
+        let button = event.relatedTarget; // Button or link that triggered the modal
+
+        let contact_id = button.getAttribute('data-contactid'); // Extract info from data-* attributes
+        let contract_id = button.getAttribute('data-contractid'); // Extract info from data-* attributes
+
+        let url = "/json.php?endpoint=Contacts&action=Singleton&contact_id=" + contact_id;
+
+        // todo check the url
+        $.getJSON(url, function (data) {
+            console.log(data);
+            console.log(data.contacts.name);
+            $('#contactNameLabel').textContent = data.contacts.name;
+
+            $('#contactName').val(data.contacts.name);
+            $('#contactFirstName').val(data.contacts.first_name);
+            $('#contactLastName').val(data.contacts.last_name);
+            $('#contactEmail').val(data.contacts.email_address);
+
+            $('#imgBadDebts').attr("src", "/run.php?endpoint=image&imageType=baddebt&contract_id=" + contract_id);
+            //width="300" height="125">
+        });
+
+        complete = true;
+        $('#modalSpinnerContact').hide();
+
+    });
+}

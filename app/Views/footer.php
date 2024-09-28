@@ -81,6 +81,7 @@ include 'Layouts/scripts.php';
 <script type="text/javascript" src="/js/templates.js"></script>
 <script type="text/javascript" src="/js/tasks.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>
+<script type="text/javascript" src="/js/widgets.js"></script>
 
 <?php
 $action = intval($_GET['action'] ?? 0);

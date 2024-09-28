@@ -1103,13 +1103,22 @@ class XeroClass
         return $output;
     }
 
+    // the equivalent of a contract
     public function getSingleRepeatingInvoice($xeroTenantId, $repeating_invoice_id): int
+    {
+        $save = $this->getSingleRepeatingInvoiceData($xeroTenantId, $repeating_invoice_id);
+
+        $contract = new ContractModel($this->pdo);
+        return $contract->prepAndSave(['contract' => $contract]);
+    }
+
+    public function getSingleRepeatingInvoiceData($xeroTenantId, $repeating_invoice_id): array
     {
         $result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
         //[/RepeatingInvoices:Read]
         $contact_id = $result[0]->getContact()->getContactId();
 
-        $save = [
+        $output = [
             'repeating_invoice_id' => $repeating_invoice_id,
             'contact_id' => $contact_id,
             'ckcontact_id' => $this->getSingleContactId($xeroTenantId, $contact_id),
@@ -1118,12 +1127,9 @@ class XeroClass
             'xeroRefresh' => true,
             'stub' => 0
         ];
-        $save = array_merge($save, $this->getScheduleFromXeroObject($result[0]['schedule']));
-
-        $this->debug($save);
-        $contract = new ContractModel($this->pdo);
-        return $contract->prepAndSave(['contract' => $contract]);
+        return array_merge($output, $this->getScheduleFromXeroObject($result[0]['schedule']));
     }
+
 
     public function getSingleRepeatingInvoiceStub($xeroTenantId, $row): int
     {

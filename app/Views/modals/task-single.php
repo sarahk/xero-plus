@@ -35,7 +35,7 @@
                 </div>
 
                 <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
-                <button type='button' class='btn btn-primary' id='cabinedit'>Edit</button>
+                <button type='button' class='btn btn-primary' id='taskEdit'>Edit</button>
             </div>
         </div>
     </div>

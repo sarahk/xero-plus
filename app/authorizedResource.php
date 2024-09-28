@@ -2,6 +2,7 @@
 namespace App;
 
 use App\Models\ContactModel;
+use App\Models\ContractModel;
 use App\Models\InvoiceModel;
 use App\Models\UserModel;
 
@@ -31,7 +32,6 @@ $debug = array_key_exists('debug', $_GET);
 $id = (array_key_exists('id', $_GET)) ? intval($_GET['id']) : 0;
 
 //$userId = $_SESSION['user']['user_id'];
-
 
 $json = new JsonClass();
 define("TENANCIES", $json->getOrganisationList());
@@ -179,16 +179,10 @@ switch ($action) {
         break;
 
     case 12:
+        // look at info related to an invoice
         $invoice = new InvoiceModel($pdo);
-        $contract = new ContractModel($pdo);
-        $contact = new ContactModel($pdo);
+        $data = $invoice->get('invoice_id', $_GET['invoice_id'])['invoices'];
 
-        $inv = $invoice->get('invoice_id', $_GET['invoice_id'])['invoices'];
-        $data = [
-            'invoice' => $inv,
-            'contract' => $contract->get('repeating_invoice_id', $inv['repeating_invoice_id'])['contracts'],
-            'contact' => $contact->get('contact_id', $inv['contact_id'])['contacts']
-        ];
         break;
 
     case 13:

@@ -4,7 +4,9 @@ namespace App;
 
 //use App\Models\AddressModel;
 //use App\Models\CabinModel;
-//use App\Models\ContactModel;
+use App\Models\ContactModel;
+use App\Models\ContractModel;
+
 //use App\Models\InvoiceModel;
 //use App\Models\PhoneModel;
 //use App\Models\TasksModel;
@@ -74,8 +76,8 @@ class JsonClass
 
         $cabin = $cabins->get('cabin_id', $params['key'])['cabins'];
 
-        $cabin['cabinstyle'] = Models\Enums\CabinStyle::from($cabin['style']);
-        $cabin['ownername'] = Models\Enums\CabinOwners::from[$cabin['owner']];
+        $cabin['cabinstyle'] = Models\Enums\CabinStyle::getCabinStyleLabel($cabin['style']);
+        $cabin['ownername'] = Models\Enums\CabinOwners::getCabinOwnersLabel($cabin['owner']);
 
 
         $tenancies = new Models\TenancyModel($this->pdo);
@@ -428,7 +430,7 @@ class JsonClass
      */
     public function getSearchContacts()
     {
-        $contact = new ContactModel();
+        $contact = new App\Model\ContactModel();
         $result = $contact->search();
 
         return json_encode($result);
@@ -768,32 +770,30 @@ class JsonClass
             }
         }
 
+        $xeroTenantId = $this->xeroTenantId;
+        $contact_id = $output['key'];
         $fields = [
             'contacts.contact_id',
             'contacts.name',
+            'contacts.firstname',
+            'contacts.lastname',
             'contacts.email_address',
             'contacts.contact_status',
             'contacts.is_supplier',
-            'contacts.is_customer'
-            ,
-            'contacts.email_address'
-            ,
-            'address_line1',
-            'address_line2',
-            'city',
-            'postal_code'
-            ,
+            'contacts.is_customer',
+            'addresses.address_line1',
+            'addresses.address_line2',
+            'addresses.city',
+            'addresses.postal_code',
             'phones.phone_number',
-            'phones.phone_area_code'
-            ,
+            'phones.phone_area_code',
             'contacts.updated_date_utc'
         ];
         $fields[] = "SUM(invoices.amount_due) as amount_due";
 
         $conditions = [
-            "contacts.xerotenant_id = '{$this->xeroTenantId}'"
-            ,
-            "contacts.contact_id = '{$output['key']}'"
+            "contacts.xerotenant_id = '$xeroTenantId'",
+            "contacts.contact_id = '$contact_id'"
         ];
 
         $sql = "SELECT " . implode(', ', $fields)
@@ -825,7 +825,25 @@ class JsonClass
 
         echo json_encode($contact);
         exit;
+    }
 
+    public function getContactSingleton(): string
+    {
+
+        //$xeroTenantId = $_GET['xeroTenantId'];
+
+        $contact_id = $_GET['contact_id'];
+        $contact = new ContactModel($this->pdo);
+        $output = $contact->get('contact_id', $contact_id);
+        return json_encode($output);
+    }
+
+    public function listPhonesForContact(): string
+    {
+        $contact_id = $_GET['contact_id'];
+        $phone = new PhoneModel($this->pdo);
+        $output = $phone->get('contact_id', $contact_id);
+        return json_encode($output);
     }
 
     public function createContact($xeroTenantId, $apiInstance, $returnObj = false)
@@ -1070,6 +1088,15 @@ class JsonClass
         } else {
             return $str;
         }
+    }
+
+    // used by the contract card widget
+    public function getContractSingleton(): string
+    {
+        $contract_id = $_GET['contract_id'];
+        $contract = new ContractModel($this->pdo);
+        $output = $contract->get('contract_id', $contract_id);
+        return json_encode($output);
     }
 
     public function getCreditNote($xeroTenantId, $apiInstance, $returnObj = false)

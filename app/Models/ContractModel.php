@@ -6,6 +6,7 @@ use App\XeroClass;
 use App\Models\BaseModel;
 
 use PDO;
+use PDOException;
 
 class ContractModel extends BaseModel
 {
@@ -47,13 +48,9 @@ class ContractModel extends BaseModel
     //  C O N T R A C T
     public function prepAndSave($data): int
     {
-        $contract = $data['contract'];
+        if (array_keys_exist(['contract_id', 'repeating_invoice_id', 'xeroRefresh'], $data)) {
 
-        //return parent::prepAndSave($data);
-        debug($data);
-        if (array_keys_exist(['contract_id', 'repeating_invoice_id', 'xeroRefresh'], $contract)) {
-
-            if (array_key_exists('xeroRefresh', $contract) && $contract['xeroRefresh'] == true) {
+            if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh'] == true) {
                 // we don't want to get the old $oldVals = ['contracts' => []];
                 // we're saving fewer columns
                 debug('xeroRefresh');
@@ -65,24 +62,24 @@ class ContractModel extends BaseModel
                        `schedule_unit` = :schedule_unit
                        WHERE repeating_invoice_id = :repeating_invoice_id";
                 $save = [
-                    'contact_id' => $contract['contact_id'],
-                    'ckcontact_id' => $contract['ckcontact_id'],
-                    'reference' => $contract['reference'],
-                    'schedule_unit' => $contract['schedule_unit'],
-                    'repeating_invoice_id' => $contract['repeating_invoice_id']
+                    'contact_id' => $data['contact_id'],
+                    'ckcontact_id' => $data['ckcontact_id'],
+                    'reference' => $data['reference'],
+                    'schedule_unit' => $data['schedule_unit'],
+                    'repeating_invoice_id' => $data['repeating_invoice_id']
                 ];
 
                 return $this->save($save);
-            } else if (array_key_exists('contract_id', $contract) && $contract['contract_id']) {
+            } else if (array_key_exists('contract_id', $data) && $data['contract_id']) {
                 debug('contract_id');
-                $oldVals = $this->get('contract_id', $contract['contract_id']);
-            } else if (array_key_exists('repeating_invoice_id', $contract)) {
+                $oldVals = $this->get('contract_id', $data['contract_id']);
+            } else if (array_key_exists('repeating_invoice_id', $data)) {
                 debug('repeating_invoice_id');
                 $oldVals = $this->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
             }
-        } else $oldVals = $this->contracts->getDefaults();
+        } else $oldVals = $this->getDefaults();
 
-        $contract = array_merge($oldVals['contracts'], $contract);
+        $contract = array_merge($oldVals['contracts'], $data);
 
         $contract['updated'] = date('Y-m-d H:i:s');
 
@@ -94,7 +91,7 @@ class ContractModel extends BaseModel
 
     protected function getFromXero($data): void
     {
-        debug($data);
+
         parent::getFromXero($data); // should be nothing there but let's check
         if (empty($data['repeating_invoice_id'])) {
             return;
@@ -104,8 +101,8 @@ class ContractModel extends BaseModel
         $repeating_invoice_id = $data['repeating_invoice_id'];
         $xeroTenantId = $this->getTenantId($repeating_invoice_id);
 
-        $xero->getSingleRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
-
+        $data = $xero->getSingleRepeatingInvoiceData($xeroTenantId, $repeating_invoice_id);
+        $this->prepAndSave($data);
     }
 
     protected function getTenantId($repeating_invoice_id): string

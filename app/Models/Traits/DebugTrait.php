@@ -7,16 +7,11 @@ trait DebugTrait
     protected int $stackLevels = 5;
     protected bool $showObjectMethods = false;
 
-    // TODO
-    // different output format for debugging json files
     public function debug($val): void
     {
         if (is_null($this->isJson)) $this->getIsJson();
-        // todo if it's json, format accordingly
-        $bt = debug_backtrace();
-        $caller = array_shift($bt);
-        $caller2 = (count($bt) > 0) ? array_shift($bt) : false;
 
+        $bt = debug_backtrace();
 
         if ($this->isJson) {
             echo '>' . PHP_EOL;
@@ -27,8 +22,6 @@ trait DebugTrait
             echo '</ul>';
         }
 
-        //$this->echoCaller($caller);
-        //if ($caller2) $this->echoCaller($caller2);
         $loops = min(count($bt) - 1, $this->stackLevels);
         for ($i = 0; $i <= $loops; $i++) {
             $this->echoCaller($bt[$i]);

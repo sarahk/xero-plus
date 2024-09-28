@@ -164,6 +164,7 @@ class InvoiceModel extends BaseModel
             $this->getStatement($recordsFiltered);
             $this->statement->execute($searchValues);
             $output['recordsFiltered'] = $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
+            
         } catch (PDOException $e) {
             echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
             $this->statement->debugDumpParams();
@@ -368,7 +369,7 @@ class InvoiceModel extends BaseModel
         $contacts = new ContactModel($this->pdo);
         $email = $contacts->get('contact_id', $row['contact_id']);
 
-        $output = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>
+        $output = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' data-contactid='{$row['contact_id']}' data-contractid='{$row['contract_id']}'>{$row['name']}</a>
                         <br/><i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
         foreach ($email['phones'] as $phone) {
 

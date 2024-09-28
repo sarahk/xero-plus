@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Models\Enums;
 
 enum CabinOwners: string
@@ -22,5 +21,3 @@ enum CabinOwners: string
         };
     }
 }
-//$cabinStatus = CabinStatus::from('active'); // Returns the enum case
-//echo $cabinStatus->label(); // Output: "Active"

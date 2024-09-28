@@ -69,8 +69,8 @@ $(document).ready(function () {
 
     }
 
-    if ($('#tInv4Contract').length) {
-        let tInv4Contract = $('#tInv4Contract').DataTable({
+    if ($('#tableInv4Contract').length) {
+        let tInv4Contract = $('#tableInv4Contract').DataTable({
             "ajax": {
                 "url": "/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=" + repeating_invoice_id,
             },
@@ -79,41 +79,41 @@ $(document).ready(function () {
             "paging": true,
             "columns": [
                 {data: "number"},
-                {data: "contact"},
                 {data: "reference"},
                 {data: "total"},
                 {data: "amount_due"},
                 {data: "due_date"},
             ],
-            dom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
-
-            buttons: [{
-                text: 'All',
-                className: 'btn mr-1',
-                action: function () {
-                    //dt.ajax.reload();
-                    tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=' + repeating_invoice_id).load();
+            layout: {
+                topStart: {
+                    buttons: [{
+                        text: 'All',
+                        className: 'btn mr-1',
+                        action: function () {
+                            //dt.ajax.reload();
+                            tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=' + repeating_invoice_id).load();
+                        }
+                    }, {
+                        text: 'Overdue',
+                        className: 'btn mr-1',
+                        action: function () {
+                            tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Contract&button=overdue&repeating_invoice_id=' + repeating_invoice_id).load();
+                        }
+                    }, {
+                        text: 'Paid',
+                        className: 'btn mr-1',
+                        action: function () {
+                            tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid&repeating_invoice_id=' + repeating_invoice_id).load();
+                        }
+                    }, {
+                        text: 'Void',
+                        className: 'btn mr-1',
+                        action: function () {
+                            tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided&repeating_invoice_id=' + repeating_invoice_id).load();
+                        }
+                    }]
                 }
-            }, {
-                text: 'Overdue',
-                className: 'btn mr-1',
-                action: function () {
-                    tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Contract&button=overdue&repeating_invoice_id=' + repeating_invoice_id).load();
-                }
-            }, {
-                text: 'Paid',
-                className: 'btn mr-1',
-                action: function () {
-                    tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid&repeating_invoice_id=' + repeating_invoice_id).load();
-                }
-            }, {
-                text: 'Void',
-                className: 'btn mr-1',
-                action: function () {
-                    tInv4Contract.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided&repeating_invoice_id=' + repeating_invoice_id).load();
-                }
-            }]
-
+            }
         });
     }
 

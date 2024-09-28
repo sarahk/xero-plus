@@ -23,7 +23,7 @@ namespace App\Layouts;
             <ul class="side-menu">
                 <?php
                 if (!\App\LOGGEDOUT) {
-                    include \App\SITE_ROOT . '/Widgets/tenancy-picker.php';
+                    include \App\SITE_ROOT . '/Views/Widgets/tenancy-picker.php';
                 }
                 ?>
                 <li class="slide"><a href="/authorizedResource.php?action=10"

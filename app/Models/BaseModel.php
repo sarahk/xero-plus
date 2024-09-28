@@ -114,7 +114,7 @@ class BaseModel
             try {
                 $this->statement->execute(['keyVal' => $keyVal]);
                 $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-                
+
                 $this->log('info', 'getRecord', ['sql' => $sql, 'data' => $data]);
             } catch (PDOException $e) {
                 echo "Error Message: " . $e->getMessage() . "\n";
@@ -147,7 +147,6 @@ class BaseModel
             WHERE {$this->joins[$parent]} 
             $orderBy 
             LIMIT 15";
-
 
         $statement = $this->pdo->prepare($sql);
 

@@ -136,7 +136,14 @@ try {
                     echo $json->archiveContact($xeroTenantId, $apiInstance);
                     break;
                 case 'Single':
+                    // gets from xero
                     echo $json->getContactSingle();
+                    break;
+                case 'Singleton':
+                case 'singleton':
+                    //gets locally
+                    echo $json->getContactSingleton();
+                    break;
                 case 'Search':
                 case 'search';
                     echo $json->getSearchContacts();
@@ -166,6 +173,15 @@ try {
                     break;
                 default:
                     echo $action . " action not supported in API";
+            }
+            break;
+
+        case 'Contracts':
+            switch ($action) {
+                case 'Singleton':
+                case 'singleton':
+                    echo $json->getContractSingleton();
+                    break;
             }
             break;
 
@@ -377,6 +393,15 @@ try {
                     break;
                 default:
                     echo $action . " action not supported in API";
+            }
+            break;
+
+        case 'Phones':
+            switch ($action) {
+                case 'List':
+                case 'list':
+                    echo $json->listPhonesForContact();
+                    break;
             }
             break;
 
