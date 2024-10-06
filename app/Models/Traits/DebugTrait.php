@@ -15,12 +15,16 @@ trait DebugTrait
 
         if ($this->isJson) {
             echo '>' . PHP_EOL;
-            $this->showJsonValue('', $val);
         } else {
             echo '<ul>';
-            $this->showValue('', $val);
+        }
+
+        $this->showValue('', $val);
+
+        if (!$this->isJson) {
             echo '</ul>';
         }
+
 
         $loops = min(count($bt) - 1, $this->stackLevels);
         for ($i = 0; $i <= $loops; $i++) {
@@ -52,64 +56,82 @@ trait DebugTrait
         // ["args"]=>["ae75d056-4af7-484d-b709-94439130faa4", "7fee9f9a-98ff-40cb-8568-90f95de7d94b"];
     }
 
-    protected function showValue($k, $val): void
+
+    protected function showValue($k, $val, $level = 1): void
     {
-        $ul = "<ul style='list-style-type: disc; padding: 1em;'>";
-        echo '<li>';
-        if (is_array($val)) {
-            echo $k . $ul;
+        $ul = ($this->isJson ? PHP_EOL : "<ul style='list-style-type: disc; padding: 1em;'>");
+        $begin = ($this->isJson) ? str_repeat('>', $level + 1) . ' ' : '<li>';
 
-            foreach ($val as $key => $row) {
-                $this->showValue($key, $row);
-            }
-            echo '</ul></li>';
-        } else if (is_object($val)) {
-            echo $k . $ul;
+        $format = ($this->isJson
+                ? str_repeat('>', $level + 1) . "%s %s: %s"
+                : "<li style='list-style-type: %s'>%s: %s</li>") . PHP_EOL;
 
-            foreach ((array)$val as $key => $row) {
-                $this->showValue($key, $row);
-            }
-            if ($this->showObjectMethods) {
-                $methods = get_class_methods($val);
-                foreach ($methods as $v) {
-                    echo "<li><i>$v</i></li>";
+        $variableType = gettype($val);
+
+        switch ($variableType) {
+            case "boolean":
+                $boolean = ($val ? 'True' : 'False');
+                printf($format, '', $k, $boolean);
+                break;
+
+            case   "integer":
+            case  "double" :
+                printf($format, 'circle', $k, "$val");
+                break;
+
+            case "string":
+                printf($format, 'disc', $k, $val);
+                break;
+
+            case "array":
+
+                echo $begin . '[array]' . $k . $ul;
+
+                if (count($val))
+                    foreach ($val as $key => $row) {
+                        $this->showValue($key, $row, $level + 1);
+                    }
+                else $this->showValue(0, '[]', $level + 1);
+
+                echo($this->isJson ? '' : '</ul></li>');
+                break;
+
+            case "object":
+                echo $begin . '[object]' . $k . $ul;
+
+                foreach ((array)$val as $key => $row) {
+                    $this->showValue($key, $row, $level + 1);
                 }
-            }
-            echo '</ul></li>';
-        } else {
-            echo(strlen($k) ? "$k: " : ''), is_string($val) ? '"' . $val . '"' : $val;
+                if ($this->showObjectMethods) {
+                    $methods = get_class_methods($val);
+                    foreach ($methods as $v) {
+                        printf($format, 'square', '', '<i>$v</i>');
+//                        if ($this->isJson) {
+//                            echo $begin . '* ' . $v . PHP_EOL;
+//                        } else {
+//                            echo "<li>* </li>";
+//                        }
+                    }
+                }
+                if (!$this->isJson) echo '</ul></li>';
+                break;
+
+            case "NULL":
+                printf($format, '', $k, 'NULL');
+                //echo $begin . (strlen($k) ? "$k: " : '') . 'NULL';
+                break;
+
+            case "resource":
+            case "resource (closed)":
+            case "unknown type":
+            default:
+                echo $begin . (strlen($k) ? "$k: " : '') . $variableType;
         }
-        echo "</li>";
+
+
+        echo($this->isJson ? PHP_EOL : "</li>");
     }
 
-    protected function showJsonValue($k, $val, $level = 1): void
-    {
-        $begin = str_repeat('>', $level + 1) . ' ';
-
-        if (is_array($val)) {
-            echo $begin . $k . PHP_EOL;
-
-            foreach ($val as $key => $row) {
-                $this->showJsonValue($key, $row, $level + 1);
-            }
-
-        } else if (is_object($val)) {
-            echo $begin . $k . PHP_EOL;
-
-            foreach ((array)$val as $key => $row) {
-                $this->showJsonValue($key, $row, $level + 1);
-            }
-            if ($this->showObjectMethods) {
-                $methods = get_class_methods($val);
-                foreach ($methods as $v) {
-                    echo $begin . $v . PHP_EOL;
-                }
-            }
-        } else {
-            echo $begin . (strlen($k) ? "$k: " : ''), is_string($val) ? '"' . $val . '"' : $val;
-        }
-        echo PHP_EOL;
-    }
 
     protected function getIsJson(): void
     {

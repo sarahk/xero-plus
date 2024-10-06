@@ -62,14 +62,12 @@ include 'Layouts/scripts.php';
 <!-- SLICK SLIDER -->
 <script type="text/javascript" src="/assets/plugins/slick/slick.min.js"></script>
 
-<!-- SWEET ALERT JS -->
-<script src="/node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
 <!-- INDEX JS -->
 <!--<script src="/assets/js/index1.js"></script>-->
 
 <!-- COOKIES JS -->
-<script src="/node_modules/js-cookie/dist/js.cookie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 
 <script type="text/javascript" src="/js/functions.js"></script>
 <script type="text/javascript" src="/js/home.js"></script>
@@ -190,7 +188,6 @@ switch ($action) {
                 url: "/xero.php?endpoint=Invoices&action=refresh&tenancy=" + tenancy,
                 type: 'GET',
                 dataType: 'json',
-
                 complete: function () {
                     $('#loadfromxerospinner').hide();//Request is complete so hide spinner
                 }
@@ -206,10 +203,18 @@ switch ($action) {
             });
         }
 
+        function loadPaymentsFromXero(tenancy) {
+            console.log('loadPaymentsFromXero: ' + tenancy);
+            $.ajax({
+                url: "/xero.php?endpoint=payments&action=readAll&tenancy=" + tenancy,
+                type: 'GET',
+            });
+        }
+
 
         // every minute
-        let frequency = 60 * 1000 * 100;
-        //let frequency = 60 * 1000;
+        //let frequency = 60 * 1000 * 100;
+        let frequency = 60 * 1000;
 
         setInterval(function () {
             console.log('setInterval');
@@ -217,6 +222,7 @@ switch ($action) {
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {
                     loadInvoicesFromXero(tenancies[i]);
+                    loadPaymentsFromXero(tenancies[i]);
                 }
             }
         }, frequency);

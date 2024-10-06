@@ -8,7 +8,8 @@ use App\Models\Traits\LoggerTrait;
 use PDO;
 use PDOException;
 use PDOStatement;
-use App\XeroClass;
+
+//use App\XeroClass;
 
 class BaseModel
 {
@@ -37,7 +38,7 @@ class BaseModel
     protected bool $hasStub = false;
 
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
         $this->initLogger($this->table . 'Model');
@@ -49,21 +50,46 @@ class BaseModel
         unset($this->pdo);
     }
 
-    protected function runQuery($sql, $searchValues): array
+    protected function runQuery(string $sql, array $searchValues, string $type = 'query'): int|array
     {
+        $this->log('info', 'runQuery', [$sql]);
         $this->getStatement($sql);
         try {
             $this->statement->execute($searchValues);
-            return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+            return match ($type) {
+                'query' => $this->statement->fetchAll(PDO::FETCH_ASSOC),
+                default => $this->pdo->lastInsertId(),
+            };
+
         } catch (PDOException $e) {
             echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
             $this->statement->debugDumpParams();
         }
-        return [];
+        return 0;
+    }
+
+    /**
+     * @param String $fieldname
+     * @param String $key
+     * @param mixed $keyVal
+     * @return mixed
+     */
+    public function field(string $fieldname, string $key, mixed $keyVal): mixed
+    {
+        $sql = "SELECT `$fieldname` FROM `$this->table` WHERE `$key` = :keyVal LIMIT 1";
+        $result = $this->runQuery($sql, [':keyVal' => $keyVal]);
+
+        return $result[0][$fieldname] ?? null;
     }
 
 
-    public function get($key, $keyVal, $defaults = true): array
+    /**
+     * @param string $key
+     * @param mixed $keyVal
+     * @param bool $defaults
+     * @return array|array[]
+     */
+    public function get(string $key, mixed $keyVal, bool $defaults = true): array
     {
         // pass 0 if you just want the defaults for the table
         if ($keyVal != 0)
@@ -75,7 +101,7 @@ class BaseModel
 
             // refresh the data and run the query again
             if ($this->hasStub && !empty($data[0]['stub'])) {
-                $xeroData = $this->getFromXero($data[0]);
+                //$xeroData = $this->getFromXero($data[0]);
                 $data = $this->getRecord($key, $keyVal);
             }
 
@@ -83,7 +109,12 @@ class BaseModel
 
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getChildren($this->table, $output[$this->table][$this->primaryKey], $defaults);
+                    $class = "\\App\\Models\\{$val}Model";
+                    $child = new $class($this->pdo);
+                    //$this->debug($output);
+                    //$this->debug($this->primaryKey);
+
+                    $output[$val] = $child->getChildren($this->table, $output[$this->table][$this->primaryKey], $defaults);
                     //var_export(['parent' => $this->table, 'child table:' => $val, 'data' => $output[$val]]);
                 }
             }
@@ -101,7 +132,7 @@ class BaseModel
     }
 
 
-    protected function getRecord($key, $keyVal): array
+    protected function getRecord(string $key, mixed $keyVal): array
     {
         $data = [];
 
@@ -148,17 +179,23 @@ class BaseModel
             $orderBy 
             LIMIT 15";
 
-        $statement = $this->pdo->prepare($sql);
+
+        //$statement = $this->pdo->prepare($sql);
 
         $varCount = substr_count($this->joins[$parent], ':');
         $vars = [];
         //['id1' => $parentId, 'id2' => $parentId]
         for ($i = 0; $i < $varCount; $i++) {
-            $vars['id' . ($i + 1)] = $parentId;
+            $vars[':id' . ($i + 1)] = $parentId;
         }
-        $statement->execute($vars);
-        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
-
+//        if ($this->table == 'notes') {
+//            $this->debug([$parent, $parentId]);
+//            $this->debug($sql);
+//            $this->debug($vars);
+//        }
+        //$statement->execute($vars);
+        //$data = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $data = $this->runQuery($sql, $vars);
         $count = count($data);
         /*
         var_export([
@@ -181,7 +218,7 @@ class BaseModel
         }
     }
 
-    protected function getTenanciesWhere($params)
+    protected function getTenanciesWhere($params): string
     {
         if (count($params['tenancies']) == 1) {
             return "`$this->table`.`xerotenant_id` = '{$params['tenancies'][0]}'";
@@ -242,6 +279,9 @@ class BaseModel
 
     public function save($values): int
     {
+        //$this->debug($values);
+        $this->log('info', 'save', $values);
+
         try {
             $this->getStatement();
             $this->statement->execute($values);
@@ -287,9 +327,10 @@ class BaseModel
         return null;
     }
 
-    public function prepAndSave($data): int
+    public function prepAndSave(array $data): int
     {
-        return 0;
+        $save = $this->getSaveValues($data);
+        return $this->save($save);
     }
 
     protected function checkNullableValues($data)
@@ -306,6 +347,10 @@ class BaseModel
 
     protected function getSaveValues($data): array
     {
+        if (count($this->saveKeys) == 0) {
+            return $data;
+        }
+
         $save = [];
         foreach ($this->saveKeys as $v) {
             if (!array_key_exists($v, $data)) $save[$v] = NULL;
@@ -316,21 +361,20 @@ class BaseModel
 
     public function getUpdatedDate($xeroTenantId)
     {
-        $updated_date_utc = '2017-10-10 00:00:00';
+        $updated_date_utc = '2015-01-01 00:00:00';
 
-        $this->getStatement("SELECT max(`updated_date_utc`) as `updated_date_utc` 
+        $sql = "SELECT max(`updated_date_utc`) as `updated_date_utc` 
                 FROM `$this->table` 
-                WHERE `xerotenant_id` = :xerotenant_id");
+                WHERE `xerotenant_id` = :xerotenant_id";
 
-        try {
-            $this->statement->execute(['xerotenant_id' => $xeroTenantId]);
-            return $this->statement->fetchColumn();
-
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-        return $updated_date_utc;
+        $result = $this->runQuery($sql, ['xerotenant_id' => $xeroTenantId]);
+        $this->log('info', 'getUpdatedDate',
+            [
+                'result' => $result[0]['updated_date_utc'] ?? $updated_date_utc,
+                'xerotenant_id' => $xeroTenantId
+            ]
+        );
+        return $result[0]['updated_date_utc'] ?? $updated_date_utc;
     }
 
     protected function updateImplode(): string
@@ -383,24 +427,20 @@ class BaseModel
 
     protected function getRecordsTotal($tenancies): int
     {
-        $recordsTotal = "SELECT count(*) FROM `{$this->table}` 
+        $recordsTotal = "SELECT count(*) FROM `$this->table` 
                 WHERE $tenancies";
         return $this->pdo->query($recordsTotal)->fetchColumn();
     }
 
     protected function getRecordsFiltered($conditions, $searchValues): int
     {
-        $recordsFiltered = "SELECT count(*) as `filtered` FROM `{$this->table}` 
+        $recordsFiltered = "SELECT count(*) as `filtered` FROM `$this->table` 
                 WHERE  " . implode(' AND ', $conditions);
 
-        try {
-            $this->getStatement($recordsFiltered);
-            $this->statement->execute($searchValues);
-            return $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
-            $this->statement->debugDumpParams();
-        }
+        $result = $this->runQuery($recordsFiltered, $searchValues);
+        if (is_array($result))
+            return $result[0]['filtered'];
+        
         return 0;
     }
 

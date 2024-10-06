@@ -26,9 +26,9 @@
 //debug($stock);
 ?>
 
-<?php include App\SITE_ROOT . '/Widgets/slick-stock.php'; ?>
+<?php include 'Views/Widgets/slick-stock.php'; ?>
 
 <div class="row">
-    <?php include App\SITE_ROOT . '/Widgets/home-tasks.php'; ?>
-    <?php include App\SITE_ROOT . '/Widgets/home-debts.php'; ?>
+    <?php include 'Views/Widgets/home-tasks.php'; ?>
+    <?php include 'Views/Widgets/home-debts.php'; ?>
 </div>

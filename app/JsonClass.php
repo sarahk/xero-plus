@@ -1286,7 +1286,7 @@ class JsonClass
         $result = $apiInstance->updateEmployee($xeroTenantId, $employeeId, $employee);
         //[/Employees:Update]
 
-        var_dump($result);
+        
         //$str = $str . "Update Employee: " . $employee["FirstName"] . "  " . $employee["LastName"]   . "<br>" ;
 
         return $str;

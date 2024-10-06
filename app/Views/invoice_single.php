@@ -2,12 +2,18 @@
 namespace App\Views;
 
 //create some variables for the widgets
-$newNote = ['parent' => 'contract', 'foreign_id' => $data['contract_id']];
+$newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
+
 ?>
 <script>
-    const repeating_invoice_id = "<?= $data['repeating_invoice_id'];?>";
-    const contact_id = "<?= $data['contact_id']?>";
-    const contract_id = "<?= $data['contract_id']?>";
+    const keys = {
+        repeating_invoice_id: "<?= $data['repeating_invoice_id'];?>",
+        contact: {
+            id: "<?= $data['contact']['id']?>",
+            contact_id: "<?= $data['contact_id']?>",
+        },
+        contract_id: "<?= $data['contract_id']?>",
+    };
 </script>
 
 <!-- PAGE-HEADER -->

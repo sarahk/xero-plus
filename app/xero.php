@@ -32,7 +32,7 @@ $log->info('New Xero Import', [date('d-m-Y-H-i-s')]);
 
 
 $storage = new StorageClass();
-
+$provider = Utilities::getProvider();
 
 $xero = new XeroClass();
 //$json = new JsonClass();
@@ -133,7 +133,8 @@ try {
                 case 'Refresh':
                 case 'refresh':
                     // this is called automatically by the footer on every page
-                    $tenancy = filter_input(INPUT_GET, 'tenancy');
+                    //$tenancy = filter_input(INPUT_GET, 'tenancy');
+                    $tenancy = $_GET['tenancy'] ?? '';
                     $xero->getInvoiceRefresh($tenancy);
                     break;
                 case "Create":
@@ -272,7 +273,17 @@ try {
             break;
 
         case "Payments":
+        case 'payments':
             switch ($action) {
+                case 'ReadAll':
+                case 'readAll':
+                case 'readall':
+                    //https://ckm:8825/xero.php?endpoint=payments&action=readAll&tenancy=ae75d056-4af7-484d-b709-94439130faa4
+
+                    $tenancy = $_GET['tenancy'] ?? '';
+                    echo $xero->getPayments($tenancy);
+                    break;
+
                 case "Create":
                     echo $xero->createPayment($xeroTenantId, $apiInstance);
                     break;

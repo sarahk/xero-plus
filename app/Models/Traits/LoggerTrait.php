@@ -29,7 +29,7 @@ trait LoggerTrait
             $stream_handler = new StreamHandler(__DIR__ . "../../../monolog/{$label}.log", Level::Debug);
             $stream_handler->setFormatter($formatter);
             $this->logger->pushHandler($stream_handler);
-            $this->log('info', 'Logger Started', []);
+            //$this->log('info', 'Logger Started', []);
 
         }
     }

@@ -14,16 +14,21 @@ namespace App\Views\Widgets;
             </tr>
             <tr>
                 <td colspan="2">Add a Note<br/>
-                    <form>
-                        <textarea class="form-control" rows="3" data-gramm="false"></textarea>
-                        <input type="hidden" name="parent" value="<?= $newNote['parent']; ?>">
-                        <input type="hidden" name="foreign_id" value="<?= $newNote['foreign_id']; ?>">
-                        <input type="hidden" name="createdby" value="<?= $_SESSION['user_id']; ?>"
-                        <input type="hidden" name="created" value="<?= date('Y-m-d H:i:s'); ?>"
+                    <form id="notesCardForm">
+                        <textarea class="form-control" rows="3" data-gramm="false" id="notesCardText"></textarea>
+                        <input type="hidden" name="parent" id="notesFormParent" value="<?= $newNote['parent']; ?>">
+                        <input type="hidden" name="foreign_id" id="notesFormForeignid"
+                               value="<?= $newNote['foreign_id']; ?>">
+                        <input type="hidden" name="createdby" id="notesFormCreatedby"
+                               value="<?= $_SESSION['user_id']; ?>">
+                        <input type="hidden" name="createdbyanme" id="notesFormCreatedbyname"
+                               value="<?= $_SESSION['user_name']; ?>">
+                        <input type="hidden" name="created" id="notesFormCreated" value="<?= date('Y-m-d H:i:s'); ?>"
                     </form>
 
                 <td><?= $_SESSION['user_name']; ?><br/>
-                    <button type="submit" class="btn btn-primary mt-2">Save</button>
+                    <button type="submit" class="btn btn-primary mt-2" form="notesCardForm" id="notesCardSubmit">Save
+                    </button>
                 </td>
             </tr>
 

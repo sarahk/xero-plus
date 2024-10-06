@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\InvoiceModel;
+use App\Models\NoteModel;
 use App\Models\TemplateModel;
 
 
@@ -12,10 +13,10 @@ require_once '../vendor/autoload.php';
 
 //TODO add security
 
-$endpoint = array_key_exists('endpoint', $_GET) ? $_GET['endpoint'] : '';
-$action = array_key_exists('action', $_GET) ? intval($_GET['action']) : 0;
+$endpoint = $_GET['endpoint'] ?? '';
+$action = $_GET['action'] ?? 0;
 
-$form = array_key_exists('form', $_GET) ?? '';
+$form = $_GET['form'] ?? '';
 
 $pdo = Utilities::getPDO();
 
@@ -38,16 +39,26 @@ switch ($endpoint) {
         break;
 
     case 'save':
-
+    case 'Save':
 
         switch ($form) {
+            case 'notesCard':
+
+                $note = new NoteModel($pdo);
+                $data['note'] = $_GET['payload'];
+
+                echo $note->prepAndSave($data);
+                exit;
+
             case 'template':
             case 'Template':
                 $template = new TemplateModel($pdo);
                 $data = $_POST['payload'];
-                var_dump($data);
+
                 $data['dateupdate'] = date('Y-m-d H:i:s');
                 $template->prepAndSave($data);
                 exit;
+
+
         }
 }

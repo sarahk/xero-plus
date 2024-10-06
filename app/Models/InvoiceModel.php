@@ -35,41 +35,22 @@ class InvoiceModel extends BaseModel
     ];
     protected int $orderByDefault = 5;
 
-    // protected ContactModel $contacts;
-    // protected ContractModel $contracts;
-
     function __construct($pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();
-        //$this->contacts = new ContactModel($pdo);
-        //$this->contracts = new ContractModel($pdo);
+
     }
 
     // I N V O I C E
-    // check we have a contract id and a ckcontact id
     // we WILL have a repeating invoice id
     // invoices are always imported from xero
-    public function prepAndSave($data): int
+    public function prepAndSave(array $data): int
     {
-
-        if (!array_key_exists('contract_id', $data['invoice']) || !$data['invoice']['contract_id']) {
-            //$contract_id = $this->contracts->getBestMatch($data['contact_id'], $data['updated_date_utc']);
-            $contracts = new ContractModel($this->pdo);
-            $contract = $contracts->get('repeating_invoice_id', $data['invoice']['repeating_invoice_id']);
-            $data['invoice']['contract_id'] = $contract['contracts']['contract_id'];
-
-            if (!array_key_exists('contact_id', $data['invoice'])) {
-                $data['contract']['contact_id'] = $contract['contracts']['contact_id'];
-            }
-        }
-
-        $checked = $this->checkNullableValues($data['invoice']);
+        $checked = $this->checkNullableValues($data);
         $save = $this->getSaveValues($checked);
 
         return $this->save($save);
-
-        // todo return invoice id
 
     }
 
@@ -164,7 +145,7 @@ class InvoiceModel extends BaseModel
             $this->getStatement($recordsFiltered);
             $this->statement->execute($searchValues);
             $output['recordsFiltered'] = $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
-            
+
         } catch (PDOException $e) {
             echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
             $this->statement->debugDumpParams();
@@ -318,9 +299,9 @@ class InvoiceModel extends BaseModel
         //$output['refreshInvoice'] = $refreshInvoice;
         // $output['refreshContact'] = $refreshContact;
 
-
         if (count($badDebts) > 0) {
             foreach ($badDebts as $row) {
+
 
                 $output['data'][] = [
                     'DT_RowId' => $row['DT_RowId'],
@@ -367,14 +348,17 @@ class InvoiceModel extends BaseModel
         if (empty($row['name'])) $row['name'] = $row['contact_id'];
 
         $contacts = new ContactModel($this->pdo);
+
         $email = $contacts->get('contact_id', $row['contact_id']);
 
         $output = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' data-contactid='{$row['contact_id']}' data-contractid='{$row['contract_id']}'>{$row['name']}</a>
                         <br/><i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
-        foreach ($email['phones'] as $phone) {
 
-            if (!empty($phone['phone_number'])) {
-                $output .= "<br/><a href='tel:{$phone['phone_area_code']}{$phone['phone_number']}'>({$phone['phone_area_code']}) {$phone['phone_number']}</a>";
+        if (isset($email['phones']) && count($email['phones'])) {
+            foreach ($email['phones'] as $phone) {
+                if (!empty($phone['phone_number'])) {
+                    $output .= "<br/><a href='tel:{$phone['phone_area_code']}{$phone['phone_number']}'>({$phone['phone_area_code']}) {$phone['phone_number']}</a>";
+                }
             }
         }
 

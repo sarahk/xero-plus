@@ -6,23 +6,18 @@ use App\Models\ContractModel;
 use App\Models\InvoiceModel;
 use App\Models\UserModel;
 
-use App\Utilities;
-use App\StorageClass;
-
 use DateTime;
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-
 require_once '../vendor/autoload.php';
-//require_once('StorageClass.php');
-//require_once('Utilities.php');
 require_once('functions.php');
-require_once('JsonClass.php');
+
 
 $pdo = Utilities::getPDO();
 $storage = new StorageClass();
+$provider = Utilities::getProvider();
 const LOGGEDOUT = false;
 
 $message = "no API calls";
@@ -182,7 +177,8 @@ switch ($action) {
         // look at info related to an invoice
         $invoice = new InvoiceModel($pdo);
         $data = $invoice->get('invoice_id', $_GET['invoice_id'])['invoices'];
-
+        $contact = new ContactModel($pdo);
+        $data['contact']['id'] = $contact->field('id', 'contact_id', $data['contact_id']);
         break;
 
     case 13:

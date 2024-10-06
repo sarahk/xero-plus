@@ -2,6 +2,8 @@
 //use XeroAPI\XeroPHP\AccountingObjectSerializer;
 namespace App;
 
+use App\Models\ContactJoinModel;
+use App\Models\PaymentModel;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\FunctionsTrait;
 use App\Models\Traits\LoggerTrait;
@@ -240,18 +242,68 @@ class XeroClass
         return $result['id'];
     }
 
-    protected function getSingleContactStub($xeroTenantId, $row)
+    protected function saveSingleContactStub(string $xeroTenantId, $row): int
     {
-        $contact = $row['contact'];
+        // should it be $row->getContact()   ???
+        $stub = $row['contact'];
+        $this->showObjectMethods = true;
 
         $save = [
-            'contact_id' => $contact->getContactId(),
-            'name' => $contact->getName(),
+            'contact_id' => $stub->getContactId(),
+            'name' => $stub->getName(),
+            'first_name' => $stub->getFirstName(),
+            'last_name' => $stub->getLastName(),
+            'email_address' => $stub->getEmailAddress(),
+            'xero_status' => $stub->getContactStatus(),
             'xerotenant_id' => $xeroTenantId,
             'stub' => 1
         ];
         $contact = new ContactModel($this->pdo);
-        return $contact->prepAndSave(['contact' => $save]);
+        $id = $contact->getContactId($save['contact_id']);
+        if ($id) {
+            return $id;
+        }
+        $this->debug($save);
+        $save['name'] = $save['name'] ?? $contact->getContactName($save);
+        $id = $contact->saveXeroStub($save);
+        $this->debug($id);
+        $this->saveAddressStubs($stub->getAddresses(), $id, $save['contact_id']);
+        // only save if it's a new customer
+        return $contact->saveXeroStub($save);
+    }
+
+    /**
+     * save the Xero address against the contact
+     * "AddressType": "POBOX",
+     * "AddressLine1": "17 Malte Brun Place",
+     * "AddressLine2": "Papatoetoe",
+     * "City": "Auckland",
+     * "PostalCode": "2025",
+     * "Country": "New Zealand"
+     *
+     * @param  $row
+     * @param int $id
+     * @return void
+     */
+    public function saveAddressStubs(array $addresses, int $id, string $contact_id): void
+    {
+        $address = new AddressModel($this->pdo);
+        $this->showObjectMethods = true;
+
+        if (count($addresses)) {
+            foreach ($addresses as $row) {
+                $this->debug($row);
+                $address->saveXeroStub([
+                    'address_line1' => $row['AddressLine1'] ?? '',
+                    'address_line2' => $row['AddressLine2'] ?? '',
+                    'city' => $row['City'] ?? '',
+                    'postal_code' => $row['PostalCode'] ?? '',
+                    'ckcontact_id' => $contact_id,
+                    'contact_id' => $id,
+                    'address_type' => $row['AddressType'] ?? ''
+                ]);
+            }
+        }
     }
 
     public function getContactRefresh(): void// auckland,waikato,bop
@@ -642,11 +694,17 @@ class XeroClass
     }
 
 
-    // https://cabinkingmanagement:8890/xero.php?endpoint=Invoices&action=refresh&tenancy=auckland
-    // does the return value get used?
-    public function getInvoiceRefresh($tenancy): int
+    /**
+     * gets invoices from xero and save in local database
+     * // https://cabinkingmanagement:8890/xero.php?endpoint=Invoices&action=refresh&tenancy=auckland
+     * // todo does the return value get used?
+     * @param string $xeroTenantName
+     * @return int
+     */
+    public function getInvoiceRefresh(string $xeroTenantName): int
     {
-        $xeroTenantId = $this->getXeroTenantId($tenancy);
+
+        $xeroTenantId = $this->getXeroTenantId($xeroTenantName);
         $objInvoice = new InvoiceModel($this->pdo);
 
         $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
@@ -675,17 +733,10 @@ class XeroClass
             if ($repeating_invoice_id) {
                 // these don't return anything, they just ensure we have the records in our
                 // local database
-                $contact_id = $row->getContact()->getContactId();
-                //$ckcontact_id = $this->getSingleContact($xeroTenantId, $contact_id);
-                $ckcontact_id = $this->getSingleContactStub($xeroTenantId, $row);
-                //$contract_id = $this->getSingleRepeatingInvoice($xeroTenantId, $row->getRepeatingInvoiceId());
-                $contract_id = $this->getSingleRepeatingInvoiceStub($xeroTenantId, $row);
 
                 // values for this specific invoice
                 $values = [
                     'invoice_id' => $row['invoice_id'],
-                    'contact_id' => $contact_id,
-                    'ckcontact_id' => $ckcontact_id,
                     'status' => $row['status'],
                     'invoice_number' => $row['invoice_number'],
                     'reference' => substr($row['reference'], 0, 20),
@@ -695,18 +746,60 @@ class XeroClass
                     'date' => getDateFromXero($row['date']),
                     'due_date' => getDateFromXero($row['due_date']),
                     'repeating_invoice_id' => $repeating_invoice_id,
-                    'contract_id' => $contract_id,
                     'xero_status' => $row['status'],
                     'updated_date_utc' => getDateFromXero($row['updated_date_utc']),
                     'xerotenant_id' => $xeroTenantId
                 ];
 
-                $objInvoice->prepAndSave(['invoice' => $values]);
+                // now fill in the parent info
+                // create the parent records one by one
+                $contact_id = $row->getContact()->getContactId();
+                //$ckcontact_id = $this->getSingleContact($xeroTenantId, $contact_id);
+                $ckcontact_id = $this->saveSingleContactStub($xeroTenantId, $row);
+                //$contract_id = $this->getSingleRepeatingInvoice($xeroTenantId, $row->getRepeatingInvoiceId());
+                $contract_id = $this->saveSingleRepeatingInvoiceStub($xeroTenantId, $row, $ckcontact_id, $contact_id);
+                $this->handleJoins('contract', $ckcontact_id, $contract_id);
+
+                $values['contract_id'] = $contract_id;
+                $values['contact_id'] = $contact_id;
+                $values['ckcontact_id'] = $ckcontact_id;
+                
+                $objInvoice->prepAndSave($values);
 
             }
         }
 
         return $k;
+    }
+
+    /**
+     * will create the joins between contacts and between contacts & contracts
+     * @param string $jointype
+     * @param int $id
+     * @param int $foreign_id
+     * @return void
+     */
+    protected function handleJoins(string $joinType, int $id, int $foreign_id): void
+    {
+        $joins = new ContactJoinModel($this->pdo);
+        $existing_id = $joins->field('id', 'ckcontact_id', $id);
+        if ($existing_id) return;
+
+        // doesn't exist so we'll add it
+        $joins->prepAndSave(['ckcontact_id' => $id,
+            'foreign_id' => $foreign_id,
+            'join_type' => $joinType,
+            'updated' => date('Y-m-d H:i:s')
+        ]);
+
+        if ($joinType === 'contact') {
+            $joins->prepAndSave(['ckcontact_id' => $foreign_id,
+                'foreign_id' => $id,
+                'jointype' => $joinType,
+                'updated' => date('Y-m-d H:i:s')
+            ]);
+        }
+        unset($joins);
     }
 
 
@@ -956,6 +1049,58 @@ class XeroClass
         }
     }
 
+    public function getPayments($xeroTenantName): string
+    {
+        // public function getPayments(
+        //$xero_tenant_id,
+        // $if_modified_since = null,
+        // $where = null,
+        // $order = null,
+        // $page = null,
+        // $page_size = null)
+        //
+        //[Payments:Read]
+        $tenant = new TenancyModel($this->pdo);
+        $xeroTenantId = $tenant->field('tenant_id', 'shortname', $xeroTenantName);
+        unset($tenant);
+        $payments = new PaymentModel($this->pdo);
+        $updated_date_utc = $payments->getUpdatedDate($xeroTenantId);
+        //$this->debug($updated_date_utc);
+        $page_size = 10;  //100
+        $result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
+
+        foreach ($result->getPayments() as $row) {
+            //$this->debug($row);
+
+            $save = [
+                'payment_id' => $row->getPaymentId(),
+                'invoice_id' => $row->getInvoice()->getInvoiceId(),
+                'date' => $row->getDateAsDate()->format('Y-m-d H:i:s'),
+                'status' => $row->getStatus(),
+                'amount' => $row->getAmount(),
+                'reference' => $row->getReference(),
+                'is_reconciled' => $row->getIsReconciled(),
+                'updated' => date('Y-m-d H:i:s'),
+                'updated_date_utc' => $row->getUpdatedDateUtcAsDate()->format('Y-m-d H:i:s'),
+                'xerotenant_id' => $xeroTenantId,
+                'contact_id' => $row->getInvoice()->getContact()->getContactId(),
+                'payment_type' => $row->getPaymentType(),
+            ];
+            if ($save['status'] != 'DELETED') {
+                $payments->prepAndSave($save);
+            }
+            //$this->debug($save);
+
+            //exit;
+        }
+
+        //$output = "Get Payments: " . count($result->getPayments()) . "<br>";
+        //$this->debug($result);
+        $output = '';
+        return $output;
+
+    }
+
 
     public function getPayment($xeroTenantId, $apiInstance, $returnObj = false)
     {
@@ -1064,14 +1209,14 @@ class XeroClass
         return $str;
     }
 
-    public function getRepeatingInvoice($xeroTenantId, $repeating_invoice_id)
+    public function getRepeatingInvoice(string $xeroTenantId, string $repeating_invoice_id)
     {
         $str = '';
 
         //[RepeatingInvoices:Read]
         // getRepeatingInvoices($xero_tenant_id, $where = null, $order = null)
         //
-        $where = '' . $repeating_invoice_id;
+        $where = $repeating_invoice_id;
         $order = null;
 
         $result = $this->apiInstance->getRepeatingInvoices($xeroTenantId, $where, $order);
@@ -1096,56 +1241,57 @@ class XeroClass
      */
     protected function getScheduleFromXeroObject($schedule): array
     {
-        // for now we only need the unit
+        // for now, we only need the unit
         $output = [
-            'schedule_unit' => $schedule->getUnit()
+            'schedule_unit' => $schedule->getUnit(),
         ];
         return $output;
     }
 
-    // the equivalent of a contract
-    public function getSingleRepeatingInvoice($xeroTenantId, $repeating_invoice_id): int
-    {
-        $save = $this->getSingleRepeatingInvoiceData($xeroTenantId, $repeating_invoice_id);
 
-        $contract = new ContractModel($this->pdo);
-        return $contract->prepAndSave(['contract' => $contract]);
-    }
-
-    public function getSingleRepeatingInvoiceData($xeroTenantId, $repeating_invoice_id): array
+    public function getSingleRepeatingInvoiceStub(string $xeroTenantId, string $repeating_invoice_id, int $ckcontact_id): array
     {
         $result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
         //[/RepeatingInvoices:Read]
         $contact_id = $result[0]->getContact()->getContactId();
+        $lineItems = $result[0]->getLineItems();
 
         $output = [
             'repeating_invoice_id' => $repeating_invoice_id,
             'contact_id' => $contact_id,
-            'ckcontact_id' => $this->getSingleContactId($xeroTenantId, $contact_id),
+            'ckcontact_id' => $ckcontact_id,
             'reference' => $result[0]->getReference(),
             'total' => $result[0]->getTotal(),
-            'xeroRefresh' => true,
-            'stub' => 0
+            'tax_type' => $lineItems[0]->getTaxType(),
+            'stub' => 0,
+            'xerotenant_id' => $xeroTenantId
         ];
+
         return array_merge($output, $this->getScheduleFromXeroObject($result[0]['schedule']));
     }
 
 
-    public function getSingleRepeatingInvoiceStub($xeroTenantId, $row): int
+    /**
+     * This creates a new contract record for the customer
+     * @param string $xeroTenantId
+     * @param $row
+     * @param int $ckcontact_id
+     * @param string $contact_id
+     * @return int
+     */
+    public function saveSingleRepeatingInvoiceStub(string $xeroTenantId, $row, int $ckcontact_id): int
     {
+        $repeatingInvoiceId = $row->getRepeatingInvoiceId();
 
-        $contact_id = $row['contact']->getContactId();
-        $contact = $this->contact->get('contact_id', $contact_id);
-        //debug($contact);
-        $contract = [
-            'repeating_invoice_id' => $row->getRepeatingInvoiceId(),
-            'contact_id' => $contact_id,
-            'ckcontact_id' => $contact['contacts']['id'],
-            'xerotenant_id' => $xeroTenantId,
-            'stub' => 1
-        ];
+        $objContract = new ContractModel($this->pdo);
+        $id = $objContract->field('contract_id', 'repeating_invoice_id', $repeatingInvoiceId);
+        if ($id) return $id;
 
-        return $this->contract->prepAndSave(['contract' => $contract]);
+        $contract = $this->getSingleRepeatingInvoiceStub($xeroTenantId, $repeatingInvoiceId, $ckcontact_id);
+
+        //$this->debug(['getSingleRepeatingInvoiceStub' => $contract]);
+
+        return $objContract->saveXeroStub($contract);
     }
 
 

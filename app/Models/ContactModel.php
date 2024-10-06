@@ -3,17 +3,9 @@
 namespace App\Models;
 
 use App\XeroClass;
-use App\Models\BaseModel;
-use App\Models\AddressModel;
-use App\Models\ContractModel;
-use App\Models\NoteModel;
-use App\Models\PhoneModel;
-
-use PDO;
 
 class ContactModel extends BaseModel
 {
-
     protected array $nullable = ['id', 'contact_id', 'updated_date_utc', 'stub'];
     protected array $saveKeys = [
         'id', 'contact_id', 'contact_status',
@@ -28,13 +20,12 @@ class ContactModel extends BaseModel
 
     protected AddressModel $addresses;
     protected PhoneModel $phones;
-
     protected NoteModel $notes;
 
     protected string $table = 'contacts';
     protected string $primaryKey = 'id';
 
-    protected array $hasMany = ['phones', 'addresses', 'notes'];
+    protected array $hasMany = ['Phone', 'Address', 'Note'];
     protected bool $hasStub = true;
 
     function __construct($pdo)
@@ -48,63 +39,36 @@ class ContactModel extends BaseModel
         $this->phones = new PhoneModel($pdo);
     }
 
-
-    public function prepAndSave($data): int
+    public function saveXeroStub(array $data): int
     {
 
-        // is this an update?
-        if (array_keys_exist(['id', 'contact_id', 'xeroRefresh'], $data['contact'], 'any')) {
-            //
-            // we've done a refresh from xero, and we need to update the records
-            if (array_key_exists('xeroRefresh', $data['contact']) && $data['contact']['xeroRefresh'] == true) {
-                // we don't want to get the old $oldVals = ['contracts' => []];
-                // we're saving fewer columns
-                $this->insert = "UPDATE `contacts` SET 
-                       `stub` = 0, 
-                       `first_name` = :first_name,
-                       `last_name` = :last_name,
-                       `email_address` = :email_address,
-                       `xero_status` = :xero_status
-                       WHERE contact_id = :contact_id";
+        $sql = "INSERT INTO `contacts` (`contact_id`,
+            `name` ,
+            `first_name`,
+            `last_name`,
+            `email_address` ,
+            `xero_status` ,
+            `xerotenant_id`,
+            `stub`) 
+            VALUES (:contact_id,:name,:first_name,:last_name,:email_address,:xero_status,:xerotenant_id,:stub)";
 
-                $save = ['contact_id' => $data['contact']['contact_id'],
-                    'first_name' => $data['contact']['first_name'],
-                    'last_name' => $data['contact']['last_name'],
-                    'email_address' => $data['contact']['email_address'],
-                    'xero_status' => $data['contact']['xero_status'],
-                ];
+        return $this->runQuery($sql, $data, 'insert');
+    }
 
-                return $this->save($save);
+    public function getContactName(array $data): string
+    {
+        return ($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '');
+    }
 
-            } else if (!empty($data['contact']['id'])) {
-                //todo do we need to refresh from xero?
-                $oldVals = $this->getRecord('id', $data['contact']['id']);
+    public function prepAndSave(array $data): int
+    {
+        //$this->debug(['contact prepAndSave', $data]);
 
-                //$this->debug(['oldvals' => $oldVals, 'data' => $data]);
-                $contact = $this->array_merge($oldVals[0], $data['contact']);
+        $data['contact']['name'] = $data['contact']['name'] ?? $this->getContactName($data['contact']);
 
-            } else if (!empty($data['contact']['contact_id'])) {
-                // probably just getting the default values
-                //todo do we need to refresh from xero?
-                $oldVals = $this->getRecord('contact_id', $data['contact']['contact_id']);
-                $contact = $this->array_merge($oldVals[0], $data['contact']);
-                $data['contact']['id'] = $contact['id'];
-            }
-        } else {
-            // this is a new record
-            $contact = $data['contact'];
-        }
-
-        $first_name = $data['contact']['first_name'] ?? '';
-        $last_name = $data['contact']['last_name'] ?? '';
-        $name = $data['contact']['name'] ?? '';
-
-        if (empty($name) && (!empty($first_name) || !empty($last_name))) {
-            $data['contact']['name'] = $first_name . ' ' . $last_name;
-        }
 
         // these can't be empty strings, either a value or null
-        $checked = $this->checkNullableValues($contact);
+        $checked = $this->checkNullableValues($data);
 
         // we can't pass extra variables
         $save = $this->getSaveValues($checked);
@@ -138,25 +102,16 @@ class ContactModel extends BaseModel
         return $data['contact']['id'];
     }
 
-    // contacts have 2 ids, one internal, one from xero
-    // this uses the xero id to get the internal id
-    public function getContactId($contact_id): int
+    /**
+     *  contacts have 2 ids, one internal, one from xero
+     *  this uses the xero id to get the internal id
+     *  returns the integer id or null
+     * @param string $contact_id
+     * @return int|null
+     */
+    public function getContactId(string $contact_id): int|null
     {
-        $sql = "SELECT `id` FROM `contacts` WHERE `contact_id` = :contact_id";
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['contact_id' => $contact_id]);
-            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            if (count($result)) {
-                return $result[0]['id'];
-            }
-            return 0;
-
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-        return 0;
+        return $this->field('id', 'contact_id', $contact_id);
     }
 
     protected function getFromXero($data): void
@@ -202,14 +157,15 @@ class ContactModel extends BaseModel
               AND (" . implode(' AND ', $conditions) .
             ') LIMIT 10';
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute($values);
-            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
+        $list = $this->runQuery($sql, $values);
+//        $this->getStatement($sql);
+//        try {
+//            $this->statement->execute($values);
+//            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+//        } catch (PDOException $e) {
+//            echo "Error Message: " . $e->getMessage() . "\n";
+//            $this->statement->debugDumpParams();
+//        }
         return [
             'count' => count($list),
             'draw' => $_GET['draw'],
@@ -226,14 +182,6 @@ class ContactModel extends BaseModel
                     order by rand() desc 
                     limit 4";
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute();
-            return $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-        return [];
+        return $this->runQuery($sql, []);
     }
 }

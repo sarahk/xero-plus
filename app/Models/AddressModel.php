@@ -22,15 +22,42 @@ class AddressModel extends BaseModel
     protected array $joins = ['contacts' => "`addresses`.`ckcontact_id` = :id1"];
     protected array $virtualFields = ['address' => "CONCAT(address_line1,', ', address_line2,', ', city, ' ', postal_code)"];
 
+    public function save($save): int
+    {
+        $this->debug(['save', $save]);
+        exit;
+        parent::save($save);
+    }
+
+    public function saveXeroStub(array $save): int
+    {
+        $sql = "INSERT INTO `addresses` ( 
+                         `address_line1`, `address_line2`,
+                         `city`, `postal_code`, 
+                         `ckcontact_id`, `contact_id`, `address_type`)
+                VALUES ( 
+                        :address_line1, :address_line2,
+                        :city, :postal_code, 
+                        :ckcontact_id, :contact_id, :address_type);";
+
+        return $this->runQuery($sql, $save, 'insert');
+    }
+
     public function prepAndSave($data): int
     {
-        parent::prepAndSave($data);
+        // don't call the parent
+        //parent::prepAndSave($data);
+        // $this->debug($data);
+
 
         if (array_key_exists('address', $data)) {
+            //normal
+            $this->debug('normal address save');
             if (!empty($data['address']['address_line1'])) {
                 return $this->save($data['address']);
             }
         } else if (array_key_exists('contract', $data) && array_key_exists('contract', $data)) {
+            $this->debug('contract address save');
             if (!empty($data['contract']['address_line1'])) {
                 $data['address'] = [
                     'ckcontact_id' => intval($data['contact']['id']),
@@ -43,12 +70,13 @@ class AddressModel extends BaseModel
                 ];
                 $data['address'] = $this->checkNullableValues($data['address']);
                 $save = $this->getSaveValues($data['address']);
-                debug($save);
+                $this->debug(['AddressModel prepAndSave', $save]);
                 return $this->save($save);
             }
 
         } else if (array_key_exists('addresses', $data)) {
             // probably from a xero import
+            $this->debug('xero import address save');
             $addresses = $this->getChildren('contacts', $data['contact']['id']);
 
             foreach ($data['addresses'] as $row) {
@@ -58,9 +86,9 @@ class AddressModel extends BaseModel
 
                     $search = array_search($row['address_line1'], $addresses);
                     if ($search !== false) {
-                        debug($row);
-                        debug($addresses);
-                        debug($search);
+                        $this->debug($row);
+                        $this->debug($addresses);
+                        $this->debug($search);
                         $row = array_merge($addresses[$search], $row);
                     }
                     $row = $this->checkNullableValues($row);
@@ -69,6 +97,7 @@ class AddressModel extends BaseModel
                 }
             }
         }
+        //$this->debug('not doing any prep and save');
         return 0;
     }
 }

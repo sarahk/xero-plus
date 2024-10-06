@@ -72,7 +72,7 @@ $(document).ready(function () {
     if ($('#tableInv4Contract').length) {
         let tInv4Contract = $('#tableInv4Contract').DataTable({
             "ajax": {
-                "url": "/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=" + repeating_invoice_id,
+                "url": "/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=" + keys.repeating_invoice_id,
             },
             "processing": true,
             "serverSide": true,

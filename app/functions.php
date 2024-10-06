@@ -87,31 +87,6 @@ function getElapsedTime($start, $end = null): string
     return implode(', ', $elapsed);
 }
 
-/**
- * @param array $keys
- * @param array $array
- * @param string $match
- * @return bool
- */
-function array_keys_exist(array $keys, array $array, string $match = 'any'): bool
-{
-    if (!array($keys) || !array($array)) {
-        return false;
-    }
-
-    $arrayKeys = array_keys($array);
-    foreach ($keys as $v) {
-        // is the key in there? does it have a value?
-        if (in_array($v, $arrayKeys) && $array[$v]) {
-            if ($match === 'any') {
-                return true;
-            }
-        } else if ($match === 'all') {
-            return false;
-        }
-    }
-    return true;
-}
 
 function getCard($filename, $label, $data): void
 {

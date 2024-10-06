@@ -3,10 +3,7 @@
 namespace App\Models;
 
 use App\XeroClass;
-use App\Models\BaseModel;
 
-use PDO;
-use PDOException;
 
 class ContractModel extends BaseModel
 {
@@ -45,15 +42,35 @@ class ContractModel extends BaseModel
         $this->buildInsertSQL();
     }
 
+    public function saveXeroStub(array $data): int
+    {
+        $sql = "INSERT INTO `contracts` ( 
+                    `repeating_invoice_id`,
+                    `xerotenant_id`,
+                    `contact_id` ,
+                    `ckcontact_id`,
+                    `reference`,
+                    `schedule_unit`,
+                    `total`,
+                    `tax_type`,
+                    `stub`  )
+                    VALUES 
+                    (:repeating_invoice_id, :xerotenant_id, :contact_id, :ckcontact_id,
+                     :reference, :schedule_unit, :total, :tax_type, :stub);";
+        
+        return $this->runQuery($sql, $data, 'insert');
+    }
+
     //  C O N T R A C T
     public function prepAndSave($data): int
     {
-        if (array_keys_exist(['contract_id', 'repeating_invoice_id', 'xeroRefresh'], $data)) {
+        $lookingFor = ['contract_id', 'repeating_invoice_id', 'xeroRefresh'];
+        if ($this->array_keys_exist($lookingFor, $data)) {
 
-            if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh'] == true) {
+            if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh']) {
                 // we don't want to get the old $oldVals = ['contracts' => []];
                 // we're saving fewer columns
-                debug('xeroRefresh');
+                $this->debug('Contract Model prepAndSave xeroRefresh');
                 $this->insert = "UPDATE `contracts` SET 
                        `stub` = 0, 
                        `contact_id` = :contact_id,
@@ -71,15 +88,21 @@ class ContractModel extends BaseModel
 
                 return $this->save($save);
             } else if (array_key_exists('contract_id', $data) && $data['contract_id']) {
-                debug('contract_id');
                 $oldVals = $this->get('contract_id', $data['contract_id']);
             } else if (array_key_exists('repeating_invoice_id', $data)) {
-                debug('repeating_invoice_id');
                 $oldVals = $this->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
+            } else {
+                //$oldVals = ['contracts' => []];
+                $defaults = $this->getDefaults();
+                $oldVals['contracts'] = $defaults[0];
             }
-        } else $oldVals = $this->getDefaults();
 
-        $contract = array_merge($oldVals['contracts'], $data);
+        } else {
+            $defaults = $this->getDefaults();
+            $oldVals['contracts'] = $defaults[0];
+        }
+// uses a special version of array_merge
+        $contract = $this->array_merge($oldVals['contracts'], $data['contract']);
 
         $contract['updated'] = date('Y-m-d H:i:s');
 
@@ -107,19 +130,9 @@ class ContractModel extends BaseModel
 
     protected function getTenantId($repeating_invoice_id): string
     {
-        $xeroTenantId = '';
         $sql = "SELECT `xerotenant_id` FROM `invoices` WHERE `repeating_invoice_id` = :keyVal LIMIT 1";
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['keyVal' => $repeating_invoice_id]);
-            $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            $xeroTenantId = $data[0]['xerotenant_id'];
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-
-        return $xeroTenantId;
+        $data = $this->runQuery($sql, ['keyVal' => $repeating_invoice_id]);
+        return $data[0]['xerotenant_id'];
     }
 
 
