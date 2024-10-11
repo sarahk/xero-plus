@@ -52,12 +52,13 @@ class BaseModel
 
     protected function runQuery(string $sql, array $searchValues, string $type = 'query'): int|array
     {
-        $this->log('info', 'runQuery', [$sql]);
+        //$this->log('info', 'runQuery', [$sql]);
         $this->getStatement($sql);
         try {
             $this->statement->execute($searchValues);
             return match ($type) {
                 'query' => $this->statement->fetchAll(PDO::FETCH_ASSOC),
+                'update' => $this->statement->rowCount(),
                 default => $this->pdo->lastInsertId(),
             };
 
@@ -432,15 +433,17 @@ class BaseModel
         return $this->pdo->query($recordsTotal)->fetchColumn();
     }
 
-    protected function getRecordsFiltered($conditions, $searchValues): int
+    protected function getRecordsFiltered(array $conditions, array $searchValues, string $sql = ''): int
     {
-        $recordsFiltered = "SELECT count(*) as `filtered` FROM `$this->table` 
+        if (empty($sql))
+            $recordsFiltered = "SELECT count(*) as `filtered` FROM `$this->table` 
                 WHERE  " . implode(' AND ', $conditions);
+        else $recordsFiltered = $sql;
 
         $result = $this->runQuery($recordsFiltered, $searchValues);
         if (is_array($result))
             return $result[0]['filtered'];
-        
+
         return 0;
     }
 

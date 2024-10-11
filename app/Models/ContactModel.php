@@ -41,8 +41,31 @@ class ContactModel extends BaseModel
 
     public function saveXeroStub(array $data): int
     {
+// if it's a new contact id will be null
+        if (!is_null($data['id'])) {
 
-        $sql = "INSERT INTO `contacts` (`contact_id`,
+            $save = [
+                'id' => $data['id'],
+                'name' => $data['name'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'email_address' => $data['email_address'],
+                'xero_status' => $data['xero_status'],
+            ];
+
+            $sql = "UPDATE `contacts` set `name` = :name,
+                        `first_name` = :first_name, 
+                        `last_name` = :last_name, 
+                        `email_address` = :email_address,
+                        `xero_status` = :xero_status
+                        WHERE `id` = :id ";
+            $this->runQuery($sql, $save, 'update');
+            return $data['id'];
+        }
+
+        $sql = "INSERT INTO `contacts` (
+            `id`,
+            `contact_id`,
             `name` ,
             `first_name`,
             `last_name`,
@@ -50,7 +73,8 @@ class ContactModel extends BaseModel
             `xero_status` ,
             `xerotenant_id`,
             `stub`) 
-            VALUES (:contact_id,:name,:first_name,:last_name,:email_address,:xero_status,:xerotenant_id,:stub)";
+            VALUES (:id, :contact_id,:name,:first_name,:last_name,:email_address,:xero_status,:xerotenant_id,:stub)";
+        //$save = array_merge($data, $dupes);
 
         return $this->runQuery($sql, $data, 'insert');
     }

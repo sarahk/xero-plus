@@ -29,9 +29,12 @@ class AddressModel extends BaseModel
         parent::save($save);
     }
 
+    //todo proper pest testing
     public function saveXeroStub(array $save): int
     {
-        $sql = "INSERT INTO `addresses` ( 
+        //$this->debug(['saveXeroStub', $save]);
+        if (!empty($save['address_line1'])) {
+            $sql = "INSERT INTO `addresses` ( 
                          `address_line1`, `address_line2`,
                          `city`, `postal_code`, 
                          `ckcontact_id`, `contact_id`, `address_type`)
@@ -40,7 +43,9 @@ class AddressModel extends BaseModel
                         :city, :postal_code, 
                         :ckcontact_id, :contact_id, :address_type);";
 
-        return $this->runQuery($sql, $save, 'insert');
+            return $this->runQuery($sql, $save, 'insert');
+        }
+        return 0;
     }
 
     public function prepAndSave($data): int

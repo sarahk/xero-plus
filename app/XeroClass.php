@@ -198,39 +198,42 @@ class XeroClass
     // internal call
     // to see the result data
     // https://api-explorer.xero.com/accounting/contacts/getcontact?path-contactid=e3e88c63-d089-4e4f-b665-a87e9796d66b
-    public function getSingleContact($xeroTenantId, $contact_id): array
+    public function getContactRefresh($xeroTenantId, $contact_id): int
     {
+        //$this->debug(['getContactRefresh', $xeroTenantId, $contact_id]);
         $result = $this->apiInstance->getContact($xeroTenantId, $contact_id);
 
         //$this->debug($result);
         if (count($result)) {
 
             $row = $result->getContacts();
-            $addresses = $this->getAddressesFromXeroObject($row[0]->getAddresses());
-            $phones = $this->getPhonesFromXeroObject($row[0]->getPhones());
+            // $this->debug($row);
+            return $this->saveSingleContactStub($xeroTenantId, ['contact' => $row[0]], 1, true);
+            //$addresses = $this->getAddressesFromXeroObject($row[0]->getAddresses());
+            //$phones = $this->getPhonesFromXeroObject($row[0]->getPhones());
 
-
-            $save = ['contact_id' => $contact_id,
-                'first_name' => $row[0]->getFirstName(),
-                'last_name' => $row[0]->getLastName(),
-                'email_address' => $row[0]->getEmailAddress(),
-                'xero_status' => $row[0]->getContactStatus(),
-                'addresses' => $addresses,
-                'phones' => $phones,
-                'xerotenant_id' => $xeroTenantId,
-                'stub' => 0,
-                'xeroRefresh' => true
-            ];
-            //$this->debug(['save' => $save]);
-            $contact = new ContactModel($this->pdo);
-            $id = $contact->getContactId($contact_id);
-            if ($id) {
-                $save['id'] = $id;
-                $save['xeroRefresh'] = false;
-            }
-
-            $save['id'] = $contact->prepAndSave(['contact' => $save]);
-            return $save;
+//
+//            $save = ['contact_id' => $contact_id,
+//                'first_name' => $row[0]->getFirstName(),
+//                'last_name' => $row[0]->getLastName(),
+//                'email_address' => $row[0]->getEmailAddress(),
+//                'xero_status' => $row[0]->getContactStatus(),
+//                'addresses' => $addresses,
+//                'phones' => $phones,
+//                'xerotenant_id' => $xeroTenantId,
+//                'stub' => 0,
+//                'xeroRefresh' => true
+//            ];
+//            //$this->debug(['save' => $save]);
+//            $contact = new ContactModel($this->pdo);
+//            $id = $contact->getContactId($contact_id);
+//            if ($id) {
+//                $save['id'] = $id;
+//                $save['xeroRefresh'] = false;
+//            }
+//
+//            $save['id'] = $contact->prepAndSave(['contact' => $save]);
+            //return $save;
         }
         return ['id' => 0];
     }
@@ -242,13 +245,15 @@ class XeroClass
         return $result['id'];
     }
 
-    protected function saveSingleContactStub(string $xeroTenantId, $row): int
+    protected function saveSingleContactStub(string $xeroTenantId, $row, $stubFlag = 1, $overwrite = false): int
     {
         // should it be $row->getContact()   ???
+        //$this->debug(['saveSingleContactSub', $xeroTenantId, $row, $stub, $overwrite]);
         $stub = $row['contact'];
         $this->showObjectMethods = true;
 
         $save = [
+            'id' => null,
             'contact_id' => $stub->getContactId(),
             'name' => $stub->getName(),
             'first_name' => $stub->getFirstName(),
@@ -256,19 +261,22 @@ class XeroClass
             'email_address' => $stub->getEmailAddress(),
             'xero_status' => $stub->getContactStatus(),
             'xerotenant_id' => $xeroTenantId,
-            'stub' => 1
+            'stub' => $stubFlag
         ];
         $contact = new ContactModel($this->pdo);
         $id = $contact->getContactId($save['contact_id']);
-        if ($id) {
+        if ($id && $overwrite) {
+            $save['id'] = $id;
+        } else {
             return $id;
         }
-        $this->debug($save);
+
         $save['name'] = $save['name'] ?? $contact->getContactName($save);
         $id = $contact->saveXeroStub($save);
-        $this->debug($id);
         $this->saveAddressStubs($stub->getAddresses(), $id, $save['contact_id']);
+        # todo save phone stubs
         // only save if it's a new customer
+        $this->debug($save);
         return $contact->saveXeroStub($save);
     }
 
@@ -282,17 +290,19 @@ class XeroClass
      * "Country": "New Zealand"
      *
      * @param  $row
-     * @param int $id
+     * @param int $id <-- internal id
+     * @param string $contact_id <-- from xero
      * @return void
      */
     public function saveAddressStubs(array $addresses, int $id, string $contact_id): void
     {
+        //$this->debug(['saveAddressStubs', $id, $contact_id]);
         $address = new AddressModel($this->pdo);
         $this->showObjectMethods = true;
 
         if (count($addresses)) {
             foreach ($addresses as $row) {
-                $this->debug($row);
+
                 $address->saveXeroStub([
                     'address_line1' => $row['AddressLine1'] ?? '',
                     'address_line2' => $row['AddressLine2'] ?? '',
@@ -304,36 +314,6 @@ class XeroClass
                 ]);
             }
         }
-    }
-
-    public function getContactRefresh(): void// auckland,waikato,bop
-    {
-        $k = 1;
-        $tenantName = $_GET['tenancy'];
-        $xeroTenantId = $this->getXeroTenantId($this->pdo, $tenantName);
-        // public function getContacts($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $page = null, $include_archived = null)
-
-        // shown in full for readability
-        $contact = new ContactModel($this->pdo);
-        $updated_date_utc = $contact->getUpdatedDate($xeroTenantId);
-        $where = $order = $ids = null;
-        $page = 1;
-        $include_archived = true;
-        // unused $summary_only = false, $search_term = null)
-
-
-        $result = $this->apiInstance->getContacts($xeroTenantId, $updated_date_utc, $where, $order, $ids, $page, $include_archived);
-        $data = $result->getContacts();
-
-        if (count($data)) {
-            foreach ($data as $k => $row) {
-                //if ($row->getIsCustomer() || true) {
-                $this->saveContactRow($row);
-                //}
-            }
-        }
-        $this->saveXeroTimestamp('Contact', $xeroTenantId);
-
     }
 
 
@@ -763,7 +743,7 @@ class XeroClass
                 $values['contract_id'] = $contract_id;
                 $values['contact_id'] = $contact_id;
                 $values['ckcontact_id'] = $ckcontact_id;
-                
+
                 $objInvoice->prepAndSave($values);
 
             }
@@ -1066,7 +1046,7 @@ class XeroClass
         $payments = new PaymentModel($this->pdo);
         $updated_date_utc = $payments->getUpdatedDate($xeroTenantId);
         //$this->debug($updated_date_utc);
-        $page_size = 10;  //100
+        $page_size = 50;  //100
         $result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
 
         foreach ($result->getPayments() as $row) {

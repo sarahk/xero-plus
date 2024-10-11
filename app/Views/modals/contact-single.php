@@ -16,37 +16,43 @@ namespace App\Views\modals;
             <div class='modal-body'>
                 <div class='container'>
                     <form id="contactForm">
+                        <input type="hidden" id="contactSingleId">
                         <div class="row mb-3">
-                            <label for="contactName" class="col-sm-2 col-form-label">Name</label>
+                            <label for="contactName" class="col-sm-3 col-form-label">Name</label>
 
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <input type="text" class="form-control" id="contactName" value="">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="contactName" class="col-sm-2 col-form-label">First Name</label>
+                            <label for="contactName" class="col-sm-3 col-form-label">First Name</label>
 
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <input type="text" class="form-control" id="contactFirstName">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="contactName" class="col-sm-2 col-form-label">Surname</label>
+                            <label for="contactName" class="col-sm-3 col-form-label">Surname</label>
 
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <input type="text" class="form-control" id="contactLastName">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="contactName" class="col-sm-2 col-form-label">Email</label>
+                            <label for="contactName" class="col-sm-3 col-form-label">Email</label>
 
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <input type="text" class="form-control" id="contactEmail">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <p class="small" id="internalData"></p>
                             </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Save</button>
-                        <button class="btn btn-info-light btn-wave">Refresh\Xero</button>
+                        <button class="btn btn-info-light btn-wave" id="refreshXero">Refresh\Xero</button>
                     </form>
                     <div class="row mt-3">
                         <div class="col-6">
@@ -71,7 +77,6 @@ namespace App\Views\modals;
                 </div>
 
                 <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
-                <button type='button' class='btn btn-primary' id='contactEdit'>Edit</button>
             </div>
         </div>
     </div>

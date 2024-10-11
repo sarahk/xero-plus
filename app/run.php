@@ -32,7 +32,7 @@ switch ($endpoint) {
         switch ($imageType) {
             case 'baddebt':
                 $invoice = new InvoiceModel($pdo);
-                $chartURL = $invoice->getChartURL($_GET['contract_id']);
+                $chartURL = $invoice->getChartURL($_GET['contact_id']);
                 header('Location: ' . $chartURL);
                 exit;
         }

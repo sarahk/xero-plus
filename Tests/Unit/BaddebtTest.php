@@ -23,11 +23,11 @@ describe('Test of Invoice Bad Debts', function () {
     it('gets a single contract_id', function () {
         $pdo = Utilities::getPDO();
         $invoice = new InvoiceModel($pdo);
-        $contract_id = $invoice->getOneBadDebtor();
-        $int = intval($contract_id);
-        $chartUrl = $invoice->getChartUrl($contract_id);
-        
-        expect($contract_id)->toBeString()
+        $contact_id = $invoice->getOneBadDebtor();
+        $int = intval($contact_id);
+        $chartUrl = $invoice->getChartUrl($contact_id);
+
+        expect($contact_id)->toBeString()
             ->and($int)->toBeInt()->toBeGreaterThan(0)
             ->and($chartUrl)->toBeUrl();
     });

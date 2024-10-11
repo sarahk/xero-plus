@@ -21,6 +21,16 @@ enum TaskType: string
         };
     }
 
+    public static function getTaskTypes()
+    {
+        $output = [];
+        $vals = self::getAllValues();
+        foreach ($vals as $val) {
+            $output[] = ['name' => $val, 'icon' => self::getTaskTypeIcon($val)];
+        }
+        return $output;
+    }
+
     public static function getTaskTypeRepeats(string $task): bool
     {
         $taskType = self::from($task);

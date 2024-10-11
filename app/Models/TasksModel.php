@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use App\Models\Enums\TaskType;
 
 class TasksModel extends BaseModel
 {
@@ -36,7 +36,7 @@ class TasksModel extends BaseModel
         parent::__construct($pdo);
         $this->buildInsertSQL();
 
-        $this->virtualFields['icon'] = $this->getCaseStatement('task_type', lists::getTaskTypes());
+        $this->virtualFields['icon'] = $this->getCaseStatement('task_type', TaskType::getTaskTypes());
     }
 
 
@@ -162,36 +162,16 @@ class TasksModel extends BaseModel
             ORDER BY {$order} 
             LIMIT {$params['start']}, {$params['length']}";
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute($searchValues);
-
-            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
-        }
+        $result = $this->runQuery($sql, $searchValues);
 
         $output = $params;
         // adds in tenancies because it doesn't use $conditions
         $recordsTotal = "SELECT count(*) FROM `tasks` 
                 WHERE $tenancies"
             . (empty($params['key']) ? '' : ' AND `tasks`.`cabin_id` = ' . $params['key']);
-
-        $recordsFiltered = "SELECT count(*) as `filtered` FROM `tasks` 
-                WHERE  " . implode(' AND ', $conditions);
-
-
+        
         $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
-
-        try {
-            $this->getStatement($recordsFiltered);
-            $this->statement->execute($searchValues);
-            $output['recordsFiltered'] = $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
-            $this->statement->debugDumpParams();
-        }
+        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
 
 
         //$output['refreshInvoice'] = $refreshInvoice;

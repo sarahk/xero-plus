@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\XeroClass;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -55,10 +54,15 @@ try {
     switch ($endpoint) {
         case "Contacts":
         case 'contacts':
+        case 'Contact':
+        case 'contact':
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
-                    $xero->getContactRefresh();
+                    $xeroTenantId = $_GET['xeroTenantId'];
+                    $contact_id = $_GET['contact_id'];
+                    
+                    $xero->getContactRefresh($xeroTenantId, $contact_id);
                     break;
                 case "Create":
                     echo $xero->createContact($apiInstance);

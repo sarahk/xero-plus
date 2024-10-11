@@ -755,76 +755,77 @@ class JsonClass
      */
     public function getContactSingle()
     {
-        $this->initPDOContact();
-        $output = $this->getOutput();
-
-        //check the age of the record first?
-
-        $result = $this->apiInstance->getContacts($this->xeroTenantId, null, null, null, $output['key'], null, true);
-        $data = $result->getContacts();
-
-
-        if (count($data)) {
-            foreach ($data as $k => $row) {
-                $this->saveContactRow($row);
-            }
-        }
-
-        $xeroTenantId = $this->xeroTenantId;
-        $contact_id = $output['key'];
-        $fields = [
-            'contacts.contact_id',
-            'contacts.name',
-            'contacts.firstname',
-            'contacts.lastname',
-            'contacts.email_address',
-            'contacts.contact_status',
-            'contacts.is_supplier',
-            'contacts.is_customer',
-            'addresses.address_line1',
-            'addresses.address_line2',
-            'addresses.city',
-            'addresses.postal_code',
-            'phones.phone_number',
-            'phones.phone_area_code',
-            'contacts.updated_date_utc'
-        ];
-        $fields[] = "SUM(invoices.amount_due) as amount_due";
-
-        $conditions = [
-            "contacts.xerotenant_id = '$xeroTenantId'",
-            "contacts.contact_id = '$contact_id'"
-        ];
-
-        $sql = "SELECT " . implode(', ', $fields)
-            . " FROM `contacts` "
-            . " LEFT JOIN invoices ON (contacts.contact_id = invoices.contact_id) "
-            . " LEFT JOIN addresses ON (contacts.contact_id = addresses.contact_id and addresses.address_type = 'STREET') "
-            . " LEFT JOIN phones ON (contacts.contact_id = phones.contact_id and phones.phone_type = 'MOBILE') "
-            . " WHERE " . implode(' AND ', $conditions) . " LIMIT 1";
-
-        $contact = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-        $address = [];
-        foreach ($this->addressOptions as $key) {
-            if (!empty($contact[$key])) {
-                $address[] = $contact[$key];
-            }
-        }
-        $contact['address'] = implode(', ', $address);
-
-        $phone = '';
-
-        if (!empty($contact['phone_number'])) {
-            $phone_number = str_replace(' ', '&nbsp;', $contact['phone_number']);
-            $phone = "<a href='tel:{$contact['phone_area_code']}{$row['phone_number']}'>{$contact['phone_area_code']}&nbsp;{$phone_number}</a>";
-        }
-        $contact['phone'] = $phone;
-
-        $contact['email'] = "<a href='mailto:{$contact['email_address']}' target='_blank'>{$contact['email_address']}</a>";
-
-        echo json_encode($contact);
-        exit;
+        return $this->getContactSingleton();
+//        $this->initPDOContact();
+//        $output = $this->getParams();
+//
+//        //check the age of the record first?
+//
+//        $result = $this->apiInstance->getContacts($this->xeroTenantId, null, null, null, $output['key'], null, true);
+//        $data = $result->getContacts();
+//
+//
+//        if (count($data)) {
+//            foreach ($data as $k => $row) {
+//                $this->saveContactRow($row);
+//            }
+//        }
+//
+//        $xeroTenantId = $this->xeroTenantId;
+//        $contact_id = $output['key'];
+//        $fields = [
+//            'contacts.contact_id',
+//            'contacts.name',
+//            'contacts.firstname',
+//            'contacts.lastname',
+//            'contacts.email_address',
+//            'contacts.contact_status',
+//            'contacts.is_supplier',
+//            'contacts.is_customer',
+//            'addresses.address_line1',
+//            'addresses.address_line2',
+//            'addresses.city',
+//            'addresses.postal_code',
+//            'phones.phone_number',
+//            'phones.phone_area_code',
+//            'contacts.updated_date_utc'
+//        ];
+//        $fields[] = "SUM(invoices.amount_due) as amount_due";
+//
+//        $conditions = [
+//            "contacts.xerotenant_id = '$xeroTenantId'",
+//            "contacts.contact_id = '$contact_id'"
+//        ];
+//
+//        $sql = "SELECT " . implode(', ', $fields)
+//            . " FROM `contacts` "
+//            . " LEFT JOIN invoices ON (contacts.contact_id = invoices.contact_id) "
+//            . " LEFT JOIN addresses ON (contacts.contact_id = addresses.contact_id and addresses.address_type = 'STREET') "
+//            . " LEFT JOIN phones ON (contacts.contact_id = phones.contact_id and phones.phone_type = 'MOBILE') "
+//            . " WHERE " . implode(' AND ', $conditions) . " LIMIT 1";
+//
+//        $contact = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+//
+//        $address = [];
+//        foreach ($this->addressOptions as $key) {
+//            if (!empty($contact[$key])) {
+//                $address[] = $contact[$key];
+//            }
+//        }
+//        $contact['address'] = implode(', ', $address);
+//
+//        $phone = '';
+//
+//        if (!empty($contact['phone_number'])) {
+//            $phone_number = str_replace(' ', '&nbsp;', $contact['phone_number']);
+//            $phone = "<a href='tel:{$contact['phone_area_code']}{$row['phone_number']}'>{$contact['phone_area_code']}&nbsp;{$phone_number}</a>";
+//        }
+//        $contact['phone'] = $phone;
+//
+//        $contact['email'] = "<a href='mailto:{$contact['email_address']}' target='_blank'>{$contact['email_address']}</a>";
+//
+//        echo json_encode($contact);
+//        exit;
     }
 
     public function getContactSingleton(): string
@@ -1286,7 +1287,7 @@ class JsonClass
         $result = $apiInstance->updateEmployee($xeroTenantId, $employeeId, $employee);
         //[/Employees:Update]
 
-        
+
         //$str = $str . "Update Employee: " . $employee["FirstName"] . "  " . $employee["LastName"]   . "<br>" ;
 
         return $str;

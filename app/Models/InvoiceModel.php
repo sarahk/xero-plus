@@ -241,35 +241,26 @@ class InvoiceModel extends BaseModel
         // this clause defines what a bad debt actually is
         $conditions[] = "invoices.`amount_due` > 0 AND invoices.due_date < now()";
 
-        $sql = "SELECT `invoices`.`contract_id`,
-            `invoices`.`contract_id` as `DT_RowId`,
+        $sql = "SELECT `contacts`.`id`,
+            `contacts`.`xerotenant_id`,
+            `contacts`.`name`, 
+            `contacts`.`contact_id`,
+            `contacts`.`id` as `DT_RowId`,
             SUM(`invoices`.`amount_due`) as due, 
             COUNT(`invoices`.`invoice_id`) as weeks_due,
-            contacts.name, 
-            contacts.contact_id,
-            (SELECT COUNT(i2.invoice_id) FROM invoices as i2 WHERE i2.contract_id = invoices.contract_id) AS total_weeks
-            FROM `invoices` 
-            LEFT JOIN `contacts` ON invoices.contact_id = contacts.`contact_id`
+            (SELECT COUNT(i2.invoice_id) FROM invoices as i2 
+                                         WHERE i2.contact_id = contacts.contact_id) AS total_weeks
+            FROM `contacts` 
+            LEFT JOIN `invoices` ON invoices.contact_id = contacts.`contact_id`
             WHERE " . implode(' AND ', $conditions) . "
-            GROUP BY `invoices`.`contract_id`, `contacts`.`contact_id`, `contacts`.`name`
+            GROUP BY `contacts`.`id`
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
 
 
         //  (SELECT CONCAT(phones.phone_area_code, ' ', phones.phone_number) as `phone` from `phones` WHERE phones.ckcontact_id = contacts.id ORDER BY `phone_type` DESC LIMIT 1) AS phone,
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute($searchValues);
-
-            //$invoices = $this->statement->fetchAll();
-            $badDebts = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
-        }
+        $badDebts = $this->runQuery($sql, $searchValues);
 
         $output = $params;
         $output['mainquery'] = $sql;
@@ -285,19 +276,8 @@ class InvoiceModel extends BaseModel
 
 
         $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
+        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues, $recordsFiltered);
 
-        try {
-            $this->getStatement($recordsFiltered);
-            $this->statement->execute($searchValues);
-            $output['recordsFiltered'] = $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
-            $this->statement->debugDumpParams();
-        }
-
-
-        //$output['refreshInvoice'] = $refreshInvoice;
-        // $output['refreshContact'] = $refreshContact;
 
         if (count($badDebts) > 0) {
             foreach ($badDebts as $row) {
@@ -309,7 +289,7 @@ class InvoiceModel extends BaseModel
                     'due' => $row['due'],
                     'weeks_due' => $row['weeks_due'],
                     'total_weeks' => $row['total_weeks'],
-                    'chart' => "<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' 
+                    'chart' => "<img src='/run.php?endpoint=image&imageType=baddebt&contact_id={$row['contact_id']}' 
                                     alt=\"Bad Debt history for {$row['name']}\" 
                                     width='300' height='125'/>"
                 ];
@@ -321,11 +301,12 @@ class InvoiceModel extends BaseModel
         return $output;
     }
 
-    public function getChartURL($contract_id): string
+    public function getChartURL($contact_id): string
     {
-        $data = $this->getChartData($contract_id);
+        $data = $this->getChartData($contact_id);
+
         $parts = [
-            'iid=' . $contract_id,
+            'iid=' . $contact_id,
             'chco=ff0000',
             'chs=300x125',
             'cht=lc',
@@ -351,7 +332,7 @@ class InvoiceModel extends BaseModel
 
         $email = $contacts->get('contact_id', $row['contact_id']);
 
-        $output = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' data-contactid='{$row['contact_id']}' data-contractid='{$row['contract_id']}'>{$row['name']}</a>
+        $output = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' data-tenancyid='{$row['xerotenant_id']}' data-contactid='{$row['contact_id']}'>{$row['name']}</a>
                         <br/><i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
 
         if (isset($email['phones']) && count($email['phones'])) {
@@ -366,43 +347,77 @@ class InvoiceModel extends BaseModel
     }
 
     //https://ckm:8825/run.php?endpoint=image&imageType=baddebt&contract_id=191
-    protected function getChartData($contract_id): array
+    protected function getChartData($contact_id): array
     {
         $xaxis = [
             'full' => '0:|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16',
-            'slim' => '0:||2||4||6||8||10||12||14||16'
+            'slim' => '0:||2||4||6||8||10||12||14||16',
+            'slim-r' => '0:|16||14||12||10||8||6||4||2'
         ];
-        $sql = "select `invoice_id`, 
-                    (select floor(sum(`amount_due`)) from `invoices` as `i1` 
-                    where i1.contract_id = :contract1 
-                    and `i1`.`date` <= `invoices`.`date`) as `totaldue`
-                    from `invoices` 
-                    where `contract_id` = :contract2
-                    order by `date` DESC
-                    limit 16 ";
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['contract1' => $contract_id, 'contract2' => $contract_id]);
-            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            $data = array_column($result, 'totaldue');
-            $data = array_reverse($data);
+        //$contract = new ContractModel($this->pdo);
+        //$contact_id = $contract->field('contact_id', 'contract_id', $contract_id);
 
-            $max = ceil(max($data) / 10) * 10;
-            //$number = ceil($input / 10) * 10;
-            $min = floor(min($data) / 10) * 10;
-            $mid = round($min + (($max - $min) / 2));
-            return [
-                'data' => implode(',', $data),
-                'xaxis' => $xaxis['slim'],
-                'yaxis' => "1:||$min||$mid||$max"
-            ];
+        $sql = "SELECT 
+                    weeks.week_number,
+                        (
+                        SELECT SUM(invoices.total) 
+                        FROM invoices 
+                        WHERE invoices.contact_id = :contact_id1
+                          AND FLOOR(DATEDIFF(CURDATE(), invoices.date) / 7) <= weeks.week_number
+                    ) AS `owing`,
+                    (
+                        SELECT SUM(payments.amount) 
+                        FROM payments 
+                        WHERE payments.contact_id = :contact_id2
+                          AND FLOOR(DATEDIFF(CURDATE(), payments.date) / 7) <= weeks.week_number
+                    ) AS `paid`
+                FROM 
+                    weeks";
 
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
+        $output = array_fill(0, 16, 0);
+
+        $result = $this->runQuery($sql, ['contact_id1' => $contact_id, 'contact_id2' => $contact_id]);
+        if (count($result)) {
+            foreach ($result as $row) {
+                $output[$row['week_number']] = $row['owing'] - $row['paid'];
+            }
         }
-        return [];
+
+
+        $max = ceil(max($output) / 10) * 10;
+        $min = floor(min($output) / 10) * 10;
+        $mid = round($min + (($max - $min) / 2));
+        return [
+            'data' => implode(',', array_reverse($output)),
+            'xaxis' => $xaxis['slim-r'],
+            'yaxis' => "1:||$min||$mid||$max"
+        ];
+
+        return $output;
+
+//        $this->getStatement($sql);
+//        try {
+//            $this->statement->execute(['contract1' => $contract_id, 'contract2' => $contract_id]);
+//            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+//            $data = array_column($result, 'totaldue');
+//            $data = array_reverse($data);
+//
+//            $max = ceil(max($data) / 10) * 10;
+//            //$number = ceil($input / 10) * 10;
+//            $min = floor(min($data) / 10) * 10;
+//            $mid = round($min + (($max - $min) / 2));
+//            return [
+//                'data' => implode(',', $data),
+//                'xaxis' => $xaxis['slim'],
+//                'yaxis' => "1:||$min||$mid||$max"
+//            ];
+//
+//        } catch (PDOException $e) {
+//            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+//            $this->statement->debugDumpParams();
+//        }
+        //return [];
     }
 
     function getPDF($invoice_id)
@@ -416,23 +431,23 @@ class InvoiceModel extends BaseModel
     */
     function getOneBadDebtor(): string
     {
-
+// todo check this works after the change from using contract_id to contact_id for bad debts
         $log = new Logger('InvoiceModel.getOneBadDebtor');
         $log->pushHandler(new StreamHandler('monolog.log', Level::Info));
 
 
-        $sql = "SELECT i.contract_id, i.invoice_id, i.date,
-                    (SELECT sum(i2.amount_due) FROM invoices AS i2 WHERE i.contract_id = i2.contract_id) AS `total`
+        $sql = "SELECT i.contact_id, i.invoice_id, i.date,
+                    (SELECT sum(i2.amount_due) FROM invoices AS i2 WHERE i.contact_id = i2.contact_id) AS `total`
                 FROM 
                     invoices i
                 INNER JOIN (
                     SELECT 
-                        contract_id, 
+                        contact_id, 
                         MAX(invoices.date) AS latest_invoice_date
                     FROM 
                         invoices
                     GROUP BY 
-                        contract_id
+                        contact_id
                 ) as latest_invoices
                 ON i.contract_id = latest_invoices.contract_id
                 AND i.date = latest_invoices.latest_invoice_date
@@ -459,4 +474,5 @@ class InvoiceModel extends BaseModel
         }
         return 0;
     }
+
 }

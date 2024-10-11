@@ -64,9 +64,11 @@ function sendSMS() {
 }
 
 // M O D A L
-if ($('#contactSingle').length) {
+// not used
+// todo - remove
+if ($('#contactSingleX').length) {
 
-    $('#contactSingle').on('show.bs.modal', function (event) {
+    $('#contactSingleX').on('show.bs.modal', function (event) {
         let complete = false;
         setTimeout(function () {
             if (!complete) {
@@ -85,7 +87,7 @@ if ($('#contactSingle').length) {
         // todo check the url
         $.getJSON(url, function (data) {
             console.log(data);
-            console.log(data.contacts.name);
+            console.log(data.contacts);
             $('#contactNameLabel').textContent = data.contacts.name;
 
             $('#contactName').val(data.contacts.name);
@@ -93,7 +95,7 @@ if ($('#contactSingle').length) {
             $('#contactLastName').val(data.contacts.last_name);
             $('#contactEmail').val(data.contacts.email_address);
 
-            $('#imgBadDebts').attr("src", "/run.php?endpoint=image&imageType=baddebt&contract_id=" + contract_id);
+            $('#imgBadDebts').attr("src", "/run.php?endpoint=image&imageType=baddebt&contract_id=" + data.contacts.contract_id);
             //width="300" height="125">
         });
 
