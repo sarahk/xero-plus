@@ -74,13 +74,13 @@ trait DebugTrait
                 printf($format, '', $k, $boolean);
                 break;
 
-            case   "integer":
+            case  "integer":
             case  "double" :
-                printf($format, 'circle', $k, "$val");
+                printf($format, ($this->isJson) ? '' : 'circle', $k, "$val");
                 break;
 
             case "string":
-                printf($format, 'disc', $k, $val);
+                printf($format, ($this->isJson) ? '' : 'disc', $k, "\"$val\"");
                 break;
 
             case "array":
@@ -105,7 +105,7 @@ trait DebugTrait
                 if ($this->showObjectMethods) {
                     $methods = get_class_methods($val);
                     foreach ($methods as $v) {
-                        printf($format, 'square', '', '<i>$v</i>');
+                        printf($format, 'square', '', "<i>$v</i>");
 //                        if ($this->isJson) {
 //                            echo $begin . '* ' . $v . PHP_EOL;
 //                        } else {

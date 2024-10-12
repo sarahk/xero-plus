@@ -22,9 +22,9 @@ const LOGGEDOUT = false;
 
 $message = "no API calls";
 
-$action = array_key_exists('action', $_GET) ? intval($_GET['action']) : 0;
-$debug = array_key_exists('debug', $_GET);
-$id = (array_key_exists('id', $_GET)) ? intval($_GET['id']) : 0;
+$action = intval($_GET['action']) ?? 0;
+$debug = $_GET['debug'] ?? 0;
+$id = intval($_GET['id']) ?? 0;
 
 //$userId = $_SESSION['user']['user_id'];
 
@@ -111,8 +111,10 @@ switch ($action) {
         break;
 
     case 9:
+    case 90:
         // don't actually need to do anything?
         break;
+
     case 4:
         // Create Multiple Contacts
         try {
@@ -255,46 +257,26 @@ switch ($action) {
 
 require_once(SITE_ROOT . '/Views/header.php');
 
+$view = match ($action) {
+    1 => 'Views/organisations_list.php',
+    5 => 'Views/contacts_index.php',
+    9 => 'Views/invoices_index.php',
+    90 => 'Views/combo_index.php',
+    10 => 'Views/enquiry-edit.php',
+    11 => 'Views/cabin-locations.php',
+    12 => 'Views/invoice_single.php',
+    13 => 'Views/cabins-index.php',
+    14 => 'Views/forms/cabin-edit.php',
+    16 => 'Views/bad_debts_index.php',
+    17 => 'Views/templates_index.php',
+    default => 'Views/home.php',
+};
+
 ?>
 
 <div>
     <?php
-
-    switch ($action) {
-        case 1:
-            include 'Views/organisations_list.php';
-            break;
-        case 5:
-            include 'Views/contacts_index.php';
-            break;
-        case 9:
-            include 'Views/invoices_index.php';
-            break;
-        case 10:
-            include 'Views/enquiry-edit.php';
-            break;
-        case 11:
-            include 'Views/cabin-locations.php';
-            break;
-        case 12:
-            include 'Views/invoice_single.php';
-            break;
-        case 13:
-            include 'Views/cabins-index.php';
-            break;
-        case 14:
-            include 'Views/forms/cabin-edit.php';
-            break;
-        case 16:
-            include 'Views/bad_debts_index.php';
-            break;
-        case 17:
-            include 'Views/templates_index.php';
-            break;
-        default:
-            include 'Views/home.php';
-            break;
-    }
+    include $view;
     ?>
 </div>
 <?php

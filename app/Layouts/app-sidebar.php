@@ -53,6 +53,7 @@ namespace App\Layouts;
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
 
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=90">Invoices & Payments</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=16">Bad Debts</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=17">Message Templates</a></li>

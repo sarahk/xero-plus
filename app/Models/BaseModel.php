@@ -36,6 +36,7 @@ class BaseModel
 
     protected array $defaults = [];
     protected bool $hasStub = false;
+    protected bool $view = false;
 
 
     function __construct(PDO $pdo)
@@ -433,6 +434,12 @@ class BaseModel
         return $this->pdo->query($recordsTotal)->fetchColumn();
     }
 
+    /**
+     * @param array $conditions
+     * @param array $searchValues
+     * @param string $sql optional
+     * @return int
+     */
     protected function getRecordsFiltered(array $conditions, array $searchValues, string $sql = ''): int
     {
         if (empty($sql))
@@ -449,6 +456,7 @@ class BaseModel
 
     protected function getOrderBy($params): string
     {
+
         if (is_array($params['order'])) {
             $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
             $column = $params['order'][0]['column'];

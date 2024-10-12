@@ -4,14 +4,17 @@ namespace App;
 
 //use App\Models\AddressModel;
 //use App\Models\CabinModel;
+use App\Models\ComboModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 
-//use App\Models\InvoiceModel;
+use App\Models\InvoiceModel;
+
 //use App\Models\PhoneModel;
 //use App\Models\TasksModel;
 //use App\Models\TenancyModel;
 use App\Models\Enums\CabinStyle;
+
 
 use App\Models\TenancyModel;
 use App\Models\Traits\DebugTrait;
@@ -20,6 +23,7 @@ use PDO;
 use DateTime;
 
 use \XeroAPI\XeroPHP\Api\AccountingApi;
+
 
 class JsonClass
 {
@@ -62,6 +66,25 @@ class JsonClass
         $apiInstance = $arg;
     }
 
+    /**
+     * Gives access to the field function on a model
+     * @param string $modelName
+     * @return string
+     */
+    public function getField(string $modelName = ''): string
+    {
+        $field = $_GET['field'] ?? '';
+        $key = $_GET['key'] ?? '';
+        $keyVal = $_GET['keyVal'] ?? '';
+        
+        if (empty($field) || empty($key) || empty($keyVal) || empty($modelName)) {
+            return '';
+        }
+        $fullModelName = "App\\Models\\{$modelName}";
+        $model = new $fullModelName($this->pdo);
+        return json_encode($model->field($field, $key, $keyVal));
+    }
+
     public function getCabins()
     {
         $cabins = new Models\CabinModel($this->pdo);
@@ -93,6 +116,14 @@ class JsonClass
 
         return json_encode($cabin);
     }
+
+    public function getComboList()
+    {
+        $params = $this->getParams();
+        $combo = new ComboModel($this->pdo);
+        return json_encode($combo->list($params));
+    }
+
 
     public function getTemplateList(): string
     {
@@ -304,21 +335,20 @@ class JsonClass
     {
         $output = ['data' => []];
 
-        $output['draw'] = filter_input(INPUT_GET, 'draw', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 1]]);
-        $output['start'] = filter_input(INPUT_GET, 'start', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 1]]);
-        $output['length'] = filter_input(INPUT_GET, 'length', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 10]]);
-        //$output['search'] = filter_input(INPUT_GET, 'search', FILTER_DEFAULT, ['options' => ['default' => '']]);
-        //$output['order'] = filter_input(INPUT_GET, 'order', FILTER_DEFAULT, ['options' => ['default' => '']]);
+        $output['draw'] = $_GET['draw'] ?? 1;
+        $output['start'] = $_GET['start'] ?? 1;
+        $output['length'] = $_GET['length'] ?? 10;
         $output['order'] = $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']];
         $output['search'] = $_GET['search']['value'] ?? '';
         // getInvoice
-        $output['invoice_status'] = filter_input(INPUT_GET, 'invoice_status', FILTER_DEFAULT);
-        $output['dates'] = filter_input(INPUT_GET, 'dates', FILTER_DEFAULT);
-        $output['contact_status'] = filter_input(INPUT_GET, 'dates', FILTER_DEFAULT);
-        $output['button'] = filter_input(INPUT_GET, 'button', FILTER_DEFAULT);
+        $output['invoice_status'] = $_GET['invoice_status'] ?? '';
+
+        $output['dates'] = $_GET['search']['dates'] ?? '';
+        $output['contact_status'] = $_GET['search']['dates'] ?? '';
+        $output['button'] = $_GET['search']['button'] ?? '';
         $output['tenancies'] = $this->getTenancies();
         // prima
-        $output['key'] = filter_input(INPUT_GET, 'key', FILTER_DEFAULT);
+        $output['key'] = $_GET['search']['key'] ?? '';
 
         return $output;
     }
@@ -1507,7 +1537,7 @@ class JsonClass
     public function getInvoiceList($returnObj = false)
     {
         $params = $this->getParams();
-        $invoice = new Models\InvoiceModel($this->pdo);
+        $invoice = new InvoiceModel($this->pdo);
         $output = $invoice->list($params);
         return json_encode($output);
 

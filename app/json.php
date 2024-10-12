@@ -56,18 +56,10 @@ $json = new JsonClass($apiInstance, $xeroTenantId);
 //$json = new JsonClass();
 //$json->setup($apiInstance);
 
-$endpoint = filter_input(INPUT_GET, 'endpoint', FILTER_DEFAULT);
-$action = filter_input(INPUT_GET, 'action', FILTER_DEFAULT);
-if (is_null($endpoint)) {
-    $endpoint = 'Accounts';
-}
-if (is_null($action)) {
-    $action = 'none';
-}
-
+$endpoint = $_GET['endpoint'] ?? 'Accounts';
+$action = $_GET['action'] ?? 'none';
 
 $loadGet = ["xero-php-oauth2-app", "disconnect.php", "json.php", $endpoint, $action];
-
 
 try {
     switch ($endpoint) {
@@ -80,6 +72,16 @@ try {
                     echo $json->getCabinSingle();
                     break;
 
+            }
+            break;
+
+        case 'Combo':
+        case 'combo':
+            switch ($action) {
+                case 'List':
+                case 'list':
+                    echo $json->getComboList();
+                    break;
             }
             break;
 
@@ -147,6 +149,10 @@ try {
                 case 'Search':
                 case 'search';
                     echo $json->getSearchContacts();
+                    break;
+                case 'Field':
+                case 'field':
+                    echo $json->getField('ContactModel');
                     break;
                 default:
                     echo "[{$endpoint}] {$action}: action not supported in API";
@@ -242,6 +248,9 @@ try {
                     echo $json->createInvoices($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
+                case 'read':
+                case 'List':
+                case 'list':
                     echo $json->getInvoiceList();
                     break;
                 case 'BadDebts':
