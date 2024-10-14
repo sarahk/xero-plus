@@ -52,6 +52,7 @@ namespace App\Layouts;
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=2">Create one Contact</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
 
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=100">Enquiries</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=90">Invoices & Payments</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=16">Bad Debts</a></li>

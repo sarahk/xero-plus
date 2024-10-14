@@ -36,5 +36,16 @@ trait FunctionsTrait
         return true;
     }
 
-    
+    protected function formatAddress($row): string
+    {
+        $output = [];
+
+        !empty($row['address_line1']) && $output[] = $row['address_line1'] . '<br>';
+        !empty($row['address_line2']) && $output[] = $row['address_line2'] . '<br>';
+        !empty($row['city'] . $row['postal_code']) && $output[] = trim($row['city'] . ' ' . $row['postal_code']);
+
+        return implode($output);
+    }
+
+
 }

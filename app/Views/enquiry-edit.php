@@ -61,10 +61,10 @@ function getCount($array)
                     <!-- Tabs -->
                     <ul class="nav tabs-menu">
                         <li><a href="#tab1" class="active " data-bs-toggle="tab">Enquiry</a></li>
-                        <li><a href="#tab2" data-bs-toggle="tab" class="">Notes <?= getCount($data['notes']); ?></a>
+                        <li><a href="#tab2" data-bs-toggle="tab" class="">Notes <?= getCount($data['Note']); ?></a>
                         </li>
                         <li><a href="#tab3" data-bs-toggle="tab"
-                               class="">Cabins <?= getCount($data['contracts']); ?></a></li>
+                               class="">Cabins <?= getCount($data['Contract']); ?></a></li>
                         <li><a href="#tab4" data-bs-toggle="tab" class="">Invoices</a></li>
                     </ul>
 
@@ -73,7 +73,7 @@ function getCount($array)
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
                             <?php
-                            include(SITE_ROOT . '/Widgets/enquiry-enquiry-panel.php'); ?>
+                            include('Widgets/enquiry-enquiry-panel.php'); ?>
                         </div>
                         <div class="tab-pane" id="tab2"></div>
                         <div class="tab-pane" id="tab3"></div>

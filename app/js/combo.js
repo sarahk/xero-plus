@@ -9,7 +9,7 @@ $(document).ready(function () {
 
     if ($('#tCombo').length) {
 
-        let tInvoices = $('#tCombo').DataTable({
+        let tCombo = $('#tCombo').DataTable({
             ajax: {
                 url: "/json.php?endpoint=Combo&action=List",
             },
@@ -29,9 +29,11 @@ $(document).ready(function () {
             createdRow: (row, data, index) => {
                 console.log(data);
                 //row.querySelector(':nth-child(1)').classList.add('table-primary');
-                row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
-                row.querySelector(':nth-child(1)').classList.add('bg-gradient');
-                row.querySelector(':nth-child(1)').classList.add('opacity-50');
+                row.classList.add('bar-' + data.colour);
+
+                // row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
+                // row.querySelector(':nth-child(1)').classList.add('bg-gradient');
+                // row.querySelector(':nth-child(1)').classList.add('opacity-50');
 
             },
             layout: {
@@ -44,32 +46,32 @@ $(document).ready(function () {
                         text: 'All',
                         action: function () {
                             //dt.ajax.reload();
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
+                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
                         }
                     }, {
                         text: 'Overdue',
                         action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
+                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
                         }
                     }, {
                         text: 'Authorised',
                         action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
+                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
                         }
                     }, {
                         text: 'Paid',
                         action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
+                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
                         }
                     }, {
                         text: 'Draft',
                         action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
+                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
                         }
                     }, {
                         text: 'Void',
                         action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
+                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
                         }
                     }]
                 }
@@ -121,9 +123,10 @@ $(document).ready(function () {
             ],
             createdRow: (row, data, index) => {
                 //row.querySelector(':nth-child(1)').classList.add('table-primary');
-                row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
-                row.querySelector(':nth-child(1)').classList.add('bg-gradient');
-                row.querySelector(':nth-child(1)').classList.add('opacity-50');
+                row.querySelector(':nth-child(1)').classList.add('bar-' + data.colour);
+                // row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
+                // row.querySelector(':nth-child(1)').classList.add('bg-gradient');
+                // row.querySelector(':nth-child(1)').classList.add('opacity-50');
 
             },
             layout: {

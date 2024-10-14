@@ -126,7 +126,9 @@ class BaseModel
             $output = [$this->table => $this->getDefaults()];
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
-                    $output[$val] = $this->{$val}->getDefaults();
+                    $modelName = "\\App\\Models\\{$val}Model";
+                    $model = new $modelName($this->pdo);
+                    $output[$val] = $model->getDefaults();
                 }
             }
             return $output;
@@ -210,11 +212,8 @@ class BaseModel
             case 0:
                 if ($defaults) return $this->getDefaults();
                 else return [];
-
+                
             case 1:
-                // needs testing
-                return [0 => $data];
-
             default:
                 return $data;
         }

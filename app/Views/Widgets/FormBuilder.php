@@ -14,37 +14,6 @@ class FormBuilder
         <?php
     }
 
-    /* G E T   T I M E S
-       The range of times we can deliver
-    */
-    static function getTimes()
-    {
-        return [
-            ['value' => '9:00'],
-            ['value' => '9:30'],
-            ['value' => '10.00'],
-            ['value' => '10:30'],
-            ['value' => '11:00'],
-            ['value' => '11:30'],
-            ['value' => '12:00'],
-            ['value' => '12:30'],
-            ['value' => '13:00', 'label' => '1:00'],
-            ['value' => '13:30', 'label' => '1:30'],
-            ['value' => '14:00', 'label' => '2:00'],
-            ['value' => '14:30', 'label' => '2:30']
-        ];
-    }
-
-    static function getStatusOptions()
-    {
-        return [
-            ['value' => 'New'],
-            ['value' => 'Maybe'],
-            ['value' => 'Yes'],
-            ['value' => 'No'],
-            ['value' => 'Call', 'label' => 'Call Back']
-        ];
-    }
 
     /**
      * @param $id String
@@ -115,7 +84,7 @@ class FormBuilder
         <?php
     }
 
-    static function select($id, $name, $label, $choices, $value = '')
+    static function select(string $id, string $name, string $label, string $choices): void
     {
         ?>
         <div class='form-group'>
@@ -123,11 +92,7 @@ class FormBuilder
             <select class="form-control" id='<?= $id; ?>' name='<?= $name; ?>'
                     data-bs-placeholder="Choose One" tabindex="-1">
                 <option label="Choose one"></option>
-                <?php foreach ($choices as $row): ?>
-                    <option value="<?= $row['value']; ?>" <?= ($row['value'] == $value ? 'selected' : ''); ?>>
-                        <?= (array_key_exists('label', $row) ? $row['label'] : $row['value']); ?>
-                    </option>
-                <?php endforeach; ?>
+                <?php echo $choices; ?>
             </select>
 
         </div>
@@ -148,5 +113,23 @@ class FormBuilder
             <span class="custom-control-label"><?= $label; ?></span>
         </label>
         <?php
+    }
+
+    static function splitName(string $what, string $name): string
+    {
+        if (empty($name)) return '';
+
+        $bits = explode(' ', $name);
+
+        if ($what === 'first') {
+            return match (count($bits)) {
+                default => $bits[0]
+            };
+        }
+        return match (count($bits)) {
+            1 => $bits[0],
+            3 => $bits[1] . ' ' . $bits[2],
+            default => $bits[1]
+        };
     }
 }

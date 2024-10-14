@@ -184,6 +184,11 @@ try {
 
         case 'Contracts':
             switch ($action) {
+                case 'List':
+                case 'list':
+                    echo $json->getContractList();
+                    break;
+
                 case 'Singleton':
                 case 'singleton':
                     echo $json->getContractSingleton();

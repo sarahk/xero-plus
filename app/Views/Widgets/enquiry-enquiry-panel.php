@@ -12,17 +12,17 @@
     FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status'] ?? '');
     //FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status']);
 
-    FormBuilder::hidden('contract_id', 'data[contract][contract_id]', $data['contracts'][0]['contract_id']);
-    FormBuilder::hidden('address_line1', 'data[contract][address_line1]', $data['contracts'][0]['address_line1']);
-    FormBuilder::hidden('address_line2', 'data[contract][address_line2]', $data['contracts'][0]['address_line2']);
-    FormBuilder::hidden('postal_code', 'data[contract][postal_code]', $data['contracts'][0]['postal_code']);
-    FormBuilder::hidden('city', 'data[contract][city]', $data['contracts'][0]['city']);
-    FormBuilder::hidden('lat', 'data[contract][lat]', $data['contracts'][0]['lat']);
-    FormBuilder::hidden('long', 'data[contract][long]', $data['contracts'][0]['long']);
-    FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['contracts'][0]['place_id']);
+    FormBuilder::hidden('contract_id', 'data[contract][contract_id]', $data['Contract'][0]['contract_id']);
+    FormBuilder::hidden('address_line1', 'data[contract][address_line1]', $data['Contract'][0]['address_line1']);
+    FormBuilder::hidden('address_line2', 'data[contract][address_line2]', $data['Contract'][0]['address_line2']);
+    FormBuilder::hidden('postal_code', 'data[contract][postal_code]', $data['Contract'][0]['postal_code']);
+    FormBuilder::hidden('city', 'data[contract][city]', $data['Contract'][0]['city']);
+    FormBuilder::hidden('lat', 'data[contract][lat]', $data['Contract'][0]['lat']);
+    FormBuilder::hidden('long', 'data[contract][long]', $data['Contract'][0]['long']);
+    FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['Contract'][0]['place_id']);
 
 
-    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['note'][0]['foreign_id'] ?? '');
+    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['Note'][0]['foreign_id'] ?? '');
     FormBuilder::hidden('note_parent', 'data[note][parent]', 'contacts');
     FormBuilder::hidden('note_createdby', 'data[note][createdby]', $_SESSION['user_id']);
     ?>
@@ -31,12 +31,12 @@
         <div class="col-md-6">
 
             <?php FormBuilder::inputs('Name', [
-                ['id' => 'first_name', 'name' => 'data[contact][first_name]', 'type' => 'text', 'value' => $data['contacts']['first_name'] ?? ''],
-                ['id' => 'last_name', 'name' => 'data[contact][last_name]', 'type' => 'text', 'value' => $data['contacts']['last_name'] ?? '']
+                ['id' => 'first_name', 'name' => 'data[contact][first_name]', 'type' => 'text', 'value' => $data['contacts']['first_name'] ?? FormBuilder::splitName('first', $data['contacts']['name'])],
+                ['id' => 'last_name', 'name' => 'data[contact][last_name]', 'type' => 'text', 'value' => $data['contacts']['last_name'] ?? FormBuilder::splitName('last', $data['contacts']['name'])]
             ], true); ?>
             <?php
 
-            foreach ($data['phones'] as $k => $row) {
+            foreach ($data['Phone'] as $k => $row) {
                 if (!empty($row['phone_number']) || $row['phone_type'] === 'MOBILE' || $row['phone_type'] === 'DEFAULT') {
                     $label = ($row['phone_type'] === 'DEFAULT') ? 'Phone' : ucfirst(strtolower($row['phone_type']));
                     FormBuilder::input('phone_type', "data[phone][$k][" . strtolower($row['phone_type']) . ']', $label, false, 'tel', $row['phone']);
@@ -49,28 +49,26 @@
 
         <div class="col-md-3">
             <?php
-            FormBuilder::select('status', 'data[contract][status]', 'Status', FormBuilder::getStatusOptions(), $data['contracts'][0]['status']);
+            FormBuilder::select('status', 'data[contract][status]',
+                'Status',
+                App\Models\Enums\EnquiryStatus::getSelectOptions($data['Contract'][0]['status']),
+                $data['Contract'][0]['status']);
             ?>
             <div id="doyoumean"></div>
         </div>
 
         <div class="col-md-3">
-            <?php FormBuilder::radio('data[contact][best_way_to_contact]', 'Best way to contact', [
-                ['name' => 'phone', 'label' => 'Phone'],
-                ['name' => 'email', 'label' => 'Email'],
-                ['name' => 'text', 'label' => 'Text/SMS'],
-                ['name' => 'nopref', 'label' => 'Whatever is easiest']
-            ], $data['contacts']['best_way_to_contact'] ?? ''
+            <?php FormBuilder::radio('data[contact][best_way_to_contact]',
+                'Best way to contact',
+                App\Models\Enums\BestWayToContact::getAllAsArray(),
+                $data['contacts']['best_way_to_contact'] ?? ''
             );
             FormBuilder::radio('data[contract][winz]', 'WINZ Form',
-                [['name' => 'No'], ['name' => 'Requested'], ['name' => 'Sent']],
-                $data['contracts'][0]['winz']
+                \App\Models\Enums\WinzStatus::getAllAsArray(),
+                $data['Contract'][0]['winz']
             );
             FormBuilder::radio('data[contact][how_did_you_hear]', 'How did you  hear about us?',
-                [['name' => 'search', 'label' => 'Web Search'],
-                    ['name' => 'facebook', 'label' => 'Facebook'],
-                    ['name' => 'wom', 'label' => 'Word of Mouth'],
-                    ['name' => 'other', 'label' => 'Other']],
+                App\Models\Enums\HowDidYouHear::getAllAsArray(),
                 $data['contacts']['how_did_you_hear'] ?? '');
             ?>
 
@@ -140,7 +138,7 @@
                         <input class="form-control" id='deliver-to' name='data[contract][address]'
                                placeholder="Delivery Address" type="text"
                                autocomplete="chrome-off"
-                               value="<?= getBestAddress($data['contracts']); ?>">
+                               value="<?= getBestAddress($data['Contract']); ?>">
                         <span id='open-in-maps' class="input-group-text btn btn-info">Maps</span>
                     </div>
                 </div>
@@ -169,32 +167,32 @@
                         </div>
                         <input class="form-control hasDatepicker" id="scheduled-delivery-date"
                                name='data[contract][scheduled_delivery_date]' placeholder="DD/MM/YYYY"
-                               value='<?= $data['contracts'][0]['scheduled_delivery_date']; ?>'
+                               value='<?= $data['Contract'][0]['scheduled_delivery_date']; ?>'
                                type="text">
 
                     </div>
                 </div>
-                <?php FormBuilder::select('time', 'data[contract][delivery_time]', 'Scheduled Delivery Time', FormBuilder::getTimes(), $data['contracts'][0]['delivery_time']); ?>
+                <?php FormBuilder::select('time', 'data[contract][delivery_time]', 'Scheduled Delivery Time', App\Models\Enums\DeliveryTimes::getSelectOptions($data['Contract'][0]['delivery_time'] ?? '9:00')); ?>
                 <div class='form-group col-md-4'>
                     <input type="submit" value="Save" class="btn btn-lg btn-primary">
                 </div>
             </div>
             <div class="col-md-3">
-                <?php FormBuilder::radio('data[contract][cabin_type]', 'Cabin Type', lists::getCabinStyles(),
-                    $data['contracts'][0]['cabin_type']); ?>
+                <?php FormBuilder::radio('data[contract][cabin_type]',
+                    'Cabin Type',
+                    App\Models\Enums\CabinStyle::getAllAsArray($data['Contract'][0]['cabin_type'])
+                ); ?>
 
 
                 <div class="form-group m-0">
                     <div class="form-label">Extras</div>
                     <div class="custom-controls-stacked">
-                        <?php FormBuilder::radio('data[contract][hiab]', 'Hiab?', [
-                            ['name' => 'No'], ['name' => 'Yes']
-                        ], $data['contracts'][0]['hiab']);
-                        FormBuilder::radio('data[contract][painted]', 'Painted?', [
-                            ['name' => '---', 'label' => 'No preference'],
-                            ['name' => 'unpainted', 'label' => 'Unpainted'],
-                            ['name' => 'painted', 'label' => 'Painted']
-                        ], $data['contracts'][0]['painted']);
+                        <?php FormBuilder::radio('data[contract][hiab]', 'Hiab?',
+                            App\Models\Enums\YesNoDontKnow::getAllAsArray(),
+                            $data['Contract'][0]['hiab']);
+                        FormBuilder::radio('data[contract][painted]', 'Painted?',
+                            App\Models\Enums\CabinPainted::getAllAsArray()
+                            , $data['Contract'][0]['painted']);
                         //FormBuilder::checkbox('hiab', 'data[contract][hiab]', 'Hiab?', 'hiab', $data['contracts']['hiab']);
                         //FormBuilder::checkbox('painted', 'data[contract][painted]', 'Painted?', 'painted', $data['contracts']['painted']);?>
                     </div>

@@ -50,8 +50,8 @@ class ComboModel extends BaseModel
         $conditions = [$tenancies];
         if (!empty($params['search'])) {
             $search = [
-                "combo.reference LIKE :search1",
-                "`combo`.`invoice_number` LIKE :search2"
+                "`vcombo`.reference LIKE :search1",
+                "`vcombo`.`invoice_number` LIKE :search2"
             ];
             //$searchValues['search'] = '%' . $params['search'] . '%';
             $searchValues['search1'] = '%' . $params['search'] . '%';
@@ -102,7 +102,7 @@ class ComboModel extends BaseModel
         $output['mainquery'] = $sql;
         $output['mainsearchvals'] = $searchValues;
         // adds in tenancies because it doesn't use $conditions
-        
+
         $output['recordsTotal'] = $this->getRecordsTotal($tenancies);
         $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
 

@@ -14,13 +14,19 @@ enum CabinStyle: string
 
     public static function getCabinStyleLabel(string $style): string
     {
-        $cabinStyle = self::from($style);
-        return match ($cabinStyle) {
+        return self::getLabel($style);
+    }
+
+    public static function getLabel(string $val): string
+    {
+        $pointer = self::tryFrom($val);
+        return match ($pointer) {
             self::Standard => 'Standard',
             self::Left => 'Standard, Left',
             self::Right => 'Standard, Right',
             self::Large => 'Large',
             self::XL => 'Extra Large',
+            default => $val,
         };
     }
 }

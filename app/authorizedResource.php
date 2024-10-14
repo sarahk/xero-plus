@@ -22,9 +22,9 @@ const LOGGEDOUT = false;
 
 $message = "no API calls";
 
-$action = intval($_GET['action']) ?? 0;
+$action = intval($_GET['action'] ?? 0);
 $debug = $_GET['debug'] ?? 0;
-$id = intval($_GET['id']) ?? 0;
+$id = intval($_GET['id'] ?? 0);
 
 //$userId = $_SESSION['user']['user_id'];
 
@@ -154,19 +154,25 @@ switch ($action) {
         // enquiries
         $contacts = new ContactModel($pdo);
         $data = $contacts->get('id', $id);
-
-        $contracts = new ContractModel($pdo);
+        $data['contact'] = $data['contacts'];
 
         $users = new UserModel($pdo);
         $user = $users->get('user_id', $_SESSION['xero_user_id']);
 
-        $data['contracts'] = $contracts->getChildren('contacts', $id);
+        $contracts = new ContractModel($pdo);
+        $data['Contract'] = $contracts->getChildren('contacts', $id);
 
         if ($debug) {
-            debug($_SESSION);
+            //debug($_SESSION);
+            
             debug($data);
             exit;
         }
+        break;
+
+    case 100:
+        // list contracts and enquiries
+        // ajax data only
         break;
 
     case 11:
@@ -263,6 +269,7 @@ $view = match ($action) {
     9 => 'Views/invoices_index.php',
     90 => 'Views/combo_index.php',
     10 => 'Views/enquiry-edit.php',
+    100 => 'Views/contracts_index.php',
     11 => 'Views/cabin-locations.php',
     12 => 'Views/invoice_single.php',
     13 => 'Views/cabins-index.php',

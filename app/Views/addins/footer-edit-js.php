@@ -35,29 +35,10 @@
 <script src="/assets/plugins/time-picker/jquery.timepicker.js"></script>
 <script src="/assets/plugins/time-picker/toggles.min.js"></script>
 
-<!-- INTERNAL INTLTELINPUT JS -->
-<!--<script src="/assets/plugins/intl-tel-input-master/intlTelInput.js"></script>-->
-<!--<script src="/assets/plugins/intl-tel-input-master/country-select.js"></script>-->
-<!--<script src="/assets/plugins/intl-tel-input-master/utils.js"></script>-->
-
-<!-- INTERNAL JQUERY TRANSFER JS -->
-<!--<script src="/assets/plugins/jQuerytransfer/jquery.transfer.js"></script>-->
-
-<!-- INTERNAL MULTI JS -->
-<!--<script src="/assets/plugins/multi/multi.min.js"></script>-->
-
-
-<!-- MULTI SELECT JS-->
-<!--<script src="/assets/plugins/multipleselect/multiple-select.js"></script>-->
-<!--<script src="/assets/plugins/multipleselect/multi-select.js"></script>-->
-
-<!-- FORMELEMENTS JS -->
-<!--<script src="/assets/js/formelementadvnced.js"></script>-->
-<!--<script src="/assets/js/form-elements.js"></script>-->
 
 <!-- CUSTOM JS -->
 <script src="/assets/js/custom.js"></script>
 
 <!-- FOR THE ADDRESSES -->
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?=GOOGLE_MAPS_API;?>&libraries=places"></script>
-
+<script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB32Z6abVU4CzDmYdxfGX1kW4H6slcLjUw&libraries=places"></script>

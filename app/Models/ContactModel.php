@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-use App\XeroClass;
+use App\Models\AddressModel;
+use App\Models\PhoneModel;
+use App\Models\NoteModel;
 
 class ContactModel extends BaseModel
 {
@@ -18,10 +20,6 @@ class ContactModel extends BaseModel
         'how_did_you_hear',
         'updated_date_utc', 'stub'];
 
-    protected AddressModel $addresses;
-    protected PhoneModel $phones;
-    protected NoteModel $notes;
-
     protected string $table = 'contacts';
     protected string $primaryKey = 'id';
 
@@ -34,9 +32,7 @@ class ContactModel extends BaseModel
 
         $this->buildInsertSQL();
 
-        $this->addresses = new AddressModel($pdo);
-        $this->notes = new NoteModel($pdo);
-        $this->phones = new PhoneModel($pdo);
+
     }
 
     public function saveXeroStub(array $data): int
@@ -101,13 +97,14 @@ class ContactModel extends BaseModel
 
         // save the id back to the data array and save the child records
         if ($newId > 0) $data['contact']['id'] = $newId;
-
-        $this->addresses->prepAndSave($data);
+        $addresses = new AddressModel($this->pdo);
+        $addresses->prepAndSave($data);
 
         // add key info to the note so we know where it came from
         $data['note']['foreign_id'] = $data['contact']['id'];
         $data['note']['parent'] = 'contacts';
-        $this->notes->prepAndSave($data);
+        $notes = new NoteModel($this->pdo);
+        $notes->prepAndSave($data);
 
 
         if (array_key_exists('phones', $data['contact']) && count($data['contact']['phones'])) {
@@ -115,8 +112,8 @@ class ContactModel extends BaseModel
                 if (!empty($phone['phone_number'])) {
                     $phone['ckcontact_id'] = $data['contact']['id'];
                     $phone['contact_id'] = $data['contact']['contact_id'];
-
-                    $this->phones->prepAndSave([
+                    $phoneModel = new PhoneModel($this->pdo);
+                    $phoneModel->prepAndSave([
                         'contact' => ['id' => $data['contact']['id']],
                         'phone' => $phone
                     ]);
@@ -138,19 +135,6 @@ class ContactModel extends BaseModel
         return $this->field('id', 'contact_id', $contact_id);
     }
 
-    protected function getFromXero($data): void
-    {
-        parent::getFromXero($data); // should be nothing there but let's check
-        if (empty($data['contact_id'])) {
-            return;
-        }
-
-        $xero = new XeroClass();
-        $contact_id = $data['contact_id'];
-        $xeroTenantId = $data['xerotenant_id'];
-
-        $xero->getSingleContact($xeroTenantId, $contact_id);
-    }
 
     /*
      * need to provide the option to limit it to a particular tenancy

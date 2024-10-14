@@ -76,7 +76,7 @@ class JsonClass
         $field = $_GET['field'] ?? '';
         $key = $_GET['key'] ?? '';
         $keyVal = $_GET['keyVal'] ?? '';
-        
+
         if (empty($field) || empty($key) || empty($keyVal) || empty($modelName)) {
             return '';
         }
@@ -124,6 +124,12 @@ class JsonClass
         return json_encode($combo->list($params));
     }
 
+    public function getContractList()
+    {
+        $params = $this->getParams();
+        $contract = new ContractModel($this->pdo);
+        return json_encode($contract->list($params));
+    }
 
     public function getTemplateList(): string
     {
