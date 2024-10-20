@@ -20,7 +20,7 @@ header("Content-type: application/json; charset=utf-8");
 $path = '../vendor/autoload.php';
 require $path;
 
-//require_once('config.php');
+//require_once('CKMProvider.php');
 
 $provider = Utilities::getProvider();
 // Storage Class uses sessions for storing token
@@ -183,9 +183,11 @@ try {
             break;
 
         case 'Contracts':
+        case 'contracts':
             switch ($action) {
                 case 'List':
                 case 'list':
+
                     echo $json->getContractList();
                     break;
 
@@ -256,15 +258,18 @@ try {
                 case 'read':
                 case 'List':
                 case 'list':
+                case 'Contract':
+                case 'contract':
                     echo $json->getInvoiceList();
                     break;
                 case 'BadDebts':
                     echo $json->getBadDebtsList();
                     break;
-                case 'Contract':
-                case 'contract':
-                    echo $json->getInvoiceList();
+
+                case 'BadDebtTotal':
+                    echo $json->getBadDebtTotal();
                     break;
+
                 case "Update":
                     echo $json->updateInvoice($xeroTenantId, $apiInstance);
                     break;

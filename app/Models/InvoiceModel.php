@@ -199,8 +199,22 @@ class InvoiceModel extends BaseModel
         return str_replace('DIR', 'DESC', $columns[2]);
     }
 
+    public function getBadDebtTotal($params): array
+    {
+        $tenancies = $this->getTenanciesWhere($params);
+        $sql = "SELECT sum(amount_due) AS `total`
+                    FROM `invoices`
+                    WHERE $tenancies
+                    AND datediff(now(), `invoices`.`date`) < 365";
+        $result = $this->runQuery($sql, []);
+        return $result[0];
+    }
+
     public function listBadDebts($params): array
     {
+
+        $tenancyList = $this->getTenancyList();
+
         $searchValues = [];
         $tenancies = $this->getTenanciesWhere($params);
         $order = $this->getOrderByBadDebts($params);
@@ -245,6 +259,7 @@ class InvoiceModel extends BaseModel
             `contacts`.`xerotenant_id`,
             `contacts`.`name`, 
             `contacts`.`contact_id`,
+            `contacts`.`xerotenant_id`,
             `contacts`.`id` as `DT_RowId`,
             SUM(`invoices`.`amount_due`) as due, 
             COUNT(`invoices`.`invoice_id`) as weeks_due,
@@ -286,9 +301,11 @@ class InvoiceModel extends BaseModel
                 $output['data'][] = [
                     'DT_RowId' => $row['DT_RowId'],
                     'contact' => $this->getFormattedContactCell($row),
+                    'name' => $row['name'],
                     'due' => $row['due'],
                     'weeks_due' => $row['weeks_due'],
                     'total_weeks' => $row['total_weeks'],
+                    'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
                     'chart' => "<img src='/run.php?endpoint=image&imageType=baddebt&contact_id={$row['contact_id']}' 
                                     alt=\"Bad Debt history for {$row['name']}\" 
                                     width='300' height='125'/>"

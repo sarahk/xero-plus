@@ -1,5 +1,10 @@
 <?php
-include_once 'Widgets/FormBuilder.php';
+namespace App\Views\EnquiryEdit;
+
+//include_once 'Widgets/FormBuilder.php';
+use App\ExtraFunctions;
+
+
 ?>
 <!-- PAGE-HEADER -->
 <div class="page-header">
@@ -15,41 +20,7 @@ include_once 'Widgets/FormBuilder.php';
 <!-- PAGE-HEADER END -->
 
 <!-- ROW OPEN -->
-<?php
-function hasIdValue($name, $fld)
-{
-    if (stristr($name, '_id')) {
-        if (!empty($fld)) return true;
-    }
-    return false;
-}
 
-function hasAnyValues($row)
-{
-    if (is_array($row)) {
-        foreach ($row as $name => $fld) {
-            if (hasIdValue($name, $fld)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-function getCount($array)
-{
-    $count = 0;
-    foreach ($array as $k => $row) {
-        if (hasAnyValues($row)) $count++;
-    }
-    if ($count) {
-        return "({$count})";
-    }
-    return '';
-}
-
-
-?>
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="card">
@@ -61,10 +32,11 @@ function getCount($array)
                     <!-- Tabs -->
                     <ul class="nav tabs-menu">
                         <li><a href="#tab1" class="active " data-bs-toggle="tab">Enquiry</a></li>
-                        <li><a href="#tab2" data-bs-toggle="tab" class="">Notes <?= getCount($data['Note']); ?></a>
+                        <li><a href="#tab2" data-bs-toggle="tab"
+                               class="">Notes <?= ExtraFunctions::getCount($data['Note'] ?? []); ?></a>
                         </li>
                         <li><a href="#tab3" data-bs-toggle="tab"
-                               class="">Cabins <?= getCount($data['Contract']); ?></a></li>
+                               class="">Cabins <?= ExtraFunctions::getCount($data['Contract']); ?></a></li>
                         <li><a href="#tab4" data-bs-toggle="tab" class="">Invoices</a></li>
                     </ul>
 

@@ -29,10 +29,7 @@ class ComboModel extends BaseModel
         <th>Due</th>
         <th>Date</th>
 */
-
-        $tenancy = new TenancyModel($this->pdo);
-        $raw = $tenancy->list();
-        $tenancyList = array_column($raw, null, 'tenant_id');
+        $tenancyList = $this->getTenancyList();
 
         $searchValues = [];
 

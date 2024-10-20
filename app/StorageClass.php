@@ -49,7 +49,31 @@ class StorageClass
         return $_SESSION['oauth2']['token'];
     }
 
+    // A function to retrieve the current access token (from session or DB)
+    public static function getAccessTokenAndExpiry()
+    {
+        // Retrieve the access token and expiration details from storage
+        //if ($_SESSION['oauth2']['expires'] < time()) {}
+        return [
+            'token' => $_SESSION['oauth2']['token'],  // Example: from session
+            'expires' => $_SESSION['oauth2']['expires'],
+        ];
+    }
+
+    // A function to store new tokens
+    public static function storeNewTokens($accessToken, $refreshToken)
+    {
+        $_SESSION['oauth2']['access_token'] = $accessToken;
+        $_SESSION['oauth2']['refresh_token'] = $refreshToken;
+        $_SESSION['oauth2']['expires'] = time() + 3600; // Set the new expiration time (1 hour)
+    }
+
     public function getRefreshToken()
+    {
+        return $_SESSION['oauth2']['refresh_token'];
+    }
+
+    public static function getRefreshTokenStatic()
     {
         return $_SESSION['oauth2']['refresh_token'];
     }

@@ -29,6 +29,16 @@ enum CabinStyle: string
             default => $val,
         };
     }
+
+    public static function isStandard(string $val): bool
+    {
+        $pointer = self::tryFrom($val);
+        return match ($pointer) {
+            self::Standard, self::Left, self::Right => true,
+            default => false
+        };
+    }
+
 }
 //$cabinStatus = CabinStatus::from('active'); // Returns the enum case
 //echo $cabinStatus->label(); // Output: "Active"

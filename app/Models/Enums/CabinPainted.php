@@ -16,7 +16,7 @@ enum CabinPainted: string
         $pointer = self::tryFrom($val);
         return match ($pointer) {
             self::Yes => 'Yes',
-            self::No => 'Not',
+            self::No => 'No',
             self::NoPref => "No Preference",
             default => $val,
         };

@@ -10,14 +10,14 @@ enum PhoneType: string
     case Mobile = 'MOBILE';
     case Fax = 'FAX';
 
-    public static function getPhoneTypeLabel(string $status): string
+    public static function getLabel(string $val = ''): string
     {
-        $taskStatus = self::from($status);
-        return match ($taskStatus) {
-            self::Default => 'Default',
+        $pointer = self::from($val);
+        return match ($pointer) {
             self::DDI => 'DDI',
             self::Mobile => 'Mobile',
             self::Fax => 'Fax',
+            default => 'Default',
         };
     }
 

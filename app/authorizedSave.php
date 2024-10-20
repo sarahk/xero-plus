@@ -4,26 +4,26 @@
  * Prevents resubmits
  */
 
+namespace App;
+
+use App\Models\ContactModel;
+use App\Utilities;
+use App\StorageClass;
+
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
-require __DIR__ . '/vendor/autoload.php';
-require_once('StorageClass.php');
-require_once('Utilities.php');
-require_once('functions.php');
+require '../vendor/autoload.php';
 
-require_once('models/ContactModel.php');
-require_once('models/ContractModel.php');
-require_once('models/NoteModel.php');
-require_once('models/PhoneModel.php');
+require_once('ExtraFunctions.php');
 
 
-require_once('authorizedXero.php');
+//require_once('authorizedXero.php');
 
 $message = "no API calls";
 
-$pdo = getPDO();
+$pdo = Utilities::getPDO();
 
-$action = (array_key_exists('action', $_GET) ? $_GET['action'] : 0);
+$action = $_GET['action'] ?? 0;
 
 switch ($action) {
 
@@ -33,19 +33,17 @@ switch ($action) {
             $data = $_GET['data'];
 
             // address needs to be duplicated
-
             $contact = new ContactModel($pdo);
             $id = $contact->prepAndSave($data);
             debug($_GET);
-
             debug($id);
             exit;
-            $contact = new ContactModel($pdo);
-            $id = $contact->prepAndSave($_GET['data']);
+
         }
         break;
     default:
         // do nothing
+        echo $message;
 }
 
 debug($_GET);

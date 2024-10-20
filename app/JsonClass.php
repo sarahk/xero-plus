@@ -127,6 +127,7 @@ class JsonClass
     public function getContractList()
     {
         $params = $this->getParams();
+        $params['subset'] = $_GET['subset'] ?? '';
         $contract = new ContractModel($this->pdo);
         return json_encode($contract->list($params));
     }
@@ -1552,9 +1553,16 @@ class JsonClass
     public function getBadDebtsList($returnObj = false): string
     {
         $params = $this->getParams();
-        $invoice = new Models\InvoiceModel($this->pdo);
+        $invoice = new InvoiceModel($this->pdo);
         $output = $invoice->listBadDebts($params);
         return json_encode($output);
+    }
+
+    public function getBadDebtTotal(): string
+    {
+        $params = $this->getParams();
+        $invoice = new InvoiceModel($this->pdo);
+        return json_encode($invoice->getBadDebtTotal($params));
     }
 
     public function getVehiclesLogList($returnObj = false)
@@ -2165,7 +2173,7 @@ class JsonClass
         if (array_key_exists('tenancies', $_SESSION)) {
             return $_SESSION['tenancies'];
         } else {
-            $provider = getProvider();
+            $provider = Utilities::getProvider();
             $storage = new StorageClass();
             $accessToken = $provider->getAccessToken('refresh_token', [
                 'refresh_token' => $storage->getRefreshToken()

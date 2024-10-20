@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Enums\CabinStyle;
+use App\Models\Enums\EnquiryRating;
+use App\Models\Enums\EnquiryStatus;
 use App\XeroClass;
 
 
@@ -50,6 +53,7 @@ class ContractModel extends BaseModel
 
     public function saveXeroStub(array $data): int
     {
+        $date = date('Y-m-d H:i:s');
         $sql = "INSERT INTO `contracts` ( 
                     `repeating_invoice_id`,
                     `xerotenant_id`,
@@ -59,10 +63,12 @@ class ContractModel extends BaseModel
                     `schedule_unit`,
                     `total`,
                     `tax_type`,
-                    `stub`  )
+                    `stub`, 
+                     `date`,
+                     `updated`)
                     VALUES 
                     (:repeating_invoice_id, :xerotenant_id, :contact_id, :ckcontact_id,
-                     :reference, :schedule_unit, :total, :tax_type, :stub);";
+                     :reference, :schedule_unit, :total, :tax_type, :stub, '$date', '$date');";
 
         return $this->runQuery($sql, $data, 'insert');
     }
@@ -156,6 +162,18 @@ class ContractModel extends BaseModel
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
 
+        // subsets are used on the home screen
+        if (!empty($params['subset'])) {
+            switch ($params['subset']) {
+                case 'New':
+                    $conditions[] = 'contracts.status = "New"';
+                    break;
+                case 'Waiting':
+                    $conditions[] = 'contracts.status = "Yes"';
+                    $conditions[] = '(contracts.delivery_date = "" OR contracts.delivery_date IS NULL)';
+            }
+        }
+
 
         // todo what buttons
         if (!empty($params['button']) && $params['button'] !== 'read') {
@@ -173,13 +191,18 @@ class ContractModel extends BaseModel
         }
 
         $sql = "SELECT `contracts`.`contract_id`, contracts.repeating_invoice_id, contracts.`status`, 
-                    `contracts`.`reference`, `delivery_date`, `pickup_date` ,
+                    `contracts`.`reference`, contracts.date,`delivery_date`, `pickup_date` , `scheduled_delivery_date`,
                     contracts.`address_line1`, contracts.`address_line2`, contracts.city, contracts.`postal_code`,
+                    `contracts`.`cabin_type`,
 	                `contacts`.`id` as `ckcontact_id`, `contacts`.`name`, `contacts`.`email_address`,
                     `contracts`.`xerotenant_id`,
                     (SELECT SUM(`amount_due`) 
                         FROM `invoices` 
-                        WHERE `invoices`.`repeating_invoice_id` = `contracts`.`repeating_invoice_id`) AS `amount_due`
+                        WHERE `invoices`.`repeating_invoice_id` = `contracts`.`repeating_invoice_id`) AS `amount_due`,
+                    (SELECT concat(`phone_area_code`,' ', `phone_number`) AS `phone_number`
+                        FROM `phones`
+                        WHERE `phones`.`ckcontact_id` = contacts.`id`
+                        ORDER BY `phone_type` DESC LIMIT 1) AS `phone_number`
                 FROM `contracts`
                 LEFT JOIN `contacts` ON `contracts`.`ckcontact_id` = `contacts`.`id`
                 WHERE " . implode(' AND ', $conditions) . "
@@ -203,20 +226,24 @@ class ContractModel extends BaseModel
                 $idCell = [];
                 if (!empty($row['repeating_invoice_id'])) {
                     $idCell[] = "<a href='/authorizedResource.php?action=10&id={$row['ckcontact_id']}'>{$row['contract_id']}</a>";
-                    $idCell[] = "<img src='/images/Xero_software_logo.svg' height='15' width='15' style='margin-left: .5em'>";
+                    $idCell[] = "<img src='/images/Xero_software_logo.svg' height='15' width='15' style='margin-left: .5em' alt='Record is in Xero'>";
                 } else {
-                    $idCell[] = "<img src='/images/Xero_disabled.svg' height='15' width='15' style='margin-left: .5em'>";
+                    $idCell[] = "<img src='/images/Xero_disabled.svg' height='15' width='15' style='margin-left: .5em' alt='Record is NOT in Xero'>";
                 }
 
                 $output['data'][] = [
                     'contract_id' => implode($idCell),
                     'status' => $row['status'],
                     'name' => "<a href='/authorizedResource.php?action=10&id={$row['ckcontact_id']}'>{$row['name']}</a>",
-                    'details' => '',//todo
+                    'details' => $this->getDetailsCell($row),
                     'reference' => $row['reference'],
                     'address' => $this->formatAddress($row),
+                    'phone_number' => $row['phone_number'] ?? '',
                     'amount_due' => $row['amount_due'],
-                    'colour' => $tenancyList[$row['xerotenant_id']]['colour']
+                    'date' => $this->getPrettyDate($row['date'] ?? ''),
+                    'scheduled_delivery_date' => $this->getPrettyDate($row['scheduled_delivery_date'] ?? ''),
+                    'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
+                    'rating' => EnquiryRating::getImage($row['enquiry_rating'] ?? 0)
                 ];
 // for debugging
                 $output['row'] = $row;
@@ -227,5 +254,77 @@ class ContractModel extends BaseModel
         return $output;
     }
 
+    protected function getDetailsCell(array $row): string
+    {
+        // verbose cabin style? CabinStyle::getLabel($row['cabin_type'])
+        ///Bob Welsh, 88 Central Rd, Henderson. Ph 022-345 67789. Large
 
+        $output = "{$row['name']}, {$row['address_line1']}, {$row['address_line2']}. {$row['cabin_type']}";
+        //todo add a url
+        $url = "authorizedResource.php?action=10&id={$row['ckcontact_id']}&contract_id={$row['contract_id']}";
+
+        return "<a href='$url'>$output</a>";
+    }
+
+    public function getChildren($parent, $parentId, $defaults = true): array
+    {
+        $contacts = new ContactModel($this->pdo);
+        $phones = new PhoneModel($this->pdo);
+
+        if (!$parentId) {
+            $output = $contacts->getDefaults();
+            $output[0]['Phones'] = $phones->getDefaults();
+            return $output;
+        }
+
+
+        $output = $contacts->getAllJoins('contract', $parentId);
+        if (count($output) > 0) {
+            for ($i = 0; $i < count($output); $i++) {
+                if (is_null($output[$i]['id'])) $output[$i]['Phones'] = $phones->getDefaults();
+                else
+                    $output['contacts'][$i]['phones'] = $phones->getChildren('contacts', $output['contacts'][$i]['id']);
+            }
+        } else $output[0]['Phones'] = $phones->getDefaults();
+        return $output;
+    }
+
+    public function getContactsAndPhone(int $contract_id): array
+    {
+        $sql = "SELECT contacts.*, `contactjoins`.`sort_order`
+                    FROM `contacts` 
+                    LEFT JOIN `contactjoins` ON `contactjoins`.`ckcontact_id` = contacts.`id`
+                    WHERE `contactjoins`.`foreign_id` = :contract_id
+                    AND `contactjoins`.join_type = 'contract'
+                    ORDER BY `contactjoins`.sort_order";
+        $result = $this->runQuery($sql, ['contract_id' => $contract_id]);
+
+        $phones = new PhoneModel($this->pdo);
+        $defaultPhone = $phones->getDefaults();
+
+
+        if (count($result) == 0) {
+            $this->checkForImportErrors($contract_id);
+            $contact = new ContactModel($this->pdo);
+            $result = [0 => $contact->getDefaults()];
+            $result[0]['Phone'] = $defaultPhone;
+        } else {
+
+            for ($i = 0; $i < count($result); $i++) {
+                $contactPhones = $phones->get('ckcontact_id', $result[$i]['id']);
+                $result[$i]['Phones'] = $contactPhones['phones'];
+            }
+        }
+        return $result;
+    }
+
+    protected function checkForImportErrors($contract_id): void
+    {
+        $ckcontact_id = $this->field('ckcontact_id', 'contract_id', $contract_id);
+        if (!empty($ckcontact_id)) {
+            $sql = "INSERT INTO `contactjoins` (`ckcontact_id`, `join_type`, `foreign_id`, `updated`)
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, NOW())";
+            $this->runQuery($sql, ['ckcontact_id' => $ckcontact_id, 'join_type' => 'contract', 'foreign_id' => $contract_id], 'insert');
+        }
+    }
 }

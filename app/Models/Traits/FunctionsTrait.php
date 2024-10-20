@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Models\Traits;
+
+use App\Models\TenancyModel;
+
 trait FunctionsTrait
 {
     public function array_merge($array1, $array2): array
@@ -47,5 +50,23 @@ trait FunctionsTrait
         return implode($output);
     }
 
+    /**
+     * generates a list of the tenancies with the xerotenant_id as the key
+     * @return array
+     */
+    protected function getTenancyList(): array
+    {
+        $tenancy = new TenancyModel($this->pdo);
+        $raw = $tenancy->list();
+        return array_column($raw, null, 'tenant_id');
+    }
+
+    protected function getPrettyDate($val): string
+    {
+        if (empty($val)) return '';
+
+        $date = date_create($val);
+        return date_format($date, "d M");
+    }
 
 }

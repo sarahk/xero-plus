@@ -7,7 +7,8 @@ namespace App\Views;
     <title>Cabin King Addons</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <?php
-    include_once 'Layouts/styles.php';
+
+    include_once 'styles.php';
 
     //create constants for the xerotenant_id info
 

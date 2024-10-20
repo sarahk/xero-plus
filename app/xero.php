@@ -23,8 +23,6 @@ $log = new Logger('Index');
 $log->pushHandler(new StreamHandler('monolog.index.log', Level::Info));
 $log->info('New Xero Import', [date('d-m-Y-H-i-s')]);
 
-//require_once('config.php');
-
 
 // Storage Class uses sessions for storing token > extend to your DB of choice
 //require_once('authorizedXero.php');
@@ -32,6 +30,8 @@ $log->info('New Xero Import', [date('d-m-Y-H-i-s')]);
 
 $storage = new StorageClass();
 $provider = Utilities::getProvider();
+
+Utilities::checkAccessToken();
 
 $xero = new XeroClass();
 //$json = new JsonClass();
@@ -61,7 +61,7 @@ try {
                 case 'refresh':
                     $xeroTenantId = $_GET['xeroTenantId'];
                     $contact_id = $_GET['contact_id'];
-                    
+
                     $xero->getContactRefresh($xeroTenantId, $contact_id);
                     break;
                 case "Create":

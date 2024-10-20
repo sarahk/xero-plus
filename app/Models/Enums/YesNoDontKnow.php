@@ -8,7 +8,7 @@ enum YesNoDontKnow: string
 
     case Yes = 'Yes';
     case No = 'No';
-    case DontKnow = 'dontknow';
+    case DontKnow = 'DK';
 
 
     public static function getLabel(string $val): string

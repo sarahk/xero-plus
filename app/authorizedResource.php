@@ -1,23 +1,23 @@
 <?php
 namespace App;
 
+use App\Models\CabinModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
-use App\Models\UserModel;
-
+use App\Models\TasksModel;
 use DateTime;
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 require_once '../vendor/autoload.php';
-require_once('functions.php');
 
 
 $pdo = Utilities::getPDO();
 $storage = new StorageClass();
 $provider = Utilities::getProvider();
+Utilities::checkAccessToken();
 const LOGGEDOUT = false;
 
 $message = "no API calls";
@@ -38,76 +38,6 @@ switch ($action) {
         $xero = new XeroClass();
         $xeroTenantIdArray = $xero->getTenantIdArray();
 
-
-        // https://api.xero.com/connections
-//Authorization: "Bearer " + access_token
-//Content-Type: application/json
-        //     exit;
-        break;
-
-    case 2:
-        // Create Contact
-        try {
-            $person = new XeroAPI\XeroPHP\Models\Accounting\ContactPerson;
-            $person->setFirstName("John")
-                ->setLastName("Smith")
-                ->setEmailAddress("john.smith@24locks.com")
-                ->setIncludeInEmails(true);
-
-            $arr_persons = [];
-            array_push($arr_persons, $person);
-
-            $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-            $contact->setName('FooBar')
-                ->setFirstName("Foo")
-                ->setLastName("Bar")
-                ->setEmailAddress("ben.bowden@24locks.com")
-                ->setContactPersons($arr_persons);
-
-            $arr_contacts = [];
-            array_push($arr_contacts, $contact);
-            $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
-            $contacts->setContacts($arr_contacts);
-
-            $apiResponse = $apiInstance->createContacts($xeroTenantId, $contacts);
-            $message = 'New Contact Name: ' . $apiResponse->getContacts()[0]->getName();
-        } catch (ApiException $e) {
-            $error = AccountingObjectSerializer::deserialize(
-                $e->getResponseBody(),
-                '\XeroAPI\XeroPHP\Models\Accounting\Error',
-                []
-            );
-            $message = "ApiException - " . $error->getElements()[0]["validation_errors"][0]["message"];
-        }
-        break;
-
-    case 3: // filter invoices
-        $if_modified_since = new DateTime("2019-01-02T19:20:30+01:00"); // \DateTime | Only records created or modified since this timestamp will be returned
-        $if_modified_since = null;
-        $where = 'Type=="ACCREC"'; // string
-        $where = null;
-        $order = null; // string
-        $ids = null; // string[] | Filter by a comma-separated list of Invoice Ids.
-        $invoice_numbers = null; // string[] |  Filter by a comma-separated list of Invoice Numbers.
-        $contact_ids = null; // string[] | Filter by a comma-separated list of ContactIDs.
-        $statuses = array("DRAFT", "SUBMITTED");
-        $statuses = [];
-        $page = 1; // int | e.g. page=1 – Up to 100 invoices will be returned in a single API call with line items
-        $include_archived = null; // bool | e.g. includeArchived=true - Contacts with a status of ARCHIVED will be included
-        $created_by_my_app = null; // bool | When set to true you'll only retrieve Invoices created by your app
-        $unitdp = null; // int | e.g. unitdp=4 – You can opt in to use four decimal places for unit amounts
-
-        try {
-            $apiResponse = $apiInstance->getInvoices($xeroTenantId, $if_modified_since, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp);
-            if (count($apiResponse->getInvoices()) > 0) {
-                $message = 'Total invoices found: ' . count($apiResponse->getInvoices());
-                //var_export($apiResponse->getInvoices());
-            } else {
-                $message = "No invoices found matching filter criteria";
-            }
-        } catch (Exception $e) {
-            echo 'Exception when calling AccountingApi->getInvoices: ', $e->getMessage(), PHP_EOL;
-        }
         break;
 
     case 9:
@@ -115,57 +45,33 @@ switch ($action) {
         // don't actually need to do anything?
         break;
 
-    case 4:
-        // Create Multiple Contacts
-        try {
-            $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-            $contact->setName('George Jetson')
-                ->setFirstName("George")
-                ->setLastName("Jetson")
-                ->setEmailAddress("george.jetson@aol.com");
-
-            // Add the same contact twice - the first one will succeed, but the
-            // second contact will throw a validation error which we'll catch.
-            $arr_contacts = [];
-            array_push($arr_contacts, $contact);
-            array_push($arr_contacts, $contact);
-            $contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
-            $contacts->setContacts($arr_contacts);
-
-            $apiResponse = $apiInstance->createContacts($xeroTenantId, $contacts, false);
-            $message = 'First contacts created: ' . $apiResponse->getContacts()[0]->getName();
-
-            if ($apiResponse->getContacts()[1]->getHasValidationErrors()) {
-                $message = $message . '<br> Second contact validation error : ' . $apiResponse->getContacts()[1]->getValidationErrors()[0]["message"];
-            }
-
-        } catch (ApiException $e) {
-            $error = AccountingObjectSerializer::deserialize(
-                $e->getResponseBody(),
-                '\XeroAPI\XeroPHP\Models\Accounting\Error',
-                []
-            );
-            $message = "ApiException - " . $error->getElements()[0]["validation_errors"][0]["message"];
-        }
-        break;
-
 
     case 10:
         // enquiries
-        $contacts = new ContactModel($pdo);
-        $data = $contacts->get('id', $id);
-        $data['contact'] = $data['contacts'];
+        //$contacts = new ContactModel($pdo);
+        //$data = $contacts->get('id', $id);
+        //$data['contact'] = $data['contacts'];
 
-        $users = new UserModel($pdo);
-        $user = $users->get('user_id', $_SESSION['xero_user_id']);
+        //$users = new UserModel($pdo);
+        //$xeroUserId = $_SESSION['xero_user_id'] ?? 0;
+//        if (!$xeroUserId) {
+//            header('/');
+//        }
+//        $user = $users->get('user_id', $_SESSION['xero_user_id']);
 
         $contracts = new ContractModel($pdo);
-        $data['Contract'] = $contracts->getChildren('contacts', $id);
+        $contract_id = $_GET['contract_id'] ?? 0;
+
+        $raw = $contracts->get('contract_id', $contract_id);
+
+        $data['Contract'] = $raw['contracts'];
+
+        $data['Contact'] = $contracts->getContactsAndPhone($contract_id);
 
         if ($debug) {
             //debug($_SESSION);
-            
-            debug($data);
+
+            ExtraFunctions::debug($data);
             exit;
         }
         break;
@@ -224,6 +130,7 @@ switch ($action) {
         // Message Templates
         break;
 
+    case 200:
     default:
         // main dash
         // TODO
@@ -276,6 +183,7 @@ $view = match ($action) {
     14 => 'Views/forms/cabin-edit.php',
     16 => 'Views/bad_debts_index.php',
     17 => 'Views/templates_index.php',
+    200 => 'Views/home2.php',
     default => 'Views/home.php',
 };
 

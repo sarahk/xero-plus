@@ -36,7 +36,7 @@
     },
     "files": [
       "app/constants.php",
-      "app/functions.php",
+      "app/ExtraFunctions.php",
       "app/StorageClass.php",
       "app/Utilities.php"
     ]

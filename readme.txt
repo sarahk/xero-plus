@@ -17,3 +17,11 @@ to run pest tests from the terminal
 
 
 https://pestphp.com/docs/cli-api-reference
+
+
+
+
+
+mysqldump -u xeroplus -p --no-data xeroplus
+
+mysql -h localhost -u xeroplus -p

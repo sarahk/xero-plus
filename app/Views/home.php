@@ -29,6 +29,10 @@
 <?php include 'Views/Widgets/slick-stock.php'; ?>
 
 <div class="row">
+    <?php include 'Views/Widgets/home-contract-panel.php'; ?>
+</div>
+
+<div class="row">
     <?php include 'Views/Widgets/home-tasks.php'; ?>
     <?php include 'Views/Widgets/home-debts.php'; ?>
 </div>

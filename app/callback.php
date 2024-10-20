@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\UserModel;
+use GuzzleHttp\Exception\RequestException;
 use \XeroAPI\XeroPHP\Configuration;
 
 //use App\StorageClass;
@@ -52,6 +54,38 @@ if (!isset($_GET['code'])) {
             $accessToken->getValues()["id_token"]
         );
 
+        // My code, October 2024
+// is there something in my xero.php code that does this too?
+        $userClient = new \GuzzleHttp\Client();
+
+        try {
+            // Make a GET request to Xero's Connections endpoint
+            $response = $userClient->request('GET', 'https://api.xero.com/connections', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            // Parse the response
+            $connections = json_decode($response->getBody(), true);
+
+            // Loop through the organizations connected and get the user_id for each
+            $user_ids = [];
+            foreach ($connections as $connection) {
+                $user_ids[] = [
+                    'id' => $connection['id'],
+                    'tenantId' => $connection['tenantId']
+                ];
+            }
+            $users = new UserModel(Utilities::getPDO());
+            $_SESSION['user_id'] = $users->getUserId($user_ids);
+
+        } catch (RequestException $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+
+        // end of  my code
         header('Location: ' . './authorizedResource.php');
         exit();
 

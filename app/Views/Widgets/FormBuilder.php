@@ -1,19 +1,41 @@
 <?php
 
+namespace App\Views\Widgets;
+
+use App\ExtraFunctions;
+
+
 class FormBuilder
 {
-    static function input($id, $name, $label, $required = false, $type = 'text', $value = '')
+
+
+    /**
+     * @param string $id
+     * @param string $name
+     * @param string $label
+     * @param bool $required
+     * @param string $type
+     * @param string $value
+     * @return void
+     */
+    static function input(string $id, string $name, string $label, bool $required = false, string $type = 'text', string $value = ''): void
     {
         ?>
         <div class='form-group'>
             <label class='form-label' for='<?= $id; ?>'><?= $label; ?></label>
-            <input class="form-control" id='<?= $id; ?>'
-                   name='<?= $name; ?>' placeholder="<?= $label; ?>"
-                   type="<?= $type; ?>" value="<?= $value; ?>" <?= ($required ? 'required' : ''); ?>>
+            <?php self::inputOnly($id, $name, $label, $required, $type, $value); ?>
         </div>
         <?php
     }
 
+    static function inputOnly(string $id, string $name, string $placeholder, bool $required, string $type = 'text', string $value = ''): void
+    {
+        ?>
+        <input class="form-control" id='<?= $id; ?>'
+               name='<?= $name; ?>' placeholder="<?= $placeholder; ?>"
+               type="<?= $type; ?>" value="<?= $value; ?>" <?= ($required ? 'required' : ''); ?>>
+        <?php
+    }
 
     /**
      * @param $id String
@@ -21,38 +43,36 @@ class FormBuilder
      * @param $value String the starting value of the hidden field
      * @return void
      */
-    static function hidden($id, $name, $value = '')
+    static function hidden(string $id, string $name, null|string $value = ''): void
     {
         ?>
         <input type="hidden" id="<?= $id; ?>" name="<?= $name; ?>" value="<?= $value; ?>">
         <?php
     }
 
-    static function inputs($label, $fields, $required = false)
+    static function inputs(string $label, array $fields, bool $required = false): void
     {
+
         ?>
         <label class='form-label' for='<?= $fields[0]['name']; ?>'><?= $label; ?></label>
         <div class="form-row">
-            <?php foreach ($fields as $row):
-                // assume the id is a good indicator of what the placeholder should be
-                $placeholder = ucfirst(str_replace('_', ' ', $row['id']));
-                ?>
-                <div class='form-group col-md-6'>
-                    <div class="form-group">
-                        <input class="form-control" id='<?= $row['id']; ?>'
-                               name='<?= $row['name']; ?>'
-                               placeholder="<?= $placeholder; ?>"
-                               type="<?= $row['type']; ?>"
-                               value="<?= $row['value']; ?>"
-                            <?= ($required ? 'required' : ''); ?> >
-                    </div>
+            <div class='form-group col-md-6'>
+                <div class="form-group">
+                    <?php self::inputsOnly($fields, $required); ?>
                 </div>
-            <?php endforeach; ?>
+            </div>
         </div>
         <?php
     }
 
-    static function textarea($id, $name, $label, $value = '')
+    static function InputsOnly(array $fields, bool $required = false): void
+    {
+        foreach ($fields as $row):
+            self::inputOnly($row['id'], $row['name'], $row['placeholder'], $required, $row['type'], $row['value']);
+        endforeach;
+    }
+
+    static function textarea($id, $name, $label, $value = ''): void
     {
         ?>
         <div class="form-group">
@@ -65,7 +85,14 @@ class FormBuilder
         <?php
     }
 
-    static function radio($name, $label, $choices, $value = '')
+    /**
+     * @param string $name
+     * @param string $label
+     * @param string $choices
+     * @param string $value
+     * @return void
+     */
+    static function radio(string $name, string $label, array $choices, null|string $value = ''): void
     {
         ?>
         <div class="form-group ">
@@ -100,7 +127,7 @@ class FormBuilder
     }
 
 
-    static function checkbox($id, $name, $label, $valueWhenChecked, $value)
+    static function checkbox($id, $name, $label, $valueWhenChecked, $value): void
     {
         $checked = ($value === $valueWhenChecked) ? ' checked="checked" ' : '';
         ?>
@@ -131,5 +158,78 @@ class FormBuilder
             3 => $bits[1] . ' ' . $bits[2],
             default => $bits[1]
         };
+    }
+
+    /**
+     * @param string $id
+     * @param string $name
+     * @param string $label
+     * @param string|null $value
+     * @return void
+     */
+    static function datePicker(string $id, string $name, string $label, null|string $value = ''): void
+    {
+        ?>
+        <div class='form-group'>
+            <label class='form-label' for='scheduled-delivery-date'><?= $label ?></label>
+            <?php self::datePickerOnly($id, $name, $value); ?>
+        </div>
+        <?php
+    }
+
+    static function datePickerOnly(string $id, string $name, null|string $value = ''): void
+    {
+        ?>
+        <div class="input-group">
+            <div class="input-group-text">
+                <span class="fa fa-calendar tx-16 lh-0 op-6"></span>
+            </div>
+            <input class="form-control hasDatepicker" id="<?= $id ?>"
+                   name='<?= $name ?>' placeholder="DD/MM/YYYY"
+                   value='<?= $value ?>'
+                   type="text">
+        </div>
+
+        <?php
+    }
+
+    static function buttonRadioButtons(array $data, string $tenancies): void
+    {
+
+        $xerotenant_id = (array_key_exists('xerotenant_id', $data['Contract'])) ? $data['Contract']['xerotenant_id'] : '';
+        $styles = $inputs = $labels = [];
+        foreach (json_decode($tenancies, true) as $row):
+            $checked = ($xerotenant_id === $row['tenant_id'] ? ' checked ' : '');
+            $backgroundColor = "var(--bs-{$row['colour']}";
+            $styles[] = "
+                        .btn-check:checked + .btn.{$row['shortname']} {
+                            background-color: $backgroundColor );
+                            color: white;
+                        }";
+            $inputs[] = "<input type='radio' class='btn-check'
+                           name='tenancy-region'
+                           id='enquiry-tenancy-{$row['shortname']}'
+                           value='{$row['tenant_id']}'
+                           autocomplete='off' $checked>
+                         <label class='btn btn-outline-primary {$row['shortname']}'
+                           for='enquiry-tenancy-{$row['shortname']}'>{$row['name']}</label>";
+
+        endforeach;
+
+        //class="btn-group"
+        ?>
+
+        <style>
+            <?php echo implode(PHP_EOL, $styles) ?>
+        </style>
+        <div class="form-label">Region:</div>
+
+        <div role="group" aria-label="Select the company">
+            <?php
+            echo implode(PHP_EOL, $inputs);
+            ?>
+        </div>
+
+        <?php
     }
 }

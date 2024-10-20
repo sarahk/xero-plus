@@ -27592,3 +27592,7 @@ INFO | 2024-10-11, 12:20 am > runQuery | ["SELECT `id` FROM `contactjoins` WHERE
 INFO | 2024-10-11, 12:20 am > runQuery | ["SELECT `id` FROM `contactjoins` WHERE `ckcontact_id` = :keyVal LIMIT 1"] 
 INFO | 2024-10-11, 12:20 am > runQuery | ["SELECT `id` FROM `contactjoins` WHERE `ckcontact_id` = :keyVal LIMIT 1"] 
 INFO | 2024-10-11, 12:20 am > runQuery | ["SELECT `id` FROM `contactjoins` WHERE `ckcontact_id` = :keyVal LIMIT 1"] 
+INFO | 2024-10-11, 11:38 pm > save | {"id":null,"ckcontact_id":17442,"join_type":"contract","foreign_id":9862,"updated":"2024-10-11 23:38:26"} 
+INFO | 2024-10-13, 10:33 pm > save | {"id":null,"ckcontact_id":17242,"join_type":"contract","foreign_id":9700,"updated":"2024-10-13 22:33:54"} 
+INFO | 2024-10-13, 10:33 pm > save | {"id":null,"ckcontact_id":17444,"join_type":"contract","foreign_id":9865,"updated":"2024-10-13 22:33:58"} 
+INFO | 2024-10-13, 10:33 pm > save | {"id":null,"ckcontact_id":17250,"join_type":"contract","foreign_id":9730,"updated":"2024-10-13 22:33:58"} 

@@ -1,3 +1,9 @@
+<?php
+namespace App\Views\Footer;
+
+use App\ExtraFunctions;
+
+?>
 </div>
 </div>
 <!--SIDEBAR-RIGHT-->
@@ -32,24 +38,25 @@ include 'Layouts/scripts.php';
 ?>
 
 <!-- SPARKLINE JS-->
-<script src="/assets/js/jquery.sparkline.min.js"></script>
+<!-- tiny bar charts to use in Datatable for bad debts etc -->
+<!--<script src="/assets/js/jquery.sparkline.min.js"></script>-->
+<!---->
+<!--<!-- CHART-CIRCLE JS-->-->
+<!--<script src="/assets/js/circle-progress.min.js"></script>-->
 
-<!-- CHART-CIRCLE JS-->
-<script src="/assets/js/circle-progress.min.js"></script>
-
-<!-- CHARTJS CHART JS-->
-<script src="/assets/plugins/chart/Chart.bundle.js"></script>
-<script src="/assets/plugins/chart/utils.js"></script>
-
-<!-- PIETY CHART JS-->
-<script src="/assets/plugins/peitychart/jquery.peity.min.js"></script>
-<script src="/assets/plugins/peitychart/peitychart.init.js"></script>
-
-<!-- INTERNAL SELECT2 JS -->
-<script src="/assets/plugins/select2/select2.full.min.js"></script>
-
-<!-- ECHART JS-->
-<script src="/assets/plugins/echarts/echarts.js"></script>
+<!--<!-- CHARTJS CHART JS-->-->
+<!--<script src="/assets/plugins/chart/Chart.bundle.js"></script>-->
+<!--<script src="/assets/plugins/chart/utils.js"></script>-->
+<!---->
+<!--<!-- PIETY CHART JS-->-->
+<!--<script src="/assets/plugins/peitychart/jquery.peity.min.js"></script>-->
+<!--<script src="/assets/plugins/peitychart/peitychart.init.js"></script>-->
+<!---->
+<!--<!-- INTERNAL SELECT2 JS -->-->
+<!--<script src="/assets/plugins/select2/select2.full.min.js"></script>-->
+<!---->
+<!--<!-- ECHART JS-->-->
+<!--<script src="/assets/plugins/echarts/echarts.js"></script>-->
 
 <!-- APEXCHART JS -->
 <script src="/assets/js/apexcharts.js"></script>

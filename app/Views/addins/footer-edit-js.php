@@ -6,8 +6,7 @@
 <script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
 <!-- DATEPICKER JS -->
-<script src="/assets/plugins/date-picker/date-picker.js"></script>
-<script src="/assets/plugins/date-picker/jquery-ui.js"></script>
+<script src="/js/plugins/jquery-ui-1.14.0/jquery-ui.js"></script>
 <script src="/assets/plugins/input-mask/jquery.maskedinput.js"></script>
 
 <!-- INTERNAL FILE-UPLOADS JS -->

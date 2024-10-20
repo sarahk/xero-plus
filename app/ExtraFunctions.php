@@ -1,179 +1,213 @@
 <?php
-function getVehicleList($dbh)
+
+namespace App;
+
+use DateTime;
+
+class ExtraFunctions
 {
-    $sql = "select `id`, `numberplate` from `vehicles` order by `numberplate` ASC";
 
-    $vehicles = $dbh->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-    return $vehicles;
-}
-
-/*
-Xero send the date like this... "/Date(1589414400000+0000)/"
-this function turns it into a nice date time string.
-*/
-function getDateFromXero($str)
-{
-    $raw = intval(substr($str, 6, -7) / 1000);
-    return date('Y-m-d H:i:s', $raw);
-}
+    /*
+    Xero send the date like this... "/Date(1589414400000+0000)/"
+    this function turns it into a nice date time string.
+    */
+    public static function getDateFromXero($str): string
+    {
+        $raw = intval(substr($str, 6, -7) / 1000);
+        return date('Y-m-d H:i:s', $raw);
+    }
 
 // if using one of the classes use $this->debug rather than this function
-function debug($val)
-{
-    echo '<ul>';
-    showValue('', $val);
+    public static function debug($val): void
+    {
+        echo '<ul>';
+        self::showValue('', $val);
 
-    // show where debug was called from
-    $bt = debug_backtrace();
+        // show where debug was called from
+        $bt = debug_backtrace();
 
-    $caller = array_shift($bt);
-    echo "
+        $caller = array_shift($bt);
+        echo "
     <li>{$caller['file']}</li>
     <li>{$caller['line']}</li>
 </ul>
 <hr>\n";
 
-}
+    }
 
 // don't call showValue directly, use debug
-function showValue($k, $val)
-{
-    $ul = "<ul style='list-style-type: disc; padding: 1em;'>";
-    echo '<li>';
-    if (is_array($val)) {
-        echo $k . $ul;
+    public static function showValue($k, $val)
+    {
+        $ul = "<ul style='list-style-type: disc; padding: 1em;'>";
+        echo '<li>';
+        if (is_array($val)) {
+            echo $k . $ul;
 
-        foreach ($val as $key => $row) {
-            showValue($key, $row);
-        }
-        echo '</ul></li>';
-    } else if (is_object($val)) {
-        echo $k . $ul;
+            foreach ($val as $key => $row) {
+                self::showValue($key, $row);
+            }
+            echo '</ul></li>';
+        } else if (is_object($val)) {
+            echo $k . $ul;
 
-        foreach ((array)$val as $key => $row) {
-            showValue($key, $row);
+            foreach ((array)$val as $key => $row) {
+                self::showValue($key, $row);
+            }
+            $methods = get_class_methods($val);
+            foreach ($methods as $v) {
+                echo "<li><i>$v</i></li>";
+            }
+            echo '</ul></li>';
+        } else {
+            echo(strlen($k) ? "$k: " : ''), is_string($val) ? '"' . $val . '"' : $val;
         }
-        $methods = get_class_methods($val);
-        foreach ($methods as $v) {
-            echo "<li><i>$v</i></li>";
-        }
-        echo '</ul></li>';
-    } else {
-        echo(strlen($k) ? "{$k}: " : ''), is_string($val) ? '"' . $val . '"' : $val;
+        echo "</li>";
     }
-    echo "</li>";
-}
 
-function getElapsedTime($start, $end = null): string
-{
-    $startDT = new DateTime($start);
+    public static function getElapsedTime($start, $end = null): string
+    {
+        $startDT = new DateTime($start);
 
-    if (is_null($end)) $endDT = new DateTime();
-    else $endDT = new DateTime($end);
+        if (is_null($end)) $endDT = new DateTime();
+        else $endDT = new DateTime($end);
 
-    $interval = $endDT->diff($startDT);
+        $interval = $endDT->diff($startDT);
 
-    $elapsed = [];
-    if ($interval->y == 1) $elapsed[] = '1 year';
-    else if ($interval->y > 1) $elapsed[] = "{$interval->y}  years";
+        $elapsed = [];
+        if ($interval->y == 1) $elapsed[] = '1 year';
+        else if ($interval->y > 1) $elapsed[] = "{$interval->y}  years";
 
-    if ($interval->m == 1) $elapsed[] = '1 month';
-    else if ($interval->m > 1) $elapsed[] = "{$interval->m} months";
+        if ($interval->m == 1) $elapsed[] = '1 month';
+        else if ($interval->m > 1) $elapsed[] = "{$interval->m} months";
 
-    if ($interval->d == 1) $elapsed[] = '1 day';
-    else $elapsed[] = "{$interval->d} days";
+        if ($interval->d == 1) $elapsed[] = '1 day';
+        else $elapsed[] = "{$interval->d} days";
 
-    return implode(', ', $elapsed);
-}
-
-
-function getCard($filename, $label, $data): void
-{
-    ?>
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title"><?= $label; ?></h3>
-        </div>
-        <div class="card-body">
-            <?php include SITE_ROOT . $filename; ?>
-        </div>
-    </div>
-    <?php
-}
-
-function getEmailDisplay($email): string
-{
-    if (preg_match("/^[\w\.-]+@[\w\.-]+\.\w+$/", $email)) {
-        return "<i class='fa-solid fa-at text-success'></i> <a href='mailto:$email'> $email</a>";
-    } else {
-        return "<i class='fa-solid fa-at text-danger'></i> <s class=' text-danger'>$email</s>";
+        return implode(', ', $elapsed);
     }
-}
 
-function getPhoneDisplay($row)
-{
-    $area = $row['phone_area_code'];
-    if (left($area) !== '0') $area = "0{$area}";
-    return "<a href='tel:{$area}{$row['phone_number']}'>$area {$row['phone_number']}</a>";
-}
 
-function getAddressDisplay($row)
-{
-    $address = [];
-    if (!empty($row['address_line1']))
-        $address[] = $row['address_line1'];
-    if (!empty($row['address_line2']))
-        $address[] = $row['address_line2'];
-
-    if (!empty($row['city']))
-        $address[] = $row['city'];
-
-    if (!empty($row['region']))
-        $address[] = $row['region'] . ' ' . $row['postal_code'];
-
-    return implode('<br>', $address);
-}
-
-function getTabs($tabList, $active, $data): void
-{
-    ?>
-    <div class="col-lg-12 col-md-12">
-        <div class="card">
-
+    public static function getCard(string $filename, string $label, string $cardId): void
+    {
+        ?>
+        <div class="card" id="$cardId">
+            <div class="card-header">
+                <h3 class="card-title"><?= $label; ?><span class="cardHeaderExtra"></span></h3>
+            </div>
             <div class="card-body">
-                <div class="card-pay">
-                    <ul class="nav tabs-menu">
-                        <?php
-                        foreach ($tabList as $tab) {
-                            $class = ($tab['name'] === $active) ? ' active ' : '';
-                            echo "<li>
+                <?php include SITE_ROOT . $filename; ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    public static function getEmailDisplay($email): string
+    {
+        if (preg_match("/^[\w\.-]+@[\w\.-]+\.\w+$/", $email)) {
+            return "<i class='fa-solid fa-at text-success'></i> <a href='mailto:$email'> $email</a>";
+        } else {
+            return "<i class='fa-solid fa-at text-danger'></i> <s class=' text-danger'>$email</s>";
+        }
+    }
+
+    public static function getPhoneDisplay($row)
+    {
+        $area = $row['phone_area_code'];
+        if (substr($area, 0, 1) !== '0') $area = "0{$area}";
+        return "<a href='tel:{$area}{$row['phone_number']}'>$area {$row['phone_number']}</a>";
+    }
+
+    public static function getAddressDisplay($row)
+    {
+        $address = [];
+        if (!empty($row['address_line1']))
+            $address[] = $row['address_line1'];
+        if (!empty($row['address_line2']))
+            $address[] = $row['address_line2'];
+
+        if (!empty($row['city']))
+            $address[] = $row['city'];
+
+        if (!empty($row['region']))
+            $address[] = $row['region'] . ' ' . $row['postal_code'];
+
+        return implode('<br>', $address);
+    }
+
+    public static function getTabs($tabList, $active, $data): void
+    {
+        ?>
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="card-pay">
+                        <ul class="nav tabs-menu">
+                            <?php
+                            foreach ($tabList as $tab) {
+                                $class = ($tab['name'] === $active) ? ' active ' : '';
+                                echo "<li>
 <a href='#tab-{$tab['name']}' class='{$class}' data-bs-toggle='tab'>{$tab['label']}</a>
 </li>";
-                        }
-                        ?>
-                    </ul>
-                </div>
+                            }
+                            ?>
+                        </ul>
+                    </div>
 
-                <div class="panel-body tabs-menu-body">
-                    <div class="tab-content">
-                        <?php
-                        foreach ($tabList as $tab) {
+                    <div class="panel-body tabs-menu-body">
+                        <div class="tab-content">
+                            <?php
+                            foreach ($tabList as $tab) {
 
-                            $class = ($tab['name'] === $active) ? ' active ' : '';
-                            echo "<div class='tab-pane {$class}' id='tab-{$tab['name']}'>";
-                            include(SITE_ROOT . $tab['filename']);
-                            echo '</div>';
-                        } ?>
+                                $class = ($tab['name'] === $active) ? ' active ' : '';
+                                echo "<div class='tab-pane {$class}' id='tab-{$tab['name']}'>";
+                                include(SITE_ROOT . $tab['filename']);
+                                echo '</div>';
+                            } ?>
 
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <?php
-}
+        <?php
+    }
 
+    public static function hasIdValue(string $name, string $fld = ''): bool
+    {
+
+        if (stristr($name, '_id')) {
+            if (!empty($fld)) return true;
+        }
+        return false;
+    }
+
+    public static function hasAnyValues(array $row): bool
+    {
+        foreach ($row as $name => $fld) {
+            if (self::hasIdValue($name, "$fld")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function getCount(null|array $array = []): string
+    {
+        $count = 0;
+        if (is_array($array)) {
+            foreach ($array as $row) {
+                if (is_array($row) && self::hasAnyValues($row)) $count++;
+            }
+        }
+        if ($count) {
+            return "({$count})";
+        }
+        return '';
+    }
+}
 /*
 // sample repeating invoice data
 $list = [

@@ -101,12 +101,6 @@ class BaseModel
         // either we didn't have a value or there isn't a record in the database
         if (count($data)) {
 
-            // refresh the data and run the query again
-            if ($this->hasStub && !empty($data[0]['stub'])) {
-                //$xeroData = $this->getFromXero($data[0]);
-                $data = $this->getRecord($key, $keyVal);
-            }
-
             $output = ["$this->table" => $data[0]];
 
             if (count($this->hasMany)) {
@@ -118,19 +112,23 @@ class BaseModel
 
                     $output[$val] = $child->getChildren($this->table, $output[$this->table][$this->primaryKey], $defaults);
                     //var_export(['parent' => $this->table, 'child table:' => $val, 'data' => $output[$val]]);
+                    $this->debug($output[$val]);
                 }
             }
             return $output;
         } else if (!$defaults) return [];
         else {
+
             $output = [$this->table => $this->getDefaults()];
             if (count($this->hasMany)) {
                 foreach ($this->hasMany as $val) {
                     $modelName = "\\App\\Models\\{$val}Model";
                     $model = new $modelName($this->pdo);
                     $output[$val] = $model->getDefaults();
+
                 }
             }
+
             return $output;
         }
     }
@@ -138,30 +136,14 @@ class BaseModel
 
     protected function getRecord(string $key, mixed $keyVal): array
     {
-        $data = [];
-
         if ($keyVal > 0) {
             $sql = "SELECT * " . $this->getVirtuals() . " 
                 FROM $this->table 
                 WHERE `$key` = :keyVal";
 
-            $this->getStatement($sql);
-            try {
-                $this->statement->execute(['keyVal' => $keyVal]);
-                $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-
-                $this->log('info', 'getRecord', ['sql' => $sql, 'data' => $data]);
-            } catch (PDOException $e) {
-                echo "Error Message: " . $e->getMessage() . "\n";
-                $this->statement->debugDumpParams();
-            }
+            return $this->runQuery($sql, [':keyVal' => $keyVal]);
         }
-        return $data;
-    }
-
-    protected function getFromXero($data): void
-    {
-
+        return [];
     }
 
     protected function getVirtuals(): string
@@ -176,6 +158,7 @@ class BaseModel
 
     public function getChildren($parent, $parentId, $defaults = true): array
     {
+        //$this->debug([$parent, $parentId, $defaults, $this->joins]);
         $orderBy = (!empty($this->orderBy) ? " ORDER BY $this->orderBy" : '');
         $sql = "SELECT * " . $this->getVirtuals() . " 
             FROM `$this->table` 
@@ -183,23 +166,20 @@ class BaseModel
             $orderBy 
             LIMIT 15";
 
-
-        //$statement = $this->pdo->prepare($sql);
-
         $varCount = substr_count($this->joins[$parent], ':');
-        $vars = [];
-        //['id1' => $parentId, 'id2' => $parentId]
-        for ($i = 0; $i < $varCount; $i++) {
-            $vars[':id' . ($i + 1)] = $parentId;
+        for ($i = 1; $i <= $varCount; $i++) {
+            $vars["id$i"] = $parentId;
         }
+        //$this->debug($vars);
 //        if ($this->table == 'notes') {
 //            $this->debug([$parent, $parentId]);
 //            $this->debug($sql);
 //            $this->debug($vars);
 //        }
-        //$statement->execute($vars);
-        //$data = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         $data = $this->runQuery($sql, $vars);
+        //$this->debug($data);
+        //print_r($data);
         $count = count($data);
         /*
         var_export([
@@ -212,7 +192,7 @@ class BaseModel
             case 0:
                 if ($defaults) return $this->getDefaults();
                 else return [];
-                
+
             case 1:
             default:
                 return $data;
@@ -250,12 +230,10 @@ class BaseModel
 
         $sql = "SHOW FULL COLUMNS FROM `$this->table`";
 
-        $statement = $this->pdo->prepare($sql);
-        $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->runQuery($sql, [], 'query');
 
         foreach ($result as $row) {
-            $this->defaults[0][$row['Field']] = $row['Default'];
+            $this->defaults[0][$row['Field']] = $row['Default'] ?? '';
         }
         if (count($this->virtualFields)) {
             foreach ($this->virtualFields as $k => $val) {

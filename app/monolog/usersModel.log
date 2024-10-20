@@ -157,3 +157,471 @@ INFO | 2024-10-14, 1:53 am > getRecord | {"sql":"SELECT *
 INFO | 2024-10-14, 2:01 am > getRecord | {"sql":"SELECT *  
                 FROM users 
                 WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:26 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:27 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:27 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:29 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:29 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:34 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:34 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:37 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:39 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:40 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:56 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:57 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 8:59 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:00 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:00 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:00 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:00 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:01 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:03 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 9:04 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 10:59 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:16 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:19 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:20 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:24 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:25 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:26 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:41 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:41 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:43 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-14, 11:49 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:02 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:02 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:06 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:08 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:10 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:14 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:16 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:20 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:27 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:38 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:40 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:41 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:52 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:56 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 12:58 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 1:03 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 1:09 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:26 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:27 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:31 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:35 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:37 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:41 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:44 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:44 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:44 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:45 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:45 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:46 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:47 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 5:48 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:06 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:07 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:08 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:14 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:14 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:15 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:16 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:16 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:17 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:18 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:20 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-15, 11:20 pm > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:19 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:24 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:26 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:27 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:27 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:28 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:30 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:30 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:31 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:31 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:36 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:36 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:36 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:46 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:47 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:48 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:48 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:49 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:50 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:53 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:53 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 1:56 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:02 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:03 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:03 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:03 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:03 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:04 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:12 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:13 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:13 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:13 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:14 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:17 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:17 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:19 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:20 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:20 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:21 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:21 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:22 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:24 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:25 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:26 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:28 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:33 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:36 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:40 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:54 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 2:55 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:04 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:28 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:28 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:30 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:30 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:31 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:31 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:32 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:34 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:37 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:38 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:40 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:40 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:45 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:46 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:47 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:49 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:55 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:56 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 3:59 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 4:18 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 4:18 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:09 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:09 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:30 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:32 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:37 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:41 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:42 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:44 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 6:44 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 
+INFO | 2024-10-16, 7:15 am > getRecord | {"sql":"SELECT *  
+                FROM users 
+                WHERE `user_id` = :keyVal","data":[{"id":1,"user_id":"87ff2891-a223-4f3e-8e65-cfbd5db3c717","first_name":"Sarah","last_name":"King","email":"sarah@itamer.com"}]} 

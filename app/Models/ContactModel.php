@@ -192,4 +192,13 @@ class ContactModel extends BaseModel
 
         return $this->runQuery($sql, []);
     }
+
+    public function getAllJoins($join_type, $foreign_id): array
+    {
+        $sql = "SELECT `contacts`.*
+                    FROM `contacts`
+                    LEFT JOIN `contactjoins` ON `contactjoins`.`ckcontact_id` = `contacts`.`id`
+                    WHERE `contactjoins`.`foreign_id` = :foreign_id";
+        return $this->runQuery($sql, ['foreign_id' => $foreign_id]);
+    }
 }

@@ -1,4 +1,6 @@
 //$(function () {
+
+
 $(document).ready(function () {
     'use strict'
 
@@ -16,9 +18,20 @@ $(document).ready(function () {
     });
 
 
+    $('#enquiryContacts input.hasDatepicker').each(function () {
+        console.log(['enquiryContacts datepicker', this]);
+        $(this).datepicker({
+            dateFormat: 'dd-mm-yy',
+            showOtherMonths: true,
+            selectOtherMonths: true,
+        });
+    });
+
     // jquery ui
-    if ($('#delivery-date').length) {
-        $('#delivery-date').datepicker({
+    let $deliveryDate = $('#deliveryDate');
+    if ($deliveryDate.length) {
+        console.log($deliveryDate);
+        $deliveryDate.datepicker({
             dateFormat: 'dd-mm-yy',
             showOtherMonths: true,
             selectOtherMonths: true,
@@ -26,8 +39,11 @@ $(document).ready(function () {
             beforeShowDay: $.datepicker.noWeekends
         });
     }
-    if ($('#actual-delivery-date').length) {
-        $('#actual-delivery-date').datepicker({
+
+    let $scheduledDeliveryDate = $('#scheduledDeliveryDate');
+    if ($scheduledDeliveryDate.length) {
+        console.log($scheduledDeliveryDate);
+        $scheduledDeliveryDate.datepicker({
             dateFormat: 'dd-mm-yy',
             showOtherMonths: true,
             selectOtherMonths: true,
@@ -46,6 +62,46 @@ $(document).ready(function () {
         window.open(url, '_blank');
     });
 
+    $('#addNewContact').on('click', function (event) {
+
+        // Assuming you want to append this row to #enquiryContacts table
+        let key = $('#enquiryContacts tr').length;  // Get the number of rows to generate a unique key
+
+        let newRow = `
+<tr data-key="${key}">
+    <td>
+        <input class="form-control" id="first_name${key}" name="data[contact][${key}][first_name]" placeholder="First Name" type="text" value="" required="">
+        <input class="form-control" id="last_name${key}" name="data[contact][${key}][last_name]" placeholder="Last Name" type="text" value="" required="">
+    </td>
+    <td>
+        <input class="form-control" id="phone_type0${key}" name="data[contact][${key}][phone][0][mobile]" placeholder="Mobile" type="tel" value="">
+        <input class="form-control" id="phone_type1${key}" name="data[contact][${key}][phone][1][default]" placeholder="Default" type="tel" value="">
+    </td>
+    <td>
+        <input class="form-control" id="email_address${key}" name="data[contact][${key}][email_address]" placeholder="Email" type="email" value="">
+    </td>
+    <td>
+        <div class="input-group">
+            <div class="input-group-text">
+                <span class="fa fa-calendar tx-16 lh-0 op-6" aria-hidden="true"></span>
+            </div>
+            <input class="form-control hasDatepicker" id="date_of_birth${key}" name="data[contact][${key}][date_of_birth]" placeholder="DD/MM/YYYY" value="" type="text">
+        </div>
+    </td>
+</tr>
+`;
+
+// Append the new row to the table
+        $('#enquiryContacts').append(newRow);
+
+// If you want to initialize the date picker for the newly added input (assuming you use a datepicker plugin)
+        $('#date_of_birth' + key).datepicker();
+
+        //let key = $('#enquiryContacts tr:last').attr('data-key');
+        console.log(key);
+        console.log($('#date_of_birth' + key))
+        Swal.fire({title: 'Success', text: 'key is ' + key});
+    });
 
     //$('#phone').mask('000 0000 0000');
     // $('#phone').mask('000 0000 0000',{autoclear: false});
@@ -73,7 +129,7 @@ $(document).ready(function () {
             let phone_area_code = $('#phone').val();
             let phone_number = $('#phone').val();
             let getData = {
-                endpoint: 'contacts',
+                endpoint: 'Contacts',
                 action: 'search',
                 first_name: $('#first_name').val(),
                 last_name: $('#last_name').val(),
@@ -208,4 +264,32 @@ $(document).ready(function () {
             }
         });
     }
+
+
+    $('#saveEnquiry').on('click', function (event) {
+        event.preventDefault();
+
+        let data = $('#enquiryForm').serializeArray()
+        let payload = {
+            action: '10',
+
+            data: data,
+        };
+        console.log(payload);
+        Swal.fire({
+            title: "About to fire",
+            text: "Saved successfully",
+            icon: "success"
+        });
+
+        $.getJSON("/authorizedSave.php", payload, function (data) {
+
+            Swal.fire({
+                title: "Good job!",
+                text: "Saved successfully",
+                icon: "success"
+            });
+
+        });
+    });
 });
