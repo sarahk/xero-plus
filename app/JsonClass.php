@@ -85,11 +85,23 @@ class JsonClass
         return json_encode($model->field($field, $key, $keyVal));
     }
 
+    public function getEnquiryCabinList()
+    {
+        $cabins = new Models\CabinModel($this->pdo);
+        $params = $this->getParams();
+        $params['xerotenant_id'] = $_GET['xerotenant_id'] ?? '';
+        $params['cabin_id'] = $_GET['cabin_id'] ?? '';
+        $params['painted'] = $_GET['painted'] ?? '';
+        $params['scheduledDate'] = $_GET['scheduledDate'] ?? '';
+        $params['cabinType'] = $_GET['cabinType'] ?? '';
+        return json_encode($cabins->enquiryList($params));
+    }
+
     public function getCabins()
     {
         $cabins = new Models\CabinModel($this->pdo);
         $params = $this->getParams();
-        return $cabins->list($params);
+        return json_encode($cabins->list($params));
     }
 
     public function getCabinSingle()
@@ -99,8 +111,8 @@ class JsonClass
 
         $cabin = $cabins->get('cabin_id', $params['key'])['cabins'];
 
-        $cabin['cabinstyle'] = Models\Enums\CabinStyle::getCabinStyleLabel($cabin['style']);
-        $cabin['ownername'] = Models\Enums\CabinOwners::getCabinOwnersLabel($cabin['owner']);
+        $cabin['cabinstyle'] = Models\Enums\CabinStyle::getLabel($cabin['style']);
+        $cabin['ownername'] = Models\Enums\CabinOwners::getLabel($cabin['owner']);
 
 
         $tenancies = new Models\TenancyModel($this->pdo);

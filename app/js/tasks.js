@@ -3,7 +3,12 @@ $(document).ready(function () {
     if ($('#tCabinTasks').length) {
         let tCabins = $('#tCabinTasks').DataTable({
             ajax: {
-                url: "/json.php?endpoint=Tasks&action=List&key=" + cabin_id,
+                url: "/json.php",
+                data: {
+                    endpoint: 'Tasks',
+                    action: 'List',
+                    key: cabin_id,
+                }
             },
             processing: true,
             stateSave: true,

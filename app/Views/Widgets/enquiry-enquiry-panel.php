@@ -2,7 +2,6 @@
 namespace App\Views\Widgets;
 
 use App\ExtraFunctions;
-use App\Models\Enums\BestWayToContact;
 use App\Models\Enums\CabinPainted;
 use App\Models\Enums\CabinStyle;
 use App\Models\Enums\CabinUse;
@@ -26,19 +25,17 @@ use App\Models\Enums\YesNoDontKnow;
 
     FormBuilder::hidden('action', 'action', '10');
 
-    FormBuilder::hidden('id', 'data[contact][id]', $data['contacts']['id'] ?? '');
-    FormBuilder::hidden('contact_id', 'data[contact][contact_id]', $data['contacts']['contact_id'] ?? '');
-    FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status'] ?? '');
     //FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status']);
 
-    FormBuilder::hidden('contract_id', 'data[Contract][contract_id]', $data['Contract']['contract_id']);
-    FormBuilder::hidden('address_line1', 'data[Contract][address_line1]', $data['Contract']['address_line1']);
-    FormBuilder::hidden('address_line2', 'data[Contract][address_line2]', $data['Contract']['address_line2']);
-    FormBuilder::hidden('postal_code', 'data[Contract][postal_code]', $data['Contract']['postal_code']);
-    FormBuilder::hidden('city', 'data[Contract][city]', $data['Contract']['city']);
-    FormBuilder::hidden('lat', 'data[Contract][lat]', $data['Contract']['lat']);
-    FormBuilder::hidden('long', 'data[Contract][long]', $data['Contract']['long']);
-    FormBuilder::hidden('place_id', 'data[Contract][place_id]', $data['Contract']['place_id']);
+    FormBuilder::hidden('contract_id', 'data[contract][contract_id]', $data['Contract']['contract_id']);
+    FormBuilder::hidden('repeating_invoice_id', 'data[contract][repeating_invoice_id]', $data['Contract']['repeating_invoice_id']);
+    FormBuilder::hidden('address_line1', 'data[contract][address_line1]', $data['Contract']['address_line1']);
+    FormBuilder::hidden('address_line2', 'data[contract][address_line2]', $data['Contract']['address_line2']);
+    FormBuilder::hidden('postal_code', 'data[contract][postal_code]', $data['Contract']['postal_code']);
+    FormBuilder::hidden('city', 'data[contract][city]', $data['Contract']['city']);
+    FormBuilder::hidden('lat', 'data[contract][lat]', $data['Contract']['lat']);
+    FormBuilder::hidden('long', 'data[contract][long]', $data['Contract']['long']);
+    FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['Contract']['place_id']);
 
 
     FormBuilder::hidden('note_foreign_id', 'data[Note][foreign_id]', $data['Note'][0]['foreign_id'] ?? '');
@@ -59,6 +56,7 @@ use App\Models\Enums\YesNoDontKnow;
 
         <div class="col-md-3">
             <?php
+
             FormBuilder::select('status', 'data[contract][status]',
                 'Status',
                 EnquiryStatus::getSelectOptions($data['Contract']['status']),
@@ -66,22 +64,18 @@ use App\Models\Enums\YesNoDontKnow;
             ?>
             <div id="doyoumean"></div>
 
-            <?php FormBuilder::radio('data[contact][best_way_to_contact]',
-                'Best way to contact',
-                BestWayToContact::getAllAsArray(),
-                $data['contacts']['best_way_to_contact'] ?? ''
-            );
+            <?php
             FormBuilder::radio('data[contract][winz]', 'WINZ Form',
                 WinzStatus::getAllAsArray(),
                 $data['Contract']['winz']
             );
-            FormBuilder::radio('data[contact][how_did_you_hear]', 'How did you  hear about us?',
+            FormBuilder::radio('data[contract][how_did_you_hear]', 'How did you  hear about us?',
                 HowDidYouHear::getAllAsArray(),
-                $data['contracts']['how_did_you_hear'] ?? '');
+                $data['Contract']['how_did_you_hear'] ?? '');
 
-            FormBuilder::radio('data[contact][enquiry_rating]', 'Enquiry Rating',
+            FormBuilder::radio('data[contract][enquiry_rating]', 'Enquiry Rating',
                 EnquiryRating::getAllAsArray(),
-                $data['contracts']['enquiry_rating'] ?? '0');
+                $data['Contract']['enquiry_rating'] ?? '0');
             ?>
 
         </div>
@@ -120,7 +114,12 @@ use App\Models\Enums\YesNoDontKnow;
                             <span id='open-in-maps' class="input-group-text btn btn-info">Maps</span>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Available Cabins</label>
+                        <div role="group" id="availableCabins" aria-label="Select the company">
+                        </div>
 
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
@@ -132,9 +131,9 @@ use App\Models\Enums\YesNoDontKnow;
                 FormBuilder::select('time', 'data[contract][delivery_time]', 'Scheduled Delivery Time', DeliveryTimes::getSelectOptions($data['Contract']['delivery_time'] ?? '9:00'));
                 FormBuilder::datePicker('deliveryDate', 'data[contract][delivery_date]', 'Actual Delivery Date', $data['Contract']['delivery_date']);
                 FormBuilder::radio('data[contract][schedule_unit]', 'Payment Schedule', ScheduleUnit::getAllAsArray(), $data['Contract']['schedule_unit']);
-                FormBuilder::radio('data[contract][text_reminder_invoice]', 'Send SMS reminder on rent day?',
+                FormBuilder::radio('data[contract][sms_reminder_invoice]', 'Send SMS reminder on rent day?',
                     YesNoDontKnow::getAllAsArray(),
-                    $data['Contract']['text_reminder_invoice']);
+                    $data['Contract']['sms_reminder_invoice']);
                 ?>
 
                 <div class='form-group col-md-4'>

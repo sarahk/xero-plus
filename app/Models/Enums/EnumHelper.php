@@ -19,13 +19,14 @@ trait EnumHelper
     }
 
     // return all the options for an html select
-    public static function getSelectOptions(string $selected): string
+    public static function getSelectOptions(string $val): string
     {
         $output = [];
 
         foreach (self::cases() as $status) {
-            $selected = ($status->value === $selected) ? 'selected' : '';
-            $output[] = "<option value='{$status->value}' $selected>{$status->value}</option>";
+            $selected = ($status->value === $val) ? 'selected' : '';
+            $label = self::getLabel($status->value);
+            $output[] = "<option value='{$status->value}' $selected>{$label}</option>";
         }
         return implode(PHP_EOL, $output);
     }

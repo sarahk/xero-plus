@@ -128,18 +128,16 @@ class XeroClass
     {
         $output = ['data' => []];
 
-        $output['draw'] = filter_input(INPUT_GET, 'draw', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 1]]);
-        $output['start'] = filter_input(INPUT_GET, 'start', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 1]]);
-        $output['length'] = filter_input(INPUT_GET, 'length', FILTER_SANITIZE_NUMBER_INT, ['options' => ['default' => 10]]);
-        //$output['search'] = filter_input(INPUT_GET, 'search', FILTER_DEFAULT, ['options' => ['default' => '']]);
-        //$output['order'] = filter_input(INPUT_GET, 'order', FILTER_DEFAULT, ['options' => ['default' => '']]);
+        $output['draw'] = int_val($_GET['draw'] ?? 1);
+        $output['start'] = int_val($_GET['start'] ?? 1);
+        $output['length'] = int_val($_GET['length'] ?? 10);
         $output['order'] = $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']];
         $output['search'] = $_GET['search']['value'] ?? '';
         // getInvoice
-        $output['invoice_status'] = filter_input(INPUT_GET, 'invoice_status');
-        $output['dates'] = filter_input(INPUT_GET, 'dates');
-        $output['contact_status'] = filter_input(INPUT_GET, 'dates');
-        $output['button'] = filter_input(INPUT_GET, 'button');
+        $output['invoice_status'] = $_GET['invoice_status'] ?? '';
+        $output['dates'] = $_GET['dates'];
+        $output['contact_status'] = $_GET['contact_status'] ?? '';
+        $output['button'] = $_GET['button'];
 
         // prima
         $output['key'] = filter_input(INPUT_GET, 'key', FILTER_DEFAULT);

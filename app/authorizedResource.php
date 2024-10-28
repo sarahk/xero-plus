@@ -103,19 +103,30 @@ switch ($action) {
     case 14:
         // single cabin record
         $cabin = new CabinModel($pdo);
-        $data = $cabin->get('cabin_id', $_GET['cabin_id'], false);
+        $cabin_id = $_GET['cabin_id'] ?? 0;
+        if (!$cabin_id) {
+            //reload the dashboard
+            header('Location: authorizedResource.php');
+            exit;
+        }
+
+
+        $data = $cabin->get('cabin_id', $cabin_id, false);
 
         //$contracts = new ContractModel($pdo);
-        $data['contracts'] = $cabin->getCurrentContract($_GET['cabin_id']);
-        $contacts = new ContactModel($pdo);
-        $contact = $contacts->get('id', $data['contracts']['ckcontact_id'], false);
+        $data['contracts'] = $cabin->getCurrentContract($cabin_id);
+        if (count($data['contracts']) > 0) {
+            $contacts = new ContactModel($pdo);
+            $contact = $contacts->get('id', $data['contracts']['ckcontact_id'], false);
 
-        // contact will have a notes child record, we let the cabin notes overwrite it
-        $data = array_merge($contact, $data);
+            // contact will have a notes child record, we let the cabin notes overwrite it
+            $data = array_merge($contact, $data);
+
+        }
 
         $tasks = new TasksModel($pdo);
         $data['tasks'] = $tasks->getChildren('cabins', $_GET['cabin_id'], false);
-        $modals = ['task-single.php'];
+        $modals = ['task-single.php', 'cabin-edit-basics.php'];
         break;
 
     case 15:
@@ -180,7 +191,7 @@ $view = match ($action) {
     11 => 'Views/cabin-locations.php',
     12 => 'Views/invoice_single.php',
     13 => 'Views/cabins-index.php',
-    14 => 'Views/forms/cabin-edit.php',
+    14 => 'Views/cabin-single.php',
     16 => 'Views/bad_debts_index.php',
     17 => 'Views/templates_index.php',
     200 => 'Views/home2.php',

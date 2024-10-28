@@ -69,4 +69,19 @@ trait FunctionsTrait
         return date_format($date, "d M");
     }
 
+    protected function toMysqlDate($val): string
+    {
+        if (empty($val)) return '';
+        $date = date_create($val);
+        return date_format($date, "Y-m-d");
+    }
+
+    protected function toNormalDate($val): string
+    {
+        if (empty($val)) return '';
+
+        $date = date_create($val);
+        return date_format($date, "d-M-Y");
+    }
+
 }

@@ -88,7 +88,7 @@ class ExtraFunctions
     }
 
 
-    public static function getCard(string $filename, string $label, string $cardId): void
+    public static function getCard(string $filename, string $label, string $cardId, array $data): void
     {
         ?>
         <div class="card" id="$cardId">
@@ -206,6 +206,36 @@ class ExtraFunctions
             return "({$count})";
         }
         return '';
+    }
+
+    public static function getAccordionItem(int $counter, string $parent, string $label, string $body): void
+    {
+        ?>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading<?= $counter; ?>">
+                <button class="accordion-button collapsed {$active}" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse<?= $counter; ?>" aria-expanded="false"
+                        aria-controls="collapse<?= $counter; ?>"><?= $label; ?>
+                </button>
+            </h2>
+            <div id="collapse<?= $counter; ?>" class="accordion-collapse collapse"
+                 aria-labelledby="heading<?= $counter; ?>"
+                 data-bs-parent="#<?= $parent; ?>" style="">
+                <div class="accordion-body">
+                    <?= $body; ?>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /* duplicate of the ones in the FunctionsTrait */
+    public static function toNormalDate(null|string $val): string
+    {
+        if (empty($val)) return '';
+
+        $date = date_create($val);
+        return date_format($date, "d-M-Y");
     }
 }
 /*

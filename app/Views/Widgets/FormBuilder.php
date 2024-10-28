@@ -116,13 +116,19 @@ class FormBuilder
         ?>
         <div class='form-group'>
             <label class="form-label" for='<?= $id; ?>'><?= $label; ?></label>
-            <select class="form-control" id='<?= $id; ?>' name='<?= $name; ?>'
-                    data-bs-placeholder="Choose One" tabindex="-1">
-                <option label="Choose one"></option>
-                <?php echo $choices; ?>
-            </select>
-
+            <?php self::selectOnly($id, $name, $choices); ?>
         </div>
+        <?php
+    }
+
+    static function selectOnly(string $id, string $name, string $choices): void
+    {
+        ?>
+        <select class="form-control" id='<?= $id; ?>' name='<?= $name; ?>'
+                data-bs-placeholder="Choose One" tabindex="-1">
+            <option label="Choose one"></option>
+            <?php echo $choices; ?>
+        </select>
         <?php
     }
 
@@ -207,7 +213,7 @@ class FormBuilder
                             color: white;
                         }";
             $inputs[] = "<input type='radio' class='btn-check'
-                           name='tenancy-region'
+                           name='data[contract][xerotenant_id]'
                            id='enquiry-tenancy-{$row['shortname']}'
                            value='{$row['tenant_id']}'
                            autocomplete='off' $checked>

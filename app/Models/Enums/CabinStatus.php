@@ -13,10 +13,15 @@ enum CabinStatus: string
     case Stolen = 'stolen';
     case WriteOff = 'write_off';
 
-    public static function getCabinStatusLabel(string $status): string
+    public static function getCabinStatusLabel(string $val): string
     {
-        $cabinStatus = self::from($status);
-        return match ($cabinStatus) {
+        return self::getLabel($val);
+    }
+
+    public static function getLabel(string $val): string
+    {
+        $pointer = self::from($val);
+        return match ($pointer) {
             self::New => 'New',
             self::Active => 'Active',
             self::Repairs => 'Needs Repairs',

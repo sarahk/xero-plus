@@ -112,7 +112,7 @@ class BaseModel
 
                     $output[$val] = $child->getChildren($this->table, $output[$this->table][$this->primaryKey], $defaults);
                     //var_export(['parent' => $this->table, 'child table:' => $val, 'data' => $output[$val]]);
-                    $this->debug($output[$val]);
+                    
                 }
             }
             return $output;

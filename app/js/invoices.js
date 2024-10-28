@@ -10,14 +10,14 @@ $(document).ready(function () {
     if ($('#tInvoices').length) {
 
         let tInvoices = $('#tInvoices').DataTable({
-            "ajax": {
-                "url": "/json.php?endpoint=Invoices&action=Read",
+            ajax: {
+                url: "/json.php?endpoint=Invoices&action=Read",
             },
-            "processing": true,
-            "serverSide": true,
-            "paging": true,
+            processing: true,
+            serverSide: true,
+            paging: true,
             stateSave: true,
-            "columns": [
+            columns: [
                 {data: "number"},
                 {data: "contact"},
                 {data: "reference"},
@@ -71,13 +71,13 @@ $(document).ready(function () {
 
     if ($('#tableInv4Contract').length) {
         let tInv4Contract = $('#tableInv4Contract').DataTable({
-            "ajax": {
-                "url": "/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=" + keys.repeating_invoice_id,
+            ajax: {
+                url: "/json.php?endpoint=Invoices&action=Contract&repeating_invoice_id=" + keys.repeating_invoice_id,
             },
-            "processing": true,
-            "serverSide": true,
-            "paging": true,
-            "columns": [
+            processing: true,
+            serverSide: true,
+            paging: true,
+            columns: [
                 {data: "number"},
                 {data: "reference"},
                 {data: "total"},

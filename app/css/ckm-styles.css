@@ -25,3 +25,46 @@ select.form-control {
 .border-bottom-purple {
     border-bottom: 1px solid var(--bs-purple);
 }
+
+
+/* original colour
+#eaedf1
+https://www.color-hex.com/color/eaedf1
+darker: #8c8e90
+*/
+
+.form-control {
+    border: 1px solid #a3a5a8;
+}
+
+.form-control:focus {
+    border-color: #a3a5a8;
+}
+
+.input-group-text {
+    border: 1px solid #a3a5a8;
+}
+
+
+/* to make fontawesome visible when used in buttons */
+.btn-outline-primary i {
+    color: var(--bs-primary); /* Bootstrap primary color */
+}
+
+.tab-content .btn i {
+    color: var(--bs-primary);;
+}
+
+
+/* Adds the coloured bar to tables */
+tr.bar-yellow td:nth-child(1) {
+    border-left: 0.75em solid yellow !important;
+}
+
+tr.bar-cyan td:nth-child(1) {
+    border-left: 0.75em solid cyan !important;
+}
+
+tr.bar-purple td:nth-child(1) {
+    border-left: 0.75em solid purple !important;
+}

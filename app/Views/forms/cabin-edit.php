@@ -1,8 +1,12 @@
 <?php
-//debug($data);
+namespace App\Views\forms;
+
+use App\ExtraFunctions;
+use App\Utilities;
+
 if (empty($data['cabins']['cabinnumber'])) $label = 'New Cabin';
 else $label = 'Cabin #' . $data['cabins']['cabinnumber'];
-debug($data);
+//ExtraFunctions::debug($data);
 echo '<pre>' . var_export($data) . '</pre>';
 ?>
 <script>
@@ -23,12 +27,12 @@ echo '<pre>' . var_export($data) . '</pre>';
         <div class="col-md-6">
             <form type='GET' id='modalForm'>
                 <?php
-                getCard('/Views/forms/cabin-edit-basics.php', 'Basics', $data);
+                ExtraFunctions::getCard('/Views/forms/cabin-edit-basics.php', 'Basics', 'cabinBasics', $data);
                 ?>
             </form>
         </div>
         <div class="col-md-6">
-            <?php getCard('/Views/cabin-current-contract.php', 'Current Contract', $data); ?>
+            <?php ExtraFunctions::getCard('/Views/cabin-current-contract.php', 'Current Contract', 'cabinContract', $data); ?>
         </div>
         <div class="col-md-6">
             <?php
@@ -37,11 +41,12 @@ echo '<pre>' . var_export($data) . '</pre>';
                 ['name' => 'contracts', 'label' => 'Contracts', 'filename' => '/Views/cabin-contracts.php'],
                 ['name' => 'photos', 'label' => 'Photos', 'filename' => '/Views/cabin-contracts.php'],
             ];
-            getTabs($tabs, 'notes', $data);
-            //getCard('/Views/cabin-contracts.php', 'Contracts', $data); ?>
+            ExtraFunctions::getTabs($tabs, 'notes', $data);
+            //getCard('/Views/cabin-contracts.php', 'Contracts', $data);
+            ?>
         </div>
         <div class="col-md-6">
-            <?php getCard('/Views/cabin-tasks.php', 'Tasks', $data); ?>
+            <?php ExtraFunctions::getCard('/Views/cabin-tasks.php', 'Tasks', 'cabinTasks', $data); ?>
         </div>
     </div>
 

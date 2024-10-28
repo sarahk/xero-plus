@@ -5,9 +5,9 @@ $(document).ready(function () {
     'use strict'
 
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.getElementsByClassName('needs-validation');
+    let forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms, function (form) {
+    let validation = Array.prototype.filter.call(forms, function (form) {
         form.addEventListener('submit', function (event) {
             if (form.checkValidity() === false) {
                 event.preventDefault();
@@ -17,6 +17,27 @@ $(document).ready(function () {
         }, false);
     });
 
+    function setContactsAsSortable() {
+
+        if ($('#enquiryContacts').length) {
+            let $tbody = $('#enquiryContacts tbody');
+            $tbody.sortable({
+                stop: function (event, ui) {
+                    // This function will trigger when sorting has stopped
+                    $("#enquiryContacts tbody tr").each(function (index) {
+                        // 'index' will act as the incrementing key (like $i in PHP)
+                        let key = $(this).attr('data-key');
+                        console.log(['key', key, index]);
+                        // Find the hidden input field within this row and set its value to the index
+                        let sortOrderKey = "#sortorder" + key;
+                        $(this).find(sortOrderKey).val(index);
+                    });
+                }
+            });
+        }
+    }
+
+    setContactsAsSortable();
 
     $('#enquiryContacts input.hasDatepicker').each(function () {
         console.log(['enquiryContacts datepicker', this]);
@@ -65,11 +86,12 @@ $(document).ready(function () {
     $('#addNewContact').on('click', function (event) {
 
         // Assuming you want to append this row to #enquiryContacts table
-        let key = $('#enquiryContacts tr').length;  // Get the number of rows to generate a unique key
+        let key = $('#enquiryContacts tr').length - 1;  // Get the number of rows to generate a unique key
 
         let newRow = `
 <tr data-key="${key}">
     <td>
+    <input type="hidden" id="sortorder${key}" name="data[contact][${key}][sort_order]" value="0">
         <input class="form-control" id="first_name${key}" name="data[contact][${key}][first_name]" placeholder="First Name" type="text" value="" required="">
         <input class="form-control" id="last_name${key}" name="data[contact][${key}][last_name]" placeholder="Last Name" type="text" value="" required="">
     </td>
@@ -81,6 +103,14 @@ $(document).ready(function () {
         <input class="form-control" id="email_address${key}" name="data[contact][${key}][email_address]" placeholder="Email" type="email" value="">
     </td>
     <td>
+                    <select class="form-control" id="contact${key}bestwaytocontact" name="data[contact][${key}][best_way_to_contact]" data-bs-placeholder="Choose One" tabindex="-1">
+            <option label="Choose one"></option>
+            <option value="phone">Phone</option>
+<option value="email">Email</option>
+<option value="sms">SMS/Text</option>
+<option value="nopref">Whatever is easiest</option>        </select>
+                </td>
+    <td>
         <div class="input-group">
             <div class="input-group-text">
                 <span class="fa fa-calendar tx-16 lh-0 op-6" aria-hidden="true"></span>
@@ -91,16 +121,12 @@ $(document).ready(function () {
 </tr>
 `;
 
-// Append the new row to the table
-        $('#enquiryContacts').append(newRow);
-
-// If you want to initialize the date picker for the newly added input (assuming you use a datepicker plugin)
+        $('#enquiryContacts tbody').append(newRow);
         $('#date_of_birth' + key).datepicker();
 
         //let key = $('#enquiryContacts tr:last').attr('data-key');
-        console.log(key);
-        console.log($('#date_of_birth' + key))
-        Swal.fire({title: 'Success', text: 'key is ' + key});
+        //Swal.fire({title: 'Success', text: 'key is ' + key});
+        setContactsAsSortable();
     });
 
     //$('#phone').mask('000 0000 0000');
@@ -122,7 +148,7 @@ $(document).ready(function () {
 
         //console.log(event.data);
         let newValue = $(this).val();
-        if ($('#id').val() == '' && newValue.length >= 3) {
+        if ($('#id').val() === '' && newValue.length >= 3) {
 
             dymDraw++;
             // needs to split out the first digits
@@ -141,7 +167,7 @@ $(document).ready(function () {
 
             $.getJSON("/json.php", getData, function (data) {
 
-                if (data.draw == dymDraw && data.count > 0) {
+                if (data.draw === dymDraw && data.count > 0) {
                     let items = [];
                     // get rid of the previous results
 
@@ -269,27 +295,118 @@ $(document).ready(function () {
     $('#saveEnquiry').on('click', function (event) {
         event.preventDefault();
 
-        let data = $('#enquiryForm').serializeArray()
+        let formData = serializeToNestedObject($('#enquiryForm').serializeArray());
         let payload = {
             action: '10',
-
-            data: data,
+            data: formData.data,
         };
         console.log(payload);
-        Swal.fire({
-            title: "About to fire",
-            text: "Saved successfully",
-            icon: "success"
+
+        $.ajax({
+            url: "/authorizedSave.php",
+            type: 'POST',
+            data: payload,
+            dataType: 'json',
+            success: function (response) {
+
+                console.log('Success:', response);
+                // You can now use the JSON response
+                Swal.fire({
+                    title: "Good job!",
+                    text: "Saved successfully",
+                    icon: "success"
+                });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // This function is called if the request fails
+                console.error('Error:', textStatus, errorThrown);
+            }
         });
 
-        $.getJSON("/authorizedSave.php", payload, function (data) {
-
-            Swal.fire({
-                title: "Good job!",
-                text: "Saved successfully",
-                icon: "success"
-            });
-
-        });
     });
+
+
+    function serializeToNestedObject(serializedArray) {
+        var result = {};
+
+        serializedArray.forEach(function (item) {
+            var keys = item.name.match(/[^\[\]]+/g); // Split the name like data[contract][contract_id] into keys: ['data', 'contract', 'contract_id']
+            var current = result;
+
+            keys.forEach(function (key, index) {
+                // If it's the last key, assign the value
+                if (index === keys.length - 1) {
+                    current[key] = item.value;
+                } else {
+                    // Create the nested object if it doesn't exist
+                    if (!current[key]) {
+                        current[key] = {};
+                    }
+                    current = current[key];
+                }
+            });
+        });
+
+        return result;
+    }
+
+    function getRadioButtonValue(radioName) {
+        let pointer = `input[name='${radioName}']:checked`;
+
+        if ($(pointer).length > 0) {
+            return $(pointer).val();
+        }
+        return false;
+    }
+
+    let availableCabins = $('#availableCabins');
+    if (availableCabins.length > 0) {
+        refreshCabinList();
+        $('input[name="data[contract][xerotenant_id]"]').on('change', refreshCabinList);
+        $('input[name="data[contract][painted]"]').on('change', refreshCabinList);
+        $('input[name="data[contract][cabin_type]"]').on('change', refreshCabinList);
+        $('#scheduledDeliveryDate').on('change', refreshCabinList);
+    }
+
+    function refreshCabinList() {
+        $('#availableCabins').empty();
+
+        if ($('input[name="data[contract][status]"]') === 'Yes') {
+
+            let payload = {
+                endpoint: 'Cabins',
+                action: 'Enquiry',
+                xerotenant_id: getRadioButtonValue('data[contract][xerotenant_id]'),
+                cabin_id: getRadioButtonValue('data[contract][cabin_id]'),
+                painted: getRadioButtonValue('data[contract][painted]'),
+                cabinType: getRadioButtonValue('data[contract][cabin_type]'),
+                scheduledDate: $('#scheduledDeliveryDate').val()
+            }
+            $.getJSON('/json.php', payload, function (data) {
+
+                let cabin_id = getRadioButtonValue('data[contract][cabin_id]');
+
+
+                $.each(data, function (key, val) {
+
+                    let checked = (val.cabin_id.toString() === cabin_id ? ' checked ' : '');
+                    let inputId = `enquiry-cabin-${val.cabin_id}`;
+
+                    let newButton =
+                        "<input type='radio' class='btn-check' " +
+                        "name='data[contract][cabin_id]'" +
+                        "id='" + inputId + "' " +
+                        "value='" + val.cabin_id + "' " +
+                        "autocomplete='off' " + checked + "> " +
+                        "<label class='btn btn-outline-primary' for='" + inputId + "'>" + val.cabinnumber +
+                        "<br><small>" + val.styleLabel + "</small>" +
+                        "<br><small>" + val.inYard + "</small>" +
+                        "</label>";
+
+                    $('#availableCabins').append(newButton);
+                });
+
+            });
+        }
+    }
 });

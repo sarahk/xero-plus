@@ -6,37 +6,42 @@
 
 namespace App;
 
-use App\Models\ContactModel;
-use App\Utilities;
-use App\StorageClass;
+use App\Models\ContractModel;
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
+// if this script returns anything, it'll be json
+header('Access-Control-Allow-Origin: *');
+header("Content-type: application/json; charset=utf-8");
+
+
 require '../vendor/autoload.php';
 
-require_once('ExtraFunctions.php');
-
-
-//require_once('authorizedXero.php');
+Utilities::checkAccessToken();
 
 $message = "no API calls";
 
 $pdo = Utilities::getPDO();
 
-$action = $_GET['action'] ?? 0;
+// P O S T    *****
+$action = $_POST['action'] ?? 0;
 
 switch ($action) {
 
     case 10:
         // enquiries
-        if (array_key_exists('data', $_GET)) {
-            $data = $_GET['data'];
+        if (array_key_exists('data', $_POST)) {
+            $data = $_POST['data']['data'];
 
             // address needs to be duplicated
-            $contact = new ContactModel($pdo);
-            $id = $contact->prepAndSave($data);
-            debug($_GET);
-            debug($id);
+            $contract = new ContractModel($pdo);
+            $contract_id = $contract->prepAndSave($data);
+            //ExtraFunctions::debug($_POST);
+            //ExtraFunctions::debug($id);
+            //output for the form
+            echo json_encode([
+                'contract_id' => $contract_id
+            ]);
             exit;
 
         }

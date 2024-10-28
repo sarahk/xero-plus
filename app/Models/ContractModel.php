@@ -22,19 +22,22 @@ class ContractModel extends BaseModel
     protected array $saveKeys = [
         'contract_id', 'repeating_invoice_id', 'cabin_id',
         'contact_id', 'ckcontact_id', 'reference', 'total', 'schedule_unit',
-        'status', 'cabin_type', 'hiab', 'painted', 'winz',
-        'delivery_date', 'scheduled_delivery_date', 'delivery_time',
+        'status', 'cabin_type', 'hiab', 'painted', 'winz', 'how_did_you_hear',
+        'delivery_date', 'scheduled_delivery_date', 'delivery_time', 'sms_reminder_invoice',
         'pickup_date', 'scheduled_pickup_date',
         'address_line1', 'address_line2', 'city', 'postal_code',
-        'lat', 'long', 'place_id', 'updated', 'stub'
+        'lat', 'long', 'place_id',
+        'updated', 'stub'
     ];
     protected array $updateKeys = [
         'cabin_id', 'reference', 'total', 'schedule_unit', 'status',
-        'cabin_type', 'hiab', 'painted', 'winz',
-        'delivery_date', 'scheduled_delivery_date', 'delivery_time',
+        'cabin_type', 'hiab', 'painted', 'winz', 'how_did_you_hear',
+        'delivery_date', 'scheduled_delivery_date', 'delivery_time', 'sms_reminder_invoice',
         'pickup_date', 'scheduled_pickup_date',
         'address_line1', 'address_line2', 'city', 'postal_code',
-        'lat', 'long', 'place_id', 'updated', 'stub'];
+        'lat', 'long', 'place_id',
+        'updated', 'stub'
+    ];
     protected array $nullable = ['contract_id', 'repeating_invoice_id', 'cabin_id', 'contact_id'];
     protected ContractModel $contract;
     protected bool $hasStub = true;
@@ -74,46 +77,45 @@ class ContractModel extends BaseModel
     }
 
     //  C O N T R A C T
-    public function prepAndSave($data): int
+    public function prepAndSave(array $data): int
     {
-        $lookingFor = ['contract_id', 'repeating_invoice_id', 'xeroRefresh'];
-        if ($this->array_keys_exist($lookingFor, $data)) {
-
-            if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh']) {
-                // we don't want to get the old $oldVals = ['contracts' => []];
-                // we're saving fewer columns
-                $this->debug('Contract Model prepAndSave xeroRefresh');
-                $this->insert = "UPDATE `contracts` SET 
+        if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh']) {
+            // we don't want to get the old $oldVals = ['contracts' => []];
+            // we're saving fewer columns
+            $this->debug('Contract Model prepAndSave xeroRefresh');
+            $this->insert = "UPDATE `contracts` SET 
                        `stub` = 0, 
                        `contact_id` = :contact_id,
                        `ckcontact_id` = :ckcontact_id,
                        `reference` = :reference,
                        `schedule_unit` = :schedule_unit
                        WHERE repeating_invoice_id = :repeating_invoice_id";
-                $save = [
-                    'contact_id' => $data['contact_id'],
-                    'ckcontact_id' => $data['ckcontact_id'],
-                    'reference' => $data['reference'],
-                    'schedule_unit' => $data['schedule_unit'],
-                    'repeating_invoice_id' => $data['repeating_invoice_id']
-                ];
+            $save = [
+                'contact_id' => $data['contact_id'],
+                'ckcontact_id' => $data['ckcontact_id'],
+                'reference' => $data['reference'],
+                'schedule_unit' => $data['schedule_unit'],
+                'repeating_invoice_id' => $data['repeating_invoice_id']
+            ];
+            //***********
+            return $this->save($save);
+            //***********
+        }
 
-                return $this->save($save);
-            } else if (array_key_exists('contract_id', $data) && $data['contract_id']) {
-                $oldVals = $this->get('contract_id', $data['contract_id']);
-            } else if (array_key_exists('repeating_invoice_id', $data)) {
-                $oldVals = $this->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
-            } else {
-                //$oldVals = ['contracts' => []];
-                $defaults = $this->getDefaults();
-                $oldVals['contracts'] = $defaults[0];
-            }
-
+        // normal save
+        if (array_key_exists('contract_id', $data['contract']) && $data['contract']['contract_id']) {
+            $oldVals = $this->get('contract_id', $data['contract']['contract_id']);
+        } else if (array_key_exists('repeating_invoice_id', $data)) {
+            // this should never be needed
+            $oldVals = $this->get('repeating_invoice_id', $data['contract']['repeating_invoice_id']);
         } else {
             $defaults = $this->getDefaults();
             $oldVals['contracts'] = $defaults[0];
         }
+
+
 // uses a special version of array_merge
+
         $contract = $this->array_merge($oldVals['contracts'], $data['contract']);
 
         $contract['updated'] = date('Y-m-d H:i:s');

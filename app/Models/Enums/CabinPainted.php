@@ -6,8 +6,8 @@ enum CabinPainted: string
 {
     use EnumHelper;
 
-    case Yes = 'Yes';
-    case No = 'No';
+    case Yes = 'painted';
+    case No = 'unpainted';
     case NoPref = 'nopref';
 
 
@@ -19,6 +19,14 @@ enum CabinPainted: string
             self::No => 'No',
             self::NoPref => "No Preference",
             default => $val,
+        };
+    }
+
+    public static function includeInQuery($val): bool
+    {
+        return match ($val) {
+            self::Yes, self::No => true,
+            default => false,
         };
     }
 }

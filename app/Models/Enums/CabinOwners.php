@@ -7,15 +7,16 @@ enum CabinOwners: string
     use EnumHelper;
 
     case None = '';
+    case NoOwner = '---';
     case Chloe = 'Chloe';
     case Charlotte = 'Charlotte';
 
 
-    public static function getCabinOwnersLabel(string $owner): string
+    public static function getLabel(string $val): string
     {
-        $cabinOwner = self::from($owner);
-        return match ($cabinOwner) {
-            self::None => '',
+        $pointer = self::from($val);
+        return match ($pointer) {
+            self::None, self::NoOwner => 'Operator',
             self::Chloe => 'Chloe',
             self::Charlotte => 'Charlotte',
         };

@@ -1,17 +1,3 @@
-<style>
-    tr.bar-yellow td:nth-child(1) {
-        border-left: 0.75em solid yellow !important;
-    }
-
-    tr.bar-cyan td:nth-child(1) {
-        border-left: 0.75em solid cyan !important;
-    }
-
-    tr.bar-purple td:nth-child(1) {
-        border-left: 0.75em solid purple !important;
-    }
-</style>
-
 <div class="col-md-4">
     <div class="card custom-card">
         <div class="card-header justify-content-between">

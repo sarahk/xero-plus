@@ -2,23 +2,116 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use App\Models\Enums\CabinPainted;
+use App\Models\Enums\CabinStyle;
 
 class CabinModel extends BaseModel
 {
     protected string $table = 'cabins';
     protected string $primaryKey = 'cabin_id';
-    protected array $hasMany = ['notes'];
-    protected NoteModel $notes;
+    protected array $hasMany = ['Note'];
+
 
     function __construct($pdo)
     {
         parent::__construct($pdo);
 
-        //$this->buildInsertSQL();
-        $this->notes = new NoteModel($pdo);
 
     }
+
+    public function enquiryList(array $params): array
+    {
+        /*
+        cabinType:"std-right"
+        painted:"No"
+        scheduledDate:"10/10/2024"
+        xerotenant_id:"e95df930-c903-4c58-aee9-bbc21b78bde7"
+        */
+
+        $conditions = $searchValues = [];
+        if (!empty($params['cabinType'])) {
+            $conditions[] = CabinStyle::getWhere($params['cabinType']);
+        }
+        if (!empty($params['painted'])) {
+            if (CabinPainted::includeInQuery($params['painted'])) {
+                $conditions[] = 'cabins.paintinside = :painted';
+                $searchValues['painted'] = $params['painted'];
+            }
+        }
+        /*
+         * todo
+         * use ScheduledDate to search for cabins coming back more than 14 days away
+         */
+//        if (!empty($params['scheduledDate'])) {
+//            $conditions[] = 'cabins.style = :cabinType';
+//            $searchValues['scheduledDate'] = $this->toMysqlDate($params['scheduledDate']);
+//        }
+        if (!empty($params['xerotenant_id'])) {
+            $conditions[] = 'cabins.xerotenant_id = :xerotenant_id';
+            $searchValues['xerotenant_id'] = $params['xerotenant_id'];
+        }
+
+        $cabin_id_where = '';
+        if (!empty($params['cabin_id'])) {
+            $cabin_id_where = " OR cabins.cabin_id = :cabin_id";
+            $searchValues['cabin_id'] = $params['cabin_id'];
+            $searchValues['cabin_id1'] = $params['cabin_id'];
+        } else {
+            $searchValues['cabin_id1'] = -1;
+        }
+
+        $sql = "SELECT `cabin_id`,`cabinnumber`, `style`, `disposaldate`, `status`, `notes`, `paintinside`,
+                    (SELECT max(pickup_date) FROM contracts 
+                        WHERE contracts.cabin_id = cabins.cabin_id and pickup_date >= NOW()) AS pickup_date,
+                    (SELECT max(scheduled_pickup_date) 
+		                FROM contracts WHERE contracts.cabin_id = cabins.cabin_id
+		                AND scheduled_pickup_date >= now()) AS scheduled_pickup_date,
+                CASE WHEN cabin_id = :cabin_id1 THEN 1 ELSE 2 END AS sort_order
+                FROM `cabins`
+                WHERE (" . implode(' AND ', $conditions) . "
+                AND cabins.cabin_id NOT IN 
+                    (SELECT contracts.cabin_id 
+                    FROM contracts 
+                    WHERE contracts.cabin_id = cabins.cabin_id 
+                    AND ( 
+                        contracts.scheduled_pickup_date is null
+                        OR contracts.scheduled_pickup_date > DATE_ADD(now(), INTERVAL 14 DAY)
+                        OR contracts.pickup_date > DATE_ADD(now(), INTERVAL 14 DAY))
+                        )
+                    ) " . $cabin_id_where . "
+                ORDER BY sort_order ASC
+                LIMIT 20";
+        $result = $this->runQuery($sql, $searchValues);
+        for ($i = 0; $i < count($result); $i++) {
+            $result[$i]['styleLabel'] = CabinStyle::getLabel($result[$i]['style']);
+            $result[$i]['inYard'] = $this->getInYard($result[$i]);
+        }
+        return $result;
+
+    }
+
+
+    protected function getInYard(array $row): string
+    {
+        $inbox = '<i class="fa-solid fa-inbox"></i>';
+        $dueIn = '<i class="fa-solid fa-right-to-bracket"></i>';
+
+        $pickupDate = $row['pickup_date'] ?? '';
+        $scheduledPickupDate = $row['scheduled_pickup_date'] ?? '';
+
+        // If both dates are empty, return 'In Yard'
+        if (empty($pickupDate . $scheduledPickupDate)) {
+            return $inbox . ' In Yard';
+        }
+
+        // Filter out empty values and find the minimum date
+        $dates = array_filter([$pickupDate, $scheduledPickupDate], fn($date) => !empty($date));
+        $dateToUse = min($dates);
+
+        // Return 'Due' with the formatted date
+        return $dueIn . ' Due ' . $this->getPrettyDate($dateToUse);
+    }
+
 
     public function list($params): string
     {
@@ -188,16 +281,7 @@ class CabinModel extends BaseModel
             AND (contracts.`pickup_date` >= now() OR contracts.`pickup_date` IS NULL)
             LIMIT 1";
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['cabin_id' => $cabin_id]);
-            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            if (count($result) == 1) return $result[0];
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-        return [];
+        return $this->runQuery($sql, [':cabin_id' => $cabin_id]);
     }
 }
 

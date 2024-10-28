@@ -1,15 +1,15 @@
 if ($('#tBadDebts').length) {
 
     let tBadDebts = $('#tBadDebts').DataTable({
-        "ajax": {
-            "url": "/json.php?endpoint=Invoices&action=BadDebts",
+        ajax: {
+            url: "/json.php?endpoint=Invoices&action=BadDebts",
         },
-        "processing": true,
-        "serverSide": true,
-        "paging": true,
+        processing: true,
+        serverSide: true,
+        paging: true,
         stateSave: true,
         rowId: 'DT_RowId',
-        "columns": [
+        columns: [
             {
                 data: null,
                 targets: 0,
@@ -49,6 +49,9 @@ if ($('#tBadDebts').length) {
                     }
                 }]
             }
+        },
+        createdRow: (row, data, index) => {
+            row.classList.add('bar-' + data.colour);
         },
     });
 

@@ -39,6 +39,16 @@ enum CabinStyle: string
         };
     }
 
+    public static function getWhere(string $val): string
+    {
+        $pointer = self::tryFrom($val);
+        return match ($pointer) {
+            self::Standard => " `cabins`.`style` in ('" . implode("','", [self::Standard->value, self::Left->value, self::Right->value]) . "')",
+            self::Left, self::Right, self::Large, self::XL => "`cabins`.`style` = '$val'",
+            default => ''
+        };
+    }
+
 }
 //$cabinStatus = CabinStatus::from('active'); // Returns the enum case
 //echo $cabinStatus->label(); // Output: "Active"
