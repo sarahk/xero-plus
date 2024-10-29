@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Enums\TaskType;
+use PDO;
 
 class TasksModel extends BaseModel
 {
@@ -40,50 +41,32 @@ class TasksModel extends BaseModel
     }
 
 
-    public function getCurrentCabin($cabin_id): array
+    public function getCurrentCabin(int $cabin_id): array
     {
         $sql = "SELECT * " . $this->getVirtuals() . " 
             FROM `tasks`
             WHERE `cabin_id` = :cabin_id
             AND `status` != 'closed'";
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['cabin_id' => $cabin_id]);
-            return $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
 
-        return [];
+        return $this->runQuery($sql, [":cabin_id" => $cabin_id]);
     }
 
-    public function getLastWOFDate($cabin_id)
+    public function getLastWOFDate(int $cabin_id)
     {
         $sql = "SELECT max(`updated`) as `wofdate`
             FROM `tasks`
             WHERE `cabin_id` = :cabin_id
             AND `status` = 'closed'
             AND `task_type`  = 'wof'
-            GROUP BY `cabin_id`
-           ";
+            GROUP BY `cabin_id`";
 
-
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute(['cabin_id' => $cabin_id]);
-            $data = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            if ($data) {
-                return $data['0']['wofdate'];
-            } else return 'unknown';
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-        return 'unknown';
+        $data = $this->runQuery($sql, [":cabin_id" => $cabin_id]);
+        if ($data) {
+            return $data['0']['wofdate'];
+        } else return 'unknown';
     }
 
-    public function closeTask($params)
+    public function closeTask(array $params): string
     {
         $task = $this->get('id', $params['key'], false)['tasks'];
         if ($task['status'] !== 'closed') {
@@ -94,8 +77,9 @@ class TasksModel extends BaseModel
             $save = $this->checkNullableValues($checked);
             $this->save($save);
 
-            $rules = lists::getTaskTypes()[$task['task_type']];
-            if ($rules['repeats']) {
+            $repeats = TaskType::getTaskTypeRepeats($task['task_type']);
+
+            if ($repeats) {
                 // we need to save a new record
                 $copy['id'] = null;
                 $copy['due_date'] = date('Y-m-d', strtotime(date('Y-m-d') . " +{$rules['years']} years"));
@@ -169,7 +153,7 @@ class TasksModel extends BaseModel
         $recordsTotal = "SELECT count(*) FROM `tasks` 
                 WHERE $tenancies"
             . (empty($params['key']) ? '' : ' AND `tasks`.`cabin_id` = ' . $params['key']);
-        
+
         $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
         $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
 

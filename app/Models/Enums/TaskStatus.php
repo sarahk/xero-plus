@@ -8,15 +8,15 @@ enum TaskStatus: string
     case Open = 'open';
     case Complete = 'complete';
     case Cancelled = 'cancelled';
+    
 
-    public static function getTaskStatusLabel(string $status): string
+    public static function getLabel(string $val): string
     {
-        $taskStatus = self::from($status);
-        return match ($taskStatus) {
+        $pointer = self::from($val);
+        return match ($pointer) {
             self::Open => 'Open',
             self::Complete => 'Complete',
             self::Cancelled => 'Cancelled',
         };
     }
-    
 }

@@ -140,16 +140,13 @@ class ExtraFunctions
         ?>
         <div class="col-lg-12 col-md-12">
             <div class="card">
-
                 <div class="card-body">
                     <div class="card-pay">
                         <ul class="nav tabs-menu">
                             <?php
                             foreach ($tabList as $tab) {
                                 $class = ($tab['name'] === $active) ? ' active ' : '';
-                                echo "<li>
-<a href='#tab-{$tab['name']}' class='{$class}' data-bs-toggle='tab'>{$tab['label']}</a>
-</li>";
+                                echo "<li><a href='#tab-{$tab['name']}' class='{$class}' data-bs-toggle='tab'>{$tab['label']}</a></li>";
                             }
                             ?>
                         </ul>
@@ -159,7 +156,6 @@ class ExtraFunctions
                         <div class="tab-content">
                             <?php
                             foreach ($tabList as $tab) {
-
                                 $class = ($tab['name'] === $active) ? ' active ' : '';
                                 echo "<div class='tab-pane {$class}' id='tab-{$tab['name']}'>";
                                 include(SITE_ROOT . $tab['filename']);

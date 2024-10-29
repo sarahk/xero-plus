@@ -1,12 +1,16 @@
 <?php
 
-namespace models;
+namespace App\Models;
 
 class VDebtsModel extends BaseModel
 {
     protected string $table = 'vdebts';
 
-    public function list($params): array
+    /**
+     * @param array<string, mixed> $params
+     * @return array<string, mixed>
+     */
+    public function list(array $params): array
     {
         $searchValues = [];
 
@@ -18,7 +22,7 @@ class VDebtsModel extends BaseModel
             2 => "vdebts.amount_due XXX",
             3 => "vdebts.weeks XXX"
         ];
-        $order = $this->getOrderBy($params, $orders, 3);
+        $order = $this->getOrderBy($params);
 
         if (!empty($params['search'])) {
             $search = [
@@ -41,15 +45,7 @@ class VDebtsModel extends BaseModel
             . "ORDER BY {$order} 
              LIMIT {$params['start']}, {$params['length']}";
 
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute($searchValues);
-
-            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
-        }
+        $result = $this->runQuery($sql, $searchValues);
 
         $output = $params;
         // adds in tenancies because it doesn't use $conditions
@@ -73,15 +69,17 @@ class VDebtsModel extends BaseModel
         return $output;
     }
 
-    public function getCounts()
+    /**
+     * @return array<string, string>
+     */
+    public function getCounts(): array
     {
         $sql = "SELECT 
-            SUM(CASE WHEN `counter` = 1 THEN 1 ELSE 0 END) AS `weeks1`,
-            SUM(CASE WHEN `counter` >= 2 AND counter < 6 THEN 1 ELSE 0 END) AS `weeks2`,
-            SUM(CASE WHEN `counter` >= 6 THEN 1 ELSE 0 END) AS `weeks6`
+            SUM(if( `counter` = 1 , 1 , 0))  AS `weeks1`,
+            SUM(if( `counter` >= 2 AND `counter` < 6 , 1 , 0 )) AS `weeks2`,
+            SUM(if (`counter` >= 6 , 1 , 0 )) AS `weeks6`
             FROM `vdebts`";
-        $stmt = $this->pdo->query($sql);
-        $output = $stmt->fetch();
+        $output = $this->runQuery($sql, []);
 
         $progress = $this->quarter($output['complete'], $output['complete'] + $output['due']);
         $output['progressBarClass'] = "w-$progress";

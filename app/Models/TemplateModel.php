@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
 
+use PDO;
 
 class TemplateModel extends BaseModel
 {
@@ -22,10 +22,10 @@ class TemplateModel extends BaseModel
     protected string $table = 'templates';
     protected string $primaryKey = 'id';
 
-    protected array $hasMany = [];
+    //protected array $hasMany = [];
     protected bool $hasStub = false;
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
 
@@ -33,7 +33,11 @@ class TemplateModel extends BaseModel
     }
 
 
-    public function prepAndSave($data): int
+    /**
+     * @param array $data <mixed>
+     * @return int
+     */
+    public function prepAndSave(array $data): int
     {
         if ($data['messagetype'] === 'SMS') {
             $data['body'] = strip_tags($data['body']);
@@ -69,30 +73,24 @@ class TemplateModel extends BaseModel
             . " LIMIT $start, $length";
 
 
-        $this->getStatement($sql);
         $output = [];
-        try {
-            $this->statement->execute($values);
-            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($list as $row) {
 
-                $subject = $row['subject'];
-                $body = $row['body'];
+        $list = $this->runQuery($sql, $values);
+        foreach ($list as $row) {
 
-                $output[] = [
-                    'id' => $row['id'],
-                    'messagetype' => $row['messagetype'],
-                    'status' => $row['status'],
-                    'subject' => $subject,
-                    'body' => $body,
-                    'preview' => $this->getPreview($row['messagetype'], $subject, $body),
-                    'label' => $this->getLabelModal($row['id'], $row['label'])
-                ];
+            $subject = $row['subject'];
+            $body = $row['body'];
 
-            }
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
+            $output[] = [
+                'id' => $row['id'],
+                'messagetype' => $row['messagetype'],
+                'status' => $row['status'],
+                'subject' => $subject,
+                'body' => $body,
+                'preview' => $this->getPreview($row['messagetype'], $subject, $body),
+                'label' => $this->getLabelModal($row['id'], $row['label'])
+            ];
+
         }
 
         return json_encode([
@@ -102,7 +100,7 @@ class TemplateModel extends BaseModel
         ]);
     }
 
-    protected function getPreview($messagetype, $subject, $body): string
+    protected function getPreview(string $messagetype, string $subject, string $body): string
     {
         if ($messagetype === 'SMS') {
             return $body;
@@ -111,7 +109,7 @@ class TemplateModel extends BaseModel
         }
     }
 
-    protected function getLabelModal($id, $label): string
+    protected function getLabelModal(string $id, string $label): string
     {
         return "<a href='#' class='templateRow' 
                     data-bs-toggle='modal' 

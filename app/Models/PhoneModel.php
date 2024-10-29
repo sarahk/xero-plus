@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use PDO;
 
 class PhoneModel extends BaseModel
 {
@@ -17,13 +18,16 @@ class PhoneModel extends BaseModel
     protected array $joins = ['contacts' => "`phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2"];
     protected array $virtualFields = ['phone' => "CONCAT(`phone_area_code`,' ',`phone_number`)"];
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
 
         $this->buildInsertSQL();
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getDefaults(): array
     {
         $phones = parent::getDefaults();

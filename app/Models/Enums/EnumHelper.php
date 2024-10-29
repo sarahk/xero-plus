@@ -3,16 +3,25 @@
 namespace App\Models\Enums;
 trait EnumHelper
 {
+    /**
+     * @return array<int, string>
+     */
     public static function getAllNames(): array
     {
         return array_map(fn($case) => $case->name, self::cases());
     }
 
+    /**
+     * @return array<int, string>
+     */
     public static function getAllValues(): array
     {
         return array_map(fn($case) => $case->value, self::cases());
     }
 
+    /**
+     * @return array<int, array<string, string>>
+     */
     public static function getAllAsArray(): array
     {
         return array_map(fn($case) => ['name' => $case->value, 'label' => self::getLabel($case->value)], self::cases());

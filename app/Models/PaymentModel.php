@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use PDO;
+
 class PaymentModel extends BaseModel
 {
     protected string $table = 'payments';
@@ -14,7 +16,7 @@ class PaymentModel extends BaseModel
 
     protected array $updateKeys = ['updated', 'is_reconciled', 'status'];
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();

@@ -12,7 +12,7 @@ class SettingModel extends BaseModel
             VALUES (:xeroTenantId, :category, :key, :value)
             ON DUPLICATE KEY UPDATE `value` = :value";
 
-    public function getKeyValue($xerotenant_id, $category, $key)
+    public function getKeyValue(string $xerotenant_id, string $category, string $key): mixed
     {
         $sql = "SELECT `value` FROM `settings` 
                WHERE `category` = :category 
@@ -21,16 +21,10 @@ class SettingModel extends BaseModel
                LIMIT 1";
         $this->getStatement($sql);
         $binders = ['xerotenant_id' => $xerotenant_id, 'category' => $category, 'key' => $key];
-        debug($binders);
-        debug($sql);
-        try {
-            $value = $this->statement->execute($binders);
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
 
-        debug($value);
+        $value = $this->runQuery($sql, $binders);
+
+        $this->debug($value);
         //$value = $this->pdo->query($sql)->fetchColumn();
         return $value;
     }

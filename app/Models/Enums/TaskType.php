@@ -11,17 +11,20 @@ enum TaskType: string
     case Repair = 'repair';
 
 
-    public static function getTaskTypeLabel(string $task): string
+    public static function getLabel(string $val): string
     {
-        $taskType = self::from($task);
-        return match ($taskType) {
+        $pointer = self::from($val);
+        return match ($pointer) {
             self::WOF => 'WOF',
             self::Buy => 'Buy',
             self::Repair => 'Repair',
         };
     }
 
-    public static function getTaskTypes()
+    /**
+     * @return array<int, array<string,string>>
+     */
+    public static function getTaskTypes(): array
     {
         $output = [];
         $vals = self::getAllValues();
@@ -33,8 +36,8 @@ enum TaskType: string
 
     public static function getTaskTypeRepeats(string $task): bool
     {
-        $taskType = self::from($task);
-        return match ($taskType) {
+        $pointer = self::from($task);
+        return match ($pointer) {
             self::WOF => true,
             self::Buy, self::Repair => false,
         };
@@ -59,6 +62,9 @@ enum TaskType: string
         };
     }
 
+    /**
+     * @return array<int, string>
+     */
     public static function getAllIcons(): array
     {
         return array_map(fn($case) => self::getTaskTypeIcon($case->value), self::cases());

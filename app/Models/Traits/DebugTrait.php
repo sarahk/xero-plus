@@ -7,7 +7,7 @@ trait DebugTrait
     protected int $stackLevels = 5;
     protected bool $showObjectMethods = false;
 
-    public function debug($val): void
+    public function debug(mixed $val): void
     {
         if (is_null($this->isJson)) $this->getIsJson();
 
@@ -36,7 +36,12 @@ trait DebugTrait
     }
 
     // show where debug was called from
-    protected function echoCaller($caller): void
+
+    /**
+     * @param array $caller <int, array<string,string>>
+     * @return void
+     */
+    protected function echoCaller(array $caller): void
     {
         $line1 = "{$caller['file']} Line {$caller['line']}";
         $line2 = "{$caller['class']}{$caller['type']}{$caller['function']}";
@@ -57,7 +62,7 @@ trait DebugTrait
     }
 
 
-    protected function showValue($k, $val, $level = 1): void
+    protected function showValue(string $k, mixed $val, int $level = 1): void
     {
         $ul = ($this->isJson ? PHP_EOL : "<ul style='list-style-type: disc; padding: 1em;'>");
         $begin = ($this->isJson) ? str_repeat('>', $level + 1) . ' ' : '<li>';
@@ -106,11 +111,6 @@ trait DebugTrait
                     $methods = get_class_methods($val);
                     foreach ($methods as $v) {
                         printf($format, 'square', '', "<i>$v</i>");
-//                        if ($this->isJson) {
-//                            echo $begin . '* ' . $v . PHP_EOL;
-//                        } else {
-//                            echo "<li>* </li>";
-//                        }
                     }
                 }
                 if (!$this->isJson) echo '</ul></li>';
@@ -125,9 +125,8 @@ trait DebugTrait
             case "resource (closed)":
             case "unknown type":
             default:
-                echo $begin . (strlen($k) ? "$k: " : '') . $variableType;
+                echo $begin . (strlen("$k") ? "$k: " : '') . $variableType;
         }
-
 
         echo($this->isJson ? PHP_EOL : "</li>");
     }

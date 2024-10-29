@@ -17,7 +17,8 @@
     }
   ],
   "require-dev": {
-    "pestphp/pest": "^3.2.4"
+    "pestphp/pest": "^3.2.4",
+    "phpstan/phpstan": "^1.12"
   },
   "config": {
     "allow-plugins": {

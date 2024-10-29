@@ -12,7 +12,7 @@ trait LoggerTrait
     protected ?Logger $logger = null;
     protected bool $saveLog = true;
 
-    public function initLogger($label): void
+    public function initLogger(string $label): void
     {
         if ($this->saveLog) {
             $output = "%level_name% | %datetime% > %message% | %context% %extra%\n";
@@ -34,7 +34,13 @@ trait LoggerTrait
         }
     }
 
-    protected function log($level, $message, array $context = []): void
+    /**
+     * @param string $level
+     * @param string $message
+     * @param array $context <mixed>
+     * @return void
+     */
+    protected function log(string $level, string $message, array $context = []): void
     {
         if ($this->saveLog && $this->logger) {
             $this->logger->log($level, $message, $context);

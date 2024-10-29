@@ -35,7 +35,7 @@ class InvoiceModel extends BaseModel
     ];
     protected int $orderByDefault = 5;
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();
@@ -55,7 +55,11 @@ class InvoiceModel extends BaseModel
     }
 
 
-    public function list($params): array
+    /**
+     * @param array $params <string, mixed>
+     * @return array<mixed>
+     */
+    public function list(array $params): array
     {
         /*
         <th>#</th>
@@ -181,7 +185,11 @@ class InvoiceModel extends BaseModel
         return $output;
     }
 
-    protected function getOrderByBadDebts($params): string
+    /**
+     * @param array $params <mixed>
+     * @return string
+     */
+    protected function getOrderByBadDebts(array $params): string
     {
         $columns = [
             'contacts.name DIR',
@@ -199,7 +207,11 @@ class InvoiceModel extends BaseModel
         return str_replace('DIR', 'DESC', $columns[2]);
     }
 
-    public function getBadDebtTotal($params): array
+    /**
+     * @param array $params <mixed>
+     * @return array<mixed>
+     */
+    public function getBadDebtTotal(array $params): array
     {
         $tenancies = $this->getTenanciesWhere($params);
         $sql = "SELECT sum(amount_due) AS `total`
@@ -210,7 +222,11 @@ class InvoiceModel extends BaseModel
         return $result[0];
     }
 
-    public function listBadDebts($params): array
+    /**
+     * @param array $params <mixed>
+     * @return array<mixed>
+     */
+    public function listBadDebts(array $params): array
     {
 
         $tenancyList = $this->getTenancyList();
@@ -318,7 +334,7 @@ class InvoiceModel extends BaseModel
         return $output;
     }
 
-    public function getChartURL($contact_id): string
+    public function getChartURL(string $contact_id): string
     {
         $data = $this->getChartData($contact_id);
 

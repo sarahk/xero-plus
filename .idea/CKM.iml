@@ -74,6 +74,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/tinymce/tinymce" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/pestphp/pest-plugin-mutate" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/simple-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpstan/phpstan" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

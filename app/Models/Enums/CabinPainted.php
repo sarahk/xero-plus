@@ -22,9 +22,10 @@ enum CabinPainted: string
         };
     }
 
-    public static function includeInQuery($val): bool
+    public static function includeInQuery(string $val): bool
     {
-        return match ($val) {
+        $pointer = self::tryFrom($val);
+        return match ($pointer) {
             self::Yes, self::No => true,
             default => false,
         };

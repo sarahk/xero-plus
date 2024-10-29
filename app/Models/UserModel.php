@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use Exception;
 
 // Use this class to deserialize error caught
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
@@ -12,24 +12,15 @@ class UserModel extends BaseModel
 {
     protected string $table = 'users';
 
-    public function getId($key, $value): int
+    public function getId(string $key, mixed $value): int
     {
         $sql = "SELECT `id` FROM `users` WHERE `{$key}` = :value";
 
-        $this->getStatement($sql);
 
-        try {
-            $this->statement->execute(['value' => $value]);
-            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-
-            if (count($list) == 0) {
-                $this->statement->debugDumpParams();
-                throw new Exception("User not found: $this->table -> $key -> {$value}");
-                exit;
-            }
-        } catch (PDOException $e) {
-            echo "[getIdStatement] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+        $list = $this->runQuery($sql, ['value' => $value]);
+        if (count($list) == 0) {
             $this->statement->debugDumpParams();
+            throw new Exception("User not found: $this->table -> $key -> {$value}");
         }
 
         return $list[0]['id'];
@@ -37,7 +28,7 @@ class UserModel extends BaseModel
 
     /**
      * run by callback.php to get the userid
-     * @param array $list
+     * @param array $list <mixed>
      * @return int
      */
     public function getUserId(array $list): int
@@ -57,7 +48,7 @@ class UserModel extends BaseModel
             $this->debug($list);
             exit;
         }
-        
+
         return $result[0]['user_id'];
     }
 }

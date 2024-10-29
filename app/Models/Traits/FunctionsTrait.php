@@ -6,7 +6,12 @@ use App\Models\TenancyModel;
 
 trait FunctionsTrait
 {
-    public function array_merge($array1, $array2): array
+    /**
+     * @param array $array1 <mixed>
+     * @param array $array2 <mixed>
+     * @return array<mixed>
+     */
+    protected function array_merge(array $array1, array $array2): array
     {
         // Merging without overwriting non-empty values
         return array_merge($array1, array_filter($array2, fn($value) => !empty($value)));
@@ -18,7 +23,7 @@ trait FunctionsTrait
      * @param string $match any or all
      * @return bool
      */
-    function array_keys_exist(array $keys, array $array, string $match = 'any'): bool
+    protected function array_keys_exist(array $keys, array $array, string $match = 'any'): bool
     {
         if (!array($keys) || !array($array)) {
             return false;
@@ -39,7 +44,11 @@ trait FunctionsTrait
         return true;
     }
 
-    protected function formatAddress($row): string
+    /**
+     * @param array $row <int, mixed>
+     * @return string
+     */
+    protected function formatAddress(array $row): string
     {
         $output = [];
 
@@ -52,7 +61,7 @@ trait FunctionsTrait
 
     /**
      * generates a list of the tenancies with the xerotenant_id as the key
-     * @return array
+     * @return array<int, mixed>
      */
     protected function getTenancyList(): array
     {
@@ -61,7 +70,7 @@ trait FunctionsTrait
         return array_column($raw, null, 'tenant_id');
     }
 
-    protected function getPrettyDate($val): string
+    protected function getPrettyDate(string $val): string
     {
         if (empty($val)) return '';
 
@@ -69,14 +78,14 @@ trait FunctionsTrait
         return date_format($date, "d M");
     }
 
-    protected function toMysqlDate($val): string
+    protected function toMysqlDate(string $val): string
     {
         if (empty($val)) return '';
         $date = date_create($val);
         return date_format($date, "Y-m-d");
     }
 
-    protected function toNormalDate($val): string
+    protected function toNormalDate(string $val): string
     {
         if (empty($val)) return '';
 

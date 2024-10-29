@@ -38,9 +38,9 @@ use App\Models\Enums\YesNoDontKnow;
     FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['Contract']['place_id']);
 
 
-    FormBuilder::hidden('note_foreign_id', 'data[Note][foreign_id]', $data['Note'][0]['foreign_id'] ?? '');
-    FormBuilder::hidden('note_parent', 'data[Note][parent]', 'contacts');
-    FormBuilder::hidden('note_createdby', 'data[Note][createdby]', $_SESSION['user_id']);
+    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['Note'][0]['foreign_id'] ?? '');
+    FormBuilder::hidden('note_parent', 'data[note][parent]', 'contacts');
+    FormBuilder::hidden('note_createdby', 'data[note][createdby]', $_SESSION['user_id']);
 
 
     ?>
