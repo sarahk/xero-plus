@@ -27596,3 +27596,120 @@ INFO | 2024-10-11, 11:38 pm > save | {"id":null,"ckcontact_id":17442,"join_type"
 INFO | 2024-10-13, 10:33 pm > save | {"id":null,"ckcontact_id":17242,"join_type":"contract","foreign_id":9700,"updated":"2024-10-13 22:33:54"} 
 INFO | 2024-10-13, 10:33 pm > save | {"id":null,"ckcontact_id":17444,"join_type":"contract","foreign_id":9865,"updated":"2024-10-13 22:33:58"} 
 INFO | 2024-10-13, 10:33 pm > save | {"id":null,"ckcontact_id":17250,"join_type":"contract","foreign_id":9730,"updated":"2024-10-13 22:33:58"} 
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["SELECT `foreign_id`
+        FROM `contactjoins`
+        WHERE `join_type` = :join_type
+        AND `foreign_id` IN (:foreign_ids)",{"join_type":"contract","foreign_ids":"id1,id2"}] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["SELECT `foreign_id`
+        FROM `contactjoins`
+        WHERE `join_type` = :join_type
+        AND `foreign_id` IN (:foreign_ids)"] 
+INFO | 2024-11-1, 4:43 am > Searching for:  | {"join_type":"contract","foreign_ids":"id1,id2"} 
+INFO | 2024-11-1, 4:43 am > Found:  | [{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0},{"foreign_id":0}] 
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":16944,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 04:43:40"}] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 4:43 am > Saved: 16944 |  
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":17509,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 04:43:40"}] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 4:43 am > Saved: 17509 |  
+INFO | 2024-11-1, 4:59 am > runQuery:  | ["SELECT `foreign_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` IN (:id0,:id1)",{":id0":16944,":id1":17509,"join_type":"contract"}] 
+INFO | 2024-11-1, 4:59 am > getStatement:  | ["SELECT `foreign_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` IN (:id0,:id1)"] 
+INFO | 2024-11-1, 4:59 am > Searching for:  | {":id0":16944,":id1":17509,"join_type":"contract"} 
+INFO | 2024-11-1, 4:59 am > Found:  |  
+INFO | 2024-11-1, 4:59 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":16944,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 04:59:18"}] 
+INFO | 2024-11-1, 4:59 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 4:59 am > Saved: 16944 |  
+INFO | 2024-11-1, 4:59 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":17509,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 04:59:18"}] 
+INFO | 2024-11-1, 4:59 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 4:59 am > Saved: 17509 |  
+INFO | 2024-11-1, 5:06 am > runQuery:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id",{"join_type":"contract","foreign_id":"9642"}] 
+INFO | 2024-11-1, 5:06 am > getStatement:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id"] 
+INFO | 2024-11-1, 5:06 am > Searching for:  | {"join_type":"contract","foreign_id":"9642"} 
+INFO | 2024-11-1, 5:06 am > Found:  | [{"ckcontact_id":16944},{"ckcontact_id":17509},{"ckcontact_id":16944},{"ckcontact_id":17509}] 
+INFO | 2024-11-1, 5:06 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":16944,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 05:06:46"}] 
+INFO | 2024-11-1, 5:06 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 5:06 am > Saved: 16944 |  
+INFO | 2024-11-1, 5:06 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":17509,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 05:06:46"}] 
+INFO | 2024-11-1, 5:06 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 5:06 am > Saved: 17509 |  
+INFO | 2024-11-1, 5:09 am > runQuery:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id",{"join_type":"contract","foreign_id":"9642"}] 
+INFO | 2024-11-1, 5:09 am > getStatement:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id"] 
+INFO | 2024-11-1, 5:09 am > Searching for:  | {"join_type":"contract","foreign_id":"9642"} 
+INFO | 2024-11-1, 5:09 am > Found:  | [{"ckcontact_id":16944},{"ckcontact_id":17509},{"ckcontact_id":16944},{"ckcontact_id":17509},{"ckcontact_id":16944},{"ckcontact_id":17509}] 
+INFO | 2024-11-1, 5:09 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":17509,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 05:09:44"}] 
+INFO | 2024-11-1, 5:09 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 5:09 am > Saved: 17509 |  
+INFO | 2024-11-1, 5:10 am > runQuery:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id",{"join_type":"contract","foreign_id":"9642"}] 
+INFO | 2024-11-1, 5:10 am > getStatement:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id"] 
+INFO | 2024-11-1, 5:10 am > Searching for:  | {"join_type":"contract","foreign_id":"9642"} 
+INFO | 2024-11-1, 5:10 am > Found:  | {"ckcontact_id":16944} 
+INFO | 2024-11-1, 5:10 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":17509,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 05:10:41"}] 
+INFO | 2024-11-1, 5:10 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 5:10 am > Saved: 17509 |  
+INFO | 2024-11-1, 5:11 am > runQuery:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id",{"join_type":"contract","foreign_id":"9642"}] 
+INFO | 2024-11-1, 5:11 am > getStatement:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id"] 
+INFO | 2024-11-1, 5:11 am > Searching for:  | {"join_type":"contract","foreign_id":"9642"} 
+INFO | 2024-11-1, 5:11 am > Found:  | {"ckcontact_id":16944} 
+INFO | 2024-11-1, 5:11 am > Found:  | {"ckcontact_id":17509} 
+INFO | 2024-11-1, 5:11 am > runQuery:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);",{"ckcontact_id":17509,"join_type":"contract","foreign_id":"9642","updated":"2024-11-01 05:11:49"}] 
+INFO | 2024-11-1, 5:11 am > getStatement:  | ["INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);"] 
+INFO | 2024-11-1, 5:11 am > Saved: 17509 |  
+INFO | 2024-11-1, 5:14 am > runQuery:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id",{"join_type":"contract","foreign_id":"9642"}] 
+INFO | 2024-11-1, 5:14 am > getStatement:  | ["SELECT `ckcontact_id`
+                            FROM `contactjoins`
+                            WHERE `join_type` = :join_type
+                            AND `foreign_id` = :foreign_id"] 
+INFO | 2024-11-1, 5:14 am > Searching for:  | {"join_type":"contract","foreign_id":"9642"} 
+INFO | 2024-11-1, 5:14 am > Found:  | [{"ckcontact_id":16944},{"ckcontact_id":17509},{"ckcontact_id":16944},{"ckcontact_id":17509},{"ckcontact_id":16944},{"ckcontact_id":17509},{"ckcontact_id":17509},{"ckcontact_id":17509},{"ckcontact_id":17509}] 
+INFO | 2024-11-1, 5:14 am > Found:  | [16944,17509,16944,17509,16944,17509,17509,17509,17509] 

@@ -1,6 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models\Enums;
+
+use App\ExtraFunctions;
+
 trait EnumHelper
 {
     /**
@@ -32,10 +36,11 @@ trait EnumHelper
     {
         $output = [];
 
-        foreach (self::cases() as $status) {
-            $selected = ($status->value === $val) ? 'selected' : '';
-            $label = self::getLabel($status->value);
-            $output[] = "<option value='{$status->value}' $selected>{$label}</option>";
+        foreach (self::cases() as $enum_value) {
+            //ExtraFunctions::debug([$enum_value->value, $val]);
+            $selected = ($enum_value->value === $val) ? 'selected' : '';
+            $label = self::getLabel($enum_value->value);
+            $output[] = "<option value='$enum_value->value' $selected>$label</option>";
         }
         return implode(PHP_EOL, $output);
     }

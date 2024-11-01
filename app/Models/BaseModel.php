@@ -51,12 +51,18 @@ class BaseModel
         unset($this->pdo);
     }
 
-    protected function runQuery(string $sql, array $searchValues, string $type = 'query'): int|array
+    /**
+     * @param string $sql
+     * @param array $search_values <string, mixed>
+     * @param string $type
+     * @return int|array
+     */
+    protected function runQuery(string $sql, array $search_values, string $type = 'query'): int|array
     {
-        //$this->log('info', 'runQuery', [$sql]);
+        $this->logInfo('runQuery: ', [$sql, $search_values]);
         $this->getStatement($sql);
         try {
-            $this->statement->execute($searchValues);
+            $this->statement->execute($search_values);
             return match ($type) {
                 'query' => $this->statement->fetchAll(PDO::FETCH_ASSOC),
                 'update' => $this->statement->rowCount(),
@@ -112,7 +118,7 @@ class BaseModel
 
                     $output[$val] = $child->getChildren($this->table, $output[$this->table][$this->primaryKey], $defaults);
                     //var_export(['parent' => $this->table, 'child table:' => $val, 'data' => $output[$val]]);
-                    
+
                 }
             }
             return $output;
@@ -246,8 +252,14 @@ class BaseModel
 
     public function getStatement($sql = ''): void
     {
-        if (empty($sql)) $sql = $this->insert;
+        if (empty($sql)) {
+            if (empty($this->insert)) {
+                $this->buildInsertSQL();
+            }
+            $sql = $this->insert;
+        }
 
+        $this->logInfo('getStatement: ', [$sql]);
         try {
             $this->statement = $this->pdo->prepare($sql);
         } catch (PDOException $e) {
@@ -256,10 +268,10 @@ class BaseModel
         }
     }
 
-    public function save($values): int
+    public function save(array $values): int
     {
         //$this->debug($values);
-        $this->log('info', 'save', $values);
+        $this->logInfo('save: ', $values);
 
         try {
             $this->getStatement();

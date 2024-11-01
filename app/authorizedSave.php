@@ -6,6 +6,7 @@
 
 namespace App;
 
+use App\Models\ContactJoinModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
@@ -36,20 +37,28 @@ switch ($action) {
             $data = $_POST['data'];
 
             // address needs to be duplicated
+            $contact = new ContactModel($pdo);
+            $contact_ids = $contact->prepAndSaveMany($data); // could be more than one record
+
             $contract = new ContractModel($pdo);
             $contract_id = $contract->prepAndSave($data);
-            $contact = new ContactModel($pdo);
-            $contact_ids = $contact->prepAndSave($data); // could be more than one record
-            $note = new NoteModel($pdo);
-            $note_id = $note->prepAndSave($data);
 
+            $contact_joins = new ContactJoinModel($pdo);
+            $contact_joins->prepAndSaveMany('contract', $contract_id, $contact_ids);
+
+            if (!empty($data['note']['note'])) {
+                $note = new NoteModel($pdo);
+                $data['note']['foreign_id'] = $contract_id;
+
+                $note_id = $note->prepAndSave($data);
+            }
             //ExtraFunctions::debug($_POST);
             //ExtraFunctions::debug($id);
             //output for the form
             echo json_encode([
                 'contract_id' => $contract_id,
                 'contact_ids' => $contact_ids,
-                'note_id' => $note_id
+                'note_id' => $note_id ?? ''
             ]);
             exit;
 
@@ -60,6 +69,6 @@ switch ($action) {
         echo $message;
 }
 
-debug($_GET);
+ExtraFunctions::debug($_GET);
 exit;
 header("Location: /authorizedResource.php?action={$action}&id={$id}");

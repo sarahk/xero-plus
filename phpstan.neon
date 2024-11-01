@@ -1,0 +1,13 @@
+parameters:
+    level: 5
+    paths:
+        - app/Models
+        - app/Views
+        - app/Layouts
+    bootstrapFiles:
+        - vendor/autoload.php
+    ignoreErrors:
+        - '#some known error pattern#'
+    excludes_analyse:
+        - *.js
+        - app/js

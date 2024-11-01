@@ -6,6 +6,7 @@ use App\Models\Enums\CabinStyle;
 use App\Models\Enums\EnquiryRating;
 use App\Models\Enums\EnquiryStatus;
 use App\XeroClass;
+use PDO;
 
 
 class ContractModel extends BaseModel
@@ -24,7 +25,7 @@ class ContractModel extends BaseModel
         'contact_id', 'ckcontact_id', 'reference', 'total', 'schedule_unit',
         'status', 'cabin_type', 'hiab', 'painted', 'winz', 'how_did_you_hear',
         'delivery_date', 'scheduled_delivery_date', 'delivery_time', 'sms_reminder_invoice',
-        'pickup_date', 'scheduled_pickup_date',
+        'pickup_date', 'scheduled_pickup_date', 'enquiry_rating', 'cabin_use',
         'address_line1', 'address_line2', 'city', 'postal_code',
         'lat', 'long', 'place_id',
         'updated', 'stub'
@@ -33,7 +34,7 @@ class ContractModel extends BaseModel
         'cabin_id', 'reference', 'total', 'schedule_unit', 'status',
         'cabin_type', 'hiab', 'painted', 'winz', 'how_did_you_hear',
         'delivery_date', 'scheduled_delivery_date', 'delivery_time', 'sms_reminder_invoice',
-        'pickup_date', 'scheduled_pickup_date',
+        'pickup_date', 'scheduled_pickup_date', 'enquiry_rating', 'cabin_use',
         'address_line1', 'address_line2', 'city', 'postal_code',
         'lat', 'long', 'place_id',
         'updated', 'stub'
@@ -48,12 +49,16 @@ class ContractModel extends BaseModel
         6 => 'amount_due DIR',
     ];
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();
     }
 
+    /**
+     * @param array $data <mixed>
+     * @return int
+     */
     public function saveXeroStub(array $data): int
     {
         $date = date('Y-m-d H:i:s');
@@ -77,6 +82,11 @@ class ContractModel extends BaseModel
     }
 
     //  C O N T R A C T
+
+    /**
+     * @param array $data <mixed>
+     * @return int
+     */
     public function prepAndSave(array $data): int
     {
         if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh']) {
@@ -134,6 +144,10 @@ class ContractModel extends BaseModel
         return $data[0]['xerotenant_id'];
     }
 
+    /**
+     * @param array $params <string, mixed>
+     * @return array<mixed>
+     */
     public function list(array $params): array
     {
         $tenancy = new TenancyModel($this->pdo);
@@ -256,6 +270,10 @@ class ContractModel extends BaseModel
         return $output;
     }
 
+    /**
+     * @param array $row <string, mixed>
+     * @return string
+     */
     protected function getDetailsCell(array $row): string
     {
         // verbose cabin style? CabinStyle::getLabel($row['cabin_type'])
@@ -268,7 +286,7 @@ class ContractModel extends BaseModel
         return "<a href='$url'>$output</a>";
     }
 
-    public function getChildren($parent, $parentId, $defaults = true): array
+    public function getChildren($parent, mixed $parentId, $defaults = true): array
     {
         $contacts = new ContactModel($this->pdo);
         $phones = new PhoneModel($this->pdo);
@@ -291,6 +309,10 @@ class ContractModel extends BaseModel
         return $output;
     }
 
+    /**
+     * @param int $contract_id
+     * @return array<mixed>
+     */
     public function getContactsAndPhone(int $contract_id): array
     {
         $sql = "SELECT contacts.*, `contactjoins`.`sort_order`

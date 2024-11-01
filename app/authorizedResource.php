@@ -89,6 +89,8 @@ switch ($action) {
 
     case 12:
         // look at info related to an invoice
+
+        /** @var TYPE_NAME $pdo */
         $invoice = new InvoiceModel($pdo);
         $data = $invoice->get('invoice_id', $_GET['invoice_id'])['invoices'];
         $contact = new ContactModel($pdo);

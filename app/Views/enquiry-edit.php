@@ -1,5 +1,5 @@
 <?php
-namespace App\Views\EnquiryEdit;
+namespace App\Views;
 
 //include_once 'Widgets/FormBuilder.php';
 use App\ExtraFunctions;
@@ -47,7 +47,9 @@ use App\ExtraFunctions;
                             <?php
                             include('Widgets/enquiry-enquiry-panel.php'); ?>
                         </div>
-                        <div class="tab-pane" id="tab2"></div>
+                        <div class="tab-pane" id="tab2">
+                            <?php include 'Widgets/enquiry-notes-index.php' ?>
+                        </div>
                         <div class="tab-pane" id="tab3"></div>
                         <div class="tab-pane" id="tab4"></div>
                     </div>

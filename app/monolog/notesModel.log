@@ -7912,3 +7912,49 @@ INFO | 2024-10-11, 12:00 am > runQuery | ["SELECT *
             WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
              ORDER BY notes.created DESC 
             LIMIT 15"] 
+INFO | 2024-11-1, 3:06 am > save:  | {"id":null,"foreign_id":null,"parent":null,"note":{"foreign_id":9642,"parent":"contract","createdby":"1","note":"Aggressive dog, wait for it to be locked up."},"createdby":null,"created":null} 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["INSERT INTO `notes` (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE note = :note"] 
+INFO | 2024-11-1, 3:24 am > runQuery:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE ",{"id":null,"foreign_id":9642,"parent":"contract","note":"Aggressive dog, wait for it to be locked up.","createdby":"1","created":"2024-11-01 03:24:13"}] 
+INFO | 2024-11-1, 3:24 am > getStatement:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE "] 
+INFO | 2024-11-1, 3:24 am > runQuery:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE ",{"id":null,"foreign_id":9642,"parent":"contract","note":"Aggressive dog, wait for it to be locked up.","createdby":"1","created":"2024-11-01 03:24:21"}] 
+INFO | 2024-11-1, 3:24 am > getStatement:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE "] 
+INFO | 2024-11-1, 3:28 am > runQuery:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE `note` = :note",{"id":null,"foreign_id":9642,"parent":"contract","note":"Aggressive dog, wait for it to be locked up.","createdby":"1","created":"2024-11-01 03:28:18"}] 
+INFO | 2024-11-1, 3:28 am > getStatement:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE `note` = :note"] 
+INFO | 2024-11-1, 3:42 am > runQuery:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE `note` = :note",{"id":null,"foreign_id":9642,"parent":"contract","note":"Aggressive dog, wait for it to be locked up.","createdby":"1","created":"2024-11-01 03:42:59"}] 
+INFO | 2024-11-1, 3:42 am > getStatement:  | ["INSERT into `notes` 
+                    (`id`, `foreign_id`, `parent`, `note`, `createdby`, `created`) 
+                VALUES (:id, :foreign_id, :parent, :note, :createdby, :created)
+                ON DUPLICATE KEY UPDATE `note` = :note"] 
+INFO | 2024-11-1, 5:54 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'cabins' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":13}] 
+INFO | 2024-11-1, 5:54 am > getStatement:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'cabins' 
+             ORDER BY notes.created DESC 
+            LIMIT 15"] 

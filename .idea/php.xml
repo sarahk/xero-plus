@@ -90,10 +90,13 @@
   </component>
   <component name="PhpStan">
     <PhpStan_settings>
-      <PhpStanConfiguration tool_path="$PROJECT_DIR$/vendor/bin/phpstan" />
+      <PhpStanConfiguration tool_path="$PROJECT_DIR$/vendor/bin/phpstan" timeout="60000" />
     </PhpStan_settings>
   </component>
   <component name="PhpStanOptionsConfiguration">
+    <option name="autoload" value="$PROJECT_DIR$/phpstan.neon" />
+    <option name="config" value="$PROJECT_DIR$/vendor/bin/phpstan" />
+    <option name="level" value="5" />
     <option name="transferred" value="true" />
   </component>
   <component name="PhpUnit">

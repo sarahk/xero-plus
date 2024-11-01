@@ -25,10 +25,6 @@ trait FunctionsTrait
      */
     protected function array_keys_exist(array $keys, array $array, string $match = 'any'): bool
     {
-        if (!array($keys) || !array($array)) {
-            return false;
-        }
-
         $arrayKeys = array_keys($array);
 
         foreach ($keys as $v) {

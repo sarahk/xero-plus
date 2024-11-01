@@ -1,0 +1,9 @@
+{
+  "esversion": 11,
+  "expr": true,
+  "unused": "vars",
+  "camelcase": false,
+  "maxstatements": false,
+  "maxcomplexity": false,
+  "latedef": "nofunc"
+}

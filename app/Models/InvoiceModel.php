@@ -10,6 +10,9 @@ use Monolog\Handler\StreamHandler;
 use PDO;
 use PDOException;
 
+/**
+ * Manages records in the Invoices table
+ */
 class InvoiceModel extends BaseModel
 {
     protected string $table = 'invoices';
@@ -25,17 +28,17 @@ class InvoiceModel extends BaseModel
         'updated_date_utc', 'xerotenant_id'
     ];
     protected array $orderByColumns = [
-        0 => "invoices.invoice_number DIR",
-        1 => "contacts.last_name DIR, contacts.first_name ASC",
-        2 => "invoices.reference DIR",
-        3 => "invoices.total DIR",
-        4 => "invoices.amount_due DIR",
-        5 => "invoices.date DIR",
+        0 => 'invoices.invoice_number DIR',
+        1 => 'contacts.last_name DIR, contacts.first_name ASC',
+        2 => 'invoices.reference DIR',
+        3 => 'invoices.total DIR',
+        4 => 'invoices.amount_due DIR',
+        5 => 'invoices.date DIR',
 
     ];
     protected int $orderByDefault = 5;
 
-    function __construct(PDO $pdo)
+    public function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();
@@ -45,19 +48,23 @@ class InvoiceModel extends BaseModel
     // I N V O I C E
     // we WILL have a repeating invoice id
     // invoices are always imported from xero
+    // don't run the parent function
+    /**
+     * @param array $data <mixed>
+     * @return int
+     */
     public function prepAndSave(array $data): int
     {
         $checked = $this->checkNullableValues($data);
         $save = $this->getSaveValues($checked);
 
         return $this->save($save);
-
     }
 
 
     /**
      * @param array $params <string, mixed>
-     * @return array<mixed>
+     * @return array
      */
     public function list(array $params): array
     {
@@ -70,7 +77,7 @@ class InvoiceModel extends BaseModel
         <th>Date</th>
 */
 
-        $searchValues = [];
+        $search_values = [];
 
         $tenancies = $this->getTenanciesWhere($params);
         $order = $this->getOrderBy($params);
@@ -78,24 +85,24 @@ class InvoiceModel extends BaseModel
         $conditions = [$tenancies];
         if (!empty($params['search'])) {
             $search = [
-                "`contacts`.`name` LIKE :search ",
-                "`contacts`.`last_name` LIKE :search ",
-                "`contacts`.`first_name` LIKE :search ",
-                "`invoices`.`invoice_number` LIKE :search "
+                '`contacts`.`name` LIKE :search ',
+                '`contacts`.`last_name` LIKE :search ',
+                '`contacts`.`first_name` LIKE :search ',
+                '`invoices`.`invoice_number` LIKE :search '
             ];
-            $searchValues['search'] = '%' . $params['search'] . '%';
+            $search_values['search'] = '%' . $params['search'] . '%';
 
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
 
         if (!empty($params['button']) && $params['button'] !== 'read') {
             if ($params['button'] == 'overdue') {
-                $searchValues['overduedate'] = date('Y-m-d', strtotime('-7 days'));
-                $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
+                $search_values['overduedate'] = date('Y-m-d', strtotime('-7 days'));
+                $conditions[] = '`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0';
 
             } else {
-                $searchValues['status'] = strtoupper($params['button']);
-                $conditions[] = "`invoices`.`status` = :status";
+                $search_values['status'] = strtoupper($params['button']);
+                $conditions[] = '`invoices`.`status` = :status';
             }
         } else {
             //todo
@@ -103,8 +110,8 @@ class InvoiceModel extends BaseModel
         }
 
         if (isset($_GET['repeating_invoice_id'])) {
-            $conditions[] = "`invoices`.`repeating_invoice_id` = :repeating_invoice_id";
-            $searchValues['repeating_invoice_id'] = $_GET['repeating_invoice_id'];
+            $conditions[] = '`invoices`.`repeating_invoice_id` = :repeating_invoice_id';
+            $search_values['repeating_invoice_id'] = $_GET['repeating_invoice_id'];
         }
 
 
@@ -122,20 +129,20 @@ class InvoiceModel extends BaseModel
         ];
 
 
-        $sql = "SELECT " . implode(', ', $fields) . " FROM `invoices` 
+        $sql = 'SELECT ' . implode(', ', $fields) . ' FROM `invoices` 
             LEFT JOIN `contacts` ON (`invoices`.`contact_id` = `contacts`.`contact_id`) 
-            WHERE " . implode(' AND ', $conditions) . "
+            WHERE ' . implode(' AND ', $conditions) . "
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
 
 
-        $invoices = $this->runQuery($sql, $searchValues);
+        $invoices = $this->runQuery($sql, $search_values);
 
         $output = $params;
         $output['mainquery'] = $sql;
-        $output['mainsearchvals'] = $searchValues;
+        $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
-        $recordsTotal = "SELECT count(*) FROM `invoices` 
+        $records_total = "SELECT count(*) FROM `invoices` 
                 WHERE $tenancies";
 
         $recordsFiltered = "SELECT count(*) as `filtered` FROM `invoices` 
@@ -143,34 +150,23 @@ class InvoiceModel extends BaseModel
                 WHERE  " . implode(' AND ', $conditions);
 
 
-        $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
-
-        try {
-            $this->getStatement($recordsFiltered);
-            $this->statement->execute($searchValues);
-            $output['recordsFiltered'] = $this->statement->fetchAll(PDO::FETCH_ASSOC)[0]['filtered'];
-
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$recordsFiltered\n";
-            $this->statement->debugDumpParams();
-        }
-
+        $output['recordsTotal'] = $this->pdo->query($records_total)->fetchColumn();
+        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $search_values);
 
         //$output['refreshInvoice'] = $refreshInvoice;
         // $output['refreshContact'] = $refreshContact;
 
-
         if (count($invoices) > 0) {
             foreach ($invoices as $row) {
                 if (empty($row['name'])) {
-                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['contact_id']}</a>";
+                    $contact_name = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['contact_id']}</a>";
                 } else {
-                    $contactName = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
+                    $contact_name = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
                 }
                 $output['data'][] = [
                     'number' => "<a href='/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}'>{$row['invoice_number']}</a>",
                     'reference' => $row['reference'],
-                    'contact' => $contactName,
+                    'contact' => $contact_name,
                     'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
                     'total' => $row['total'],
                     'amount_paid' => $row['amount_paid'],
@@ -180,7 +176,6 @@ class InvoiceModel extends BaseModel
 // for debugging
                 $output['row'] = $row;
             }
-
         }
         return $output;
     }
@@ -313,7 +308,6 @@ class InvoiceModel extends BaseModel
         if (count($badDebts) > 0) {
             foreach ($badDebts as $row) {
 
-
                 $output['data'][] = [
                     'DT_RowId' => $row['DT_RowId'],
                     'contact' => $this->getFormattedContactCell($row),
@@ -357,6 +351,10 @@ class InvoiceModel extends BaseModel
         return 'https://image-charts.com/chart?' . implode('&', $parts) . '&';
     }
 
+    /**
+     * @param $row
+     * @return string
+     */
     protected function getFormattedContactCell($row): string
     {
         if (empty($row['name'])) $row['name'] = $row['contact_id'];
@@ -380,7 +378,7 @@ class InvoiceModel extends BaseModel
     }
 
     //https://ckm:8825/run.php?endpoint=image&imageType=baddebt&contract_id=191
-    protected function getChartData($contact_id): array
+    protected function getChartData(string $contact_id): array
     {
         $xaxis = [
             'full' => '0:|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16',
@@ -427,7 +425,6 @@ class InvoiceModel extends BaseModel
             'yaxis' => "1:||$min||$mid||$max"
         ];
 
-        return $output;
 
 //        $this->getStatement($sql);
 //        try {
@@ -453,7 +450,7 @@ class InvoiceModel extends BaseModel
         //return [];
     }
 
-    function getPDF($invoice_id)
+    public function getPDF(string $invoice_id): void
     {
         //GET https://api.xero.com/api.xro/2.0/Invoices/acb4b8d6-e8bc-41c9-9a57-dccae7ad51de
     }
@@ -462,23 +459,23 @@ class InvoiceModel extends BaseModel
        used for testing
 
     */
-    function getOneBadDebtor(): string
+    public function getOneBadDebtor(): string
     {
 // todo check this works after the change from using contract_id to contact_id for bad debts
         $log = new Logger('InvoiceModel.getOneBadDebtor');
         $log->pushHandler(new StreamHandler('monolog.log', Level::Info));
 
 
-        $sql = "SELECT i.contact_id, i.invoice_id, i.date,
+        $sql = 'SELECT i.contact_id, i.invoice_id, i.date,
                     (SELECT sum(i2.amount_due) FROM invoices AS i2 WHERE i.contact_id = i2.contact_id) AS `total`
                 FROM 
-                    invoices i
+                    `invoices` i
                 INNER JOIN (
                     SELECT 
-                        contact_id, 
+                        `contact_id`,                                   
                         MAX(invoices.date) AS latest_invoice_date
                     FROM 
-                        invoices
+                        `invoices`
                     GROUP BY 
                         contact_id
                 ) as latest_invoices
@@ -486,7 +483,7 @@ class InvoiceModel extends BaseModel
                 AND i.date = latest_invoices.latest_invoice_date
                 WHERE YEAR(i.date) = YEAR(NOW())
                 ORDER BY `total` DESC
-                LIMIT 3, 1;";
+                LIMIT 3, 1;';
 
         //$log->info('SQL',$sql);
 

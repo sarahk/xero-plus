@@ -40,10 +40,10 @@ class FormBuilder
     /**
      * @param $id String
      * @param $name String
-     * @param $value String the starting value of the hidden field
+     * @param $value mixed the starting value of the hidden field
      * @return void
      */
-    static function hidden(string $id, string $name, null|string $value = ''): void
+    static function hidden(string $id, string $name, mixed $value = ''): void
     {
         ?>
         <input type="hidden" id="<?= $id; ?>" name="<?= $name; ?>" value="<?= $value; ?>">
@@ -65,7 +65,7 @@ class FormBuilder
         <?php
     }
 
-    static function InputsOnly(array $fields, bool $required = false): void
+    static function inputsOnly(array $fields, bool $required = false): void
     {
         foreach ($fields as $row):
             self::inputOnly($row['id'], $row['name'], $row['placeholder'], $required, $row['type'], $row['value']);
@@ -92,7 +92,7 @@ class FormBuilder
      * @param string $value
      * @return void
      */
-    static function radio(string $name, string $label, array $choices, null|string $value = ''): void
+    static function radio(string $name, string $label, array $choices, mixed $value = ''): void
     {
         ?>
         <div class="form-group ">
@@ -206,10 +206,10 @@ class FormBuilder
         $styles = $inputs = $labels = [];
         foreach (json_decode($tenancies, true) as $row):
             $checked = ($xerotenant_id === $row['tenant_id'] ? ' checked ' : '');
-            $backgroundColor = "var(--bs-{$row['colour']}";
+            $background_color = "var(--bs-{$row['colour']}";
             $styles[] = "
                         .btn-check:checked + .btn.{$row['shortname']} {
-                            background-color: $backgroundColor );
+                            background-color: $background_color );
                             color: white;
                         }";
             $inputs[] = "<input type='radio' class='btn-check'

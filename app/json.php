@@ -10,6 +10,7 @@ use App\JsonClass;
 use App\Models\TemplateModel;
 use \XeroAPI\XeroPHP\Configuration;
 use \XeroAPI\XeroPHP\Api\AccountingApi;
+use App\Models\Enums;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -83,6 +84,18 @@ try {
                 case 'list':
                     echo $json->getComboList();
                     break;
+            }
+            break;
+
+        case 'Enums':
+            // The name of the enum class in a variable
+            switch ($action) {
+                case 'getAllAsArray':
+
+                    $fullEnumName = "App\\Models\\Enums\\{$_GET['enumClass']}";
+                    $output = $fullEnumName::getAllAsArray();
+                    echo json_encode($output);
+
             }
             break;
 

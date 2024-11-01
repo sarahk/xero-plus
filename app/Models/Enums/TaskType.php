@@ -43,6 +43,16 @@ enum TaskType: string
         };
     }
 
+    public static function getTaskTypeRepeatYears(string $task): int
+    {
+        $pointer = self::from($task);
+        return match ($pointer) {
+            self::WOF => 1,
+            default => 0
+        };
+    }
+
+
     public static function getTaskTypeDelete(string $task): bool
     {
         $taskType = self::from($task);

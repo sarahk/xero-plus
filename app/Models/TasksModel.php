@@ -24,15 +24,15 @@ class TasksModel extends BaseModel
 
     protected int $orderByDefault = 3;
 
-    // TODO assign a colour to the tasks by their amount of overdueness
+    // TODO assign a colour to the tasks by their amount of overdue-ness
     protected array $virtualFields = [
-        'date_status' => "CASE WHEN datediff(due_date, now()) < -90 THEN 'overdue' 
+        'date_status' => "CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
                 WHEN datediff(due_date, now()) < 90 THEN 'due'
                 ELSE 'future' END",
 
     ];
 
-    function __construct($pdo)
+    function __construct(PDO $pdo)
     {
         parent::__construct($pdo);
         $this->buildInsertSQL();
@@ -78,11 +78,12 @@ class TasksModel extends BaseModel
             $this->save($save);
 
             $repeats = TaskType::getTaskTypeRepeats($task['task_type']);
+            $years = TaskType::getTaskTypeRepeatYears($task['task_type']);
 
             if ($repeats) {
                 // we need to save a new record
                 $copy['id'] = null;
-                $copy['due_date'] = date('Y-m-d', strtotime(date('Y-m-d') . " +{$rules['years']} years"));
+                $copy['due_date'] = date('Y-m-d', strtotime(date('Y-m-d') . " +$years years"));
                 $copy['status'] = 'new';
                 $checked = $this->getSaveValues($copy);
                 $save = $this->checkNullableValues($checked);
@@ -97,7 +98,7 @@ class TasksModel extends BaseModel
     public function list($params): array
     {
 
-        $where = $statuses = null;
+
         /*
         <th>&nbsp;</th>  <-- icon
             <th>#</th>
@@ -143,7 +144,7 @@ class TasksModel extends BaseModel
 
         $sql = "SELECT *" . $this->getVirtuals() . " FROM `tasks` 
             WHERE " . implode(' AND ', $conditions) . "
-            ORDER BY {$order} 
+            ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
 
         $result = $this->runQuery($sql, $searchValues);
@@ -163,7 +164,7 @@ class TasksModel extends BaseModel
 
 
         if (count($result) > 0) {
-            foreach ($result as $k => $row) {
+            foreach ($result as $row) {
 
                 $output['data'][] = [
                     'icon' => "<i class='fa fa-{$row['icon']}' aria-hidden='false'></i>",
@@ -172,8 +173,9 @@ class TasksModel extends BaseModel
                     'status' => $row['status'],
                     'due_date' => date('d F Y', strtotime($row['due_date']))
                 ];
+                $output['row'] = $row;
             }
-            $output['row'] = $row;
+
         }
         return $output;
     }
@@ -181,9 +183,9 @@ class TasksModel extends BaseModel
     public function getCounts(): array
     {
         $sql = "SELECT 
-SUM(CASE WHEN `due_date` < '2023-11-03' AND `status` = 'open' THEN 1 ELSE 0 END) AS `overdue`,
-SUM(CASE WHEN `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'open' THEN 1 ELSE 0 END) AS `due`,
-SUM(CASE WHEN `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'complete' THEN 1 ELSE 0 END) AS `complete`
+SUM(if( `due_date` < '2023-11-03' AND `status` = 'open' , 1 , 0 )) AS `overdue`,
+SUM(if(  `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'open' ,1 , 0)) AS `due`,
+SUM(if(  `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'complete' ,1 , 0)) AS `complete`
 FROM `tasks`";
         $stmt = $this->pdo->query($sql);
         $output = $stmt->fetch();

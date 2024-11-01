@@ -12,12 +12,10 @@ class ContactModel extends BaseModel
     protected array $saveKeys = [
         'id', 'contact_id', 'contact_status',
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
-        'how_did_you_hear',
         'updated_date_utc', 'xerotenant_id', 'stub'];
     protected array $updateKeys = [
         'contact_status',
         'name', 'first_name', 'last_name', 'email_address', 'best_way_to_contact',
-        'how_did_you_hear',
         'updated_date_utc', 'stub'];
 
     protected string $table = 'contacts';
@@ -80,31 +78,61 @@ class ContactModel extends BaseModel
         return ($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '');
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function prepAndSaveMany(array $data): array
+    {
+        $output = [];
+        foreach ($data['contact'] as $k => $contact) {
+            $output[$k] = $this->prepAndSave(['contact' => $contact]);
+        }
+        return $output;
+    }
+
+    /**
+     * @param array $data
+     * @return int
+     */
     public function prepAndSave(array $data): int
     {
         //$this->debug(['contact prepAndSave', $data]);
+
+        $this->logInfo('prepAndSave: ', $data);
 
         $data['contact']['name'] = $data['contact']['name'] ?? $this->getContactName($data['contact']);
 
 
         // these can't be empty strings, either a value or null
-        $checked = $this->checkNullableValues($data);
-
-        // we can't pass extra variables
+        $checked = $this->checkNullableValues($data['contact']);
         $save = $this->getSaveValues($checked);
+        // we can't pass extra variables
+        $this->buildInsertSQL();
+        $newId = $this->runQuery($this->insert, $save, 'insert');
 
-        $newId = $this->save($save);
+        //$newId = $this->save($save);
 
         // save the id back to the data array and save the child records
         if ($newId > 0) $data['contact']['id'] = $newId;
         $addresses = new AddressModel($this->pdo);
         $addresses->prepAndSave($data);
 
-        // add key info to the note so we know where it came from
-        $data['note']['foreign_id'] = $data['contact']['id'];
-        $data['note']['parent'] = 'contacts';
-        $notes = new NoteModel($this->pdo);
-        $notes->prepAndSave($data);
+        if (array_key_exists('phone', $data['contact'])) {
+            $phone = new PhoneModel($this->pdo);
+            foreach ($data['contact']['phone'] as $phoneData) {
+                if (!empty($phoneData['phone'])) {
+                }
+            }
+        }
+
+        if (array_key_exists('note', $data['contact'])) {
+            // add key info to the note so we know where it came from
+            $data['note']['foreign_id'] = $data['contact']['id'];
+            $data['note']['parent'] = 'contacts';
+            $notes = new NoteModel($this->pdo);
+            $notes->prepAndSave($data);
+        }
 
 
         if (array_key_exists('phones', $data['contact']) && count($data['contact']['phones'])) {

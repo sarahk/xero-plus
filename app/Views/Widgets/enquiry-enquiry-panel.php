@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App\Views\Widgets;
 
 use App\ExtraFunctions;
@@ -13,19 +14,35 @@ use App\Models\Enums\ScheduleUnit;
 use App\Models\Enums\WinzStatus;
 use App\Models\Enums\YesNoDontKnow;
 
+/**
+ * @param $addresses
+ * @return array
+ */
+function getBestAddress(array $addresses): array
+{
+    $best = 0;
+    foreach ($addresses as $k => $row) {
+        if (!empty($row['address_line1'])) {
+            $best = $k;
+        }
+    }
+    return $addresses[$best]['address'];
+}
+
 ?>
 
 <div class="card-header">
     <h3 class="card-title">Customer Details </h3>
 </div>
 
-<form action="/authorizedSave.php?action=10" id='enquiryForm' method="get" class="needs-validation" novalidate>
+<form id='enquiryForm' class="needs-validation" novalidate>
     <?php
 
 
     FormBuilder::hidden('action', 'action', '10');
 
     //FormBuilder::hidden('contact_status', 'data[contact][contact_status]', $data['contacts']['contact_status']);
+
 
     FormBuilder::hidden('contract_id', 'data[contract][contract_id]', $data['Contract']['contract_id']);
     FormBuilder::hidden('repeating_invoice_id', 'data[contract][repeating_invoice_id]', $data['Contract']['repeating_invoice_id']);
@@ -38,8 +55,8 @@ use App\Models\Enums\YesNoDontKnow;
     FormBuilder::hidden('place_id', 'data[contract][place_id]', $data['Contract']['place_id']);
 
 
-    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]', $data['Note'][0]['foreign_id'] ?? '');
-    FormBuilder::hidden('note_parent', 'data[note][parent]', 'contacts');
+    FormBuilder::hidden('note_foreign_id', 'data[note][foreign_id]');
+    FormBuilder::hidden('note_parent', 'data[note][parent]', 'contract');
     FormBuilder::hidden('note_createdby', 'data[note][createdby]', $_SESSION['user_id']);
 
 
@@ -73,6 +90,7 @@ use App\Models\Enums\YesNoDontKnow;
                 HowDidYouHear::getAllAsArray(),
                 $data['Contract']['how_did_you_hear'] ?? '');
 
+            //ExtraFunctions::debug($data['Contract']);
             FormBuilder::radio('data[contract][enquiry_rating]', 'Enquiry Rating',
                 EnquiryRating::getAllAsArray(),
                 $data['Contract']['enquiry_rating'] ?? '0');
@@ -91,17 +109,6 @@ use App\Models\Enums\YesNoDontKnow;
                 <div class="form-group">
                     <?php FormBuilder::buttonRadioButtons($data, TENANCIES);
 
-
-                    function getBestAddress($addresses)
-                    {
-                        $best = 0;
-                        foreach ($addresses as $k => $row) {
-                            if (!empty($row['address_line1'])) {
-                                $best = $k;
-                            }
-                        }
-                        return $addresses[$best]['address'];
-                    }
 
                     ?>
                     <div class='form-group'>

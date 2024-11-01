@@ -47,4 +47,9 @@ trait LoggerTrait
         }
 
     }
+
+    protected function logInfo(string $message, array $context = []): void
+    {
+        $this->log('info', $message, $context);
+    }
 }

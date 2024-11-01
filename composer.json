@@ -41,5 +41,10 @@
       "app/StorageClass.php",
       "app/Utilities.php"
     ]
+  },
+  "scripts": {
+    "test": "pestphp",
+    "analyse": "phpstan analyse",
+    "phpstan": "\"vendor/bin/phpstan -c phpstan.neon\""
   }
 }

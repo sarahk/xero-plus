@@ -1,3 +1,6 @@
+<?php
+namespace App\Views\Invoices;
+?>
 <div class="row row-sm">
     <div class="col-lg-12">
         <div class="card">

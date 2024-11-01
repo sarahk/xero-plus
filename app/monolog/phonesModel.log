@@ -16968,3 +16968,1429 @@ INFO | 2024-10-19, 6:11 am > getRecord | {"sql":"SELECT * , CONCAT(`phone_area_c
 INFO | 2024-10-19, 6:12 am > getRecord | {"sql":"SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
                 FROM phones 
                 WHERE `ckcontact_id` = :keyVal","data":[]} 
+INFO | 2024-10-31, 6:37 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-10-31, 6:37 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-10-31, 11:47 pm > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-10-31, 11:47 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-10-31, 11:50 pm > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-10-31, 11:50 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 12:18 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 12:18 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 12:25 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 12:25 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 1:09 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 1:09 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 1:10 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 1:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 1:11 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 1:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 1:11 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 1:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 1:11 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 1:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:39 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:39 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:39 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:39 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:48 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:48 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:48 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:48 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:49 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:49 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:49 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:49 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:50 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:50 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:50 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:50 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:57 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:57 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:57 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:57 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:58 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:58 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:58 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:58 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:58 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:58 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:58 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:58 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 2:59 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 2:59 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 2:59 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 2:59 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:00 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:00 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:00 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:00 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:00 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:00 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:00 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:00 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:02 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:02 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:02 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:02 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:05 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:05 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:05 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:05 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:05 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:05 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:05 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:05 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 3:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 3:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:17 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 4:17 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 4:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:21 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 4:21 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 4:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:23 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 4:23 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 4:23 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:23 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:25 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 4:25 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 4:25 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:25 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 4:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:44 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 4:44 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 4:44 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 4:44 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 4:44 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 4:44 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:19 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:19 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:20 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:20 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:43 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:43 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 5:47 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 5:47 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:06 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:06 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:07 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:07 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:08 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:08 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:10 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:10 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:11 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:11 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:13 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:13 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:16 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:16 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:17 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:17 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:21 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:21 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 6:22 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 6:22 am > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 9:58 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 9:58 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[]] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SHOW FULL COLUMNS FROM `phones`"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":16944}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
+INFO | 2024-11-1, 10:00 pm > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal",{":keyVal":17509}] 
+INFO | 2024-11-1, 10:00 pm > getStatement:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+                FROM phones 
+                WHERE `ckcontact_id` = :keyVal"] 
