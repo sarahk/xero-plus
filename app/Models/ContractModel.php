@@ -209,7 +209,7 @@ class ContractModel extends BaseModel
         $sql = "SELECT `contracts`.`contract_id`, contracts.repeating_invoice_id, contracts.`status`, 
                     `contracts`.`reference`, contracts.date,`delivery_date`, `pickup_date` , `scheduled_delivery_date`,
                     contracts.`address_line1`, contracts.`address_line2`, contracts.city, contracts.`postal_code`,
-                    `contracts`.`cabin_type`,
+                    `contracts`.`cabin_type`, contracts.enquiry_rating,
 	                `contacts`.`id` as `ckcontact_id`, `contacts`.`name`, `contacts`.`email_address`,
                     `contracts`.`xerotenant_id`,
                     (SELECT SUM(`amount_due`) 

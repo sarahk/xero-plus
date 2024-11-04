@@ -31,16 +31,21 @@ class ComboModel extends BaseModel
 */
         $tenancyList = $this->getTenancyList();
 
-        $searchValues = [];
+        $search_values = [];
 
         $tenancies = $this->getTenanciesWhere($params);
 
         $contact_id = $_GET['contact_id'] ?? '';
         if (!empty($contact_id)) {
             // added to tenancies because we need it to run on the total and filter count queries
-            $tenancies .= " AND `contact_id` = '$contact_id'";
+            $tenancies .= " AND `contact_id` = :contact_id";
+            $search_values['contact_id'] = $contact_id;
         }
 
+        if (!empty($params['contract_id'])) {
+            $tenancies .= " AND `contract_id` = :contract_id";
+            $search_values['contract_id'] = $params['contract_id'];
+        }
 
         $order = $this->getOrderBy($params);
 
@@ -51,8 +56,8 @@ class ComboModel extends BaseModel
                 "`vcombo`.`invoice_number` LIKE :search2"
             ];
             //$searchValues['search'] = '%' . $params['search'] . '%';
-            $searchValues['search1'] = '%' . $params['search'] . '%';
-            $searchValues['search2'] = '%' . $params['search'] . '%';
+            $search_values['search1'] = '%' . $params['search'] . '%';
+            $search_values['search2'] = '%' . $params['search'] . '%';
 
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
@@ -61,11 +66,11 @@ class ComboModel extends BaseModel
         // todo what buttons
         if (!empty($params['button']) && $params['button'] !== 'read') {
             if ($params['button'] == 'overdue') {
-                $searchValues['overduedate'] = date('Y-m-d', strtotime('-7 days'));
+                $search_values['overduedate'] = date('Y-m-d', strtotime('-7 days'));
                 $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
 
             } else {
-                $searchValues['status'] = strtoupper($params['button']);
+                $search_values['status'] = strtoupper($params['button']);
                 $conditions[] = "`invoices`.`status` = :status";
             }
         } else {
@@ -76,7 +81,8 @@ class ComboModel extends BaseModel
 
         $fields = [
             '`row_type`',
-            '`xero_id`',
+            '`invoice_id`',
+            'contract_id',
             '`status`',
             '`invoice_number`',
             '`reference`',
@@ -93,24 +99,24 @@ class ComboModel extends BaseModel
             LIMIT {$params['start']}, {$params['length']}";
 
 
-        $result = $this->runQuery($sql, $searchValues);
+        $result = $this->runQuery($sql, $search_values);
 
         $output = $params;
         $output['mainquery'] = $sql;
-        $output['mainsearchvals'] = $searchValues;
+        $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
-        $output['recordsTotal'] = $this->getRecordsTotal($tenancies);
-        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
+        $output['recordsTotal'] = $this->getRecordsTotal($tenancies, $search_values);
+        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $search_values);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
 // todo change the links if it's payment
                 $output['data'][] = [
                     'row_type' => "{$tenancyList[$row['xerotenant_id']]['shortname']} <b>{$row['row_type']}</b>",
-                    'number' => "<a href='/authorizedResource.php?action=12&invoice_id={$row['xero_id']}'>{$row['invoice_number']}</a>",
+                    'number' => "<a href='/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}'>{$row['invoice_number']}</a>",
                     'reference' => $row['reference'],
-                    'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['xero_id']}' target='_blank'>{$row['status']}</a>",
+                    'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
                     'amount' => $row['amount'],
                     'amount_due' => $row['amount_due'],
                     'date' => date('d F Y', strtotime($row['date'])),

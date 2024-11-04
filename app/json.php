@@ -5,12 +5,13 @@
 
 namespace App;
 
+use App\Models\NoteModel;
 use App\StorageClass;
 use App\JsonClass;
 use App\Models\TemplateModel;
 use \XeroAPI\XeroPHP\Configuration;
 use \XeroAPI\XeroPHP\Api\AccountingApi;
-use App\Models\Enums;
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -84,6 +85,8 @@ try {
                 case 'list':
                     echo $json->getComboList();
                     break;
+
+
             }
             break;
 
@@ -97,6 +100,22 @@ try {
                     echo json_encode($output);
 
             }
+            break;
+
+        case 'Notes':
+        case 'notes':
+            switch ($action) {
+                case 'ListAssociated':
+                    $note = new NoteModel(Utilities::getPDO());
+                    echo json_encode($note->listAssociated(Utilities::getParams()));
+                    break;
+            }
+            break;
+
+        case 'Xero':
+        case 'xero':
+            echo json_encode(['result' => Utilities::refreshAccessTokenJs()]);
+
             break;
 
         case "Accounts":

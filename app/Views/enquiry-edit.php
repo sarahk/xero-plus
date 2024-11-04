@@ -33,11 +33,10 @@ use App\ExtraFunctions;
                     <ul class="nav tabs-menu">
                         <li><a href="#tab1" class="active " data-bs-toggle="tab">Enquiry</a></li>
                         <li><a href="#tab2" data-bs-toggle="tab"
-                               class="">Notes <?= ExtraFunctions::getCount($data['Note'] ?? []); ?></a>
+                               class="">Notes (<span id="notesCounter"></span>)</a>
                         </li>
-                        <li><a href="#tab3" data-bs-toggle="tab"
-                               class="">Cabins <?= ExtraFunctions::getCount($data['Contract']); ?></a></li>
-                        <li><a href="#tab4" data-bs-toggle="tab" class="">Invoices</a></li>
+                        <li><a href="#tab3" data-bs-toggle="tab" class="">
+                                Invoices & Payments (<span id="comboCounter"></span>)</a></li>
                     </ul>
 
                 </div>
@@ -48,10 +47,12 @@ use App\ExtraFunctions;
                             include('Widgets/enquiry-enquiry-panel.php'); ?>
                         </div>
                         <div class="tab-pane" id="tab2">
-                            <?php include 'Widgets/enquiry-notes-index.php' ?>
+                            <?php include 'Widgets/enquiry-notes-index.php'; ?>
                         </div>
-                        <div class="tab-pane" id="tab3"></div>
-                        <div class="tab-pane" id="tab4"></div>
+                        <div class="tab-pane" id="tab3">
+                            <?php include 'combo-index.php'; ?>
+                        </div>
+
                     </div>
                 </div>
 

@@ -447,12 +447,66 @@ $(document).ready(function () {
     });
 
 
-    let availableCabins = $('#availableCabins');
-    if (availableCabins.length > 0) {
+    let $availableCabins = $('#availableCabins');
+    if ($availableCabins.length > 0) {
         refreshCabinList();
         $('input[name="data[contract][xerotenant_id]"]').on('change', refreshCabinList);
         $('input[name="data[contract][painted]"]').on('change', refreshCabinList);
         $('input[name="data[contract][cabin_type]"]').on('change', refreshCabinList);
         $('#scheduledDeliveryDate').on('change', refreshCabinList);
     }
+
+
+    let $notesTable = $('#tNotes');
+    if ($notesTable.length) {
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        $notesTable
+            .on('xhr.dt', function (e, settings, json, xhr) {
+                console.log('xhr.dt', json.recordsTotal);
+                $('#notesCounter').text(json.recordsTotal);
+
+            })
+            .DataTable({
+                ajax: {
+                    url: "/json.php",
+                    data: {
+                        endpoint: 'Notes',
+                        action: 'ListAssociated',
+                        foreign_id: urlParams.get('contract_id'),
+                        parent: 'contract'
+                    }
+                },
+                searching: false,
+                processing: true,
+                serverSide: true,
+                paging: true,
+                stateSave: true,
+                rowId: 'DT_RowId',
+                columns: [
+                    {data: "id"},
+                    {data: "formatted_date"},
+                    {data: "note"},
+                    {data: "first_name"},
+                ],
+                fixedColumns: {
+                    start: 1
+                },
+
+                layout: {
+                    topStart: {
+                        buttons: ['pageLength', {
+                            extend: 'csv',
+                            text: 'Export',
+                            split: ['copy', 'excel', 'pdf', 'print']
+
+                        }],
+                    },
+                },
+            });
+
+    }
+
+
 });

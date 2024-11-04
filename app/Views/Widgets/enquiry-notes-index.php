@@ -17,6 +17,7 @@ namespace App\Views\Widgets;
                             <th>#</th>
                             <th>Date</th>
                             <th>Note</th>
+                            <th>&nbsp;</th>
                         </tr>
                         </thead>
                     </table>

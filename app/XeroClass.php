@@ -43,9 +43,9 @@ class XeroClass
         );
 
         //$this->apiInstance = $apiInstance;
-        $pdo = Utilities::getPDO();
-        $this->pdo = $pdo;
+        $this->pdo = Utilities::getPDO();
 
+        $this->initLogger('XeroClass');
     }
 
     public function getTenantIdArray()
@@ -263,10 +263,10 @@ class XeroClass
         ];
         $contact = new ContactModel($this->pdo);
         $id = $contact->getContactId($save['contact_id']);
-        if ($id && $overwrite) {
-            $save['id'] = $id;
-        } else {
+        if ($id && !$overwrite) {
             return $id;
+        } else {
+            $save['id'] = $id;
         }
 
         $save['name'] = $save['name'] ?? $contact->getContactName($save);
@@ -274,8 +274,8 @@ class XeroClass
         $this->saveAddressStubs($stub->getAddresses(), $id, $save['contact_id']);
         # todo save phone stubs
         // only save if it's a new customer
-        $this->debug($save);
-        return $contact->saveXeroStub($save);
+        //$this->debug($save);
+        return $id;
     }
 
     /**
@@ -687,7 +687,7 @@ class XeroClass
 
         $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
 
-        $objInvoice->getStatement();
+        //$objInvoice->getStatement();
 
         //    public function getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $i_ds = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null)
         // xero: getInvoices($xero_tenant_id, $if_modified_since = null, $where = null, $order = null, $ids = null, $invoice_numbers = null, $contact_ids = null, $statuses = null, $page = null, $include_archived = null, $created_by_my_app = null, $unitdp = null, $summary_only = false)
@@ -721,11 +721,11 @@ class XeroClass
                     'total' => $row['total'],
                     'amount_due' => $row['amount_due'],
                     'amount_paid' => $row['amount_paid'],
-                    'date' => getDateFromXero($row['date']),
-                    'due_date' => getDateFromXero($row['due_date']),
+                    'date' => ExtraFunctions::getDateFromXero($row['date']),
+                    'due_date' => ExtraFunctions::getDateFromXero($row['due_date']),
                     'repeating_invoice_id' => $repeating_invoice_id,
                     'xero_status' => $row['status'],
-                    'updated_date_utc' => getDateFromXero($row['updated_date_utc']),
+                    'updated_date_utc' => ExtraFunctions::getDateFromXero($row['updated_date_utc']),
                     'xerotenant_id' => $xeroTenantId
                 ];
 
@@ -742,6 +742,8 @@ class XeroClass
                 $values['contact_id'] = $contact_id;
                 $values['ckcontact_id'] = $ckcontact_id;
 
+                $this->logInfo('getInvoiceRefresh: values', $values);
+                $this->logInfo('getInvoiceRefresh: Row: ', [$row]);
                 $objInvoice->prepAndSave($values);
 
             }
@@ -770,6 +772,8 @@ class XeroClass
             'updated' => date('Y-m-d H:i:s')
         ]);
 
+
+        //todo - document why I need the join reversed
         if ($joinType === 'contact') {
             $joins->prepAndSave(['ckcontact_id' => $foreign_id,
                 'foreign_id' => $id,
@@ -1047,12 +1051,15 @@ class XeroClass
         $page_size = 50;  //100
         $result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
 
+
         foreach ($result->getPayments() as $row) {
             //$this->debug($row);
 
+            $invoice_id = $row->getInvoice()->getInvoiceId();
             $save = [
                 'payment_id' => $row->getPaymentId(),
-                'invoice_id' => $row->getInvoice()->getInvoiceId(),
+                'invoice_id' => $invoice_id,
+                'contract_id' => $payments->getContractId($invoice_id),
                 'date' => $row->getDateAsDate()->format('Y-m-d H:i:s'),
                 'status' => $row->getStatus(),
                 'amount' => $row->getAmount(),
@@ -1065,6 +1072,8 @@ class XeroClass
                 'payment_type' => $row->getPaymentType(),
             ];
             if ($save['status'] != 'DELETED') {
+                //$this->logInfo('getPayments: Save:', $save);
+                //$this->logInfo('getPayments: Row:', [$row]);
                 $payments->prepAndSave($save);
             }
             //$this->debug($save);

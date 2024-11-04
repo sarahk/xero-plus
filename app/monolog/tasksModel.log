@@ -164,3 +164,615 @@ INFO | 2024-11-1, 5:54 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `t
                 WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `tasks`.`cabin_id` = :cabin_id",{"cabin_id":""}] 
 INFO | 2024-11-1, 5:54 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
                 WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `tasks`.`cabin_id` = :cabin_id"] 
+INFO | 2024-11-2, 2:11 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-2, 2:11 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-2, 2:11 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-2, 2:11 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-2, 2:30 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-2, 2:30 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-2, 2:30 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-2, 2:30 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-2, 2:30 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-2, 2:30 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-2, 2:30 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-2, 2:30 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-2, 2:36 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-2, 2:36 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-2, 2:36 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-2, 2:36 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-2, 10:41 pm > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-2, 10:41 pm > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-2, 10:41 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-2, 10:41 pm > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-2, 11:20 pm > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-2, 11:20 pm > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-2, 11:20 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-2, 11:20 pm > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-02' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 1:02 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 1:02 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 1:02 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 1:02 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 3:14 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 3:14 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 3:14 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 3:14 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 3:15 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 3:15 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 3:15 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 3:15 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 4:05 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 4:05 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 4:05 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 4:05 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 9:07 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 9:07 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 9:07 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 9:07 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 9:21 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 9:21 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 9:21 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 9:21 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:04 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:04 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:04 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:04 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:08 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:08 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:08 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:08 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:08 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:08 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:08 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:08 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:09 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:09 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:09 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:09 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:24 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:24 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:24 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:24 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:38 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:38 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:38 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:38 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:41 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:41 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:41 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:41 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:48 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:48 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:48 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:48 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-3, 10:56 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-3, 10:56 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-3, 10:56 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-3, 10:56 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-03' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-4, 12:10 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-4, 12:10 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-4, 12:10 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-4, 12:10 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-4, 12:11 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-4, 12:11 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-4, 12:11 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-4, 12:11 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-4, 1:11 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-4, 1:11 am > getStatement:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10"] 
+INFO | 2024-11-4, 1:11 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-4, 1:11 am > getStatement:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)"] 
+INFO | 2024-11-4, 1:49 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-4, 1:49 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-4, 2:20 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-4, 2:20 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 
+INFO | 2024-11-4, 3:18 am > runQuery:  | ["SELECT *, CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
+                WHEN datediff(due_date, now()) < 90 THEN 'due'
+                ELSE 'future' END as date_status, CASE WHEN `task_type` = 'wof' THEN 'bolt-lightning' WHEN `task_type` = 'buy' THEN 'cart-shopping' WHEN `task_type` = 'repair' THEN 'hammer'  END  as icon FROM `tasks` 
+            WHERE `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)
+            ORDER BY tasks.due_date DESC 
+            LIMIT 0, 10",[]] 
+INFO | 2024-11-4, 3:18 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `tasks` 
+                WHERE  `tasks`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (
+                    (`tasks`.`due_date` >= '2024-11-04' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < 1970-01-01)",[]] 

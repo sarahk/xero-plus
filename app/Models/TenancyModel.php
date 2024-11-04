@@ -11,11 +11,12 @@ class TenancyModel extends BaseModel
     protected string $table = 'tenancies';
 
     /**
+     * NEEDS TO BE EXTENDED TO USE THE `userstenancies` table
      * @return array<mixed>
      */
     public function list(): array
     {
-        $sql = "SELECT * from `tenancies` order by `sortorder`";
+        $sql = "SELECT * FROM `tenancies` ORDER BY `sortorder`";
         $result = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $output = [];
@@ -25,5 +26,20 @@ class TenancyModel extends BaseModel
         }
         return $output;
     }
+
+    public function listActiveTenantId(): array
+    {
+        $data = $this->list();
+        $output = [];
+
+        foreach ($data as $row) {
+            if ($row['active'] == 'true') {
+                $output[] = $row['tenant_id'];
+            }
+        }
+        
+        return $output;
+    }
+
 
 }

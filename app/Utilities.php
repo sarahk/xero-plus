@@ -1,17 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace App;
 
-use App\StorageClass;
+use App\Models\TenancyModel;
+
 use App\Models\UserModel;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 use League\OAuth2\Client\Provider\GenericProvider;
-use XeroAPI\XeroPHP\Configuration;
+
+//use XeroAPI\XeroPHP\Configuration;
 use PDO;
 use PDOException;
 use Exception;
+use TypeError;
+use Throwable;
+
 
 if (!isset($_SESSION)) {
     session_start();
@@ -90,9 +97,9 @@ class Utilities
                 $newAccessToken->getExpires(),
                 $xeroTenantId,
                 $newAccessToken->getRefreshToken(),
-                $newAccessToken->getValues()["id_token"]
+                $newAccessToken->getValues()['id_token']
             );
-            setTenanciesforUser($provider, $storage);
+            self::setTenanciesForUser($provider, $storage);
         }
         setJWTValues($storage);
 
@@ -100,7 +107,7 @@ class Utilities
         return $storage;
     }
 
-    function getTenanciesForUser(): array
+    public function getTenanciesForUser(): array
     {
         if (array_key_exists('tenancies', $_SESSION)) {
             return $_SESSION['tenancies'];
@@ -109,7 +116,7 @@ class Utilities
         }
     }
 
-    public static function setTenanciesforUser($provider, $storage): void
+    public static function setTenanciesForUser($provider, $storage): void
     {
         if (!array_key_exists('tenancies', $_SESSION)) {
 
@@ -148,7 +155,7 @@ class Utilities
             return new PDO('mysql:host=localhost;dbname=xeroplus;charset=utf8mb4', $user, $pass);
 //"mysql:host=$host;dbname=$db;charset=utf8mb4"
         } catch (PDOException $e) {
-            print "Error!: " . $e->getMessage() . "<br/>";
+            print 'Error!: ' . $e->getMessage() . '<br/>';
             die();
         }
     }
@@ -161,7 +168,7 @@ class Utilities
 
 // If the access token is expired or about to expire, refresh it
         if ($currentTime > $tokens['expires'] - 60) {  // Token expires in less than 1 minute
-            $newAccessToken = self::refreshAccessToken();
+            $newAccessToken = self::refreshAccessToken('html');
 
             if ($newAccessToken) {
                 //todo do we need to do anything?
@@ -175,7 +182,9 @@ class Utilities
         }
     }
 
-    protected static function refreshAccessToken()
+
+    // Don't call this directly
+    protected static function refreshAccessToken(string $what): bool
     {
         $client = new Client(); //guzzle
         try {
@@ -191,7 +200,7 @@ class Utilities
                     'redirect_uri' => $credentials['redirectUri'],
                 ],
             ]);
-
+            
             $responseBody = json_decode($response->getBody(), true);
 
             // Extract new tokens
@@ -201,10 +210,66 @@ class Utilities
             // Store the new tokens securely (e.g., in the session or database)
             StorageClass::storeNewTokens($newAccessToken, $newRefreshToken);
 
-            return $newAccessToken; // Return the new access token
-        } catch (RequestException $e) {
-            echo 'Error refreshing access token: ' . $e->getMessage();
-            return null;
+            return true;
+
+        } catch (IdentityProviderException|RequestException|TypeError|Throwable|Exception $e) {
+            // Catch any other exception or error
+            // should be sending to monolog too
+            if ($what === 'html') {
+                header('Location: /');
+                exit;
+            }
+            return false;
         }
+    }
+
+
+    public static function refreshAccessTokenJs()
+    {
+        $tokens = StorageClass::getAccessTokenAndExpiry();
+        $currentTime = time();
+
+// If the access token is expired or about to expire, refresh it
+        if ($currentTime > $tokens['expires']) {
+            // it's expired, we can't refresh and we'll get errors if we try
+            return false;
+        }
+        if ($currentTime > $tokens['expires'] - 60) {
+            try {
+
+                return self::refreshAccessToken('js');
+
+            } catch (RequestException|TypeError|Throwable|Exception $e) {
+                // Catch any other exception or error
+                // should be sending to monolog too
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    // structured for datatables
+    public static function getParams(): array
+    {
+        $tenancies = new TenancyModel(self::getPDO());
+
+        return [
+            'data' => [],
+            'draw' => $_GET['draw'] ?? 1,
+            'start' => $_GET['start'] ?? 0,
+            'length' => $_GET['length'] ?? 10,
+            'search' => $_GET['search']['value'] ?? '',
+            'order' => $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']],
+            'invoice_status' => $_GET['invoice_status'] ?? '',
+            'dates' => $_GET['search']['dates'] ?? '',
+            'contact_status' => $_GET['search']['contact_status'] ?? '',
+            'button' => $_GET['search']['button'] ?? '',
+            'key' => $_GET['search']['key'] ?? '',
+            'tenancies' => $tenancies->listActiveTenantId(),
+            'contract_id' => $_GET['contract_id'] ?? 0,
+            'foreign_id' => $_GET['foreign_id'] ?? 0,
+            'parent' => $_GET['parent'] ?? '',
+        ];
     }
 }

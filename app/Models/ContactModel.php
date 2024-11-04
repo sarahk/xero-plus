@@ -54,6 +54,8 @@ class ContactModel extends BaseModel
                         `xero_status` = :xero_status
                         WHERE `id` = :id ";
             $this->runQuery($sql, $save, 'update');
+            $this->logInfo('saveXeroStub-existing', $save);
+            $this->logInfo('saveXeroStub-existing', $data['id']);
             return $data['id'];
         }
 
@@ -70,7 +72,10 @@ class ContactModel extends BaseModel
             VALUES (:id, :contact_id,:name,:first_name,:last_name,:email_address,:xero_status,:xerotenant_id,:stub)";
         //$save = array_merge($data, $dupes);
 
-        return $this->runQuery($sql, $data, 'insert');
+        $newId = $this->runQuery($sql, $data, 'insert');
+        $this->logInfo('saveXeroStub-new', $data);
+        $this->logInfo('saveXeroStub-new', $newId);
+        return $newId;
     }
 
     public function getContactName(array $data): string

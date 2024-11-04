@@ -114,7 +114,7 @@ switch ($action) {
     ?>
 
     $(document).ready(function () {
-
+        // Event listener for the date input
         $('input[name="dates"]').mouseup(getInvoiceRedraw);
 
         function getInvoiceRedraw() {
@@ -125,34 +125,28 @@ switch ($action) {
             }, 100);
         }
 
-
+        // Initialize owlCarousel if it exists
         if ($('.owl-carousel').length) {
             let homeScreen = getScreenBreakpoint();
             let homeCarousel = (homeScreen === 'xs' || homeScreen === 'sm') ? 1 : 5;
-//items: homeCarousel,
+
             $(".owl-carousel").owlCarousel({
                 URLhashListener: true,
                 margin: 5,
                 startPosition: '#today',
                 responsiveClass: true,
                 responsive: {
-                    0: {
-                        items: 1
-                    },
-                    400: {
-                        items: 2
-                    },
-                    740: {
-                        items: 5
-                    },
-                    940: {
-                        items: 5
-                    }
+                    0: {items: 1},
+                    400: {items: 2},
+                    740: {items: 5},
+                    940: {items: 5}
                 },
                 nav: true,
                 stagePadding: 50,
             });
         }
+
+        // Initialize slick slider if it exists
         if ($('.slick-stock').length) {
             $('.slick-stock').slick({
                 dots: false,
@@ -183,22 +177,25 @@ switch ($action) {
                             slidesToShow: 1,
                             slidesToScroll: 1
                         }
-                    }],
+                    }
+                ],
             });
         }
 
-        // refresh data from Xero
-        // but only for one tenancy
+        // Functions to load data from Xero
         function loadInvoicesFromXero(tenancy) {
-            //The load button
             console.log(['loadInvoicesFromXero', tenancy]);
-            $('#loadfromxerospinner').show();//Load button clicked show spinner
+            $('#loadfromxerospinner').show();
             $.ajax({
-                url: "/xero.php?endpoint=Invoices&action=refresh&tenancy=" + tenancy,
+                url: "/xero.php",
+                data: {
+                    endpoint: 'Invoices',
+                    action: 'refresh',
+                    tenancy: tenancy
+                },
                 type: 'GET',
-                dataType: 'json',
                 complete: function () {
-                    $('#loadfromxerospinner').hide();//Request is complete so hide spinner
+                    $('#loadfromxerospinner').hide();
                 }
             });
         }
@@ -208,25 +205,41 @@ switch ($action) {
             $.ajax({
                 url: "/xero.php?endpoint=Contacts&action=refresh&tenancy=" + tenancy,
                 type: 'GET',
-                dataType: 'json',
             });
         }
 
         function loadPaymentsFromXero(tenancy) {
             console.log('loadPaymentsFromXero: ' + tenancy);
             $.ajax({
-                url: "/xero.php?endpoint=payments&action=readAll&tenancy=" + tenancy,
+                url: "/xero.php",
+                data: {
+                    endpoint: 'Payments',
+                    action: 'readAll',
+                    tenancy: tenancy
+                },
                 type: 'GET',
             });
         }
 
+        // Set an interval to check the token every minute
+        const intervalId = setInterval(function () {
+            $.ajax({
+                url: "/json.php",
+                data: {endpoint: "Xero"}
+            })
+                .done(function (data) {
+                    console.log(data);
+                    if (!data.result) {
+                        clearInterval(intervalId);
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error('setInterval Ajax request failed:', textStatus, errorThrown);
+                    clearInterval(intervalId);
+                });
 
-        // every minute
-        //let frequency = 60 * 1000 * 100;
-        let frequency = 60 * 1000;
 
-        setInterval(function () {
-            console.log('setInterval');
+            // Load data for each tenancy if the cookie is set
             const tenancies = ['auckland', 'waikato', 'bop'];
             for (let i = 0; i < tenancies.length; i++) {
                 if (Cookies.get(tenancies[i]) === 'true') {
@@ -234,11 +247,10 @@ switch ($action) {
                     loadPaymentsFromXero(tenancies[i]);
                 }
             }
-        }, frequency);
+        }, 10000);
 
 
-// save the working with choices
-// https://github.com/js-cookie/js-cookie/tree/main
+        // Save the working with choices using cookies
         $('#tenancy-auckland').change(function () {
             Cookies.set('auckland', $('#tenancy-auckland')[0].checked);
             console.log('auckland cookie');
@@ -251,8 +263,8 @@ switch ($action) {
             Cookies.set('bop', $('#tenancy-bop')[0].checked);
             console.log('bop cookie');
         });
-
     });
+
 </script>
 </body>
 

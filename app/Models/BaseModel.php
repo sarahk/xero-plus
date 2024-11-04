@@ -66,6 +66,7 @@ class BaseModel
             return match ($type) {
                 'query' => $this->statement->fetchAll(PDO::FETCH_ASSOC),
                 'update' => $this->statement->rowCount(),
+                'column' => $this->statement->fetchColumn(),
                 default => $this->pdo->lastInsertId(),
             };
 
@@ -259,7 +260,7 @@ class BaseModel
             $sql = $this->insert;
         }
 
-        $this->logInfo('getStatement: ', [$sql]);
+        //$this->logInfo('getStatement: ', [$sql]);
         try {
             $this->statement = $this->pdo->prepare($sql);
         } catch (PDOException $e) {
@@ -416,11 +417,14 @@ class BaseModel
         ];
     }
 
-    protected function getRecordsTotal($tenancies): int
+    protected function getRecordsTotal(string $tenancies, array $search_values = []): int
     {
-        $recordsTotal = "SELECT count(*) FROM `$this->table` 
+        $recordsTotal = "SELECT count(*) as `total`
+                FROM $this->table
                 WHERE $tenancies";
-        return $this->pdo->query($recordsTotal)->fetchColumn();
+        //return $this->pdo->query($recordsTotal)->fetchColumn();
+        $this->logInfo($recordsTotal, []);
+        return $this->runQuery($recordsTotal, $search_values, 'column');
     }
 
     /**
@@ -436,11 +440,8 @@ class BaseModel
                 WHERE  " . implode(' AND ', $conditions);
         else $recordsFiltered = $sql;
 
-        $result = $this->runQuery($recordsFiltered, $searchValues);
-        if (is_array($result))
-            return $result[0]['filtered'];
-
-        return 0;
+        return $this->runQuery($recordsFiltered, $searchValues, 'column');
+        
     }
 
     protected function getOrderBy($params): string

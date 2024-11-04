@@ -62,7 +62,7 @@ trait DebugTrait
     }
 
 
-    protected function showValue(int $k, mixed $val, int $level = 1): void
+    protected function showValue(mixed $k, mixed $val, int $level = 1): void
     {
         $ul = ($this->isJson ? PHP_EOL : "<ul style='list-style-type: disc; padding: 1em;'>");
         $begin = ($this->isJson) ? str_repeat('>', $level + 1) . ' ' : '<li>';

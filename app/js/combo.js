@@ -7,76 +7,90 @@ $(document).ready(function () {
         $("#modalSpinner").hide();
     });
 
-    if ($('#tCombo').length) {
 
-        let tCombo = $('#tCombo').DataTable({
-            ajax: {
-                url: "/json.php?endpoint=Combo&action=List",
-            },
-            processing: true,
-            serverSide: true,
-            paging: true,
-            stateSave: true,
-            columns: [
-                {data: "row_type"},
-                {data: "number"},
-                {data: "reference"},
-                {data: 'status'},
-                {data: "amount"},
-                {data: "amount_due"},
-                {data: "date"},
-            ],
-            createdRow: (row, data, index) => {
-                console.log(data);
-                //row.querySelector(':nth-child(1)').classList.add('table-primary');
-                row.classList.add('bar-' + data.colour);
+    let $tCombo = $('#tCombo');
+    if ($tCombo.length) {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        $tCombo
+            .on('xhr.dt', function (e, settings, json, xhr) {
+                console.log('xhr.dt', json.recordsTotal);
+                $('#comboCounter').text(json.recordsTotal);
 
-                // row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
-                // row.querySelector(':nth-child(1)').classList.add('bg-gradient');
-                // row.querySelector(':nth-child(1)').classList.add('opacity-50');
+            })
+            .DataTable({
+                ajax: {
+                    url: "/json.php",
+                    data: {
+                        endpoint: 'Combo',
+                        action: 'List',
+                        contract_id: urlParams.get('contract_id'),
+                    }
+                },
+                processing: true,
+                serverSide: true,
+                paging: true,
+                stateSave: true,
+                columns: [
+                    {data: "row_type"},
+                    {data: "number"},
+                    {data: "reference"},
+                    {data: 'status'},
+                    {data: "amount"},
+                    {data: "amount_due"},
+                    {data: "date"},
+                ],
+                createdRow: (row, data, index) => {
+                    //console.log(data);
+                    //row.querySelector(':nth-child(1)').classList.add('table-primary');
+                    row.classList.add('bar-' + data.colour);
 
-            },
-            layout: {
-                topStart: {
-                    buttons: ['pageLength', {
-                        extend: 'csv',
-                        text: 'Export',
-                        split: ['copy', 'excel', 'pdf', 'print']
-                    }, {
-                        text: 'All',
-                        action: function () {
-                            //dt.ajax.reload();
-                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
-                        }
-                    }, {
-                        text: 'Overdue',
-                        action: function () {
-                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
-                        }
-                    }, {
-                        text: 'Authorised',
-                        action: function () {
-                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
-                        }
-                    }, {
-                        text: 'Paid',
-                        action: function () {
-                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
-                        }
-                    }, {
-                        text: 'Draft',
-                        action: function () {
-                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
-                        }
-                    }, {
-                        text: 'Void',
-                        action: function () {
-                            tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
-                        }
-                    }]
-                }
-            },
-        });
+                    // row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
+                    // row.querySelector(':nth-child(1)').classList.add('bg-gradient');
+                    // row.querySelector(':nth-child(1)').classList.add('opacity-50');
+
+                },
+                layout: {
+                    topStart: {
+                        buttons: ['pageLength', {
+                            extend: 'csv',
+                            text: 'Export',
+                            split: ['copy', 'excel', 'pdf', 'print']
+                        }, {
+                            text: 'All',
+                            action: function () {
+                                //dt.ajax.reload();
+                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
+                            }
+                        }, {
+                            text: 'Overdue',
+                            action: function () {
+                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
+                            }
+                        }, {
+                            text: 'Authorised',
+                            action: function () {
+                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
+                            }
+                        }, {
+                            text: 'Paid',
+                            action: function () {
+                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
+                            }
+                        }, {
+                            text: 'Draft',
+                            action: function () {
+                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
+                            }
+                        }, {
+                            text: 'Void',
+                            action: function () {
+                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
+                            }
+                        }]
+                    }
+                },
+            });
 
     }
     if ($('#comboContactName').length) {

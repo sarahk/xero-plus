@@ -13,10 +13,11 @@ class ContactJoinModel extends BaseModel
     protected array $hasMany = [];
 
     protected array $nullable = [];
-    protected array $saveKeys = ['id', 'ckcontact_id', 'join_type', 'foreign_id', 'updated'];
+    protected array $saveKeys = ['ckcontact_id', 'join_type', 'foreign_id', 'updated'];
     protected array $updateKeys = ['foreign_id', 'updated'];
-    protected string $insert = 'INSERT INTO `contactjoins` ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
-                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);';
+    protected string $insert = 'INSERT INTO contactjoins
+                                    ( `ckcontact_id`, `join_type`, `foreign_id`, `updated`) 
+                                    VALUES (:ckcontact_id, :join_type, :foreign_id, :updated);';
 
 
     /**
@@ -44,7 +45,7 @@ class ContactJoinModel extends BaseModel
         $id_list = array_map(function ($item) {
             return $item['ckcontact_id'];
         }, $result);
-        
+
 
         $updated = date('Y-m-d H:i:s');
 

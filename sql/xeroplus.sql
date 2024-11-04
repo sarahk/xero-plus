@@ -3,19 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 16, 2024 at 06:39 AM
+-- Generation Time: Nov 04, 2024 at 12:28 AM
 -- Server version: 5.7.44
--- PHP Version: 8.2.20
+-- PHP Version: 8.3.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `xeroplus`
@@ -100,6 +94,7 @@ CREATE TABLE `contactjoins`
     `ckcontact_id` int(11)                                DEFAULT NULL,
     `join_type`    varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `foreign_id`   int(11)                                DEFAULT NULL,
+    `sort_order`   tinyint(3)                             DEFAULT NULL,
     `updated`      datetime                               DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -122,7 +117,6 @@ CREATE TABLE `contacts`
     `last_name`           varchar(100) DEFAULT NULL,
     `email_address`       varchar(250) DEFAULT NULL,
     `best_way_to_contact` varchar(25)  DEFAULT NULL,
-    `how_did_you_hear`    varchar(25)  DEFAULT NULL,
     `is_supplier`         tinyint(1)   DEFAULT '0',
     `date_of_birth`       date         DEFAULT NULL,
     `is_customer`         tinyint(1)   DEFAULT '1',
@@ -150,7 +144,7 @@ CREATE TABLE `contracts`
     `status`                  varchar(20) NOT NULL DEFAULT 'New',
     `schedule_unit`           varchar(25)          DEFAULT NULL,
     `cabin_use`               varchar(15)          DEFAULT NULL,
-    `text_reminder_invoice`   char(3)              DEFAULT 'DK',
+    `sms_reminder_invoice`    char(3)              DEFAULT 'DK',
     `reference`               varchar(25)          DEFAULT NULL,
     `tax_type`                varchar(10)          DEFAULT 'NONE',
     `cabin_type`              varchar(10)          DEFAULT NULL,
@@ -158,6 +152,7 @@ CREATE TABLE `contracts`
     `painted`                 varchar(10) NOT NULL DEFAULT '---',
     `winz`                    varchar(10)          DEFAULT NULL,
     `delivery_date`           date                 DEFAULT NULL,
+    `how_did_you_hear`        varchar(25)          DEFAULT '',
     `scheduled_delivery_date` date                 DEFAULT NULL,
     `delivery_time`           char(5)              DEFAULT NULL,
     `pickup_date`             date                 DEFAULT NULL,
@@ -231,6 +226,7 @@ CREATE TABLE `payments`
 (
     `payment_id`       char(36) CHARACTER SET utf8 NOT NULL,
     `invoice_id`       char(36) CHARACTER SET utf8    DEFAULT NULL,
+    `contract_id`      int(11)                        DEFAULT NULL,
     `contact_id`       char(36)                       DEFAULT NULL,
     `date`             datetime                       DEFAULT NULL,
     `status`           varchar(20) CHARACTER SET utf8 DEFAULT NULL,
@@ -366,6 +362,21 @@ VALUES (1, '87ff2891-a223-4f3e-8e65-cfbd5db3c717', 'Sarah', 'King', 'sarah@itame
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `userstenancies`
+--
+
+CREATE TABLE `userstenancies`
+(
+    `user_id`       int(11)                             NOT NULL,
+    `xerouser_id`   char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `xerotenant_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `vamountdue`
 -- (See below for the actual view)
 --
@@ -384,9 +395,11 @@ CREATE TABLE `vamountdue`
 CREATE TABLE `vcombo`
 (
     `row_type`       varchar(1),
-    `xero_id`        char(36),
+    `invoice_id`     char(36),
+    `payment_id`     varchar(36),
     `status`         varchar(20),
     `invoice_number` varchar(20),
+    `contract_id`    int(11),
     `reference`      varchar(20),
     `amount`         decimal(10, 2),
     `amount_due`     decimal(18, 2),
@@ -466,6 +479,29 @@ CREATE TABLE `weeks`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `weeks`
+--
+
+INSERT INTO `weeks` (`week_number`)
+VALUES (0),
+       (1),
+       (2),
+       (3),
+       (4),
+       (5),
+       (6),
+       (7),
+       (8),
+       (9),
+       (10),
+       (11),
+       (12),
+       (13),
+       (14),
+       (15),
+       (16);
+
 -- --------------------------------------------------------
 
 --
@@ -490,9 +526,11 @@ DROP TABLE IF EXISTS `vcombo`;
 
 CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vcombo` AS
 SELECT 'I'                         AS `row_type`,
-       `invoices`.`invoice_id`     AS `xero_id`,
+       `invoices`.`invoice_id`     AS `invoice_id`,
+       ''                          AS `payment_id`,
        `invoices`.`status`         AS `status`,
        `invoices`.`invoice_number` AS `invoice_number`,
+       `invoices`.`contract_id`    AS `contract_id`,
        `invoices`.`reference`      AS `reference`,
        `invoices`.`total`          AS `amount`,
        `invoices`.`amount_due`     AS `amount_due`,
@@ -502,9 +540,11 @@ SELECT 'I'                         AS `row_type`,
 FROM `invoices`
 union
 select 'P'                        AS `row_type`,
-       `payments`.`payment_id`    AS `xero_id`,
+       `payments`.`invoice_id`    AS `invoice_id`,
+       `payments`.`payment_id`    AS `payment_id`,
        `payments`.`status`        AS `status`,
        ''                         AS `invoice_number`,
+       `payments`.`contract_id`   AS `contract_id`,
        `payments`.`reference`     AS `reference`,
        `payments`.`amount`        AS `amount`,
        0                          AS `amount_due`,
@@ -751,7 +791,3 @@ ALTER TABLE `vehicles`
 ALTER TABLE `vehicle_log`
     MODIFY `id` int(9) NOT NULL AUTO_INCREMENT;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;

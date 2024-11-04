@@ -24,7 +24,7 @@ trait LoggerTrait
                 true, // allowInlineLineBreaks option, default false
                 true  // discard empty Square brackets in the end, default false
             );
-            $this->logger = new Logger($this->table . ' Logger');
+            $this->logger = new Logger($this->table ?? 'alt-' . ' Logger');
 
             $stream_handler = new StreamHandler(__DIR__ . "../../../monolog/{$label}.log", Level::Debug);
             $stream_handler->setFormatter($formatter);

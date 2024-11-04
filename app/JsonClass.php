@@ -131,7 +131,7 @@ class JsonClass
 
     public function getComboList()
     {
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $combo = new ComboModel($this->pdo);
         return json_encode($combo->list($params));
     }

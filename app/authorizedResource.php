@@ -17,6 +17,8 @@ require_once '../vendor/autoload.php';
 $pdo = Utilities::getPDO();
 $storage = new StorageClass();
 $provider = Utilities::getProvider();
+
+// if not logged in, will show the login button
 Utilities::checkAccessToken();
 const LOGGEDOUT = false;
 
@@ -187,7 +189,7 @@ $view = match ($action) {
     1 => 'Views/organisations_list.php',
     5 => 'Views/contacts_index.php',
     9 => 'Views/invoices_index.php',
-    90 => 'Views/combo_index.php',
+    90 => 'Views/combo-index.php',
     10 => 'Views/enquiry-edit.php',
     100 => 'Views/contracts_index.php',
     11 => 'Views/cabin-locations.php',

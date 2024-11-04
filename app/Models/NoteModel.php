@@ -60,7 +60,8 @@ class NoteModel extends BaseModel
 
     public function list($parent, $foreign_id): array
     {
-        $sql = "SELECT notes.*, users.`first_name`
+        $sql = "SELECT notes.*, users.`first_name`,
+                    DATE_FORMAT(notes.created, '%e %b \'%y') AS formatted_date
                     FROM `notes`
                     LEFT JOIN `users` ON users.`id` = notes.`createdby`
                     WHERE notes.`foreign_id` = :foreign_id
@@ -71,4 +72,72 @@ class NoteModel extends BaseModel
 
         return $this->runQuery($sql, $search_values);
     }
+
+    public function ListAssociated(array $params): array
+    {
+
+        $sql = "(SELECT notes.*, users.first_name,
+                        DATE_FORMAT(notes.created, '%e %b \'%y') AS formatted_date
+                 FROM notes
+                 LEFT JOIN users ON users.id = notes.createdby
+                 WHERE notes.foreign_id = :foreign_id
+                   AND notes.parent = :parent
+                )
+                UNION ALL
+                (SELECT notes.*, users.first_name,
+                        DATE_FORMAT(notes.created, '%e %b \'%y') AS formatted_date
+                 FROM notes
+                 LEFT JOIN users ON users.id = notes.createdby
+                 LEFT JOIN contactjoins ON notes.foreign_id = contactjoins.ckcontact_id
+                 WHERE contactjoins.join_type = :parent
+                   AND notes.parent = 'contact'
+                   AND contactjoins.foreign_id = :foreign_id
+                )
+                ORDER BY created DESC
+                LIMIT {$params['start']}, {$params['length']};
+";
+
+        $search_values = ['parent' => $params['parent'], 'foreign_id' => $params['foreign_id']];
+
+        $output = $params;
+        $output['data'] = $this->runQuery($sql, $search_values);
+
+
+        $output['mainquery'] = $sql;
+        $output['mainsearchvals'] = $search_values;
+        // adds in tenancies because it doesn't use $conditions
+
+        $output['recordsTotal'] = $this->getRecordsTotalJoins($search_values);
+        // no filtering or searching on notes
+        $output['recordsFiltered'] = $output['recordsTotal'];
+
+        return $output;
+    }
+
+    protected function getRecordsTotalJoins($search_values): int
+    {
+        $sql = "SELECT COUNT(*) AS total_count
+                FROM (
+                    SELECT 1
+                    FROM notes
+                    LEFT JOIN users ON users.id = notes.createdby
+                    WHERE notes.foreign_id = :foreign_id
+                      AND notes.parent = :parent
+                    
+                    UNION ALL
+                
+                    SELECT 1
+                    FROM notes
+                    LEFT JOIN users ON users.id = notes.createdby
+                    LEFT JOIN contactjoins ON notes.foreign_id = contactjoins.ckcontact_id
+                    WHERE contactjoins.join_type = :parent
+                      AND notes.parent = 'contact'
+                      AND contactjoins.foreign_id = :foreign_id
+                ) AS combined_results;";
+
+
+        return $this->runQuery($sql, $search_values, 'column');
+    }
+
+
 }
