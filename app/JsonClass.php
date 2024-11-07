@@ -19,6 +19,7 @@ use App\Models\Enums\CabinStyle;
 use App\Models\TenancyModel;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\LoggerTrait;
+use Hoa\Math\Util;
 use PDO;
 use DateTime;
 
@@ -138,7 +139,7 @@ class JsonClass
 
     public function getContractList()
     {
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $params['subset'] = $_GET['subset'] ?? '';
         $contract = new ContractModel($this->pdo);
         return json_encode($contract->list($params));
@@ -146,8 +147,9 @@ class JsonClass
 
     public function getTemplateList(): string
     {
+        $params = Utilities::getParams();
         $template = new Models\TemplateModel($this->pdo);
-        return $template->search();
+        return $template->search($params);
     }
 
     public function getTemplate($id): string
@@ -1564,7 +1566,7 @@ class JsonClass
 
     public function getBadDebtsList($returnObj = false): string
     {
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $invoice = new InvoiceModel($this->pdo);
         $output = $invoice->listBadDebts($params);
         return json_encode($output);

@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Traits\PdoTrait;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\FunctionsTrait;
 use App\Models\Traits\LoggerTrait;
@@ -13,11 +15,12 @@ use PDOStatement;
 
 class BaseModel
 {
+    use PdoTrait;
     use DebugTrait;
     use LoggerTrait;
     use FunctionsTrait;
 
-    protected PDO $pdo;
+
     protected string $insert;
     protected array $nullable = [];
     protected array $saveKeys = [];
@@ -41,7 +44,8 @@ class BaseModel
 
     function __construct(PDO $pdo)
     {
-        $this->pdo = $pdo;
+
+        $this->initPdo($pdo);
         $this->initLogger($this->table . 'Model');
     }
 
@@ -51,31 +55,6 @@ class BaseModel
         unset($this->pdo);
     }
 
-    /**
-     * @param string $sql
-     * @param array $search_values <string, mixed>
-     * @param string $type
-     * @return int|array
-     */
-    protected function runQuery(string $sql, array $search_values, string $type = 'query'): int|array
-    {
-        $this->logInfo('runQuery: ', [$sql, $search_values]);
-        $this->getStatement($sql);
-        try {
-            $this->statement->execute($search_values);
-            return match ($type) {
-                'query' => $this->statement->fetchAll(PDO::FETCH_ASSOC),
-                'update' => $this->statement->rowCount(),
-                'column' => $this->statement->fetchColumn(),
-                default => $this->pdo->lastInsertId(),
-            };
-
-        } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
-        }
-        return 0;
-    }
 
     /**
      * @param String $fieldname
@@ -83,10 +62,11 @@ class BaseModel
      * @param mixed $keyVal
      * @return mixed
      */
-    public function field(string $fieldname, string $key, mixed $keyVal): mixed
+    public function field(string $fieldname, string $key, mixed $key_val): mixed
     {
-        $sql = "SELECT `$fieldname` FROM `$this->table` WHERE `$key` = :keyVal LIMIT 1";
-        $result = $this->runQuery($sql, [':keyVal' => $keyVal]);
+        $sql = "SELECT `$fieldname` FROM $this->table WHERE $key = :key_val LIMIT 1";
+
+        $result = $this->runQuery($sql, ['key_val' => $key_val]);
 
         return $result[0][$fieldname] ?? null;
     }
@@ -144,11 +124,13 @@ class BaseModel
     protected function getRecord(string $key, mixed $keyVal): array
     {
         if ($keyVal > 0) {
-            $sql = "SELECT * " . $this->getVirtuals() . " 
+            $sql = 'SELECT * ' . $this->getVirtuals() . " 
                 FROM $this->table 
                 WHERE `$key` = :keyVal";
 
-            return $this->runQuery($sql, [':keyVal' => $keyVal]);
+            $result = $this->runQuery($sql, ['keyVal' => $keyVal]);
+
+            if (count($result)) return $result;
         }
         return [];
     }
@@ -165,6 +147,7 @@ class BaseModel
 
     public function getChildren($parent, $parentId, $defaults = true): array
     {
+        $vars = [];
         //$this->debug([$parent, $parentId, $defaults, $this->joins]);
         $orderBy = (!empty($this->orderBy) ? " ORDER BY $this->orderBy" : '');
         $sql = "SELECT * " . $this->getVirtuals() . " 
@@ -237,7 +220,7 @@ class BaseModel
 
         $sql = "SHOW FULL COLUMNS FROM `$this->table`";
 
-        $result = $this->runQuery($sql, [], 'query');
+        $result = $this->runQuery($sql, []);
 
         foreach ($result as $row) {
             $this->defaults[0][$row['Field']] = $row['Default'] ?? '';
@@ -251,41 +234,6 @@ class BaseModel
         return $this->defaults;
     }
 
-    public function getStatement($sql = ''): void
-    {
-        if (empty($sql)) {
-            if (empty($this->insert)) {
-                $this->buildInsertSQL();
-            }
-            $sql = $this->insert;
-        }
-
-        //$this->logInfo('getStatement: ', [$sql]);
-        try {
-            $this->statement = $this->pdo->prepare($sql);
-        } catch (PDOException $e) {
-            echo "[getStatement] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
-        }
-    }
-
-    public function save(array $values): int
-    {
-        //$this->debug($values);
-        $this->logInfo('save: ', $values);
-
-        try {
-            $this->getStatement();
-            $this->statement->execute($values);
-            // this will be zero if it was an update
-            return $this->pdo->lastInsertId();
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-            $this->params($this->insert, $values);
-        }
-        return 0;
-    }
 
     protected function buildInsertSQL(): void
     {
@@ -296,6 +244,7 @@ class BaseModel
 
     }
 
+    // is this used?
     function params($string, $data): void
     {
         $indexed = array_values($data);
@@ -322,7 +271,7 @@ class BaseModel
     public function prepAndSave(array $data): int
     {
         $save = $this->getSaveValues($data);
-        return $this->save($save);
+        return $this->runQuery($this->insert, $save, 'insert');
     }
 
     protected function checkNullableValues($data)
@@ -360,7 +309,7 @@ class BaseModel
                 WHERE `xerotenant_id` = :xerotenant_id";
 
         $result = $this->runQuery($sql, ['xerotenant_id' => $xeroTenantId]);
-        $this->log('info', 'getUpdatedDate',
+        $this->logInfo('getUpdatedDate',
             [
                 'result' => $result[0]['updated_date_utc'] ?? $updated_date_utc,
                 'xerotenant_id' => $xeroTenantId
@@ -423,7 +372,7 @@ class BaseModel
                 FROM $this->table
                 WHERE $tenancies";
         //return $this->pdo->query($recordsTotal)->fetchColumn();
-        $this->logInfo($recordsTotal, []);
+        $this->logInfo($recordsTotal);
         return $this->runQuery($recordsTotal, $search_values, 'column');
     }
 
@@ -441,7 +390,7 @@ class BaseModel
         else $recordsFiltered = $sql;
 
         return $this->runQuery($recordsFiltered, $searchValues, 'column');
-        
+
     }
 
     protected function getOrderBy($params): string

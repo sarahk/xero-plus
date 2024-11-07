@@ -130,7 +130,7 @@ $(document).ready(function () {
             stateSave: true,
             columns: [
                 {data: "name"},
-                {data: "due"},
+                {data: "amount_due"},
                 {data: "weeks_due"},
 
             ],

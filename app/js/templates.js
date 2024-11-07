@@ -1,14 +1,27 @@
-if ($('#tTemplates').length) {
+let currentTemplateButton = '';
+let templateModal = document.getElementById('templateModal');
+let modalTemplateId = templateModal.querySelector('#template_id');
+let modalMessagetype = templateModal.querySelector('#messagetype');
+let modalTemplateStatus = templateModal.querySelector('#templatestatus');
+let modalLabel = templateModal.querySelector('#templatelabel');
+let modalSubject = templateModal.querySelector('#templatesubject');
+let $tTemplates;
 
-    let tTemplates = $('#tTemplates').DataTable({
-        "ajax": {
-            "url": "/json.php?endpoint=Templates&action=list",
+if ($('#tTemplates').length) {
+    $tTemplates = $('#tTemplates').DataTable({
+        ajax: {
+            url: "/json.php",
+            data: function (d) {
+                d.endpoint = 'Templates';
+                d.action = 'List';
+                d.button = currentTemplateButton;
+            }
         },
-        "processing": true,
-        "serverSide": true,
-        "paging": true,
+        processing: true,
+        serverSide: true,
+        paging: true,
         stateSave: true,
-        "columns": [
+        columns: [
             {data: "id"},
             {data: "status"},
             {data: "messagetype"},
@@ -25,12 +38,15 @@ if ($('#tTemplates').length) {
                     text: 'All',
                     action: function () {
                         //dt.ajax.reload();
-                        tTemplates.ajax.url('/json.php?endpoint=Templates&action=list').load();
+                        currentTemplateButton = ''
+                        $tTemplates.ajax.reload();
                     }
                 }, {
                     text: 'Active',
                     action: function () {
-                        tTemplates.ajax.url('/json.php?endpoint=Templates&action=list&button=active').load();
+                        currentTemplateButton = 'active';
+                        $tTemplates.ajax.reload();
+
                     }
                 }]
             }
@@ -44,12 +60,6 @@ if ($('#tTemplates').length) {
 
     });
 
-    let templateModal = document.getElementById('templateModal');
-    let modalTemplateId = templateModal.querySelector('#template_id');
-    let modalMessagetype = templateModal.querySelector('#messagetype');
-    let modalTemplateStatus = templateModal.querySelector('#templatestatus');
-    let modalLabel = templateModal.querySelector('#templatelabel');
-    let modalSubject = templateModal.querySelector('#templatesubject');
 
     templateModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
@@ -58,18 +68,22 @@ if ($('#tTemplates').length) {
         let template_id = target.getAttribute('data-template_id');
 
         if (template_id === '0') {
-            
+
             modalTemplateId.value = ''
             modalMessagetype.value = 'SMS';
             modalTemplateStatus.value = 1;
             modalLabel.value = '';
             modalSubject.value = '';
-
             tinymce.activeEditor.setContent("");
             //tinymce.get("myTextarea").setContent("<p>Hello world!</p>");
         } else {
             $.ajax({
-                url: "/json.php?endpoint=Templates&action=single&id=" + template_id,
+                url: "/json.php",
+                data: {
+                    endpoint: 'Templates',
+                    action: 'single',
+                    id: template_id,
+                },
                 context: document.body
             }).done(function (data) {
                 modalTemplateId.value = template_id;
@@ -80,36 +94,43 @@ if ($('#tTemplates').length) {
                 tinymce.activeEditor.setContent(data.templates.body);
             });
         }
-
     });
 
     //$('#template_save').click(function () {
-    document.getElementById('template_editor').addEventListener('submit', function (event) {
-        console.log('in submit');
-        event.preventDefault();
-
-        let data = {
-            payload: {
-                id: modalTemplateId.value,
-                messagetype: modalMessagetype.value,
-                status: modalTemplateStatus.value,
-                label: modalLabel.value,
-                subject: modalSubject.value,
-                body: tinymce.activeEditor.getContent("template_body")
-            }
-        };
-        console.log(data);
-        $.ajax({
-            type: "POST",
-            url: '/run.php?endpoint=save&form=template',
-            data: data,
-
-        }).done(function (result) {
-            console.log(['done', result]);
-            //templateModal.hide();
-            $("#templateModal").modal("hide");
-        });
-
+    $('#saveTemplateButton').on('click', function (e) {
+        saveTemplate(e, $tTemplates);
     });
-// tinymce.activeEditor.getContent("myTextarea");
+    $('#template_editor').on('submit', function (e) {
+        saveTemplate(e, $tTemplates);
+    });
+}
+
+function saveTemplate(event, dataTable) {
+    console.log('in submit');
+    event.preventDefault();
+
+    let data = {
+        payload: {
+            id: modalTemplateId.value,
+            messagetype: modalMessagetype.value,
+            status: modalTemplateStatus.value,
+            label: modalLabel.value,
+            subject: modalSubject.value,
+            body: tinymce.activeEditor.getContent("template_body")
+        },
+        endpoint: 'Save',
+        form: 'Template'
+    };
+
+    console.log(data);
+    $.ajax({
+        type: "POST",
+        url: '/run.php',
+        data: data,
+
+    }).done(function (result) {
+        console.log(['done', result]);
+        dataTable.ajax.reload();
+        //templateModal.hide();
+    });
 }

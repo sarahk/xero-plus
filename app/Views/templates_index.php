@@ -31,4 +31,4 @@
 </div>
 <!-- Button trigger modal -->
 
-<?php require SITE_ROOT . '/Views/modals/template-single.php'; ?>
+<?php require 'modals/template-single.php'; ?>

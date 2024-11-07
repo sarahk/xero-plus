@@ -6,7 +6,7 @@ namespace App\Views\bad_debts;
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Bad Debts</h3>
+                    <h3 class="card-title">Bad Debts <span id="badDebtsTitle" class="text-danger"></span></h3>
                 </div>
                 <p>
 
@@ -34,3 +34,4 @@ namespace App\Views\bad_debts;
 
     <?php
 include('modals/contact-single.php');
+include('modals/save-sms-request.php');

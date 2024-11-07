@@ -6,8 +6,9 @@
     "xeroapi/xero-php-oauth2": "^7.3",
     "monolog/monolog": "^3.7",
     "guzzlehttp/guzzle": "^7.9.2",
-    "tinymce/tinymce": "^7.3",
-    "ext-pdo": "*"
+    "tinymce/tinymce": "^7.4.1",
+    "ext-pdo": "*",
+    "twilio/sdk": "^8.3"
   },
   "license": "MIT",
   "authors": [
@@ -17,8 +18,8 @@
     }
   ],
   "require-dev": {
-    "pestphp/pest": "^3.2.4",
-    "phpstan/phpstan": "^1.12"
+    "pestphp/pest": "^3.5.0",
+    "phpstan/phpstan": "^1.12.7"
   },
   "config": {
     "allow-plugins": {

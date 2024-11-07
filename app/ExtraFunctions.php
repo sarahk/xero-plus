@@ -3,6 +3,10 @@
 namespace App;
 
 use DateTime;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Level;
+use Monolog\Logger;
 
 class ExtraFunctions
 {
@@ -232,6 +236,26 @@ class ExtraFunctions
 
         $date = date_create($val);
         return date_format($date, "d-M-Y");
+    }
+
+    public static function getPestLogger(string $name)
+    {
+        $output = "%level_name% | %datetime% > %message% | %context% %extra%\n";
+        $dateFormat = "Y-n-j, g:i a";
+
+        $formatter = new LineFormatter(
+            $output, // Format of message in log
+            $dateFormat, // Datetime format
+            true, // allowInlineLineBreaks option, default false
+            true  // discard empty Square brackets in the end, default false
+        );
+        $logger = new Logger('Pest Logger');
+
+        $stream_handler = new StreamHandler(__DIR__ . "/monolog/$name.log", Level::Debug);
+        $stream_handler->setFormatter($formatter);
+        $logger->pushHandler($stream_handler);
+        $logger->log('info', 'New Setup');
+        return $logger;
     }
 }
 /*

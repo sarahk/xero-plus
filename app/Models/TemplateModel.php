@@ -25,13 +25,6 @@ class TemplateModel extends BaseModel
     //protected array $hasMany = [];
     protected bool $hasStub = false;
 
-    function __construct(PDO $pdo)
-    {
-        parent::__construct($pdo);
-
-        $this->buildInsertSQL();
-    }
-
 
     /**
      * @param array $data <mixed>
@@ -39,10 +32,14 @@ class TemplateModel extends BaseModel
      */
     public function prepAndSave(array $data): int
     {
+        $data['dateupdate'] = date('Y-m-d H:i:s');
+        $this->logInfo('Template save data', $data);
         if ($data['messagetype'] === 'SMS') {
             $data['body'] = strip_tags($data['body']);
         }
-        return $this->save($data);
+        $data['id'] = (empty($data['id']) ? null : $data['id']);
+
+        return $this->runQuery($this->insert, $data, 'insert');
     }
 
 
@@ -51,51 +48,58 @@ class TemplateModel extends BaseModel
      * need to provide the option to limit it to a particular tenancy
      * add weighting in the future?
      */
-    public function search(): string
+    public function search($params): string
     {
         $searchFields = ['status', 'messagetype', 'label'];
-        $conditions = $values = [];
+        $conditions = $search_values = [];
 
-        $start = $_GET['start'] ?? 0;
-        $length = $_GET['length'] ?? 0;
 
         foreach ($searchFields as $var) {
             if (!empty($_GET[$var])) {
                 $conditions[] = " `$var` LIKE :$var ";
-                $values[':' . $var] = $_GET[$var];
+                $search_values[':' . $var] = $_GET[$var];
             }
         }
 
-        $sql = "SELECT *
-            FROM `templates`
-             WHERE  `id` is not null "
-            . (count($conditions) ? " AND (" . implode(' AND ', $conditions) . ")" : '')
-            . " LIMIT $start, $length";
+        if (!empty($params['button'])) {
+            switch ($params['button']) {
+                case 'active':
+                    $conditions[] = 'templates.status = 1';
+                    break;
+                default:
+            }
+        }
 
+        $sql = "SELECT * FROM `templates`"
+            . (count($conditions) ? " WHERE (" . implode(' AND ', $conditions) . ")" : '')
+            . " LIMIT {$params['start']}, {$params['length']}";
 
         $output = [];
 
-        $list = $this->runQuery($sql, $values);
+        $list = $this->runQuery($sql, $search_values);
         foreach ($list as $row) {
-
-            $subject = $row['subject'];
-            $body = $row['body'];
 
             $output[] = [
                 'id' => $row['id'],
                 'messagetype' => $row['messagetype'],
-                'status' => $row['status'],
-                'subject' => $subject,
-                'body' => $body,
-                'preview' => $this->getPreview($row['messagetype'], $subject, $body),
+                'status' => $row['status'] ? 'Active' : 'Archived',
+                'subject' => $row['subject'],
+                'body' => $row['body'],
+                'preview' => $this->getPreview($row['messagetype'], $row['subject'], $row['body']),
                 'label' => $this->getLabelModal($row['id'], $row['label'])
             ];
-
         }
+
+        $recordsTotal = 'SELECT count(*) FROM templates';
+        $recordsFiltered = 'SELECT count(*) FROM templates WHERE templates.status = 1';
 
         return json_encode([
             'count' => count($output),
-            'draw' => $_GET['draw'],
+            'draw' => $params['draw'],
+            'recordsTotal' => $this->runQuery($recordsTotal, [], 'column'),
+            'recordsFiltered' => $this->runQuery($recordsFiltered, $search_values, 'column'),
+            'mainquery' => $sql,
+            'mainsearchvals' => $search_values,
             'data' => $output
         ]);
     }
@@ -116,5 +120,16 @@ class TemplateModel extends BaseModel
                     data-bs-target='#templateModal'
                     data-template_id='$id' 
                     >$label</a>";
+    }
+
+    public function getSelectChoices($message_type): string
+    {
+        $sql = "SELECT id, label FROM templates WHERE `status` = 1 AND `messagetype` = '$message_type' ORDER BY sortorder";
+        $result = $this->runQuery($sql, []);
+        $output = [];
+        foreach ($result as $row) {
+            $output[] = "<option value='$row[id]'>$row[label]</option>";
+        }
+        return implode($output);
     }
 }

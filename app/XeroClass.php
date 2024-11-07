@@ -261,6 +261,7 @@ class XeroClass
             'xerotenant_id' => $xeroTenantId,
             'stub' => $stubFlag
         ];
+        
         $contact = new ContactModel($this->pdo);
         $id = $contact->getContactId($save['contact_id']);
         if ($id && !$overwrite) {

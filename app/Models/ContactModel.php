@@ -36,8 +36,7 @@ class ContactModel extends BaseModel
     public function saveXeroStub(array $data): int
     {
 // if it's a new contact id will be null
-        if (!is_null($data['id'])) {
-
+        if (!empty($data['id'])) {
             $save = [
                 'id' => $data['id'],
                 'name' => $data['name'],

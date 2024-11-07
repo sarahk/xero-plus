@@ -247,7 +247,7 @@ switch ($action) {
                     loadPaymentsFromXero(tenancies[i]);
                 }
             }
-        }, 10000);
+        }, 100000);
 
 
         // Save the working with choices using cookies

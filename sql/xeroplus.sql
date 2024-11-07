@@ -3,13 +3,19 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 04, 2024 at 12:28 AM
+-- Generation Time: Nov 05, 2024 at 04:22 AM
 -- Server version: 5.7.44
 -- PHP Version: 8.3.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `xeroplus`
@@ -374,6 +380,15 @@ CREATE TABLE `userstenancies`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `userstenancies`
+--
+
+INSERT INTO `userstenancies` (`user_id`, `xerouser_id`, `xerotenant_id`)
+VALUES (1, '98299269-5603-4c21-8a02-9e5b5b2b373c', 'ae75d056-4af7-484d-b709-94439130faa4'),
+       (1, '5cf767b2-c0d5-4fed-8e0b-913bced62d5e', 'e95df930-c903-4c58-aee9-bbc21b78bde7'),
+       (1, 'b748e3b0-b813-48bb-8c7c-9f803ef711e7', 'eafd3b39-46c7-41e4-ba4e-6ea6685e39f7');
+
 -- --------------------------------------------------------
 
 --
@@ -469,6 +484,52 @@ CREATE TABLE `vehicle_log`
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `vinvoices`
+-- (See below for the actual view)
+--
+CREATE TABLE `vinvoices`
+(
+    `contract_id`          int(11),
+    `xerotenant_id`        char(36),
+    `repeating_invoice_id` varchar(50),
+    `pickup_date`          date,
+    `contract_status`      varchar(20),
+    `enquiry_rating`       tinyint(3),
+    `invoice_id`           char(36),
+    `contact_id`           char(36),
+    `status`               varchar(20),
+    `invoice_number`       varchar(20),
+    `reference`            varchar(20),
+    `total`                decimal(10, 2),
+    `amount_due`           decimal(10, 2),
+    `amount_paid`          decimal(10, 2),
+    `date`                 datetime,
+    `due_date`             datetime,
+    `updated_date_utc`     datetime
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vold_debts`
+-- (See below for the actual view)
+--
+CREATE TABLE `vold_debts`
+(
+    `xerotenant_id`        char(36),
+    `repeating_invoice_id` varchar(50),
+    `contact_id`           char(36),
+    `total_amount`         decimal(32, 2),
+    `amount_due`           decimal(32, 2),
+    `total_weeks`          bigint(21),
+    `oldest`               datetime,
+    `newest`               datetime,
+    `weeks_due`            bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `weeks`
 --
 
@@ -478,29 +539,6 @@ CREATE TABLE `weeks`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
-
---
--- Dumping data for table `weeks`
---
-
-INSERT INTO `weeks` (`week_number`)
-VALUES (0),
-       (1),
-       (2),
-       (3),
-       (4),
-       (5),
-       (6),
-       (7),
-       (8),
-       (9),
-       (10),
-       (11),
-       (12),
-       (13),
-       (14),
-       (15),
-       (16);
 
 -- --------------------------------------------------------
 
@@ -581,6 +619,67 @@ where ((`invoices`.`amount_due` > 0) and (`invoices`.`status` = 'AUTHORISED') an
        ((to_days(`invoices`.`date`) - to_days(now())) < -(7)))
 group by `invoices`.`xerotenant_id`, `invoices`.`repeating_invoice_id`, `invoices`.`contact_id`);
 
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vinvoices`
+--
+DROP TABLE IF EXISTS `vinvoices`;
+
+CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vinvoices` AS
+SELECT `contracts`.`contract_id`          AS `contract_id`,
+       `contracts`.`xerotenant_id`        AS `xerotenant_id`,
+       `contracts`.`repeating_invoice_id` AS `repeating_invoice_id`,
+       `contracts`.`pickup_date`          AS `pickup_date`,
+       `contracts`.`status`               AS `contract_status`,
+       `contracts`.`enquiry_rating`       AS `enquiry_rating`,
+       `invoices`.`invoice_id`            AS `invoice_id`,
+       `invoices`.`contact_id`            AS `contact_id`,
+       `invoices`.`status`                AS `status`,
+       `invoices`.`invoice_number`        AS `invoice_number`,
+       `invoices`.`reference`             AS `reference`,
+       `invoices`.`total`                 AS `total`,
+       `invoices`.`amount_due`            AS `amount_due`,
+       `invoices`.`amount_paid`           AS `amount_paid`,
+       `invoices`.`date`                  AS `date`,
+       `invoices`.`due_date`              AS `due_date`,
+       `invoices`.`updated_date_utc`      AS `updated_date_utc`
+FROM (`contracts` left join `invoices` on ((`invoices`.`repeating_invoice_id` = `contracts`.`repeating_invoice_id`)))
+WHERE ((`invoices`.`status` = 'AUTHORISED') AND ((to_days(`invoices`.`date`) - to_days(now())) < -(7)));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vold_debts`
+--
+DROP TABLE IF EXISTS `vold_debts`;
+
+CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vold_debts` AS
+SELECT `vinvoices`.`xerotenant_id`        AS `xerotenant_id`,
+       `vinvoices`.`repeating_invoice_id` AS `repeating_invoice_id`,
+       `vinvoices`.`contact_id`           AS `contact_id`,
+       `agg1`.`total_amount`              AS `total_amount`,
+       `agg1`.`amount_due`                AS `amount_due`,
+       `agg1`.`total_weeks`               AS `total_weeks`,
+       `agg2`.`oldest`                    AS `oldest`,
+       `agg2`.`newest`                    AS `newest`,
+       `agg2`.`weeks_due`                 AS `weeks_due`
+FROM ((`vinvoices` left join (select `vinvoices`.`repeating_invoice_id` AS `repeating_invoice_id`,
+                                     sum(`vinvoices`.`total`)           AS `total_amount`,
+                                     sum(`vinvoices`.`amount_due`)      AS `amount_due`,
+                                     count(`vinvoices`.`invoice_id`)    AS `total_weeks`
+                              from `vinvoices`
+                              group by `vinvoices`.`xerotenant_id`, `vinvoices`.`repeating_invoice_id`) `agg1`
+       on ((`agg1`.`repeating_invoice_id` = `vinvoices`.`repeating_invoice_id`))) left join (select `vinvoices`.`repeating_invoice_id` AS `repeating_invoice_id`,
+                                                                                                    min(`vinvoices`.`date`)            AS `oldest`,
+                                                                                                    max(`vinvoices`.`date`)            AS `newest`,
+                                                                                                    count(0)                           AS `weeks_due`
+                                                                                             from `vinvoices`
+                                                                                             where (`vinvoices`.`amount_due` > 0)
+                                                                                             group by `vinvoices`.`repeating_invoice_id`) `agg2`
+      on ((`agg2`.`repeating_invoice_id` = `vinvoices`.`repeating_invoice_id`)))
+GROUP BY `vinvoices`.`xerotenant_id`, `vinvoices`.`repeating_invoice_id`, `vinvoices`.`contact_id`;
+
 --
 -- Indexes for dumped tables
 --
@@ -641,7 +740,9 @@ ALTER TABLE `invoices`
     ADD KEY `repeating_invoice_id` (`repeating_invoice_id`),
     ADD KEY `status` (`status`),
     ADD KEY `xerotenant_id` (`xerotenant_id`),
-    ADD KEY `invoice_number` (`invoice_number`);
+    ADD KEY `invoice_number` (`invoice_number`),
+    ADD KEY `date` (`date`),
+    ADD KEY `amount_due` (`amount_due`);
 
 --
 -- Indexes for table `notes`
@@ -791,3 +892,7 @@ ALTER TABLE `vehicles`
 ALTER TABLE `vehicle_log`
     MODIFY `id` int(9) NOT NULL AUTO_INCREMENT;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;

@@ -200,7 +200,7 @@ class Utilities
                     'redirect_uri' => $credentials['redirectUri'],
                 ],
             ]);
-            
+
             $responseBody = json_decode($response->getBody(), true);
 
             // Extract new tokens
@@ -264,7 +264,7 @@ class Utilities
             'invoice_status' => $_GET['invoice_status'] ?? '',
             'dates' => $_GET['search']['dates'] ?? '',
             'contact_status' => $_GET['search']['contact_status'] ?? '',
-            'button' => $_GET['search']['button'] ?? '',
+            'button' => $_GET['button'] ?? '',//datatables
             'key' => $_GET['search']['key'] ?? '',
             'tenancies' => $tenancies->listActiveTenantId(),
             'contract_id' => $_GET['contract_id'] ?? 0,
