@@ -189,12 +189,15 @@ class BaseModel
         }
     }
 
-    protected function getTenanciesWhere($params): string
+    protected function getTenanciesWhere(array $params, null|string $altTable = null): string
     {
+        // use altTable when the xerotenant_id is on left joined table
+        $table = empty($altTable) ? $this->table : $altTable;
+
         if (count($params['tenancies']) == 1) {
-            return "`$this->table`.`xerotenant_id` = '{$params['tenancies'][0]}'";
+            return "`$table`.`xerotenant_id` = '{$params['tenancies'][0]}'";
         } else {
-            return "`$this->table`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
+            return "`$table`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
         }
     }
 

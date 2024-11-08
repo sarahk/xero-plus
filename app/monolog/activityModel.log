@@ -1891,3 +1891,644 @@ INFO | 2024-11-8, 1:30 am > runQuery:  | ["select max(activity_date) as activity
 INFO | 2024-11-8, 1:30 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"b9d99cfb-0f3c-4952-9a39-7bb7d631326e"},{"contact_id":"b9d99cfb-0f3c-4952-9a39-7bb7d631326e"}] 
 INFO | 2024-11-8, 1:30 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"b9d99cfb-0f3c-4952-9a39-7bb7d631326e"},{"contact_id":"b9d99cfb-0f3c-4952-9a39-7bb7d631326e"}] 
 INFO | 2024-11-8, 1:30 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"b9d99cfb-0f3c-4952-9a39-7bb7d631326e"},{"contact_id":"b9d99cfb-0f3c-4952-9a39-7bb7d631326e"}] 
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity.id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+                    ORDER BY activity.id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 1:57 am > SELECT count(*) as `total`
+                FROM activity
+                WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT count(*) as `total`
+                FROM activity
+                WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `activity` 
+                WHERE  `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 1:57 am > SELECT count(*) as `total`
+                FROM activity
+                WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT count(*) as `total`
+                FROM activity
+                WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `activity` 
+                WHERE  `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 1:57 am > SELECT count(*) as `total`
+                FROM activity
+                WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT count(*) as `total`
+                FROM activity
+                WHERE `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 1:57 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `activity` 
+                WHERE  `activity`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:02 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:02 am > SELECT count(*) as `total`
+                FROM activity
+                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-8, 2:02 am > runQuery:  | ["SELECT count(*) as `total`
+                FROM activity
+                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:02 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `activity` 
+                WHERE  `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:03 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:03 am > SELECT count(*) as `total`
+                FROM activity
+                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-8, 2:03 am > runQuery:  | ["SELECT count(*) as `total`
+                FROM activity
+                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:03 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `activity` 
+                WHERE  `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:03 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:03 am > SELECT count(*) as `total`
+                FROM activity
+                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-8, 2:03 am > runQuery:  | ["SELECT count(*) as `total`
+                FROM activity
+                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:03 am > runQuery:  | ["SELECT count(*) as `filtered` FROM `activity` 
+                WHERE  `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:12 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:12 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:12 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:13 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:13 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:13 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:14 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:14 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:14 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:14 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:14 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:14 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:15 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:15 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:15 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:19 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:19 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:19 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:20 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:20 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:20 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_id DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_type ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:21 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:22 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:22 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:22 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND (`contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') )",[],[]] 
+INFO | 2024-11-8, 2:26 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:26 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:26 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  ",[],[]] 
+INFO | 2024-11-8, 2:26 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contact.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%PH%"},{"search":"%PH%"}] 
+INFO | 2024-11-8, 2:26 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%PH%"},[]] 
+INFO | 2024-11-8, 2:26 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contact.name LIKE :search) ",{"search":"%PH%"},{"search":"%PH%"}] 
+INFO | 2024-11-8, 2:27 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%P%"},{"search":"%P%"}] 
+INFO | 2024-11-8, 2:27 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%P%"},[]] 
+INFO | 2024-11-8, 2:27 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%P%"},{"search":"%P%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%Ph%"},{"search":"%Ph%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%Ph%"},[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%Ph%"},{"search":"%Ph%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%P%"},{"search":"%P%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%P%"},[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%P%"},{"search":"%P%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  ",[],[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  ",[],[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%a%"},{"search":"%a%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%a%"},[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%a%"},{"search":"%a%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%aa%"},{"search":"%aa%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%aa%"},[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%aa%"},{"search":"%aa%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%a%"},{"search":"%a%"}] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%a%"},[]] 
+INFO | 2024-11-8, 2:28 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%a%"},{"search":"%a%"}] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  ",[],[]] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%jo%"},{"search":"%jo%"}] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%jo%"},[]] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%jo%"},{"search":"%jo%"}] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:29 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"45855441-1167-45e9-b721-59b56a7752b7"},{"contact_id":"45855441-1167-45e9-b721-59b56a7752b7"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:38 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:38 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:38 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:38 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:38 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:38 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:39 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:39 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:39 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:39 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:39 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:39 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) 
+                    ORDER BY activity_type DESC 
+                    LIMIT 0, 10",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",{"search":"%j%"},[]] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')   AND  (contacts.name LIKE :search) ",{"search":"%j%"},{"search":"%j%"}] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
+                    FROM activity
+                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
+                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
+                    WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  
+                    ORDER BY activity_id ASC 
+                    LIMIT 0, 10",[],[]] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-8, 2:51 am > runQuery:  | ["SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE `contracts`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  ",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"},{"contact_id":"e12343a7-8048-4593-8b8d-15b88b667927"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"},{"contact_id":"9f8b4a2f-51c2-4c34-844d-86cbd78b5811"}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["select max(activity_date) as activity_date from activity where contact_id = :contact_id",{"contact_id":"45855441-1167-45e9-b721-59b56a7752b7"},{"contact_id":"45855441-1167-45e9-b721-59b56a7752b7"}] 

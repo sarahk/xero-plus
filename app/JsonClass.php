@@ -4,6 +4,7 @@ namespace App;
 
 //use App\Models\AddressModel;
 //use App\Models\CabinModel;
+use App\Models\ActivityModel;
 use App\Models\ComboModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
@@ -128,6 +129,13 @@ class JsonClass
         // todo - add a wof status and a wof status colour
 
         return json_encode($cabin);
+    }
+
+    public function getActivityList()
+    {
+        $params = Utilities::getParams();
+        $activity = new ActivityModel($this->pdo);
+        return json_encode($activity->list($params));
     }
 
     public function getComboList()

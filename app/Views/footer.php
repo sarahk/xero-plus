@@ -78,6 +78,7 @@ include 'Layouts/scripts.php';
 
 <script type="text/javascript" src="/js/functions.js"></script>
 <script type="text/javascript" src="/js/home.js"></script>
+<script type="text/javascript" src="/js/activity.js"></script>
 <script type="text/javascript" src="/js/cabins.js"></script>
 <script type="text/javascript" src="/js/combo.js"></script>
 <script type="text/javascript" src="/js/contacts.js"></script>

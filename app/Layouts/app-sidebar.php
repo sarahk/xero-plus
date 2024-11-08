@@ -43,14 +43,13 @@ namespace App\Layouts;
                     <h3>Widgets</h3>
                 </li>
 
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
-
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=100">Enquiries</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=90">Invoices & Payments</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=16">Bad Debts</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=17">Message Templates</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=18">Messages Sent</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=5">Get Contact List with Filters</a>
                 </li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=11">Cabin Locations</a></li>
@@ -65,6 +64,8 @@ namespace App\Layouts;
                 <li class="sub-category">
                     <h3>Admin</h3></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=6">Get JWT Claims</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
+
 
                 </li>
             </ul>

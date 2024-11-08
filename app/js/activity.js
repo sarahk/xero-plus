@@ -1,15 +1,39 @@
-let currentActivityButton = '';
-let $badDebtsTitle = $('#badDebtsTitle');
-let $smsBody = $('#smsBody');
+function ns_activity() {
+    this.idTag = '#tActivity';
+    this.dataTable;
+    this.currentButton = '';
+    // this.templateModal;
+    // this.modalTemplateId;
+    // this.modalMessagetype;
+    // this.modalTemplateStatus;
+    // this.modalLabel;
+    // this.modalSubject;
 
-if ($('#tActivity').length) {
+    this.init_datatable = function () {
 
-    let $tActivity = $('#tActivity').DataTable({
+        if ($(this.idTag).length > 0) {
+            this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
+            // this.templateModal = $('#templateModal');
+            // this.modalTemplateId = $('#template_id');
+            // this.modalMessagetype = $('#messagetype');
+            // this.modalTemplateStatus = $('#templatestatus');
+            // this.modalLabel = $('#templatelabel');
+            // this.modalSubject = $('#templatesubject');
+
+            this.setListeners();
+        }
+    };
+
+    this.setListeners = function () {
+        console.log('setListeners');
+    };
+
+    this.dataTableOptions = {
         ajax: {
             url: "/json.php",
-            data: function (d) {
+            data: (d) => {
                 // Make sure this is updating every time `ajax.reload()` is called
-                d.button = currentActivityButton;
+                d.button = this.currentButton;
                 d.endpoint = 'Activity';
                 d.action = 'List';
             }
@@ -20,13 +44,12 @@ if ($('#tActivity').length) {
         stateSave: true,
         rowId: 'DT_RowId',
         columns: [
-
-            {data: "id", name: "id"},
+            {data: "activity_id", name: "activity_id"},
             {data: "date", name: "activity_date"},
             {data: "activity_status", name: "activity_status"},
             {data: "activity_type", name: "activity_type"},
             {data: "name", name: "name"},
-            {data: "preview", name: "preview"},
+            {data: "preview", name: "preview", sortable: false, searchable: false},
 
         ],
         layout: {
@@ -40,31 +63,31 @@ if ($('#tActivity').length) {
                     },
                     {
                         text: 'All',
-                        action: function () {
+                        action: () => {
                             //dt.ajax.reload();
-                            currentActivityButton = '';
-                            $tActivity.ajax.reload();
+                            this.currentButton = '';
+                            this.dataTable.ajax.reload();
                         }
                     },
                     {
                         text: 'Email',
-                        action: function () {
-                            currentActivityButton = 'Email';
-                            $tActivity.ajax.reload();
+                        action: () => {
+                            this.currentButton = 'Email';
+                            this.dataTable.ajax.reload();
                         }
                     },
                     {
                         text: 'SMS',
-                        action: function () {
-                            currentActivityButton = 'SMS';
-                            $tActivity.ajax.reload();
+                        action: () => {
+                            this.currentButton = 'SMS';
+                            this.dataTable.ajax.reload();
                         }
                     },
                     {
                         text: 'New',
-                        action: function () {
-                            currentActivityButton = 'New';
-                            $tActivity.ajax.reload();
+                        action: () => {
+                            currentButton = 'New';
+                            this.dataTable.ajax.reload();
                         }
                     },
 
@@ -74,4 +97,9 @@ if ($('#tActivity').length) {
         createdRow: (row, data, index) => {
             row.classList.add('bar-' + data.colour);
         },
-    });
+    };
+
+}
+
+const nsActivity = new ns_activity();
+nsActivity.init_datatable();

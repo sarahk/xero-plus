@@ -2,20 +2,19 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">SMS & Emails</h3>
+                <h3 class="card-title">SMS & Emails Sent</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped text-nowrap border-bottom w-100" id="tActivity">
                         <thead>
                         <tr>
-
                             <th>#</th>
+                            <th>Date</th>
                             <th>Status</th>
                             <th>Type</th>
                             <th>Name</th>
                             <th>Preview</th>
-
                         </tr>
                         </thead>
                     </table>

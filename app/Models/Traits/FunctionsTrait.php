@@ -3,6 +3,7 @@
 namespace App\Models\Traits;
 
 use App\Models\TenancyModel;
+use DateTime;
 
 trait FunctionsTrait
 {
@@ -68,11 +69,31 @@ trait FunctionsTrait
 
     protected function getPrettyDate(string $val): string
     {
-        if (empty($val)) return '';
+        if (empty($val)) {
+            return '';
+        }
 
+        // Create a DateTime object from the provided date string
         $date = date_create($val);
-        return date_format($date, "d M");
+        if ($date === false) {
+            return 'Invalid date'; // Handle invalid date
+        }
+
+        // Get the current date
+        $currentDate = new DateTime();
+
+        // Calculate the difference between the current date and the provided date
+        $interval = $currentDate->diff($date);
+
+        // Check if the date is more than 6 months ago
+        if ($interval->m >= 6 || $interval->y > 0) {
+            return date_format($date, 'j M \'y');
+        }
+
+        // If within the last 6 months, return day and month only
+        return date_format($date, 'j M'); // Return without year
     }
+
 
     protected function toMysqlDate(string $val): string
     {

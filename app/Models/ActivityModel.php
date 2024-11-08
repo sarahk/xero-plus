@@ -14,6 +14,13 @@ class ActivityModel extends BaseModel
     protected string $table = 'activity';
     protected array $joins = [];
     protected array $virtualFields = [];
+
+    protected array $orderByColumns = [
+        0 => "activity_id DIR",
+        1 => "activity_status DIR",
+        2 => "activity_type DIR",
+
+    ];
     protected string $account_sid = 'ACcca2973426cdb7e4d07756ace82be488';
     protected string $auth_token = '1389609818fc296c08a5f624234cecb8';
     protected string $fromNumber = '+15407798990';
@@ -22,19 +29,18 @@ class ActivityModel extends BaseModel
     {
 
 
-        $search_values = [];
+        $conditions = $search_values = [];
 
-        $tenancies = $this->getTenanciesWhere($params);
+        $tenancies = $this->getTenanciesWhere($params, 'contracts');
         $order = $this->getOrderBy($params);
-        $conditions = [$tenancies];
+
 
         if (!empty($params['search'])) {
             $search = [
-                "contact.name LIKE :search",
+                "contacts.name LIKE :search",
             ];
 
             $search_values['search'] = '%' . $params['search'] . '%';
-
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
 
@@ -60,11 +66,15 @@ class ActivityModel extends BaseModel
                 $conditions[] = "activity_status = :activity_status ";
             }
         }
-        $sql = "SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour
+
+        $conds = count($conditions) > 0 ? ' AND ' . implode(' AND ', $conditions) : null;
+        $sql = "SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
+                    activity_id as DT_RowId
                     FROM activity
                     LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
                     LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
-                    WHERE " . implode(' AND ', $conditions) . "
+                    WHERE $tenancies $conds
                     ORDER BY $order 
                     LIMIT {$params['start']}, {$params['length']}";
 
@@ -75,12 +85,18 @@ class ActivityModel extends BaseModel
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
-        $output['recordsTotal'] = $this->getRecordsTotal($tenancies, $search_values);
-        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $search_values);
+        $recordsTotal = "SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE $tenancies";
+        $recordsFiltered = "SELECT count(*) 
+                                FROM activity 
+                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
+                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
+                                WHERE $tenancies $conds";
+
+        $output['recordsTotal'] = $this->runQuery($recordsTotal, $search_values, 'column');
+        $output['recordsFiltered'] = $this->runQuery($recordsFiltered, $search_values, 'column');
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-
                 $output['data'][] = array_merge($row, [
                     'date' => $this->getPrettyDate($row['activity_date']),
                     'preview' => $this->getPreview($row['activity_type'], $row['subject'], $row['body']),

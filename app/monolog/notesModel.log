@@ -43570,3 +43570,123 @@ INFO | 2024-11-8, 1:30 am > runQuery:  | ["SELECT *
              ORDER BY notes.created DESC 
             LIMIT 15",{"id1":17014},{"id1":17014}] 
 INFO | 2024-11-8, 1:30 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":459},{"id1":459}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":363},{"id1":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":17470},{"id1":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT *  
+            FROM `notes` 
+            WHERE `notes`.`foreign_id` = :id1 AND `notes`.`parent` = 'contacts' 
+             ORDER BY notes.created DESC 
+            LIMIT 15",{"id1":459},{"id1":459}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `notes`",[],[]] 

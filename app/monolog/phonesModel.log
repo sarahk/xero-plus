@@ -52849,3 +52849,123 @@ INFO | 2024-11-8, 1:30 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,'
              
             LIMIT 15",{"id1":17014,"id2":17014},{"id1":17014,"id2":17014}] 
 INFO | 2024-11-8, 1:30 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":459,"id2":459},{"id1":459,"id2":459}] 
+INFO | 2024-11-8, 2:31 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":363,"id2":363},{"id1":363,"id2":363}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":17470,"id2":17470},{"id1":17470,"id2":17470}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SELECT * , CONCAT(`phone_area_code`,' ',`phone_number`) as phone 
+            FROM `phones` 
+            WHERE `phones`.`ckcontact_id` = :id1 OR `phones`.`contact_id` = :id2 
+             
+            LIMIT 15",{"id1":459,"id2":459},{"id1":459,"id2":459}] 
+INFO | 2024-11-8, 3:02 am > runQuery:  | ["SHOW FULL COLUMNS FROM `phones`",[],[]] 

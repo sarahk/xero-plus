@@ -78,6 +78,16 @@ try {
             }
             break;
 
+        case 'Activity':
+        case 'activity':
+            switch ($action) {
+                case 'List':
+                case 'list':
+                    echo $json->getActivityList();
+                    break;
+            }
+            break;
+
         case 'Combo':
         case 'combo':
             switch ($action) {
