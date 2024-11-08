@@ -37,6 +37,8 @@ use App\ExtraFunctions;
                         </li>
                         <li><a href="#tab3" data-bs-toggle="tab" class="">
                                 Invoices & Payments (<span id="comboCounter"></span>)</a></li>
+                        <li><a href="#tab4" data-bs-toggle="tab" class="">
+                                SMS & Emails (<span id="comboCounter"></span>)</a></li>
                     </ul>
 
                 </div>
@@ -51,6 +53,9 @@ use App\ExtraFunctions;
                         </div>
                         <div class="tab-pane" id="tab3">
                             <?php include 'combo-index.php'; ?>
+                        </div>
+                        <div class="tab-pane" id="tab4">
+                            <?php include 'activity-index.php'; ?>
                         </div>
 
                     </div>

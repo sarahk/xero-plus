@@ -1,42 +1,61 @@
-var tContacts = $('#tContacts').DataTable({
+let $tContacts = $('#tContacts').DataTable({
     ajax: {
-        "url": "/json.php?endpoint=Contacts&action=Read"
+        url: "/json.php",
+        data: function (d) {
+            // Make sure this is updating every time `ajax.reload()` is called
+            d.button = currentContactButton;
+            d.endpoint = 'Contact';
+            d.action = 'List';
+        }
     },
     processing: true,
     serverSide: true,
     columns: [
-        {data: "checkbox", orderable: false},
-        {data: "theyowe", className: 'dt-right'},
+        {data: "total_due", className: 'dt-right'},
         {data: "name"},
-        {data: "phone", orderable: false},
-        {data: "email"},
-        {data: "address", orderable: false},
+        {data: "phone_number", orderable: false},
+        {data: "email_address"},
+        {data: "address_line1", orderable: false},
         {data: "action", orderable: false}
     ],
     paging: true,
     stateSave: true,
-    dom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
-    buttons: [
-        {
-            text: 'All',
-            className: 'btn mr-1',
-            action: function (e, dt, node, config) {
-                //dt.ajax.reload();
-                tContacts.ajax.url('/json.php?endpoint=Contacts&action=Read').load();
-            }
-        }, {
-            text: 'Active',
-            className: 'btn mr-1',
-            action: function (e, dt, node, config) {
-                tContacts.ajax.url('/json.php?endpoint=Contacts&action=Read&button=active').load();
-            }
-        }, {
-            text: 'Archived',
-            className: 'btn mr-1',
-            action: function (e, dt, node, config) {
-                tContacts.ajax.url('/json.php?endpoint=Contacts&action=Read&button=archived').load();
-            }
-        }]
+    layout: {
+        topStart: {
+            buttons: [
+                'pageLength',
+                {
+                    extend: 'csv',
+                    text: 'Export',
+                    split: ['copy', 'excel', 'pdf', 'print']
+                },
+                {
+                    text: 'All',
+                    action: function () {
+                        //dt.ajax.reload();
+                        currentContactButton = '';
+                        $tContacts.ajax.reload();
+                    }
+                },
+                {
+                    text: 'Active',
+                    action: function () {
+                        currentActivityButton = 'Email';
+                        $tContacts.ajax.reload();
+                    }
+                },
+                {
+                    text: 'Archived',
+                    action: function () {
+                        currentActivityButton = 'SMS';
+                        $tContacts.ajax.reload();
+                    }
+                },
+
+
+            ]
+        }
+    }
 });
 
 

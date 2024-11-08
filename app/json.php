@@ -162,7 +162,8 @@ try {
                     echo $json->createContacts($xeroTenantId, $apiInstance);
                     break;
                 case "Read":
-                    echo $json->getContact($xeroTenantId, $apiInstance);
+                case 'List':
+                    echo $json->getContactList($xeroTenantId, $apiInstance);
                     break;
                 case "Update":
                     echo $json->updateContact($xeroTenantId, $apiInstance);

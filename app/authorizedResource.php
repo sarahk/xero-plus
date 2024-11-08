@@ -145,6 +145,10 @@ switch ($action) {
         // Message Templates
         break;
 
+    case 18:
+        // activity
+        break;
+
     case 200:
     default:
         // main dash
@@ -197,7 +201,8 @@ $view = match ($action) {
     13 => 'Views/cabins-index.php',
     14 => 'Views/cabin-single.php',
     16 => 'Views/bad_debts_index.php',
-    17 => 'Views/templates_index.php',
+    17 => 'Views/templates-index.php',
+    18 => 'Views/activity-index.php',
     200 => 'Views/home2.php',
     default => 'Views/home.php',
 };

@@ -50,7 +50,7 @@ class XeroClass
 
     public function getTenantIdArray()
     {
-        $provider = getProvider();
+        $provider = Utilities::getProvider();
 
         //$apiResponse = $this->apiInstance->getOrganisations($xeroTenantId);
         //$message = '<p>Organisation Name: ' . $apiResponse->getOrganisations()[0]->getName();
@@ -261,7 +261,7 @@ class XeroClass
             'xerotenant_id' => $xeroTenantId,
             'stub' => $stubFlag
         ];
-        
+
         $contact = new ContactModel($this->pdo);
         $id = $contact->getContactId($save['contact_id']);
         if ($id && !$overwrite) {

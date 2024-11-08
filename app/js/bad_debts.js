@@ -15,7 +15,7 @@ if ($('#tBadDebts').length) {
                 d.endpoint = 'Invoices';
                 d.action = 'BadDebts';
 
-                
+
                 $badDebtsTitle.text(currentButtonValue);
             }
         },
@@ -104,19 +104,6 @@ if ($('#tBadDebts').length) {
             row.classList.add('bar-' + data.colour);
         },
     });
-
-
-// test function
-    function sendSMS() {
-        $.ajax({
-            url: "/run.php",
-            data: {
-                endpoint: 'processSMSQueue',
-            }
-        }).done(function () {
-            alert("sms sent");
-        });
-    }
 
 
     $('#saveSmsRequest').on('show.bs.modal', function (event) {

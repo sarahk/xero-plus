@@ -8,10 +8,7 @@ namespace App\Views\bad_debts;
                 <div class="card-header">
                     <h3 class="card-title">Bad Debts <span id="badDebtsTitle" class="text-danger"></span></h3>
                 </div>
-                <p>
-
-                    <button onclick="sendSMS();">Test SMS</button>
-                </p>
+                
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered text-nowrap border-bottom w-100" id="tBadDebts">

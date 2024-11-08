@@ -18,6 +18,12 @@ class TemplateModel extends BaseModel
                 values (:id, :status, :messagetype , :label, :subject, :body,:dateupdate)
                 ON DUPLICATE KEY UPDATE `status` = :status, `label` = :label, `subject` = :subject, `body` = :body, `dateupdate` = :dateupdate";
 
+    protected array $orderByColumns = [
+        0 => "templates.id DIR",
+        1 => "templates.status DIR",
+        2 => "templates.messagetype DIR",
+        3 => "templates.label DIR",
+    ];
 
     protected string $table = 'templates';
     protected string $primaryKey = 'id';
@@ -66,12 +72,17 @@ class TemplateModel extends BaseModel
                 case 'active':
                     $conditions[] = 'templates.status = 1';
                     break;
+                case 'SMS':
+                case 'Email':
+                    $conditions[] = 'templates.messagetype = :messagetype';
+                    $search_values['messagetype'] = $params['button'];
                 default:
             }
         }
 
         $sql = "SELECT * FROM `templates`"
             . (count($conditions) ? " WHERE (" . implode(' AND ', $conditions) . ")" : '')
+            . " ORDER BY " . $this->getOrderBy($params)
             . " LIMIT {$params['start']}, {$params['length']}";
 
         $output = [];

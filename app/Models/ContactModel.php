@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\AddressModel;
+use App\Models\Enums\AmountDue;
 use App\Models\PhoneModel;
 use App\Models\NoteModel;
 
@@ -166,50 +167,55 @@ class ContactModel extends BaseModel
     {
         return $this->field('id', 'contact_id', $contact_id);
     }
-
-
-    /*
-     * need to provide the option to limit it to a particular tenancy
-     * add weighting in the future?
-     */
-    public function search()
+    
+    public function list(array $params): array
     {
-        $searchFields = ['first_name', 'last_name', 'email_address', 'phone'];
-        $conditions = $values = [];
+        $this->table = 'vcontacts';
+        $tenancies = $this->getTenanciesWhere($params);
+
+        $search_fields = ['name', 'first_name', 'last_name', 'email_address', 'address_line1', 'phone_number'];
+        $conditions = $search_values = [];
 
 
-        foreach ($searchFields as $var) {
-            if (!empty($_GET[$var])) {
-                $conditions[] = " `{$var}` LIKE :$var ";
-                $values[':' . $var] = $_GET[$var];
+        if (!empty($params['search'])) {
+            foreach ($search_fields as $var) {
+                $conditions[] = " `$var` LIKE :search ";
             }
+            $search_values['search'] = $params['search'];
         }
 
-        $sql = "SELECT `contacts`.`id`, `contacts`.`contact_id`, `contacts`.`status`
-            `contacts`.`name`, `first_name`, `last_name`, 
-            `email_address`, `phone_area_code`, `phone_number`, 
-            `xerotenant_id`, `contacts`.`updated_date_utc`,
-            `tenancies`.`colour`
-            FROM `contacts`
-            LEFT JOIN `phones` on `contacts`.`id` = `phones`.`ckcontact_id` 
-            LEFT JOIN `tenancies` on `contacts`.`xerotenant_id` = `tenancies`.`tenant_id`
-            WHERE `is_customer` = 1 
-              AND (" . implode(' AND ', $conditions) .
-            ') LIMIT 10';
+// uses the view to make searching on phone number and address easier
+        $conds = (count($conditions) ? ' AND (' . implode(' OR ', $conditions) . ')' : '');
 
-        $list = $this->runQuery($sql, $values);
-//        $this->getStatement($sql);
-//        try {
-//            $this->statement->execute($values);
-//            $list = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-//        } catch (PDOException $e) {
-//            echo "Error Message: " . $e->getMessage() . "\n";
-//            $this->statement->debugDumpParams();
-//        }
+
+        $sql = "SELECT vcontacts.*,
+            tenancies.colour,vAmountDue.total_due
+            FROM vcontacts
+            LEFT JOIN vAmountDue ON (vcontacts.contact_id = vAmountDue.contact_id) 
+            LEFT JOIN tenancies ON (vcontacts.xerotenant_id = tenancies.tenant_id)
+            WHERE vcontacts.is_customer = 1 
+              AND $tenancies $conds
+              LIMIT {$params['start']}, {$params['length']}";
+
+        $result = $this->runQuery($sql, $search_values);
+        for ($i = 0; $i < count($result); $i++) {
+            $result[$i]['risk'] = AmountDue::getIcon($result[$i]['total_due']);
+            $result[$i]['action'] = '';
+        }
+
+
+        $recordsTotal = 'SELECT count(*) FROM vcontacts WHERE vcontacts.is_customer = 1 AND ' . $tenancies;
+        $recordsFiltered = "SELECT count(*) 
+                                FROM vcontacts 
+                                WHERE vcontacts.is_customer = 1 AND $tenancies $conds";
+
+
         return [
-            'count' => count($list),
-            'draw' => $_GET['draw'],
-            'data' => $list
+            'count' => count($result),
+            'draw' => $params['draw'],
+            'recordsTotal' => $this->runQuery($recordsTotal, $search_values, 'column'),
+            'recordsFiltered' => $this->runQuery($recordsFiltered, $search_values, 'column'),
+            'data' => $result
         ];
     }
 

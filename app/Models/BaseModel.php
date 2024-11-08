@@ -398,6 +398,11 @@ class BaseModel
 
         if (is_array($params['order'])) {
             $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
+
+            if (!empty($params['order']['name'])) {
+                return "{$params['order']['name']} $direction";
+            }
+
             $column = $params['order'][0]['column'];
             foreach ($this->orderByColumns as $k => $v) {
                 if ($k == $column) {

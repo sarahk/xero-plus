@@ -510,3 +510,87 @@ INFO | 2024-11-7, 8:44 pm > runQuery:  | ["SELECT count(*) as `total`
                 WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contract_id` = :contract_id",{"contract_id":"9642"},{"contract_id":"9642"}] 
 INFO | 2024-11-7, 8:44 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
                 WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contract_id` = :contract_id",{"contract_id":"9642"},{"contract_id":"9642"}] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+            ORDER BY vcombo.invoice_number ASC 
+            LIMIT 0, 10",[],[]] 
+INFO | 2024-11-7, 9:28 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+            ORDER BY vcombo.date ASC 
+            LIMIT 0, 10",[],[]] 
+INFO | 2024-11-7, 9:28 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') 
+            ORDER BY vcombo.date DESC 
+            LIMIT 0, 10",[],[]] 
+INFO | 2024-11-7, 9:28 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  |  
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7') ",[],[]] 
+INFO | 2024-11-7, 9:28 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id
+            ORDER BY vcombo.invoice_number ASC 
+            LIMIT 0, 10",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:29 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id |  
+INFO | 2024-11-7, 9:29 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:29 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:31 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id
+            ORDER BY vcombo.invoice_number ASC 
+            LIMIT 0, 10",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:31 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id |  
+INFO | 2024-11-7, 9:31 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:31 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:32 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id
+            ORDER BY vcombo.invoice_number ASC 
+            LIMIT 0, 10",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:32 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id |  
+INFO | 2024-11-7, 9:32 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:32 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:33 pm > runQuery:  | ["SELECT `row_type`, `invoice_id`, contract_id, `status`, `invoice_number`, `reference`, `amount`, `amount_due`, `date`, `xerotenant_id` FROM `vcombo` 
+            WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id
+            ORDER BY vcombo.invoice_number ASC 
+            LIMIT 0, 10",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:33 pm > SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id |  
+INFO | 2024-11-7, 9:33 pm > runQuery:  | ["SELECT count(*) as `total`
+                FROM vcombo
+                WHERE `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 
+INFO | 2024-11-7, 9:33 pm > runQuery:  | ["SELECT count(*) as `filtered` FROM `vcombo` 
+                WHERE  `vcombo`.`xerotenant_id` IN ('ae75d056-4af7-484d-b709-94439130faa4','e95df930-c903-4c58-aee9-bbc21b78bde7','eafd3b39-46c7-41e4-ba4e-6ea6685e39f7')  AND `contact_id` = :contact_id",{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"},{"contact_id":"ed1aaffa-226e-4dc5-94d6-cc581a941381"}] 

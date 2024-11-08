@@ -94,7 +94,7 @@ class ComboModel extends BaseModel
 
 
         $sql = "SELECT " . implode(', ', $fields) . " FROM `vcombo` 
-            WHERE " . implode(' AND ', $conditions) . "
+            WHERE " . implode(' OR ', $conditions) . "
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
 
