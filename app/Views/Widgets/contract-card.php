@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Views\Widgets;
-?>
-<?php
-namespace App\Views\Widgets;
+
 // todo
 // add addresses and phone numbers
 
@@ -31,8 +29,12 @@ namespace App\Views\Widgets;
                 <td id="contractCardDelivered"></td>
             </tr>
             <tr>
-                <th>Delivered</th>
-                <td id="contractCardTodo">Todo - add in pickup info if status changes</td>
+                <th>Summary</th>
+                <td id="contractCardSummary"></td>
+            </tr>
+            <tr>
+                <th>------</th>
+                <td id="contractCardTodo">Todo - what else would be useful here?</td>
             </tr>
 
 

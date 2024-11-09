@@ -1,189 +1,242 @@
-$(document).ready(function () {
+function ns_combo() {
+    this.idTag = '#tCombo';
+    this.dataTable;
+    this.currentButton = '';
+    this.contract_id = 0;
 
-    $(document).ajaxStart(function () {
-        $("#modalSpinner").show();
-    });
-    $(document).ajaxStop(function () {
-        $("#modalSpinner").hide();
-    });
+    this.init_datatable = function () {
 
+        if ($(this.idTag).length > 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            this.contract_id = urlParams.get('contract_id') ?? 0;
 
-    let $tCombo = $('#tCombo');
-    if ($tCombo.length) {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        $tCombo
-            .on('xhr.dt', function (e, settings, json, xhr) {
-                console.log('xhr.dt', json.recordsTotal);
-                $('#comboCounter').text(json.recordsTotal);
+            this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
 
-            })
-            .DataTable({
-                ajax: {
-                    url: "/json.php",
-                    data: {
-                        endpoint: 'Combo',
-                        action: 'List',
-                        contract_id: urlParams.get('contract_id'),
-                    }
-                },
-                processing: true,
-                serverSide: true,
-                paging: true,
-                stateSave: true,
-                columns: [
-                    {data: "row_type"},
-                    {data: "number"},
-                    {data: "reference"},
-                    {data: 'status'},
-                    {data: "amount"},
-                    {data: "amount_due"},
-                    {data: "date"},
-                ],
-                createdRow: (row, data, index) => {
-                    //console.log(data);
-                    //row.querySelector(':nth-child(1)').classList.add('table-primary');
-                    row.classList.add('bar-' + data.colour);
+            this.setListeners();
+        }
+    };
 
-                    // row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
-                    // row.querySelector(':nth-child(1)').classList.add('bg-gradient');
-                    // row.querySelector(':nth-child(1)').classList.add('opacity-50');
+    this.setListeners = function () {
 
-                },
-                layout: {
-                    topStart: {
-                        buttons: ['pageLength', {
-                            extend: 'csv',
-                            text: 'Export',
-                            split: ['copy', 'excel', 'pdf', 'print']
-                        }, {
-                            text: 'All',
-                            action: function () {
-                                //dt.ajax.reload();
-                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
-                            }
-                        }, {
-                            text: 'Overdue',
-                            action: function () {
-                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
-                            }
-                        }, {
-                            text: 'Authorised',
-                            action: function () {
-                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
-                            }
-                        }, {
-                            text: 'Paid',
-                            action: function () {
-                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
-                            }
-                        }, {
-                            text: 'Draft',
-                            action: function () {
-                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
-                            }
-                        }, {
-                            text: 'Void',
-                            action: function () {
-                                tCombo.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
-                            }
-                        }]
-                    }
-                },
-            });
+    };
 
-    }
-    if ($('#comboContactName').length) {
-        $.ajax({
-            dataType: "json",
+    this.dataTableOptions = {
+        ajax: {
             url: "/json.php",
-            data: {
-                endpoint: 'Contacts',
-                action: 'Field',
-                field: 'name',
-                key: 'id',
-                keyVal: keys.contact.id,
-            },
-            success: function (data) {
-
-                $('#comboContactName').text(data);
+            data: (d) => {
+                d.endpoint = 'Combo';
+                d.action = 'List';
+                d.contract_id = this.contract_id;
+                d.button = this.currentButton;
             }
-        });
+        },
+        processing: true,
+        serverSide: true,
+        paging: true,
+        stateSave: true,
+        columns: [
+            {data: "row_type", name: 'row_type'},
+            {data: "number", name: 'number'},
+            {data: "reference", name: 'reference'},
+            {data: 'name', name: 'name'},
+            {data: 'status', name: 'status'},
+            {data: "amount", name: 'amount'},
+            {data: "amount_due", name: 'amount_due'},
+            {data: "date", name: 'date'},
+        ],
+        createdRow: (row, data, index) => {
+            row.classList.add('bar-' + data.colour);
+        },
+        layout: {
+            topStart: {
+                buttons: ['pageLength', {
+                    extend: 'csv',
+                    text: 'Export',
+                    split: ['copy', 'excel', 'pdf', 'print']
+                }, {
+                    text: 'All',
+                    action: () => {
+                        //dt.ajax.reload();
+                        this.currentButton = '';
+                        this.dataTable.ajax.reload();
+                    }
+                }, {
+                    text: 'Overdue',
+                    action: () => {
+                        this.currentButton = 'overdue';
+                        this.dataTable.ajax.reload();
+                    }
+                }, {
+                    text: 'Authorised',
+                    action: () => {
+                        this.currentButton = 'authorised';
+                        this.dataTable.ajax.reload();
+                    }
+                }, {
+                    text: 'Paid',
+                    action: () => {
+                        this.currentButton = 'paid';
+                        this.dataTable.ajax.reload();
+                    }
+                }, {
+                    text: 'Draft',
+                    action: () => {
+                        this.currentButton = 'draft';
+                        this.dataTable.ajax.reload();
+                    }
+                }, {
+                    text: 'Void',
+                    action: () => {
+                        this.currentButton = 'voided';
+                        this.dataTable.ajax.reload();
+                    }
+                }]
+            }
+        },
+    };
+}
+
+const nsCombo = new ns_combo();
+nsCombo.init_datatable();
+
+// $tCombo
+//     .on('xhr.dt', function (e, settings, json, xhr) {
+//         console.log('xhr.dt', json.recordsTotal);
+//         $('#comboCounter').text(json.recordsTotal);
+//
+//     })
+
+
+function ns_comboContact() {
+    this.idTag = '#tComboContact';
+    this.dataTable;
+    this.currentButton = '';
+    this.first = true;
+    //this.contract_id = 0;
+
+    this.init_datatable = function () {
+
+        if ($(this.idTag).length > 0) {
+            this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
+            this.findContractId();
+            this.setComboContactName();
+            this.setListeners();
+        }
+    };
+
+    this.setListeners = function () {
+
+    };
+
+    // this.getSearchTerm = function () {
+    //     if (this.first) {
+    //         this.first = false;
+    //         return new URLSearchParams(window.location.search).get('search');
+    //     }
+    //     return this.dataTable.search();
+    // }
+
+    this.findContractId = function () {
+        this.contract_id = keys.invoice?.contract_id ??
+            keys.contract?.contract_id ??
+            new URLSearchParams(window.location.search).get('contract_id') ?? 0;
+    };
+
+    this.getContractId = function () {
+        return keys.invoice?.contract_id ??
+            keys.contract?.contract_id ??
+            new URLSearchParams(window.location.search).get('contract_id') ?? 0;
     }
 
-    if ($('#tComboContact').length) {
+    this.dataTableOptions = {
+        ajax: {
+            url: "/json.php",
+            data: (d) => {
+                d.endpoint = 'Combo';
+                d.action = 'List';
+                d.contract_id = this.getContractId();
+                d.repeating_invoice_id = keys.contract.repeating_invoice_id ?? 0;
+                d.button = this.currentButton;
+                // d.search_term = this.getSearchTerm();
+            }
+        },
+        processing: true,
+        serverSide: true,
+        paging: true,
+        stateSave: true,
+        columns: [
+            {data: "row_type", name: 'row_type', orderable: false, searchable: false},
+            {data: "number", name: 'number'},
+            {data: "reference", name: 'reference'},
+            {data: 'status', name: 'status'},
+            {data: "amount", name: 'amount'},
+            {data: "amount_due", name: 'amount_due'},
+            {data: "date", name: 'date'},
+        ],
+        createdRow: (row, data, index) => {
+            row.querySelector(':nth-child(1)').classList.add('bar-' + data.colour);
+        },
+        layout: {
+            topStart: {
+                buttons: ['pageLength', {
+                    extend: 'csv',
+                    text: 'Export',
+                    split: ['copy', 'excel', 'pdf', 'print']
+                }, {
+                    text: 'All',
+                    action: () => {
+                        //dt.ajax.reload();
+                        this.currentButton = '';
+                        this.dataTable.ajax.reload();
+                    }
+                }, {
+                    text: 'Overdue',
+                    action: () => {
+                        this.currentButton = 'overdue';
+                        this.dataTable.ajax.reload();
 
-        let tInvoices = $('#tComboContact').DataTable({
-            ajax: {
+                    }
+                }, {
+                    text: 'Authorised',
+                    action: () => {
+                        this.currentButton = 'authorised';
+                        this.dataTable.ajax.reload();
+
+                    }
+                }, {
+                    text: 'Paid',
+                    action: () => {
+                        this.currentButton = 'paid';
+                        this.dataTable.ajax.reload();
+
+                    }
+                }]
+            }
+        },
+        language: {
+            emptyTable: "No invoices or payments for this contract"  // Custom message
+        },
+    };
+
+    this.setComboContactName = function () {
+        if ($('#comboContactName').length) {
+            $.ajax({
+                dataType: "json",
                 url: "/json.php",
                 data: {
-                    endpoint: 'Combo',
-                    action: 'List',
-                    contact_id: keys.contact.contact_id,
+                    endpoint: 'Contacts',
+                    action: 'Field',
+                    field: 'name',
+                    key: 'id',
+                    keyVal: keys.contact.id ?? 0,
+                },
+                success: (data) => {
+                    $('#comboContactName').text(data);
                 }
-            },
-            processing: true,
-            serverSide: true,
-            paging: true,
-            stateSave: true,
-            columns: [
-                {data: "row_type"},
-                {data: "number"},
-                {data: "reference"},
-                {data: 'status'},
-                {data: "amount"},
-                {data: "amount_due"},
-                {data: "date"},
-            ],
-            createdRow: (row, data, index) => {
-                //row.querySelector(':nth-child(1)').classList.add('table-primary');
-                row.querySelector(':nth-child(1)').classList.add('bar-' + data.colour);
-                // row.querySelector(':nth-child(1)').classList.add('bg-' + data.colour);
-                // row.querySelector(':nth-child(1)').classList.add('bg-gradient');
-                // row.querySelector(':nth-child(1)').classList.add('opacity-50');
+            });
+        }
+    };
+}
 
-            },
-            layout: {
-                topStart: {
-                    buttons: ['pageLength', {
-                        extend: 'csv',
-                        text: 'Export',
-                        split: ['copy', 'excel', 'pdf', 'print']
-                    }, {
-                        text: 'All',
-                        action: function () {
-                            //dt.ajax.reload();
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read').load();
-                        }
-                    }, {
-                        text: 'Overdue',
-                        action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=overdue').load();
-                        }
-                    }, {
-                        text: 'Authorised',
-                        action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=authorised').load();
-                        }
-                    }, {
-                        text: 'Paid',
-                        action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=paid').load();
-                        }
-                    }, {
-                        text: 'Draft',
-                        action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=draft').load();
-                        }
-                    }, {
-                        text: 'Void',
-                        action: function () {
-                            tInvoices.ajax.url('/json.php?endpoint=Invoices&action=Read&button=voided').load();
-                        }
-                    }]
-                }
-            },
-        });
-
-    }
-});
+const nsComboContact = new ns_comboContact();
+nsComboContact.init_datatable();

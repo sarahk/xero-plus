@@ -351,4 +351,15 @@ class ContractModel extends BaseModel
             $this->runQuery($sql, ['ckcontact_id' => $ckcontact_id, 'join_type' => 'contract', 'foreign_id' => $contract_id], 'insert');
         }
     }
+
+    public function getPaymentSummary($params)
+    {
+        $sql = 'SELECT
+                SUM(IF(amount_due = 0, 1, 0)) AS fully_paid,
+                SUM(IF(amount_due > 0 AND amount_due < total, 1, 0)) AS part_paid,
+                SUM(IF(amount_due = total, 1, 0)) AS unpaid,
+                SUM(amount_due) AS amount_due
+            FROM invoices WHERE contract_id = :contract_id';
+        return $this->runQuery($sql, ['contract_id' => $params['contract_id']]);
+    }
 }

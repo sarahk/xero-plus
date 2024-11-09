@@ -18,8 +18,13 @@
             </a>
             <!-- LOGO -->
             <div class="main-header-center ms-3 d-none d-lg-block">
-                <input class="form-control" placeholder="Search for anything..." type="search">
-                <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                <form action="/authorizedResource.php" method="get">
+                    <input type="hidden" name="action" value="5">
+                    <?php $search_term = $_GET['search_term'] ?? ''; ?>
+                    <input class="form-control" name="search_term" placeholder="Search for anything..." type="search"
+                           value="<?= $search_term; ?>">
+                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </form>
             </div>
             <div class="d-flex order-lg-2 ms-auto header-right-icons">
                 <!-- SEARCH -->

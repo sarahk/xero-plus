@@ -4,7 +4,7 @@ namespace App\Views\Widgets;
 // add addresses and phone numbers
 
 ?>
-<div class="card custom-card" id="contactCard">
+<div class="card custom-card card-haze" id="contactCard">
     <div class="card-header">
         <div class="card-title">Contact: <span id="contactCardTitle"><strong></strong></span></div>
     </div>

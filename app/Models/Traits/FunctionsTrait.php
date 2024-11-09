@@ -110,4 +110,24 @@ trait FunctionsTrait
         return date_format($date, "d-M-Y");
     }
 
+    /** generates a url using all the variables in the row
+     *  send a shorter array if necessary.
+     * @param string $action
+     * @param array $row
+     * @return string
+     */
+    protected function getContractOverviewLink(string $action, array $row): string
+    {
+        $variables = ["/authorizedResource.php?action=$action"];
+        foreach ($row as $key => $val) {
+            $variables[] = "&$key=$val";
+        }
+        return '<a href="' . implode($variables) . '">';
+    }
+
+
+    protected function getDataAttribute($key, $val)
+    {
+        return "data-$key='$val'";
+    }
 }

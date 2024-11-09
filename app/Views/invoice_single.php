@@ -4,27 +4,20 @@ namespace App\Views;
 
 //create some variables for the widgets
 $newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
-
+//var_dump($data);
 ?>
     <script>
-        const keys = {
-            repeating_invoice_id: "<?= $data['repeating_invoice_id'];?>",
-            contact: {
-                id: "<?= $data['contact']['id']?>",
-                contact_id: "<?= $data['contact_id']?>",
-            },
-            contract_id: "<?= $data['contract_id']?>",
-        };
+        const keys = <?=  json_encode($keys, JSON_PRETTY_PRINT) ?>;
     </script>
 
     <!-- PAGE-HEADER -->
     <div class="page-header">
         <div>
-            <h1 class="page-title">Invoice: <strong><?= $data['invoice_number']; ?></strong></h1>
+            <h1 class="page-title">Invoice: <strong><?= $data['invoices']['invoice_number']; ?></strong></h1>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/authorizedResource.php?action=9">Invoices</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Invoice
-                    #<?= $data['invoice_number']; ?></li>
+                    #<?= $data['invoices']['invoice_number']; ?></li>
             </ol>
         </div>
     </div>
@@ -32,6 +25,7 @@ $newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
 
     <div class="row">
         <div class="col-md-6 ">
+            <?php include 'Views/Widgets/combo-single-card.php' ?>
             <?php include 'Views/Widgets/contact-card.php' ?>
 
 

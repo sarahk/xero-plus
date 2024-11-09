@@ -173,7 +173,7 @@ try {
                     break;
                 case "Read":
                 case 'List':
-                    echo $json->getContactList($xeroTenantId, $apiInstance);
+                    echo $json->getContactList();
                     break;
                 case "Update":
                     echo $json->updateContact($xeroTenantId, $apiInstance);
@@ -239,6 +239,13 @@ try {
                 case 'singleton':
                     echo $json->getContractSingleton();
                     break;
+
+                case 'Summary':
+                case 'summary':
+                    echo $json->getInvoiceSummary();
+                    break;
+                default:
+                    echo $action . " action not supported in API";
             }
             break;
 
@@ -321,6 +328,7 @@ try {
                 case "Void":
                     echo $json->voidInvoice($xeroTenantId, $apiInstance);
                     break;
+
 
                 default:
                     echo $action . " action not supported in API [Invoices]";
@@ -442,18 +450,11 @@ try {
 
         case "Payments":
             switch ($action) {
-                case "Create":
-                    echo $json->createPayment($xeroTenantId, $apiInstance);
+                case "List":
+                case 'list':
+                    echo $json->getPaymentsList();
                     break;
-                case "CreateMulti":
-                    echo $json->createPayments($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getPayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Delete":
-                    echo $json->deletePayment($xeroTenantId, $apiInstance);
-                    break;
+
                 default:
                     echo $action . " action not supported in API";
             }

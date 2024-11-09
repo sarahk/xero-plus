@@ -15,15 +15,27 @@ select.form-control {
 
 /* if the colours for the tenancies change they need to be added here */
 .border-bottom-yellow {
-    border-bottom: 1px solid var(--bs-yellow);
+    border-bottom: 1px solid #ecb403;
 }
 
 .border-bottom-cyan {
-    border-bottom: 1px solid var(--bs-cyan);
+    border-bottom: 1px solid #17a2b8;
 }
 
 .border-bottom-purple {
-    border-bottom: 1px solid var(--bs-purple);
+    border-bottom: 1px solid #867efc;
+}
+
+tr.bar-yellow td:nth-child(1) {
+    border-left: 0.75em solid #ecb403 !important;
+}
+
+tr.bar-cyan td:nth-child(1) {
+    border-left: 0.75em solid #17a2b8 !important;
+}
+
+tr.bar-purple td:nth-child(1) {
+    border-left: 0.75em solid #867efc !important;
 }
 
 
@@ -57,14 +69,3 @@ darker: #8c8e90
 
 
 /* Adds the coloured bar to tables */
-tr.bar-yellow td:nth-child(1) {
-    border-left: 0.75em solid yellow !important;
-}
-
-tr.bar-cyan td:nth-child(1) {
-    border-left: 0.75em solid cyan !important;
-}
-
-tr.bar-purple td:nth-child(1) {
-    border-left: 0.75em solid purple !important;
-}

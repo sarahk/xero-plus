@@ -2,13 +2,15 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Contacts</h3>
+                <h3 class="card-title">Customers</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered text-nowrap border-bottom w-100" id="tContacts">
                         <thead>
                         <tr>
+                            <th>Lifecycle</th>
+                            <th>&nbsp;</th>
                             <th>Bal</th>
                             <th>Name</th>
                             <th>Phone</th>

@@ -8,14 +8,15 @@ class ComboModel extends BaseModel
 {
     protected string $table = 'vcombo';
     protected bool $view = true;
-    protected int $orderByDefault = 3;
+    protected int $orderByDefault = 6;
     protected string $orderByDefaultDirection = 'DESC';
 
     protected array $orderByColumns = [
         0 => "vcombo.invoice_number DIR",
         2 => "vcombo.reference DIR",
-        3 => "vcombo.amount DIR",
-        4 => "vcombo.amount_due DIR",
+        3 => "contacts.last_name DIR, contacts.first_name ASC",
+        4 => "vcombo.amount DIR",
+        5 => "vcombo.amount_due DIR",
         6 => "vcombo.date DIR",
     ];
 
@@ -35,12 +36,13 @@ class ComboModel extends BaseModel
 
         $tenancies = $this->getTenanciesWhere($params);
 
-        $contact_id = $_GET['contact_id'] ?? '';
-        if (!empty($contact_id)) {
+
+        if (!empty($params['contact_id'])) {
             // added to tenancies because we need it to run on the total and filter count queries
             $tenancies .= " AND `contact_id` = :contact_id";
-            $search_values['contact_id'] = $contact_id;
+            $search_values['contact_id'] = $params['contact_id'];
         }
+
 
         if (!empty($params['contract_id'])) {
             $tenancies .= " AND `contract_id` = :contract_id";
@@ -52,12 +54,10 @@ class ComboModel extends BaseModel
         $conditions = [$tenancies];
         if (!empty($params['search'])) {
             $search = [
-                "`vcombo`.reference LIKE :search1",
-                "`vcombo`.`invoice_number` LIKE :search2"
+                "vcombo.reference LIKE :search",
+                'contacts.name LIKE :search'
             ];
-            //$searchValues['search'] = '%' . $params['search'] . '%';
-            $search_values['search1'] = '%' . $params['search'] . '%';
-            $search_values['search2'] = '%' . $params['search'] . '%';
+            $search_values['search'] = '%' . $params['search'] . '%';
 
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
@@ -84,17 +84,20 @@ class ComboModel extends BaseModel
             '`invoice_id`',
             'contract_id',
             '`status`',
-            '`invoice_number`',
+            'contacts.name',
+            'invoice_number',
             '`reference`',
             '`amount`',
             '`amount_due`',
             '`date`',
-            '`xerotenant_id`'
+            'vcombo.xerotenant_id'
         ];
 
 
-        $sql = "SELECT " . implode(', ', $fields) . " FROM `vcombo` 
-            WHERE " . implode(' OR ', $conditions) . "
+        $sql = "SELECT " . implode(', ', $fields) . " 
+            FROM `vcombo` 
+            LEFT JOIN contacts on `vcombo`.`contact_id` = `contacts`.`contact_id`
+            WHERE " . implode(' AND ', $conditions) . "
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
 
@@ -106,20 +109,27 @@ class ComboModel extends BaseModel
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
-        $output['recordsTotal'] = $this->getRecordsTotal($tenancies, $search_values);
-        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $search_values);
+        $records_total = "SELECT COUNT(*) FROM vcombo WHERE $tenancies";
+        $records_filtered = "SELECT COUNT(*) 
+                                FROM vcombo 
+                                LEFT JOIN contacts on `vcombo`.`contact_id` = `contacts`.`contact_id`
+                                WHERE " . implode(' AND ', $conditions);
+        $output['recordsTotal'] = $this->runQuery($records_total, $search_values, 'column');
+        $output['recordsFiltered'] = $this->runQuery($records_filtered, $search_values, 'column');
 
         if (count($result) > 0) {
             foreach ($result as $row) {
 // todo change the links if it's payment
+                $url = "/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}";
                 $output['data'][] = [
                     'row_type' => "{$tenancyList[$row['xerotenant_id']]['shortname']} <b>{$row['row_type']}</b>",
-                    'number' => "<a href='/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}'>{$row['invoice_number']}</a>",
+                    'number' => "<a href='$url'>{$row['invoice_number']}</a>",
                     'reference' => $row['reference'],
+                    'name' => "<a href='$url'>{$row['name']}</a>",
                     'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
                     'amount' => $row['amount'],
                     'amount_due' => $row['amount_due'],
-                    'date' => date('d F Y', strtotime($row['date'])),
+                    'date' => $this->getPrettyDate($row['date']),
                     'colour' => $tenancyList[$row['xerotenant_id']]['colour']
                 ];
 // for debugging

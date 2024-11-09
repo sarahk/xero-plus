@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\AddressModel;
 use App\Models\Enums\AmountDue;
+use App\Models\Enums\ContractStatus;
 use App\Models\PhoneModel;
 use App\Models\NoteModel;
 
@@ -23,6 +24,14 @@ class ContactModel extends BaseModel
     protected string $primaryKey = 'id';
 
     protected array $hasMany = ['Phone', 'Address', 'Note'];
+
+    protected array $orderByColumns = [
+        0 => 'last_name DIR, first_name ASC',
+        2 => 'total_due DIR',
+        3 => 'last_name DIR, first_name ASC',
+    ];
+
+
     protected bool $hasStub = true;
 
     function __construct($pdo)
@@ -167,40 +176,52 @@ class ContactModel extends BaseModel
     {
         return $this->field('id', 'contact_id', $contact_id);
     }
-    
+
     public function list(array $params): array
     {
         $this->table = 'vcontacts';
         $tenancies = $this->getTenanciesWhere($params);
+        $order_by = $this->getOrderBy($params);
 
-        $search_fields = ['name', 'first_name', 'last_name', 'email_address', 'address_line1', 'phone_number'];
+        $search_fields = [
+            'vcontacts.name', 'vcontacts.first_name', 'vcontacts.last_name',
+            'vcontacts.email_address', 'vcontacts.address_line1', 'vcontacts.phone_number'];
         $conditions = $search_values = [];
 
 
         if (!empty($params['search'])) {
             foreach ($search_fields as $var) {
-                $conditions[] = " `$var` LIKE :search ";
+                $conditions[] = " $var LIKE :search ";
             }
-            $search_values['search'] = $params['search'];
+            $search_values['search'] = "%{$params['search']}%";
         }
 
 // uses the view to make searching on phone number and address easier
         $conds = (count($conditions) ? ' AND (' . implode(' OR ', $conditions) . ')' : '');
 
-
-        $sql = "SELECT vcontacts.*,
-            tenancies.colour,vAmountDue.total_due
-            FROM vcontacts
-            LEFT JOIN vAmountDue ON (vcontacts.contact_id = vAmountDue.contact_id) 
-            LEFT JOIN tenancies ON (vcontacts.xerotenant_id = tenancies.tenant_id)
+// if a contact has more than one cabin this may show high
+        $sql = "SELECT 
+                tenancies.tenant_id,
+                tenancies.colour,
+                vcontacts.*,
+                SUM(vamount_due.total_due) AS total_due,
+                max(contracts.enquiry_rating) AS enquiry_rating,
+                max(contracts.delivery_date) AS delivery_date,
+                max(contracts.pickup_date) AS pickup_date
+            FROM tenancies
+            LEFT JOIN vcontacts ON vcontacts.xerotenant_id = tenancies.tenant_id
+            LEFT JOIN vamount_due ON vcontacts.contact_id = vamount_due.contact_id
+            LEFT JOIN contracts ON contracts.ckcontact_id = vcontacts.id
             WHERE vcontacts.is_customer = 1 
-              AND $tenancies $conds
-              LIMIT {$params['start']}, {$params['length']}";
+                AND $tenancies $conds  
+            GROUP BY tenancies.tenant_id, vcontacts.id, vcontacts.last_name, vcontacts.first_name
+            ORDER BY $order_by " . $this->getListLimits($params);
 
         $result = $this->runQuery($sql, $search_values);
         for ($i = 0; $i < count($result); $i++) {
-            $result[$i]['risk'] = AmountDue::getIcon($result[$i]['total_due']);
-            $result[$i]['action'] = '';
+            $result[$i]['life_cycle'] = ContractStatus::getIconHtml($result[$i]);
+            $result[$i]['total_due_icon'] = AmountDue::getIconHtml($result[$i]['total_due'] ?? 0);
+            $result[$i]['action'] = ''; // what do we want here?
         }
 
 

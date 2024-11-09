@@ -69,7 +69,7 @@ if (!isset($_GET['code'])) {
 
             // Parse the response
             $connections = json_decode($response->getBody(), true);
-
+            var_dump($connections);
             // Loop through the organizations connected and get the user_id for each
             $user_ids = [];
             foreach ($connections as $connection) {
@@ -79,10 +79,13 @@ if (!isset($_GET['code'])) {
                 ];
             }
             $users = new UserModel(Utilities::getPDO());
-            $_SESSION['user_id'] = $users->getUserId($user_ids);
+            $user_id = $users->getUserId($user_ids);
+            $_SESSION['user_id'] = $user_id;
+            $_SESSION['user_name'] = $users->field('first_name', 'id', $user_id);
 
         } catch (RequestException $e) {
             echo 'Error: ' . $e->getMessage();
+            exit;
         }
 
         // end of  my code

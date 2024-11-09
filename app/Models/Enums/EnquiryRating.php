@@ -33,4 +33,9 @@ enum EnquiryRating: string
     {
         return "<img src='/images/five-star-rating-{$val}.png' height='40' width='40'>";
     }
+
+    public static function getImageSmall(string $val): string
+    {
+        return "<img src='/images/five-star-rating-{$val}.png' height='24' width='24'>";
+    }
 }

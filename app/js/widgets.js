@@ -1,92 +1,116 @@
 //looks for widgets and loads their data
 //expects to find the appropriate id in a constant on the page
-if ($('#contactCard').length) {
 
-    let url1 = "/json.php?endpoint=Contacts&action=Singleton&contact_id=" + keys.contact.contact_id;
+function ns_contactWidget() {
+    this.tagId = '#contactCard';
+    this.init = function () {
+        console.log(keys);
+        if ($(this.tagId).length) {
+            this.populateWidget();
+        }
+    };
 
-    $.getJSON(url1, function (data) {
-        $('#contactCardTitle').text(data.contacts.name);
-        $('#contactCardName').text(data.contacts.name);
-        $('#contactCardFirstName').text(data.contacts.first_name);
-        $('#contactCardLastName').text(data.contacts.last_name);
-        $('#contactCardEmail').text(data.contacts.email_address);
-        // todo - move this to the contract card?
+    this.populateWidget = function () {
+        $.getJSON('/json.php', {
+            endpoint: 'Contacts',
+            action: 'Singleton',
+            contact_id: keys.contact.contact_id ?? 0,
+            id: keys.contact.id ?? 0
+        }, (data) => {
+            $('#contactCardTitle').text(data.contacts.name);
+            $('#contactCardName').text(data.contacts.name);
+            $('#contactCardFirstName').text(data.contacts.first_name);
+            $('#contactCardLastName').text(data.contacts.last_name);
+            $('#contactCardEmail').text(data.contacts.email_address);
+            // todo - move this to the contract card?
+            console.log(data);
+            this.addPhones(data);
+            this.addAddresses(data);
+            this.addNotes(data);
+        });
         $('#contactCardPaymentsImage').attr("src", "/run.php?endpoint=image&imageType=baddebt&contract_id=" + keys.contract_id);
-        console.log(data);
-        addPhones(data);
-        addAddresses(data);
-        addNotes(data);
 
-    });
-}
+    };
 
-function addPhones(data) {
-    if (data.phones && data.phones.length > 0) {
-        data.phones.forEach(phone => {
-            // Check if the address contains meaningful data
-            if (phone.phone_number) {
-                let number = (phone.phone_area_code || '') + ' ' + (phone.phone_number || '');
-                let newRow = `<tr><td>Phone</td><td>${number}</td></tr>`;
-                $('#contactCardTable tbody').append(newRow);
-            }
-        });
-    }
-}
-
-function addAddresses(data) {
-    if (data.addresses && data.addresses.length > 0) {
-        data.addresses.forEach(address => {
-            // Check if the address contains meaningful data
-            if (address.address_line1) {
-                let line1 = (address.address_line1 + '<br/>' || '');
-                let line2 = (address.city + '<br/>' || '');
-                let line3 = (address.postal_code + '<br/>' || '');
-                let newRow = `<tr><td>Address</td><td>${line1}${line2}${line3}</td></tr>`;
-                $('#contactCardTable tbody').append(newRow);
-            }
-        });
-    }
-}
-
-function addNotes(data) {
-// only if the notes card is on the page too
-    if ($('#notesCard').length) {
-        if (data.notes && data.notes.length > 0) {
-            data.notes.forEach(note => {
+    this.addPhones = function (data) {
+        if (data.phones && data.phones.length > 0) {
+            data.phones.forEach(phone => {
                 // Check if the address contains meaningful data
-                if (note.note) {
-                    //todo - tidy up date - get name of user
-                    addNoteToTable(note);
+                if (phone.phone_number) {
+                    let number = (phone.phone_area_code || '') + ' ' + (phone.phone_number || '');
+                    let newRow = `<tr><td>Phone</td><td>${number}</td></tr>`;
+                    $('#contactCardTable tbody').append(newRow);
                 }
             });
         }
-    }
+    };
+
+    this.addAddresses = function (data) {
+        if (data.addresses && data.addresses.length > 0) {
+            data.addresses.forEach(address => {
+                // Check if the address contains meaningful data
+                if (address.address_line1) {
+                    let line1 = (address.address_line1 + '<br/>' || '');
+                    let line2 = (address.city + '<br/>' || '');
+                    let line3 = (address.postal_code + '<br/>' || '');
+                    let newRow = `<tr><td>Address</td><td>${line1}${line2}${line3}</td></tr>`;
+                    $('#contactCardTable tbody').append(newRow);
+                }
+            });
+        }
+    };
+
+    this.addNotes = function (data) {
+// only if the notes card is on the page too
+        if ($('#notesCard').length) {
+            if (data.notes && data.notes.length > 0) {
+                data.notes.forEach(note => {
+                    // Check if the address contains meaningful data
+                    if (note.note) {
+                        //todo - tidy up date - get name of user
+                        addNoteToTable(note);
+                    }
+                });
+            }
+        }
+    };
+
+    this.addNoteToTable = function (note) {
+        console.log(note);
+        let createdby = note.createdbyname ?? note.createdby;
+        let newRow = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
+        $('#notesCardTable tbody').append(newRow);
+    };
 }
 
-function addNoteToTable(note) {
-    console.log(note);
-    let createdby = note.createdbyname ?? note.createdby;
-    let newRow = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
-    $('#notesCardTable tbody').append(newRow);
-}
+const nsContactWidget = new ns_contactWidget();
+nsContactWidget.init();
 
-if ($('#notesCard').length) {
 
-    $("#notesCardForm").submit(function (event) {
-        event.preventDefault();
+function ns_notesWidget() {
+    this.tagId = '#notesCard';
+
+    this.init = function () {
+        if ($(this.tagId).length) {
+            this.setListeners();
+        }
+    };
+    this.setListeners = function () {
+        $("#notesCardForm").submit(function (event) {
+            event.preventDefault();
+            this.saveNote();
+        });
+    };
+
+    this.saveNote = function () {
         $('#notesCardSubmit').prop(
             "disabled",
             true
         );
-        // var formData = {
-        //     name: $("#name").val(),
-        //     email: $("#email").val(),
-        //     superheroAlias: $("#superheroAlias").val(),
-        // };
 
-        //let formData = $("#notesCardForm :input").serializeArray();
-        //formData.push({name: "notes", value: $('#notesCardText').val()});
         let data = {
+            endpoint: 'save',
+            form: 'notesCard',
             payload: {
                 note: $("#notesCardText").val(),
                 parent: $("#notesFormParent").val(),
@@ -96,38 +120,117 @@ if ($('#notesCard').length) {
                 created: $("#notesFormCreated").val(),
             }
         };
-        // this should work too
-        //let formData = JSON.stringify(formData);
 
-        console.log(data);
+        console.log(['saveNote Widget', data]);
 
         $.ajax({
             type: "GET",
-            url: "run.php?endpoint=save&form=notesCard",
+            url: "/run.php",
             data: data,
             encode: true,
-        }).done(function () {
-            addNoteToTable(data.payload);
+        }).done(() => {
+            this.addNoteToTable(data.payload);
             $("#notesCardText").val('');
             $("#notesFormCreated").val(new Date().toISOString().slice(0, 19).replace('T', ' '));
         });
 
-        $('#notesCardSubmit').prop(
-            "disabled",
-            false
-        );
-    });
+        this.addNoteToTable = function (note) {
+            console.log(note);
+            let createdby = note.createdbyname ?? note.createdby;
+            let newRow = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
+            $('#notesCardTable tbody').append(newRow);
+        };
+    };
 }
 
-if ($('#contractCard').length) {
+const nsNotesWidget = new ns_notesWidget();
+nsNotesWidget.init();
 
-    let url = "/json.php?endpoint=Contracts&action=Singleton&contract_id=" + keys.contract_id;
-
-    $.getJSON(url, function (data) {
-
-        $('#contractCardStatus').text(data.contracts.status);
-        $('#contractCardCabin').text(data.contracts.cabin_type);
-        $('#contractCardScheduleUnit').text(data.contracts.schedule_unit.toCamelCase);
-        $('#contractCardDelivered').text(data.contracts.delivery_date);
-    });
+function ns_contractWidget() {
+    this.tagId = '#contractCard';
+    this.init = function () {
+        console.log('in ns_contractWidget');
+        if ($(this.tagId).length) {
+            console.log('we have contract data card, lets go');
+            this.getContractData();
+            this.getContractSummary();
+        }
+    };
+    this.getContractData = function () {
+        console.log('getContractData');
+        $.getJSON('/json.php',
+            {
+                endpoint: 'Contracts',
+                action: 'Singleton',
+                contract_id: keys.invoice.contract_id ?? 0,
+                repeating_invoice_id: keys.invoice.repeating_invoice_id ?? 0,
+            },
+            (data) => {
+                console.log('contractCard callback');
+                $('#contractCardStatus').text(data.contracts.status);
+                $('#contractCardCabin').text(data.contracts.cabin_type);
+                $('#contractCardScheduleUnit').text(data.contracts.schedule_unit);
+                $('#contractCardDelivered').text(data.contracts.delivery_date);
+            });
+    };
+    this.getContractSummary = function () {
+        console.log('getContractSummary');
+        $.getJSON('/json.php',
+            {
+                endpoint: 'Contracts',
+                action: 'Summary',
+                contract_id: keys.invoice.contract_id ?? 0,
+                repeating_invoice_id: keys.invoice.repeating_invoice_id ?? 0,
+            },
+            (data) => {
+                console.log(['contractCard summary', data]);
+                let summary = `${data[0].fully_paid} invoices`;
+                if (data.part_paid > 0) summary += `, ${data[0].part_paid} partly paid`;
+                if (data.unpaid > 0) summary += `, ${data[0].unpaid} unpaid`;
+                summary += `, $ ${data[0].amount_due} owing.`;
+                $('#contractCardSummary').text(summary);
+            });
+    };
 }
+
+const nscontractWidget = new ns_contractWidget();
+nscontractWidget.init();
+
+
+function ns_comboCardWidget() {
+    this.idTag = '#invoiceCard';
+    this.dataTable;
+
+    this.init = () => {
+        if ($(this.idTag).length > 0) {
+            this.dataTable = $('#tInvCardPayments').DataTable(this.dataTableOptions);
+        }
+    };
+    this.dataTableOptions = {
+        ajax: {
+            url: "/json.php",
+            data: (d) => {
+                d.endpoint = 'Payments';
+                d.action = 'List';
+                d.invoice_id = keys.invoice.invoice_id;
+            }
+        },
+        processing: true,
+        serverSide: true,
+        paging: false,
+        stateSave: true,
+        search: false,
+        columns: [
+            {data: "date", name: 'date'},
+            {data: 'status', name: 'status'},
+            {data: "amount", name: 'amount'},
+            {data: "reference", name: 'reference'},
+        ],
+        language: {
+            emptyTable: "No payments for this invoice"  // Custom message
+        }
+    };
+}
+
+const nscomboCardWidget = new ns_comboCardWidget();
+nscomboCardWidget.init();

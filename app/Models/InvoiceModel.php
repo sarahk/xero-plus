@@ -284,8 +284,8 @@ class InvoiceModel extends BaseModel
 
 
         // use the view
-        $sql = 'SELECT *,
-            contacts.name, contacts.first_name, contacts.last_name
+        $sql = 'SELECT vold_debts.*,
+            contacts.id as ckcontact_id, contacts.name, contacts.first_name, contacts.last_name
             FROM `vold_debts`
             LEFT JOIN contacts on (`vold_debts`.`contact_id` = `contacts`.`contact_id`)
             WHERE ' . implode(' AND ', $conditions) . "
@@ -316,17 +316,20 @@ class InvoiceModel extends BaseModel
         if (count($bad_debts) > 0) {
             foreach ($bad_debts as $row) {
 
+                // overview page
+                $link = $this->getContractOverviewLink(91, $row);
+
                 $output['data'][] = [
                     'DT_RowId' => $row['repeating_invoice_id'],
                     'contact' => $this->getFormattedContactCell($row),
                     'name' => $row['name'],
-                    'amount_due' => $row['amount_due'],
+                    'amount_due' => $link . $row['amount_due'] . '</a>',
                     'weeks_due' => $row['weeks_due'],
                     'total_weeks' => $row['total_weeks'],
                     'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
-                    'chart' => "<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' 
+                    'chart' => "$link<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' 
                                     alt=\"Bad Debt history for {$row['name']}\" 
-                                    width='300' height='125'/>"
+                                    width='300' height='125'/></a>"
                 ];
                 // for debugging
                 $output['row'] = $row;
@@ -341,7 +344,7 @@ class InvoiceModel extends BaseModel
         $data = $this->getChartData($contract_id);
 
         $parts = [
-            'iid=' . $contact_id,
+            'iid=' . $contract_id,
             'chco=ff0000',
             'chs=300x125',
             'cht=lc',
@@ -372,7 +375,9 @@ class InvoiceModel extends BaseModel
 
         $email = $contacts->get('contact_id', $row['contact_id']);
 
-        $output[] = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' data-tenancyid='{$row['xerotenant_id']}' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
+        $output[] = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' 
+                        data-tenancyid='{$row['xerotenant_id']}' data-contactid='{$row['contact_id']}' 
+                        data-contractid='{$row['contract_id']}'>{$row['name']}</a>";
         $output[] = "<i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
 
         if (isset($email['phones']) && count($email['phones'])) {

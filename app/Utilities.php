@@ -84,6 +84,7 @@ class Utilities
                 $newAccessToken = $provider->getAccessToken('refresh_token', [
                     'refresh_token' => $storage->getRefreshToken()
                 ]);
+
             } catch (Exception $e) {
                 // need to log in again
                 // todo monolog the event
@@ -180,6 +181,7 @@ class Utilities
                 // Handle token refresh failure (e.g., re-authenticate the user)
             }
         }
+        //self::getUserCredentials();
     }
 
 
@@ -246,6 +248,47 @@ class Utilities
             }
         }
         return true;
+    }
+
+    protected static function getUserCredentials()
+    {
+        // Assuming you already have an OAuth access token
+        $storage = new StorageClass();
+        $accessToken = $storage->getAccessToken();
+
+        $client = new Client();
+
+// Execute the request
+        $response = $client->request('POST', 'https://api.xero.com/connections',
+            [
+                "Authorization: Bearer $accessToken",
+                'Content-Type: application/json'
+            ]);
+
+// Check for errors
+
+        // Decode the JSON response
+        $data = json_decode($response->getBody(), true);
+
+        // Check if the data is available
+        if (isset($data[0])) {
+            $user = $data[0];
+
+            // Get the user information (email, user_id, etc.)
+            $userID = $user['userId']; // This is the Xero user ID
+            $email = $user['emailAddress']; // This is the user's email
+            $fullName = $user['name']; // The full name of the user
+            setcookie($user);
+            // Output or use the user information
+            echo "User ID: $userID<br>";
+            echo "Full Name: $fullName<br>";
+            echo "Email: $email<br>";
+
+        }
+
+// Close the cURL session
+        curl_close($ch);
+
     }
 
 

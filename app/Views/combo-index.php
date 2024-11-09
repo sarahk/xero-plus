@@ -12,6 +12,7 @@
                             <th>&nbsp;</th>
                             <th>#</th>
                             <th>Ref</th>
+                            <th>Customer</th>
                             <th>Status</th>
                             <th>Total</th>
                             <th>$ Due</th>

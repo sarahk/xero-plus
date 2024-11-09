@@ -17,6 +17,7 @@ use App\Models\InvoiceModel;
 use App\Models\Enums\CabinStyle;
 
 
+use App\Models\PaymentModel;
 use App\Models\TenancyModel;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\LoggerTrait;
@@ -141,6 +142,22 @@ class JsonClass
     public function getComboList()
     {
         $params = Utilities::getParams();
+        $params['contact_id'] = $_GET['contact_id'] ?? 0;
+        // do we want a generic list or one filtered for a contract or contact?
+        if (empty($params['contact_id'])) {
+            $id = $_GET['ckcontact_id'] ?? 0;
+            if (!empty($id)) {
+                $contact = new ContactModel($this->pdo);
+                $params['contact_id'] = $contact->field('contact_id', 'contact_id', $id);
+            }
+        }
+        if (empty($params['contract_id'])) {
+            $params['repeating_invoice_id'] = $_GET['repeating_invoice_id'] ?? 0;
+            if (!empty($params['repeating_invoice_id'])) {
+                $contract = new ContractModel($this->pdo);
+                $params['contract_id'] = $contract->field('contract_id', 'repeating_invoice_id', $params['repeating_invoice_id']);
+            }
+        }
         $combo = new ComboModel($this->pdo);
         return json_encode($combo->list($params));
     }
@@ -224,6 +241,28 @@ class JsonClass
         $tasks = new Models\TasksModel($this->pdo);
         $counts = $tasks->getCounts();
         return json_encode($counts);
+    }
+
+    public function getPaymentsList(): string
+    {
+        $payments = new PaymentModel($this->pdo);
+        $params = Utilities::getParams();
+        $params['invoice_id'] = $_GET['invoice_id'] ?? 0;
+        return json_encode($payments->list($params));
+    }
+
+    public function getInvoiceSummary(): string
+    {
+        $contracts = new ContractModel($this->pdo);
+        $params = Utilities::getParams();
+        if ($params['contract_id'] == 0) {
+            $params['repeating_invoice_id'] = $_GET['repeating_invoice_id'] ?? 0;
+            if (empty($params['repeating_invoice_id'])) {
+                return '';
+            }
+            $params['contract_id'] = $contracts->field('contract_id', 'repeating_invoice_id', $params['repeating_invoice_id']);
+        }
+        return json_encode($contracts->getPaymentSummary($params));
     }
 
     public function getAccount($xeroTenantId, $apiInstance, $returnObj = false)
@@ -656,6 +695,7 @@ class JsonClass
     public function getContactList(): string
     {
         $params = Utilities::getParams();
+
         $contacts = new ContactModel($this->pdo);
         return json_encode($contacts->list($params));
     }
@@ -744,9 +784,16 @@ class JsonClass
 
         //$xeroTenantId = $_GET['xeroTenantId'];
 
-        $contact_id = $_GET['contact_id'];
+        $contact_id = $_GET['contact_id'] ?? 0;
+        $id = $_GET['id'] ?? 0;
         $contact = new ContactModel($this->pdo);
-        $output = $contact->get('contact_id', $contact_id);
+
+        if ($contact_id) {
+            $output = $contact->get('contact_id', $contact_id);
+        } else {
+            $output = $contact->get('id', $id);
+        }
+
         return json_encode($output);
     }
 
@@ -1005,9 +1052,16 @@ class JsonClass
     // used by the contract card widget
     public function getContractSingleton(): string
     {
-        $contract_id = $_GET['contract_id'];
         $contract = new ContractModel($this->pdo);
-        $output = $contract->get('contract_id', $contract_id);
+
+        $contract_id = $_GET['contract_id'] ?? 0;
+        $repeating_invoice_id = $_GET['repeating_invoice_id'] ?? 0;
+        if ($contract_id) {
+            $output = $contract->get('contract_id', $contract_id);
+        } else {
+            $output = $contract->get('repeating_invoice_id', $repeating_invoice_id);
+        }
+
         return json_encode($output);
     }
 

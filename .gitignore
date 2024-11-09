@@ -8,7 +8,6 @@ composer.lock
 /app/assets/
 pestresults.txt
 
-
 **/log
 **/*.log
 

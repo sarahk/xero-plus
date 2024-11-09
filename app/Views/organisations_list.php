@@ -14,7 +14,7 @@ array (
   ),
   */
 
-  ?>
+?>
 <div class='row'>
     <div class="col-md-12 col-xl-6">
         <div class="card">
@@ -22,22 +22,25 @@ array (
                 <h5 class="card-title">You have access to these companies</h5>
             </div>
             <div class="card-body">
-            <?php foreach ($xeroTenantIdArray as $row): ?>
-                <div class="clearfix row mb-4">
-                    <div class="col">
-                        <div class="float-start">
-                            <h5 class="mb-0"><strong> <?= $row['tenantName']; ?></strong></h5>
-                           
+                <?php foreach ($xeroTenantIdArray as $row): ?>
+                    <div class="clearfix row mb-4">
+                        <div class="col">
+                            <div class="float-start">
+                                <h5 class="mb-0"><strong> <?= $row['tenantName']; ?></strong></h5>
+
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-end">
+                                <small class="text-blue">Company: <?= $row['tenantId']; ?>
+                                    <br/>User: <?= $row['id']; ?></small>
+                            </div>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="float-end">
-                            <small class="text-blue"><?= $row['tenantId']; ?></small>
-                        </div>
-                    </div>
-                </div>
-            
-            <?php endforeach; ?></div>
+
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </div>
+<p>User: <?php echo($_SESSION['user_id']); ?></p>

@@ -35,22 +35,23 @@ namespace App\Layouts;
                     <h3>Main</h3>
                 </li>
                 <li class="slide">
-                    <a class="side-menu__item" data-bs-toggle="slide" href="index.php"><i
+                    <a class="side-menu__item" data-bs-toggle="slide" href="/authorizedResource.php"><i
                                 class="side-menu__icon fe fe-home"></i><span
                                 class="side-menu__label">Dashboard</span></a>
                 </li>
-                <li class="sub-category">
-                    <h3>Widgets</h3>
-                </li>
 
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=100">Enquiries</a></li>
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
+
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=100"><i
+                                class="side-menu__icon fe fe-help-circle"></i><span
+                                class="side-menu__label">Enquiries</span></a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=90">Invoices & Payments</a></li>
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=16">Bad Debts</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=16"><i
+                                class="side-menu__icon fe fe-alert-circle"></i><span
+                                class="side-menu__label">Bad Debts</span></a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=17">Message Templates</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=18">Messages Sent</a></li>
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=5">Get Contact List with Filters</a>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=5">Customers</a>
                 </li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=11">Cabin Locations</a></li>
                 <li><a class="side-menu__item" href="/index.php?action=logoff">Log Off</a></li>
@@ -65,6 +66,7 @@ namespace App\Layouts;
                     <h3>Admin</h3></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=6">Get JWT Claims</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
+                <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
 
 
                 </li>

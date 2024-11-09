@@ -994,7 +994,7 @@ class XeroClass
         if (array_key_exists('tenancies', $_SESSION)) {
             return $_SESSION['tenancies'];
         } else {
-            $provider = getProvider();
+            $provider = Utilities::getProvider();
             $storage = new StorageClass();
             $accessToken = $provider->getAccessToken('refresh_token', [
                 'refresh_token' => $storage->getRefreshToken()

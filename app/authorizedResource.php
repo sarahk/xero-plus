@@ -2,6 +2,7 @@
 namespace App;
 
 use App\Models\CabinModel;
+use App\Models\ComboModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
@@ -12,6 +13,9 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 require_once '../vendor/autoload.php';
+
+//var_dump($_GET);
+//exit;
 
 
 $pdo = Utilities::getPDO();
@@ -42,8 +46,9 @@ switch ($action) {
 
         break;
 
-    case 9:
-    case 90:
+    case 9: // invoice_index
+    case 90: // combo_index
+
         // don't actually need to do anything?
         break;
 
@@ -90,13 +95,28 @@ switch ($action) {
         break;
 
     case 12:
-        // look at info related to an invoice
+        // look at info related to an invoice or payment
 
-        /** @var TYPE_NAME $pdo */
         $invoice = new InvoiceModel($pdo);
-        $data = $invoice->get('invoice_id', $_GET['invoice_id'])['invoices'];
+        $invoice_id = $_GET['invoice_id'] ?? 0;
+
+        $data = $invoice->get('invoice_id', $invoice_id);
         $contact = new ContactModel($pdo);
-        $data['contact']['id'] = $contact->field('id', 'contact_id', $data['contact_id']);
+        $data['contact']['id'] = $contact->field('id', 'contact_id', $data['invoices']['contact_id']);
+
+        $keys = [
+            'invoice' => [
+                'invoice_id' => $data['invoices']['invoice_id'] ?? 0,
+                'repeating_invoice_id' => $data['invoices']['repeating_invoice_id'] ?? 0,
+                'contract_id' => $data['invoices']['contract_id'] ?? 0,
+            ],
+            'contact' => [
+                'id' => $data['contacts']['ckcontact_id'] ?? 0,
+                'contact_id' => $data['contacts']['ckcontact_id'] ?? 0,
+            ]];
+
+        unset($invoice);
+        unset($contact);
         break;
 
     case 13:
@@ -149,6 +169,27 @@ switch ($action) {
         // activity
         break;
 
+    case 91:
+        // contract single
+        // set up some keys for the javascript to run off
+        $keys = [
+            'invoice' => [
+                'invoice_id' => $_GET['invoice_id'] ?? 0
+            ],
+            'contact' => [
+                'id' => $_GET['ckcontact_id'] ?? 0,
+                'contact_id' => $_GET['contact_id'] ?? 0,
+                'name' => $_GET['contact_name'] ?? '',
+            ],
+            'contract' => [
+                'contract_id' => $_GET['contract_id'] ?? 0
+            ]
+        ];
+
+        $data = $_GET;
+
+
+        break;
     case 200:
     default:
         // main dash
@@ -194,6 +235,7 @@ $view = match ($action) {
     5 => 'Views/contacts_index.php',
     9 => 'Views/invoices_index.php',
     90 => 'Views/combo-index.php',
+    91 => 'Views/contract_single.php',
     10 => 'Views/enquiry-edit.php',
     100 => 'Views/contracts_index.php',
     11 => 'Views/cabin-locations.php',

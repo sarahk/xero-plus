@@ -16,6 +16,11 @@ class StorageClass
     public function startSession()
     {
         if (!isset($_SESSION)) {
+            ini_set('session.cookie_lifetime', 3600); // Lifetime of the cookie (1 hour)
+            ini_set('session.cookie_path', '/'); // Path where the cookie is available
+            //ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS only
+            //ini_set('session.cookie_httponly', 1); // Make the cookie HTTP only (not accessible by JavaScript)
+
             session_start();
         }
     }

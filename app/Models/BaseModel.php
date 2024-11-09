@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Traits\DatatableTrait;
 use App\Models\Traits\PdoTrait;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\FunctionsTrait;
@@ -19,6 +20,7 @@ class BaseModel
     use DebugTrait;
     use LoggerTrait;
     use FunctionsTrait;
+    use DatatableTrait;
 
 
     protected string $insert;
@@ -396,25 +398,7 @@ class BaseModel
 
     }
 
-    protected function getOrderBy($params): string
-    {
 
-        if (is_array($params['order'])) {
-            $direction = strtoupper($params['order'][0]['dir'] ?? 'DESC');
-
-            if (!empty($params['order']['name'])) {
-                return "{$params['order']['name']} $direction";
-            }
-
-            $column = $params['order'][0]['column'];
-            foreach ($this->orderByColumns as $k => $v) {
-                if ($k == $column) {
-                    return str_replace('DIR', $direction, $v);
-                }
-            }
-        }
-        return str_replace('DIR', $this->orderByDefaultDirection, $this->orderByColumns[$this->orderByDefault]);
-    }
 }
 
 
