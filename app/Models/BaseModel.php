@@ -273,10 +273,13 @@ class BaseModel
         return null;
     }
 
-    public function prepAndSave(array $data): int
+    public function prepAndSave(array $data): string
     {
         $save = $this->getSaveValues($data);
-        return $this->runQuery($this->insert, $save, 'insert');
+        $result = $this->runQuery($this->insert, $save, 'insert');
+        
+        return $result;
+        //return $this->runQuery($this->insert, $save, 'insert');
     }
 
     protected function checkNullableValues($data)

@@ -36,7 +36,7 @@ class TemplateModel extends BaseModel
      * @param array $data <mixed>
      * @return int
      */
-    public function prepAndSave(array $data): int
+    public function prepAndSave(array $data): string
     {
         $data['dateupdate'] = date('Y-m-d H:i:s');
         $this->logInfo('Template save data', $data);

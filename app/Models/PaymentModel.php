@@ -31,7 +31,10 @@ class PaymentModel extends BaseModel
     public function getContractId($invoice_id): int
     {
         $sql = 'SELECT contract_id FROM invoices where invoice_id = :invoice_id LIMIT 1';
-        return $this->runQuery($sql, ['invoice_id' => $invoice_id], 'column');
+        $result = $this->runQuery($sql, ['invoice_id' => $invoice_id], 'column');
+
+        if ($result) return $result;
+        else return 0;
     }
 
     public function repairContractId(): void

@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace App\Views;
 
 //create some variables for the widgets
+use App\ExtraFunctions;
+
 $newNote = ['parent' => 'contact', 'foreign_id' => $keys['contract']['contract_id']];
 //var_dump($data);
-?>
-    <script>
-        const keys = <?=  json_encode($keys, JSON_PRETTY_PRINT) ?>;
-    </script>
 
+ExtraFunctions::outputKeysAsJs($keys);
+?>
     <!-- PAGE-HEADER -->
     <div class="page-header">
         <div>
@@ -20,6 +20,9 @@ $newNote = ['parent' => 'contact', 'foreign_id' => $keys['contract']['contract_i
                 <li class="breadcrumb-item active" aria-current="page">Contract
                     #<?= $keys['contract']['contract_id']; ?></li>
             </ol>
+        </div>
+        <div>
+            <?= $link_to_enquiry; ?>See Enquiry</a>
         </div>
     </div>
     <!-- PAGE-HEADER END -->

@@ -7,11 +7,14 @@ namespace App\Views\Widgets;
     </div>
     <div class="card-body">
         <table class="table table-bordered border-primary" id="notesCardTable">
+            <thead>
             <tr>
                 <th>Note</th>
                 <th>Date</th>
                 <th>By</th>
             </tr>
+            </thead>
+            <tbody>
             <tr>
                 <td colspan="2">Add a Note<br/>
                     <form id="notesCardForm">
@@ -32,7 +35,7 @@ namespace App\Views\Widgets;
                 </td>
             </tr>
 
-
+            </tbody>
         </table>
     </div>
 </div>

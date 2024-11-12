@@ -116,13 +116,14 @@ trait FunctionsTrait
      * @param array $row
      * @return string
      */
-    protected function getContractOverviewLink(string $action, array $row): string
+    public function getContractOverviewLink(string $action, array $row, string $class = ''): string
     {
         $variables = ["/authorizedResource.php?action=$action"];
         foreach ($row as $key => $val) {
             $variables[] = "&$key=$val";
         }
-        return '<a href="' . implode($variables) . '">';
+        $link = implode($variables);
+        return "<a href='$link' class='$class'>";
     }
 
 

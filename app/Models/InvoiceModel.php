@@ -53,10 +53,11 @@ class InvoiceModel extends BaseModel
      * @param array $data <mixed>
      * @return int
      */
-    public function prepAndSave(array $data): int
+    public function prepAndSave(array $data): string
     {
         $checked = $this->checkNullableValues($data);
         $save = $this->getSaveValues($checked);
+
 
         return $this->runQuery($this->insert, $save, 'insert');
     }

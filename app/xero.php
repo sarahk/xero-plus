@@ -254,27 +254,6 @@ try {
             }
             break;
 
-        case "Overpayments":
-            switch ($action) {
-                case "Read":
-                    //echo $xero->getOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Create":
-                    //echo $xero->createOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Allocate":
-                    //echo $xero->allocateOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                case "AllocateMulti":
-                    //echo $xero->allocateOverpayments($xeroTenantId, $apiInstance);
-                    break;
-                case "Refund":
-                    //echo $xero->refundOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "Payments":
         case 'payments':
@@ -305,46 +284,6 @@ try {
             }
             break;
 
-        case "Prepayments":
-            switch ($action) {
-                case "Read":
-                    echo $xero->getPrepayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Create":
-                    echo $xero->createPrepayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Allocate":
-                    echo $xero->allocatePrepayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Refund":
-                    echo $xero->refundPrepayment($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-        case "PurchaseOrders":
-            switch ($action) {
-                case "Create":
-                    //echo $xero->createPurchaseOrder($xeroTenantId, $apiInstance);
-                    break;
-                case "CreateMulti":
-                    //echo $xero->createPurchaseOrders($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    //echo $xero->getPurchaseOrder($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    //echo $xero->updatePurchaseOrder($xeroTenantId, $apiInstance);
-                    break;
-                case "Delete":
-                    //echo $xero->deletePurchaseOrder($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "Receipts":
             switch ($action) {

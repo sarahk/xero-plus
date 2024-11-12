@@ -27,8 +27,12 @@ namespace App\Views\Widgets;
                 <td id="contactCardEmail"></td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
+                <th>&nbsp;</th>
                 <td><img id="contactCardPaymentsImage"></td>
+            </tr>
+            <tr>
+                <th>Other Enquiries/Contracts</th>
+                <td id="contactOtherContracts"></td>
             </tr>
         </table>
     </div>

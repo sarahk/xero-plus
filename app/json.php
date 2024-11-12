@@ -5,6 +5,8 @@
 
 namespace App;
 
+use App\Models\ContactModel;
+use App\Models\ContractModel;
 use App\Models\NoteModel;
 use App\StorageClass;
 use App\JsonClass;
@@ -157,7 +159,7 @@ try {
             switch ($action) {
                 case 'Refresh':
                 case 'refresh':
-                    $json->getContactRefresh();
+                    $json->getContactRefresh('is this being used?');
                     break;
                 case 'RefreshSingle':
                 case 'refreshSingle':
@@ -197,6 +199,11 @@ try {
                 case 'Field':
                 case 'field':
                     echo $json->getField('ContactModel');
+                    break;
+
+                case 'getOtherContacts':
+                    $contact = new ContactModel(Utilities::getPDO());
+                    echo json_encode($contact->getOtherContacts(Utilities::getParamsPlus(['ckcontact_id'])));
                     break;
                 default:
                     echo "[{$endpoint}] {$action}: action not supported in API";
@@ -244,56 +251,17 @@ try {
                 case 'summary':
                     echo $json->getInvoiceSummary();
                     break;
+
+                case 'otherContracts':
+                    $contracts = new ContractModel(Utilities::getPDO());
+                    echo json_encode($contracts->getOtherContracts(Utilities::getParamsPlus(['ckcontact_id'])));
+                    break;
+
                 default:
                     echo $action . " action not supported in API";
             }
             break;
 
-        case "CreditNotes":
-            switch ($action) {
-                case "Create":
-                    echo $json->createCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "CreateMulti":
-                    echo $json->createCreditNotes($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $json->updateCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "Allocate":
-                    echo $json->allocateCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                case "Refund":
-                    echo $json->refundCreditNote($xeroTenantId, $apiInstance);
-                    break;
-
-                case "Void":
-                    echo $json->voidCreditNote($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-        case "ExpenseClaims":
-            switch ($action) {
-                case "Create":
-                    echo $json->createExpenseClaim($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getExpenseClaim($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $json->updateExpenseClaim($xeroTenantId, $apiInstance);
-                    //echo $action . " action is supported in API but not SDK (no setStatus)";
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "Invoices":
         case 'invoices':
@@ -345,71 +313,6 @@ try {
             }
             break;
 
-        case "Items":
-            switch ($action) {
-                case "Create":
-                    echo $json->createItem($xeroTenantId, $apiInstance);
-                    break;
-                case "CreateMulti":
-                    echo $json->createItems($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getItem($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $json->updateItem($xeroTenantId, $apiInstance);
-                    break;
-
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-        case "Journals":
-            switch ($action) {
-                case "Read":
-                    echo $json->getJournal($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-        case "LinkedTransactions":
-            switch ($action) {
-                case "Create":
-                    echo $json->createLinkedTransaction($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getLinkedTransaction($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $json->updateLinkedTransaction($xeroTenantId, $apiInstance);
-                    break;
-
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
-
-        case "ManualJournals":
-            switch ($action) {
-                case "Create":
-                    echo $json->createManualJournal($xeroTenantId, $apiInstance);
-                    break;
-                case "CreateMulti":
-                    echo $json->createManualJournals($xeroTenantId, $apiInstance);
-                    break;
-                case "Read":
-                    echo $json->getManualJournal($xeroTenantId, $apiInstance);
-                    break;
-                case "Update":
-                    echo $json->updateManualJournal($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "Organisations":
         case 'organisations':
@@ -426,27 +329,6 @@ try {
             }
             break;
 
-        case "Overpayments":
-            switch ($action) {
-                case "Read":
-                    echo $json->getOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Create":
-                    echo $json->createOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                case "Allocate":
-                    echo $json->allocateOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                case "AllocateMulti":
-                    echo $json->allocateOverpayments($xeroTenantId, $apiInstance);
-                    break;
-                case "Refund":
-                    echo $json->refundOverpayment($xeroTenantId, $apiInstance);
-                    break;
-                default:
-                    echo $action . " action not supported in API";
-            }
-            break;
 
         case "Payments":
             switch ($action) {

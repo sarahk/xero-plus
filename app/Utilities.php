@@ -315,4 +315,13 @@ class Utilities
             'parent' => $_GET['parent'] ?? '',
         ];
     }
+
+    public static function getParamsPlus(array $plusList = []): array
+    {
+        $params = self::getParams();
+        foreach ($plusList as $item) {
+            $params[$item] = $_GET[$item] ?? '';
+        }
+        return $params;
+    }
 }

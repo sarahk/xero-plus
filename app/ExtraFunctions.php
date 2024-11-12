@@ -257,6 +257,16 @@ class ExtraFunctions
         $logger->log('info', 'New Setup');
         return $logger;
     }
+
+    public static function outputKeysAsJs(array $keys = []): void
+    {
+        $js = json_encode($keys, JSON_PRETTY_PRINT);
+        ?>
+        <script>
+            const keys = <?= $js ?>;
+        </script>
+        <?php
+    }
 }
 /*
 // sample repeating invoice data

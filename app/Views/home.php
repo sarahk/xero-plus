@@ -34,5 +34,5 @@
 
 <div class="row">
     <?php include 'Views/Widgets/home-tasks.php'; ?>
-    <?php include 'Views/Widgets/home-debts.php'; ?>
+   
 </div>

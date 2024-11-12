@@ -87,7 +87,7 @@ class ContractModel extends BaseModel
      * @param array $data <mixed>
      * @return int
      */
-    public function prepAndSave(array $data): int
+    public function prepAndSave(array $data): string
     {
         if (array_key_exists('xeroRefresh', $data) && $data['xeroRefresh']) {
             // we don't want to get the old $oldVals = ['contracts' => []];
@@ -133,7 +133,7 @@ class ContractModel extends BaseModel
         $checked = $this->checkNullableValues($contract);
         $save = $this->getSaveValues($checked);
 
-        return $this->save($save);
+        return $this->runQuery($this->insert, $save, 'insert');
     }
 
 
@@ -361,5 +361,20 @@ class ContractModel extends BaseModel
                 SUM(amount_due) AS amount_due
             FROM invoices WHERE contract_id = :contract_id';
         return $this->runQuery($sql, ['contract_id' => $params['contract_id']]);
+    }
+
+
+    public function getOtherContracts($params)
+    {
+
+        $sql = 'SELECT contracts.*
+                FROM contracts 
+                LEFT JOIN contactjoins ON(contactjoins.foreign_id = contracts.contract_id
+                    AND contactjoins.join_type = "contract")
+                WHERE contactjoins.ckcontact_id = :ckcontact_id
+                    AND contracts.contract_id != :contract_id';
+
+        $result = $this->runQuery($sql, ['ckcontact_id' => $params['ckcontact_id'], 'contract_id' => $params['contract_id']]);
+        return $result;
     }
 }

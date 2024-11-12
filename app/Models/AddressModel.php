@@ -22,12 +22,6 @@ class AddressModel extends BaseModel
     protected array $joins = ['contacts' => "`addresses`.`ckcontact_id` = :id1"];
     protected array $virtualFields = ['address' => "CONCAT(address_line1,', ', address_line2,', ', city, ' ', postal_code)"];
 
-    public function save($save): int
-    {
-        $this->debug(['save', $save]);
-        exit;
-        parent::save($save);
-    }
 
     //todo proper pest testing
     public function saveXeroStub(array $save): int
@@ -48,7 +42,7 @@ class AddressModel extends BaseModel
         return 0;
     }
 
-    public function prepAndSave($data): int
+    public function prepAndSave($data): string
     {
         // don't call the parent
         //parent::prepAndSave($data);

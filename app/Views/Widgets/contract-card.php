@@ -29,14 +29,23 @@ namespace App\Views\Widgets;
                 <td id="contractCardDelivered"></td>
             </tr>
             <tr>
+                <th>Picked Up</th>
+                <td id="contractCardPickup"></td>
+            </tr>
+            <tr>
                 <th>Summary</th>
                 <td id="contractCardSummary"></td>
             </tr>
             <tr>
-                <th>------</th>
-                <td id="contractCardTodo">Todo - what else would be useful here?</td>
+                <th>Also on this contract</th>
+                <td id="contractCardContacts"></td>
             </tr>
-
+            <tr>
+                <td colspan="2">
+                    <button class="btn btn-primary">Schedule for Pickup</button>
+                    <button class="btn btn-secondary">Mark as Picked Up</button>
+                </td>
+            </tr>
 
         </table>
     </div>

@@ -20,7 +20,7 @@ class NoteModel extends BaseModel
     protected array $nullable = ['id'];
 
 
-    public function prepAndSave(array $data): int
+    public function prepAndSave(array $data): string
     {
         if ($this->hasNote($data) && $this->hasIdAndParent($data)) {
 
@@ -73,41 +73,59 @@ class NoteModel extends BaseModel
         return $this->runQuery($sql, $search_values);
     }
 
-    public function ListAssociated(array $params): array
+    public function listAssociated(array $params): array
     {
+// todo = buttons? search field?
+        $sql_parts = $search_values = [];
 
-        $sql = "(SELECT notes.*, users.first_name,
-                        DATE_FORMAT(notes.created, '%e %b \'%y') AS formatted_date
+        // get anything linked to the contract_id
+        if (!empty($params['contract_id'])) {
+            $sql_parts[] = "(SELECT notes.note, users.first_name as createdby, notes.created
                  FROM notes
                  LEFT JOIN users ON users.id = notes.createdby
-                 WHERE notes.foreign_id = :foreign_id
-                   AND notes.parent = :parent
+                 WHERE notes.foreign_id = :contract_id
+                   AND notes.parent = 'contract'
                 )
                 UNION ALL
-                (SELECT notes.*, users.first_name,
-                        DATE_FORMAT(notes.created, '%e %b \'%y') AS formatted_date
+                (SELECT notes.note, users.first_name as createdby, notes.created
                  FROM notes
                  LEFT JOIN users ON users.id = notes.createdby
                  LEFT JOIN contactjoins ON notes.foreign_id = contactjoins.ckcontact_id
-                 WHERE contactjoins.join_type = :parent
+                 WHERE contactjoins.join_type = 'contract'
                    AND notes.parent = 'contact'
-                   AND contactjoins.foreign_id = :foreign_id
-                )
-                ORDER BY created DESC
-                LIMIT {$params['start']}, {$params['length']};
-";
+                   AND contactjoins.foreign_id = :contract_id
+                ) ";
+            $search_values['contract_id'] = $params['contract_id'];
+        }
+        if (!empty($params['ckcontact_id'])) {
+            $sql_parts[] = "(SELECT notes.note, users.first_name as createdby, notes.created
+                 FROM notes
+                 LEFT JOIN users ON users.id = notes.createdby
+                 WHERE notes.foreign_id = :contact_id
+                   AND notes.parent = 'contact'
+                ) ";
+            $search_values['contact_id'] = $params['ckcontact_id'];
+        }
 
-        $search_values = ['parent' => $params['parent'], 'foreign_id' => $params['foreign_id']];
+        if (!count($sql_parts)) return ['data' => [], 'recordsTotal' => 0, 'recordsFiltered' => 0, 'draw' => $params['draw']];
+
+
+        $sql = implode(" UNION ALL ", $sql_parts) . ' ORDER BY created DESC ' . $this->getListLimits($params);
 
         $output = $params;
-        $output['data'] = $this->runQuery($sql, $search_values);
+        $output['data'] = [];
+        $result = $this->runQuery($sql, $search_values);
+        foreach ($result as $row) {
+            $row['created'] = $this->getPrettyDate($row['created']);
+            $output['data'][] = $row;
+        }
 
 
         $output['mainquery'] = $sql;
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
-        $output['recordsTotal'] = $this->getRecordsTotalJoins($search_values);
+        $output['recordsTotal'] = $this->getRecordsTotalJoins($params);
         // no filtering or searching on notes
         $output['recordsFiltered'] = $output['recordsTotal'];
 
@@ -116,8 +134,9 @@ class NoteModel extends BaseModel
 
     protected function getRecordsTotalJoins($search_values): int
     {
-        $sql = "SELECT COUNT(*) AS total_count
-                FROM (
+        $sql_parts = [];
+        if (!empty($params['contract_id'])) {
+            $sql = "
                     SELECT 1
                     FROM notes
                     LEFT JOIN users ON users.id = notes.createdby
@@ -133,11 +152,26 @@ class NoteModel extends BaseModel
                     WHERE contactjoins.join_type = :parent
                       AND notes.parent = 'contact'
                       AND contactjoins.foreign_id = :foreign_id
-                ) AS combined_results;";
+               ";
+            $search_values['contract_id'] = $params['contract_id'];
+        }
+        if (!empty($params['ckcontact_id'])) {
+            $sql_parts[] = "SELECT 1
+                 FROM notes
+                 LEFT JOIN users ON users.id = notes.createdby
+                 WHERE notes.foreign_id = :contact_id
+                   AND notes.parent = 'contact'
+                ) ";
+            $search_values['contact_id'] = $params['ckcontact_id'];
+        }
+
+        if (!count($sql_parts)) return 0;
+
+
+        $sql = 'SELECT COUNT(*) AS total_count
+                FROM (' . implode(" UNION ALL ", $sql_parts) . ' ) AS combined_results;';
 
 
         return $this->runQuery($sql, $search_values, 'column');
     }
-
-
 }

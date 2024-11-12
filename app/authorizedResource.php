@@ -75,6 +75,12 @@ switch ($action) {
 
         $data['Contact'] = $contracts->getContactsAndPhone($contract_id);
 
+        $keys = ['contract' => ['contract_id' => $contract_id]];
+
+        // we're opening in enquiry mode but this takes us to the overview mode
+
+        $link_to_contract = $contracts->getContractOverviewLink('91', ['contract_id' => $contract_id], 'btn btn-secondary');
+
         if ($debug) {
             //debug($_SESSION);
 
@@ -187,8 +193,15 @@ switch ($action) {
         ];
 
         $data = $_GET;
+        $contract = new ContractModel(Utilities::getPDO());
 
+        // a wee bit of data cleaning
+        if (empty($keys['contact']['id']) & !empty($keys['contract']['contract_id'])) {
+            $keys['contact']['id'] = $contract->field('ckcontact_id', 'contract_id', $keys['contract']['contract_id']);
+        }
+        $link_to_enquiry = $contract->getContractOverviewLink('10', array_merge($keys['contact'], $keys['contract']), 'btn btn-secondary');
 
+        unset($contract);
         break;
     case 200:
     default:

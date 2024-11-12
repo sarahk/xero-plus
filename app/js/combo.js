@@ -116,7 +116,7 @@ function ns_comboContact() {
 
     this.init_datatable = function () {
 
-        if ($(this.idTag).length > 0) {
+        if ($(this.idTag).length > 0 && this.getContractId() > 0) {
             this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
             this.findContractId();
             this.setComboContactName();

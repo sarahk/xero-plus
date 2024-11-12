@@ -109,7 +109,7 @@ class ContactModel extends BaseModel
      * @param array $data
      * @return int
      */
-    public function prepAndSave(array $data): int
+    public function prepAndSave(array $data): string
     {
         //$this->debug(['contact prepAndSave', $data]);
 
@@ -207,7 +207,8 @@ class ContactModel extends BaseModel
                 SUM(vamount_due.total_due) AS total_due,
                 max(contracts.enquiry_rating) AS enquiry_rating,
                 max(contracts.delivery_date) AS delivery_date,
-                max(contracts.pickup_date) AS pickup_date
+                max(contracts.pickup_date) AS pickup_date,
+                max(contracts.contract_id) as contract_id
             FROM tenancies
             LEFT JOIN vcontacts ON vcontacts.xerotenant_id = tenancies.tenant_id
             LEFT JOIN vamount_due ON vcontacts.contact_id = vamount_due.contact_id
@@ -219,6 +220,7 @@ class ContactModel extends BaseModel
 
         $result = $this->runQuery($sql, $search_values);
         for ($i = 0; $i < count($result); $i++) {
+            $result[$i]['name'] = $this->getContractOverviewLink(91, $result[$i]) . $result[$i]['name'] . '</a>';
             $result[$i]['life_cycle'] = ContractStatus::getIconHtml($result[$i]);
             $result[$i]['total_due_icon'] = AmountDue::getIconHtml($result[$i]['total_due'] ?? 0);
             $result[$i]['action'] = ''; // what do we want here?
@@ -259,5 +261,22 @@ class ContactModel extends BaseModel
                     LEFT JOIN `contactjoins` ON `contactjoins`.`ckcontact_id` = `contacts`.`id`
                     WHERE `contactjoins`.`foreign_id` = :foreign_id";
         return $this->runQuery($sql, ['foreign_id' => $foreign_id]);
+    }
+
+    public function getOtherContacts($params)
+    {
+        $sql = 'SELECT contacts.id as ckcontact_id, contacts.name, contactjoins.foreign_id AS contract_id
+                FROM contacts
+                LEFT JOIN contactjoins ON contacts.id = contactjoins.ckcontact_id 
+                                              AND contactjoins.`join_type` = "contract"
+                WHERE contacts.id != :ckcontact_id
+                AND contactjoins.foreign_id = :contract_id';
+        $result = $this->runQuery($sql, $params);
+
+        for ($i = 0; $i < count($result); $i++) {
+            $result[$i]['alink'] = $this->getContractOverviewLink('91', $result[$i]);
+        }
+        // todo add a hyperlink to the name
+        return $result;
     }
 }

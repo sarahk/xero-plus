@@ -4,18 +4,20 @@ namespace App\Views;
 //include_once 'Widgets/FormBuilder.php';
 use App\ExtraFunctions;
 
-
+ExtraFunctions::outputKeysAsJs($keys);
 ?>
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
         <h1 class="page-title">Enquiry</h1>
-        <!--        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="javascript:void(0);">Forms</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Form-Elements</li>
-        </ol>-->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Contracts</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contract <?= $contract_id; ?></li>
+        </ol>
     </div>
-
+    <div>
+        <?= $link_to_contract; ?>See Contract</a>
+    </div>
 </div>
 <!-- PAGE-HEADER END -->
 

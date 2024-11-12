@@ -38,7 +38,7 @@ class PhoneModel extends BaseModel
         return $phones;
     }
 
-    public function prepAndSave($data): int
+    public function prepAndSave($data): string
     {
         parent::prepAndSave($data);
 

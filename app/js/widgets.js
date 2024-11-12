@@ -7,6 +7,7 @@ function ns_contactWidget() {
         console.log(keys);
         if ($(this.tagId).length) {
             this.populateWidget();
+            this.addOtherContracts();
         }
     };
 
@@ -81,6 +82,25 @@ function ns_contactWidget() {
         let newRow = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
         $('#notesCardTable tbody').append(newRow);
     };
+
+    this.addOtherContracts = function () {
+        $.getJSON('/json.php', {
+            endpoint: 'Contracts',
+            action: 'otherContracts',
+            ckcontact_id: keys.contact.id ?? 0,
+            contact_id: keys.contact.contact_id ?? 0,
+            contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0
+        }, (data) => {
+            if (data.length) {
+                var newList = $('<ul></ul>');
+                $.each(data.items, function (index, item) {
+                    let listItem = $('<li></li>').text(item);
+                    newList.append(listItem);
+                });
+                $('#contactOtherContracts').append(newList);
+            }
+        });
+    };
 }
 
 const nsContactWidget = new ns_contactWidget();
@@ -92,13 +112,30 @@ function ns_notesWidget() {
 
     this.init = function () {
         if ($(this.tagId).length) {
+            console.log('found the card');
             this.setListeners();
+            this.populateTable();
         }
     };
     this.setListeners = function () {
-        $("#notesCardForm").submit(function (event) {
+        $("#notesCardForm").submit((event) => {
             event.preventDefault();
+            console.log('trying to save');
             this.saveNote();
+        });
+    };
+
+    this.populateTable = function () {
+        $.getJSON('/json.php', {
+            endpoint: 'Notes',
+            action: 'ListAssociated',
+            contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0,
+            ckcontact_id: keys.contact.id ?? 0,
+        }).done((data) => {
+            data.data.forEach(note => {
+                console.log(note);
+                this.addNoteToTable(note);
+            });
         });
     };
 
@@ -121,25 +158,30 @@ function ns_notesWidget() {
             }
         };
 
-        console.log(['saveNote Widget', data]);
-
         $.ajax({
             type: "GET",
             url: "/run.php",
             data: data,
             encode: true,
         }).done(() => {
+            console.log(['saved', data]);
+            // we're using the data we sent to the server, not the response
             this.addNoteToTable(data.payload);
             $("#notesCardText").val('');
             $("#notesFormCreated").val(new Date().toISOString().slice(0, 19).replace('T', ' '));
         });
 
-        this.addNoteToTable = function (note) {
-            console.log(note);
-            let createdby = note.createdbyname ?? note.createdby;
-            let newRow = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
-            $('#notesCardTable tbody').append(newRow);
-        };
+
+    };
+    this.addNoteToTable = (note) => {
+        console.log(['addNoteToTable', note]);
+        let createdby = note.createdbyname ?? note.createdby;
+        let newRow = `<tr>
+                                    <td>${note.note}</td>
+                                    <td>${note.created}</td>
+                                    <td>${createdby}</td>
+                                  </tr>`;
+        $('#notesCardTable tbody').prepend(newRow);
     };
 }
 
@@ -154,6 +196,7 @@ function ns_contractWidget() {
             console.log('we have contract data card, lets go');
             this.getContractData();
             this.getContractSummary();
+            this.getOtherContacts();
         }
     };
     this.getContractData = function () {
@@ -179,7 +222,7 @@ function ns_contractWidget() {
             {
                 endpoint: 'Contracts',
                 action: 'Summary',
-                contract_id: keys.invoice.contract_id ?? 0,
+                contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0,
                 repeating_invoice_id: keys.invoice.repeating_invoice_id ?? 0,
             },
             (data) => {
@@ -189,6 +232,27 @@ function ns_contractWidget() {
                 if (data.unpaid > 0) summary += `, ${data[0].unpaid} unpaid`;
                 summary += `, $ ${data[0].amount_due} owing.`;
                 $('#contractCardSummary').text(summary);
+            });
+    };
+
+    this.getOtherContacts = function () {
+        console.log('getOtherContacts');
+        $.getJSON('/json.php',
+            {
+                endpoint: 'Contacts',
+                action: 'getOtherContacts',
+                ckcontact_id: keys.contact.id ?? 0,
+                contact_id: keys.contact.contact_id ?? keys.invoice.contact_id ?? 0,
+                contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0,
+                repeating_invoice_id: keys.invoice.repeating_invoice_id ?? 0,
+            },
+            (data) => {
+                console.log(['getOtherContacts data', data]);
+                data.forEach(contact => {
+                    let html = `<p>${contact.alink}${contact.name}</a></p>`;
+                    $('#contractCardContacts').append(html);
+                });
+
             });
     };
 }
