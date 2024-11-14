@@ -104,51 +104,94 @@ if ($('#tBadDebts').length) {
             row.classList.add('bar-' + data.colour);
         },
     });
+}
 
 
-    $('#saveSmsRequest').on('show.bs.modal', function (event) {
+// to run the saveSms modal - either from the bad debts screen or a contract page
+function ns_SaveSms() {
+    this.$tBadDebts;
+    this.$smsBody;
+    this.popType = 'contract';
+
+    this.init = function () {
+        if ($('#saveSmsRequest').length) {
+
+            this.$smsBody = $('#smsBody');
+
+            if ($('#tBadDebts').length) {
+                this.$tBadDebts = $('#tBadDebts');
+                this.popType = 'datatable';
+            }
+            this.setListeners();
+        }
+    };
+    this.setListeners = function () {
+
+        //set up the modal
+        $('#saveSmsRequest').on('show.bs.modal', this.showSmsModal);
+
+        // save the sms requests
+        $('#smsSendButton').on('click', this.sendSms);
+
+        // change the template
+        $('#templateId').on('change', this.getTemplateBody);
+
+        // select all the rows in the datatable
+        $('#selectAll').on('click', function (e) {
+            e.preventDefault();
+            this.selectAll();
+        });
+
+        // the text in the sms has changed, show the character count
+        $smsBody.on('input', this.updateCharCounter);
+
+    };
+
+
+    this.showSmsModal = function () {
         $('#saveSmsGroupLabel').text(currentButtonValue);
 
 // Get the count of selected rows
-        let info = $tBadDebts.page.info();
-        let selectedRowCount = $tBadDebts.rows({selected: true}).count();
-        let recordsDisplay = info.recordsDisplay;
-        let unselectedCount = recordsDisplay - selectedRowCount;
-        console.log([info, unselectedCount, recordsDisplay, selectedRowCount]);
+        if (this.popType == 'datatable') {
+            let info = this.$tBadDebts.page.info();
+            let selectedRowCount = this.$tBadDebts.rows({selected: true}).count();
+            let recordsDisplay = info.recordsDisplay;
+            let unselectedCount = recordsDisplay - selectedRowCount;
+            console.log([info, unselectedCount, recordsDisplay, selectedRowCount]);
 
-        if (unselectedCount) {
-            $('#unselected').text(unselectedCount);
-            $('#showAddAll').show();
+            if (unselectedCount) {
+                $('#unselected').text(unselectedCount);
+                $('#showAddAll').show();
+            }
+            $('#smsCount').text(selectedRowCount);
         }
-        $('#smsCount').text(selectedRowCount);
-    });
 
-    $('#selectAll').on('click', function (e) {
-        e.preventDefault();
-        let info = $tBadDebts.page.info();
+    };
+
+    this.selectAll = function () {
+        let info = this.$tBadDebts.page.info();
         let recordsDisplay = info.recordsDisplay;
 
         if (info.pages > 1) {
             let newLength = getBiggerTableLength(recordsDisplay);
-            $tBadDebts.page.len(newLength).draw();
+            this.$tBadDebts.page.len(newLength).draw();
 
-            // Wait for the draw to complete, then select all rows
-            $tBadDebts.on('draw', function () {
-                $tBadDebts.rows().select();
+            // Wait for the datatable draw to complete, then select all rows
+            this.$tBadDebts.on('draw', () => {
+                this.$tBadDebts.rows().select();
                 // Remove the event listener to avoid multiple triggers
-                $tBadDebts.off('draw');
+                this.$tBadDebts.off('draw');
             });
 
         } else {
-            $tBadDebts.rows().select();
+            this.$tBadDebts.rows().select();
         }
         $('#showAddAll').hide();
         $('#smsCount').text(recordsDisplay);
-    });
+    };
 
 
-    $('#templateId').on('change', function () {
-        let $smsBody = $('#smsBody');
+    this.getTemplateBody = function () {
 
         let payload = {
             endpoint: 'Templates',
@@ -156,14 +199,19 @@ if ($('#tBadDebts').length) {
             id: $('#templateId').val()
         };
 
-        $.getJSON('/json.php', payload, function (data) {
-            $smsBody.val(data.templates.body);
-            updateCharCounter();
-        });
-    });
+        $.getJSON('/json.php',
+            payload)
+            .done(function (data) {
+                console.log(this);
+                // todo fix this is the dropdown, not the namespace
+                this.$smsBody.val(data.templates.body);
+                this.updateCharCounter();
+            }.bind(this));
+    };
 
-    $('#smsSendButton').on('click', function () {
-        let selectedRowIds = $tBadDebts.rows({selected: true}).ids().toArray();
+
+    this.sendSms = function () {
+        let selectedRowIds = this.$tBadDebts.rows({selected: true}).ids().toArray();
         let payload = {
             endpoint: 'Activity',
             action: 'SaveManySMS',
@@ -184,69 +232,63 @@ if ($('#tBadDebts').length) {
                     icon: "success"
                 });
             });
-    })
+
+    };
+
+    this.updateCharCounter = function () {
+        let text = $smsBody.val();
+        let blocks = this.splitIntoBlocks(text);
+        let last = blocks[blocks.length - 1];
+        let msg = `${blocks.length} SMS,  ${last.length}/160`;
+        $('#charCounter').text(msg);
+    };
 
 
-    $smsBody.on('input', updateCharCounter);
+    this.splitIntoBlocks = function (text, blockSize = 160) {
+        let blocks = [];
+        let start = 0;
 
-// Usage example
+        while (start < text.length) {
+            // Slice up to the blockSize limit
+            let end = start + blockSize;
+            let slice = text.slice(start, end);
 
-}
+            // If slice length exceeds the limit due to multi-byte characters (like emojis), adjust the end
+            if (slice.length > blockSize) {
+                end = findLastSpace(text, start, end);
+                slice = text.slice(start, end); // Re-slice the text within adjusted bounds
+            }
 
-function updateCharCounter() {
-    let text = $smsBody.val();
-    let blocks = splitIntoBlocks(text);
-    let last = blocks[blocks.length - 1];
-    let msg = `${blocks.length} SMS,  ${last.length}/160`;
-    $('#charCounter').text(msg);
-}
-
-
-function splitIntoBlocks(text, blockSize = 160) {
-    let blocks = [];
-    let start = 0;
-
-    while (start < text.length) {
-        // Slice up to the blockSize limit
-        let end = start + blockSize;
-        let slice = text.slice(start, end);
-
-        // If slice length exceeds the limit due to multi-byte characters (like emojis), adjust the end
-        if (slice.length > blockSize) {
-            end = findLastSpace(text, start, end);
-            slice = text.slice(start, end); // Re-slice the text within adjusted bounds
+            blocks.push(slice);
+            start = end;
         }
 
-        blocks.push(slice);
-        start = end;
-    }
-
-    return blocks;
-}
+        return blocks;
+    };
 
 // Helper function to find the last space within the block size limit
-function findLastSpace(text, start, end) {
-    const subText = text.slice(start, end);
-    const lastSpace = subText.lastIndexOf(' ');
+    this.findLastSpace = function (text, start, end) {
+        const subText = text.slice(start, end);
+        const lastSpace = subText.lastIndexOf(' ');
 
-    return lastSpace === -1 ? end : start + lastSpace;
-}
+        return lastSpace === -1 ? end : start + lastSpace;
+    };
 
 
-function getBiggerTableLength(currentLength) {
-    let lengths = [10, 25, 50, 100];
+    this.getBiggerTableLength = function (currentLength) {
+        let lengths = [10, 25, 50, 100];
 
-    if (currentLength > 100) {
-        return Math.ceil(currentLength / 25) * 25;
-    }
-
-    for (let length of lengths) {
-        if (length > currentLength) {
-            return length;
+        if (currentLength > 100) {
+            return Math.ceil(currentLength / 25) * 25;
         }
-    }
-    return 100;
-}
+
+        for (let length of lengths) {
+            if (length > currentLength) {
+                return length;
+            }
+        }
+        return 100;
+    };
 
 //Get the Count of Selected Rows: Use table.rows({ selected: true }).count().
 //Get the Row IDs of Selected Rows: Use table.rows({ selected: true }).ids().toArray().
@@ -257,3 +299,8 @@ function getBiggerTableLength(currentLength) {
 // option to select all
 // if more than will show on the page then change the page length first
 // can all that be done behind a modal?
+
+}
+
+const nsSaveSms = new ns_SaveSms();
+nsSaveSms.init();

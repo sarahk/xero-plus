@@ -117,10 +117,15 @@ function ns_comboContact() {
     this.init_datatable = function () {
 
         if ($(this.idTag).length > 0 && this.getContractId() > 0) {
-            this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
             this.findContractId();
             this.setComboContactName();
             this.setListeners();
+            setTimeout(() => {
+                // This code will run after .1 second
+                // gives the other js time to run before this slow request
+                this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
+            }, 100);
+
         }
     };
 

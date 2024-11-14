@@ -34,6 +34,16 @@ namespace App\Views\Widgets;
                 <th>Other Enquiries/Contracts</th>
                 <td id="contactOtherContracts"></td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="btn btn-primary" id="saveSMSButton">Send SMS</button>
+                </td>
+            </tr>
         </table>
     </div>
 </div>
+<?php
+// it belongs with the card but is there a problem having it here?
+
+include('Views/modals/save-sms-request.php');
+?>

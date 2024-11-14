@@ -8,8 +8,17 @@ function ns_contactWidget() {
         if ($(this.tagId).length) {
             this.populateWidget();
             this.addOtherContracts();
+            this.addListeners();
         }
     };
+
+    this.addListeners = function () {
+        $('#saveSMSButton').on('click', (event) => {
+            let saveSmsModal = new bootstrap.Modal(document.getElementById('saveSmsRequest'));
+            saveSmsModal.show();
+        });
+
+    }
 
     this.populateWidget = function () {
         $.getJSON('/json.php', {
@@ -126,17 +135,19 @@ function ns_notesWidget() {
     };
 
     this.populateTable = function () {
-        $.getJSON('/json.php', {
-            endpoint: 'Notes',
-            action: 'ListAssociated',
-            contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0,
-            ckcontact_id: keys.contact.id ?? 0,
-        }).done((data) => {
-            data.data.forEach(note => {
-                console.log(note);
-                this.addNoteToTable(note);
+        $.getJSON('/json.php',
+            {
+                endpoint: 'Notes',
+                action: 'ListAssociated',
+                contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0,
+                ckcontact_id: keys.contact.id ?? 0,
+            })
+            .done((data) => {
+                data.data.forEach(note => {
+                    console.log(note);
+                    this.addNoteToTable(note);
+                });
             });
-        });
     };
 
     this.saveNote = function () {
@@ -200,16 +211,16 @@ function ns_contractWidget() {
         }
     };
     this.getContractData = function () {
-        console.log('getContractData');
+        console.log(['getContractData', keys]);
         $.getJSON('/json.php',
             {
                 endpoint: 'Contracts',
                 action: 'Singleton',
-                contract_id: keys.invoice.contract_id ?? 0,
+                contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0,
                 repeating_invoice_id: keys.invoice.repeating_invoice_id ?? 0,
             },
             (data) => {
-                console.log('contractCard callback');
+                console.log(['contractCard callback', data]);
                 $('#contractCardStatus').text(data.contracts.status);
                 $('#contractCardCabin').text(data.contracts.cabin_type);
                 $('#contractCardScheduleUnit').text(data.contracts.schedule_unit);

@@ -46,6 +46,7 @@ $templates = $templateModel->getSelectChoices('SMS');
                                     <p>You can personalise with:</p>
                                     <ul>
                                         <li>[first_name]</li>
+                                        <li class="text-muted text-decoration-line-through">[cabin]</li>
                                     </ul>
                                     <p class="small">The swap length may result in additional costs to send</p>
                                 </div>
