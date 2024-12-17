@@ -110,6 +110,26 @@ trait FunctionsTrait
         return date_format($date, "d-M-Y");
     }
 
+    protected function readableDate($date)
+    {
+        if ($date === '---') return '';
+
+        $timestamp = strtotime($date);
+        $now = strtotime(date('Y-m-d'));
+        $diff = ($now - strtotime(date('Y-m-d', $timestamp))) / 86400; // Difference in days
+
+        if ($diff === 0) {
+            return 'Today';
+        } elseif ($diff === 1) {
+            return 'Yesterday';
+        } elseif ($diff < 7) {
+            return "$diff days ago";
+        } else {
+            return $this->getPrettyDate($date); // Fallback to formatted date
+        }
+    }
+
+
     /** generates a url using all the variables in the row
      *  send a shorter array if necessary.
      * @param string $action
@@ -130,5 +150,15 @@ trait FunctionsTrait
     protected function getDataAttribute($key, $val)
     {
         return "data-$key='$val'";
+    }
+
+    protected function getXeroDeeplink(string $type, array $data): string
+    {
+        $base = "https://go.xero.com/organisationlogin/default.aspx?shortcode={$data['xero_shortcode']}";
+        
+        return match ($type) {
+            'Contact' => "$base&redirecturl=/Contacts/View/{$data['contact_id']}",
+            default => '',
+        };
     }
 }

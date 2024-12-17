@@ -193,13 +193,18 @@ class XeroClass
         return $phones;
     }
 
+    public function getContact($xeroTenantId, $contact_id)
+    {
+        return $this->apiInstance->getContact($xeroTenantId, $contact_id);
+    }
+
     // internal call
     // to see the result data
     // https://api-explorer.xero.com/accounting/contacts/getcontact?path-contactid=e3e88c63-d089-4e4f-b665-a87e9796d66b
     public function getContactRefresh($xeroTenantId, $contact_id): int
     {
         //$this->debug(['getContactRefresh', $xeroTenantId, $contact_id]);
-        $result = $this->apiInstance->getContact($xeroTenantId, $contact_id);
+        $result = $this->getContact($xeroTenantId, $contact_id);
 
         //$this->debug($result);
         if (count($result)) {
@@ -275,6 +280,32 @@ class XeroClass
         $this->saveAddressStubs($stub->getAddresses(), $id, $save['contact_id']);
         # todo save phone stubs
         // only save if it's a new customer
+        $phone_array = $stub->getPhones();
+
+        if (count($phone_array) > 0) {
+            $phone = new PhoneModel($this->pdo);
+
+            $mobile_prefixes = ['021', '022', '027', '0273', '0274'];
+
+            foreach ($phone_array as $each_phone) {
+                $phone_type = $each_phone->getPhoneType();
+                $phone_area_code = $each_phone->getPhoneAreaCode();
+                if (in_array($phone_area_code, $mobile_prefixes)) {
+                    $phone_type = 'MOBILE';
+                }
+                $phone_save = [
+                    'ckcontact_id' => $id,
+                    'contact_id' => $save['contact_id'],
+                    'phone_type' => $phone_type,
+                    'phone_area_code' => $phone_area_code,
+                    'phone_number' => $each_phone->getPhoneNumber()
+                ];
+                if (!empty($phone_save['phone_number']))
+                    $phone->saveOne($phone_save);
+            }
+        }
+
+
         //$this->debug($save);
         return $id;
     }
@@ -673,20 +704,9 @@ class XeroClass
     }
 
 
-    /**
-     * gets invoices from xero and save in local database
-     * // https://cabinkingmanagement:8890/xero.php?endpoint=Invoices&action=refresh&tenancy=auckland
-     * // todo does the return value get used?
-     * @param string $xeroTenantName
-     * @return int
-     */
-    public function getInvoiceRefresh(string $xeroTenantName): int
+    public function getXeroInvoices($xeroTenantId, $updated_date_utc): array
     {
 
-        $xeroTenantId = $this->getXeroTenantId($xeroTenantName);
-        $objInvoice = new InvoiceModel($this->pdo);
-
-        $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
 
         //$objInvoice->getStatement();
 
@@ -700,7 +720,24 @@ class XeroClass
 
         $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only);
 
-        $data = $result->getInvoices();
+        return $result->getInvoices();
+    }
+
+    /**
+     * gets invoices from xero and save in local database
+     * // https://cabinkingmanagement:8890/xero.php?endpoint=Invoices&action=refresh&tenancy=auckland
+     * // todo does the return value get used?
+     * @param string $xeroTenantName
+     * @return int
+     */
+    public function getInvoiceRefresh(string $xeroTenantName): int
+    {
+
+        $xeroTenantId = $this->getXeroTenantId($xeroTenantName);
+
+        $objInvoice = new InvoiceModel($this->pdo);
+        $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
+        $data = $this->getXeroInvoices($xeroTenantId, $updated_date_utc);
 
         $k = 0;
 
@@ -953,21 +990,19 @@ class XeroClass
     }
 
 
-    public function getOrganisation($xeroTenantId, $apiInstance, $returnObj = false)
+    public function getOrganisation(string $xeroTenantId)
     {
         $str = '';
 
         //[Organisations:Read]
-        $result = $apiInstance->getOrganisations($xeroTenantId);
+        $result = $this->apiInstance->getOrganisations($xeroTenantId);
         //[/Organisations:Read]
 
-        $str = $str . "Get Organisations: " . $result->getOrganisations()[0]->getName() . "<br>";
+        $list = $result->getOrganisations();
+        //$str = $str . "Get Organisations: " . $list[0]->getName() . "<br>";
 
-        if ($returnObj) {
-            return $result->getOrganisations()[0];
-        } else {
-            return $str;
-        }
+        return $list;
+        //return $result->getOrganisations()[0];
     }
 
     public function getOrganisationList($returnObj = false): void
@@ -1230,10 +1265,22 @@ class XeroClass
     protected function getScheduleFromXeroObject($schedule): array
     {
         // for now, we only need the unit
-        $output = [
+        $parts = [
+            'schedule_period' => $schedule->getPeriod(),
             'schedule_unit' => $schedule->getUnit(),
         ];
-        return $output;
+
+        if ($parts['schedule_period'] == 1) {
+            $output = $parts['schedule_unit'];
+        } else {
+            $joined = implode(' ', $parts);
+            $output = match ($joined) {
+                '2 WEEKLY' => 'FORTNIGHT',
+                default => $joined
+            };
+        }
+
+        return ['schedule_unit' => $output];
     }
 
 

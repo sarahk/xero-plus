@@ -256,6 +256,7 @@ $view = match ($action) {
     13 => 'Views/cabins-index.php',
     14 => 'Views/cabin-single.php',
     16 => 'Views/bad_debts_index.php',
+    160 => 'Views/bad_debts_management.php',
     17 => 'Views/templates-index.php',
     18 => 'Views/activity-index.php',
     200 => 'Views/home2.php',

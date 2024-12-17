@@ -142,7 +142,7 @@ function ns_contactModal() {
         });
     }
 
-    this.populateContactSingleModal = function (data, contactid) {
+    this.populateContactSingleModal = (data, contactid) => {
         console.log('populateContactSingleModal');
         console.log(contactid);
         console.log(data.contacts);
@@ -156,6 +156,7 @@ function ns_contactModal() {
         $('#contactFirstName').val(data.contacts.first_name);
         $('#contactLastName').val(data.contacts.last_name);
         $('#contactEmail').val(data.contacts.email_address);
+        $('#contactMobile').val(this.getMobile(data));
         //$('#contactPhone').html(data.contacts.phone);
         //$('#contactAddress').html(data.contacts.address);
         //$('#contactUpdate').text(data.contacts.updated_date_utc);
@@ -167,6 +168,36 @@ function ns_contactModal() {
             window.open('https://go.xero.com/Contacts/View/' + contactid, '_blank');
         });
 
+    };
+
+    this.getMobile = function (data) {
+
+        // Default return values if no matching phone found
+        let result = {
+            phone_area_code: '',
+            phone_number: ''
+        };
+
+        // Check if Phone array exists and has entries
+        if (!data.Phone || !Array.isArray(data.Phone) || data.Phone.length === 0) {
+            return '';
+        }
+
+        // First try to find MOBILE
+        let mobilePhone = data.Phone.find(phone => phone.phone_type === 'MOBILE');
+
+        // If no mobile, try to find DEFAULT
+        if (!mobilePhone) {
+            mobilePhone = data.Phone.find(phone => phone.phone_type === 'DEFAULT');
+        }
+
+        // If we found either MOBILE or DEFAULT, return those details
+        if (mobilePhone) {
+            result.phone_area_code = mobilePhone.phone_area_code || '';
+            result.phone_number = mobilePhone.phone_number || '';
+        }
+
+        return result.phone_area_code + ' ' + result.phone_number;
     };
 
 

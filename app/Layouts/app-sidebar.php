@@ -45,9 +45,24 @@ namespace App\Layouts;
                                 class="side-menu__icon fe fe-help-circle"></i><span
                                 class="side-menu__label">Enquiries</span></a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=90">Invoices & Payments</a></li>
-                <li><a class="side-menu__item" href="/authorizedResource.php?action=16"><i
+
+
+                <li class="slide is-expanded">
+                    <a class="side-menu__item" data-bs-toggle="slide" href="/authorizedResource.php?action=16"><i
                                 class="side-menu__icon fe fe-alert-circle"></i><span
-                                class="side-menu__label">Bad Debts</span></a></li>
+                                class="side-menu__label">Outstanding Rents</span><i class="angle fa fa-angle-right"></i></a>
+
+                    <ul class="slide-menu open" style="display: block;">
+                        <li><a href="/authorizedResource.php?action=16" class="slide-item">
+                                Reminders</a>
+                        </li>
+                        <li><a href="/authorizedResource.php?action=160" class="slide-item">
+                                Management</a>
+                        </li>
+                    </ul>
+                </li>
+
+
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=13">Cabins</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=17">Message Templates</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=18">Messages Sent</a></li>

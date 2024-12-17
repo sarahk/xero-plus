@@ -200,4 +200,18 @@ class ActivityModel extends BaseModel
         }
         return '---';
     }
+
+    public function getSentToday($contact_id): bool
+    {
+        $last_message_date = $this->getLastMessageDate($contact_id);
+
+        if ($last_message_date == '---') {
+            return false;
+        }
+
+        if (substr($last_message_date, 0, 10) === date('Y-m-d')) {
+            return true;
+        }
+        return false;
+    }
 }

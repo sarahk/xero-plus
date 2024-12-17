@@ -4,9 +4,183 @@ let currentButtonValue = '';
 let $badDebtsTitle = $('#badDebtsTitle');
 let $smsBody = $('#smsBody');
 
-if ($('#tBadDebts').length) {
+// can't use let
+var nsReminders = nsReminders || {};
 
-    let $tBadDebts = $('#tBadDebts').DataTable({
+nsReminders.DataTableManager = (function () {
+
+    let $tBadDebts;
+    let $badDebtsTitle = $('#badDebtsTitle');
+    let ajaxRequest;
+    let currentButtonValue = 'All';//1week
+
+    return {
+        init: function () {
+            if ($('#tBadDebts').length) {
+                //nsReminders.DataTableManager.addListeners();
+                this.loadTable();
+            }
+        },
+
+        loadTable: function () {
+
+            $tBadDebts = $('#tBadDebts').DataTable({
+                ajax: function (data, callback, settings) {
+                    // Store the Ajax request in `ajaxRequest`
+                    ajaxRequest = $.ajax({
+                        url: "/json.php",
+                        data: $.extend({}, data, {
+                            button: currentButtonValue, // Add your custom parameters
+                            endpoint: 'Invoices',
+                            action: 'BadDebts'
+                        }),
+                        method: 'GET',
+                        success: function (response) {
+                            console.log('success', response);
+                            callback(response); // Pass the response to DataTable
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.error('nsReminders Ajax error:', textStatus, errorThrown);
+                        }
+                    });
+                },
+
+                processing: true,
+                serverSide: true,
+                paging: true,
+                stateSave: true,
+                rowId: 'DT_RowId',
+                columns: [
+                    {
+                        data: null,
+                        targets: 0,
+                        searchable: false,
+                        orderable: false,
+                        render: DataTable.render.select(),
+                    },
+                    {data: "contact", name: "contact"},
+                    {data: "amount_due", name: "amount_due"},
+                    {data: 'sent', name: "sent", orderable: false},
+                    {data: 'actions', orderable: false},
+                ],
+                fixedColumns: {
+                    start: 1
+                },
+                select: {
+                    style: 'multi',
+                    selector: 'td:first-child'
+                },
+                layout: {
+                    topStart: {
+                        buttons: [
+                            'pageLength',
+                            {
+                                extend: 'csv',
+                                text: 'Export',
+                                split: ['copy', 'excel', 'pdf', 'print']
+                            },
+                            {
+                                text: 'All',
+                                className: 'btn-lg',
+                                action: function () {
+                                    //dt.ajax.reload();
+                                    currentButtonValue = 'All';
+                                    $badDebtsTitle.text(currentButtonValue);
+                                    nsReminders.DataTableManager.setProcessingColour(currentButtonValue);
+                                    $tBadDebts.ajax.reload();
+                                }
+                            },
+                            {
+                                text: '1 week',
+                                className: 'btn-lg',
+                                action: function () {
+                                    currentButtonValue = '1week';
+                                    $badDebtsTitle.text(currentButtonValue);
+                                    nsReminders.DataTableManager.setProcessingColour(currentButtonValue);
+                                    $tBadDebts.ajax.reload();
+                                }
+                            },
+                            {
+                                text: '2 weeks',
+                                className: 'btn-lg',
+                                action: function () {
+                                    currentButtonValue = '2weeks';
+                                    $badDebtsTitle.text(currentButtonValue);
+                                    nsReminders.DataTableManager.setProcessingColour(currentButtonValue);
+                                    $tBadDebts.ajax.reload();
+                                }
+                            },
+                            {
+                                text: '3 weeks',
+                                className: 'btn-lg',
+                                action: function () {
+                                    currentButtonValue = '3weeks';
+                                    $badDebtsTitle.text(currentButtonValue);
+                                    nsReminders.DataTableManager.setProcessingColour(currentButtonValue);
+                                    $tBadDebts.ajax.reload();
+                                }
+                            },
+                            {
+                                text: 'SMS',
+                                className: 'btn-lg',
+                                action: function () {
+                                    let saveSmsModal = new bootstrap.Modal(document.getElementById('saveSmsRequest'));
+                                    saveSmsModal.show();
+                                }
+                            },
+                        ]
+                    }
+                },
+                createdRow: (row, data, index) => {
+                    row.classList.add('bar-' + data.colour);
+                },
+            });
+
+        },
+
+        addListeners: function () {
+            $(document).on('click', 'a, button', function () {
+                nsReminders.DataTableManager.cancelLoad();
+                console.log('User clicked:', $(this).text());
+            });
+        },
+
+        cancelLoad: function () {
+
+            if (ajaxRequest) {
+                console.log('aborting datatable load', ajaxRequest);
+                ajaxRequest.abort(); // Cancel the ongoing Ajax request
+                ajaxRequest = null;  // Reset the request tracker
+                console.log('DataTable loading cancelled.');
+                console.log(ajaxRequest);
+            }
+        },
+        setProcessingColour: function (currentButtonValue) {
+            // https://palettes.shecodes.io/palettes/1377
+            // https://www.color-hex.com/color/0275d8
+
+            const match = (key) => ({
+                'All': '#1b82db',
+                '1week': '#3490df',
+                '2weeks': '#4d9ee3',
+                '3weeks': '#67ace7',
+            }[key] || '#0275D8');
+
+            $('div.dt-processing>div:last-child>div').css({
+                'background-color': match(currentButtonValue)
+            });
+        }
+    };
+})(jQuery);
+
+nsReminders.DataTableManager.init();
+
+// reminders
+
+
+if ($('#tBadDebtsManagement').length) {
+
+    let $tBadDebtsManagement = $('#tBadDebtsManagement').DataTable({
         ajax: {
             url: "/json.php",
             data: function (d) {
@@ -14,7 +188,6 @@ if ($('#tBadDebts').length) {
                 d.button = currentButtonValue;
                 d.endpoint = 'Invoices';
                 d.action = 'BadDebts';
-
 
                 $badDebtsTitle.text(currentButtonValue);
             }
@@ -36,6 +209,7 @@ if ($('#tBadDebts').length) {
             {data: "amount_due", name: "amount_due"},
             {data: "weeks_due", name: "weeks_due"},
             {data: "total_weeks", name: "total_weeks"},
+            {data: "flags", name: "flags"},
             {data: 'chart', orderable: false,}
         ],
         fixedColumns: {
@@ -56,45 +230,35 @@ if ($('#tBadDebts').length) {
                     },
                     {
                         text: 'All',
+                        className: 'btn-lg',
                         action: function () {
                             //dt.ajax.reload();
                             currentButtonValue = '';
-                            $tBadDebts.ajax.reload();
+                            $tBadDebtsManagement.ajax.reload();
                         }
                     },
                     {
-                        text: '1 week',
+                        text: 'Weekly',
+                        className: 'btn-lg',
                         action: function () {
-                            currentButtonValue = '1week';
-                            $tBadDebts.ajax.reload();
+                            currentButtonValue = 'Weekly';
+                            $tBadDebtsManagement.ajax.reload();
                         }
                     },
                     {
                         text: '2 weeks',
+                        className: 'btn-lg',
                         action: function () {
-                            currentButtonValue = '2weeks';
-                            $tBadDebts.ajax.reload();
+                            currentButtonValue = 'Fortnightly';
+                            $tBadDebtsManagement.ajax.reload();
                         }
                     },
                     {
-                        text: '3 weeks',
+                        text: 'Monthly',
+                        className: 'btn-lg',
                         action: function () {
-                            currentButtonValue = '3weeks';
-                            $tBadDebts.ajax.reload();
-                        }
-                    },
-                    {
-                        text: 'Older',
-                        action: function () {
-                            currentButtonValue = 'older';
-                            $tBadDebts.ajax.reload();
-                        }
-                    },
-                    {
-                        text: 'SMS',
-                        action: function () {
-                            let saveSmsModal = new bootstrap.Modal(document.getElementById('saveSmsRequest'));
-                            saveSmsModal.show();
+                            currentButtonValue = 'Monthly';
+                            $tBadDebtsManagement.ajax.reload();
                         }
                     },
                 ]

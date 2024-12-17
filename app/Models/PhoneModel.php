@@ -58,4 +58,16 @@ class PhoneModel extends BaseModel
         }
         return 0;
     }
+
+    public function saveOne($data): int
+    {
+        $this->debug($data);
+        $sql = 'INSERT INTO phones (ckcontact_id, contact_id, phone_type, phone_number, phone_area_code)
+                    VALUES (:ckcontact_id, :contact_id, :phone_type, :phone_number, :phone_area_code)
+                    ON DUPLICATE KEY UPDATE
+                        ckcontact_id = :ckcontact_id,
+                        phone_number = :phone_number,
+                        phone_area_code = :phone_area_code;';
+        return $this->runQuery($sql, $data, 'insert');
+    }
 }

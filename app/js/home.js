@@ -97,47 +97,62 @@ $(document).ready(function () {
 
 
     // W A T C H   L I S T
+    var nsWatchList = nsWatchList || {};
 
+    nsWatchList.WatchlistManager = (function ($) {
 
-    if ($('#watchlistTotal').length) {
-        let payload = {
-            endpoint: 'Invoices',
-            action: 'BadDebtTotal',
-        };
+        return {
+            init: function () {
+                if ($('#watchlistTotal').length) {
+                    this.updateTotal();
+                }
 
-        $.getJSON("/json.php", payload, function (data) {
-            $('#watchlistTotal').text(data.total);
-        });
-
-    }
-
-
-    if ($('#tHomeWatchlist').length) {
-
-        $('#tHomeWatchlist').DataTable({
-            ajax: {
-                url: "/json.php",
-                data: {
-                    endpoint: "Invoices",
-                    action: "BadDebts",
+                if ($('#tHomeWatchlist').length) {
+                    this.initializeWatchlistTable();
                 }
             },
-            processing: true,
-            serverSide: true,
-            paging: true,
-            searching: false,
-            info: false,
-            stateSave: true,
-            columns: [
-                {data: "name"},
-                {data: "amount_due"},
-                {data: "weeks_due"},
 
-            ],
-            createdRow: (row, data, index) => {
-                row.classList.add('bar-' + data.colour);
+            updateTotal: function () {
+                let payload = {
+                    endpoint: 'Invoices',
+                    action: 'BadDebtTotal',
+                };
+
+                $.getJSON("/json.php", payload, function (data) {
+                    $('#watchlistTotal').text(data.total);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error('Failed to fetch watchlist total:', textStatus, errorThrown);
+                });
             },
 
-        });
-    }
+            initializeWatchlistTable: function () {
+                $('#tHomeWatchlist').DataTable({
+                    ajax: {
+                        url: "/json.php",
+                        data: {
+                            endpoint: "Invoices",
+                            action: "BadDebts",
+                        }
+                    },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    searching: false,
+                    info: false,
+                    stateSave: true,
+                    columns: [
+                        {data: "name"},
+                        {data: "amount_due"},
+                        {data: "weeks_due"}
+                    ],
+                    createdRow: (row, data, index) => {
+                        row.classList.add('bar-' + data.colour);
+                    },
+                });
+            }
+        };
+    })(jQuery);
+
+// Initialize the WatchlistManager
+    nsWatchList.WatchlistManager.init();
 });

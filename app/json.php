@@ -149,7 +149,7 @@ try {
                     echo $json->attachmentAccount($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -206,7 +206,7 @@ try {
                     echo json_encode($contact->getOtherContacts(Utilities::getParamsPlus(['ckcontact_id'])));
                     break;
                 default:
-                    echo "[{$endpoint}] {$action}: action not supported in API";
+                    echo json_encode("[{$endpoint}] {$action}: action not supported in API");
             }
             break;
 
@@ -229,7 +229,7 @@ try {
                     echo $json->createContactGroupContacts($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -258,7 +258,7 @@ try {
                     break;
 
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -299,7 +299,7 @@ try {
 
 
                 default:
-                    echo $action . " action not supported in API [Invoices]";
+                    echo json_encode($action . " action not supported in API [Invoices]");
             }
             break;
 
@@ -309,7 +309,7 @@ try {
                     echo $json->getInvoiceReminder($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -325,7 +325,7 @@ try {
                     echo $json->getOrganisationList();
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -338,7 +338,7 @@ try {
                     break;
 
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -348,6 +348,9 @@ try {
                 case 'list':
                     echo $json->listPhonesForContact();
                     break;
+
+                default:
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -366,7 +369,7 @@ try {
                     echo $json->refundPrepayment($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -388,7 +391,7 @@ try {
                     echo $json->deletePurchaseOrder($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -404,7 +407,7 @@ try {
                     echo $json->updateReceipt($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -414,7 +417,7 @@ try {
                     echo $json->getRepeatingInvoice($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -451,7 +454,7 @@ try {
                     echo $json->getTrialBalance($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
 
@@ -511,10 +514,13 @@ try {
                     echo $json->getUser($xeroTenantId, $apiInstance);
                     break;
                 default:
-                    echo $action . " action not supported in API";
+                    echo json_encode($action . " action not supported in API");
             }
             break;
+
+        default:
+            echo json_encode("Action $action is not recognised");
     }
 } catch (Exception $e) {
-    echo 'Exception when calling AccountingApi: ', $e->getMessage(), PHP_EOL;
+    echo json_encode('Exception when calling AccountingApi: ', $e->getMessage(), PHP_EOL);
 }

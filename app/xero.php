@@ -243,7 +243,7 @@ try {
         case 'organisations':
             switch ($action) {
                 case "Read":
-                    echo $xero->getOrganisation($xeroTenantId, $apiInstance);
+                    echo $xero->getOrganisation($xeroTenantId);
                     break;
                 case 'List':
                 case 'list':

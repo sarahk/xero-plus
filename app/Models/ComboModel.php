@@ -68,7 +68,6 @@ class ComboModel extends BaseModel
             if ($params['button'] == 'overdue') {
                 $search_values['overduedate'] = date('Y-m-d', strtotime('-7 days'));
                 $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
-
             } else {
                 $search_values['status'] = strtoupper($params['button']);
                 $conditions[] = "`invoices`.`status` = :status";

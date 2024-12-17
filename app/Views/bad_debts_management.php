@@ -6,20 +6,22 @@ namespace App\Views\bad_debts;
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Outstanding Rent Reminders <span id="badDebtsTitle"
-                                                                            class="text-danger"></span></h3>
+                    <h3 class="card-title">Outstanding Rent Management <span id="badDebtsTitle"
+                                                                             class="text-danger"></span></h3>
                 </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered text-nowrap border-bottom w-100" id="tBadDebts">
+                        <table class="table table-bordered text-nowrap border-bottom w-100" id="tBadDebtsManagement">
                             <thead>
                             <tr>
                                 <th></th>
                                 <th>Contact</th>
                                 <th>Total Due</th>
-                                <th>Sent</th>
-                                <th>&nbsp;</th>
+                                <th>Weeks Owing</th>
+                                <th>Weeks</th>
+                                <th>Flags</th>
+                                <th>History</th>
                             </tr>
                             </thead>
                         </table>
@@ -31,4 +33,3 @@ namespace App\Views\bad_debts;
 
     <?php
 include('modals/contact-single.php');
-include('modals/save-sms-request.php');

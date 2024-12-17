@@ -55,6 +55,7 @@ function ns_combo() {
                     split: ['copy', 'excel', 'pdf', 'print']
                 }, {
                     text: 'All',
+                    className: 'btn-lg',
                     action: () => {
                         //dt.ajax.reload();
                         this.currentButton = '';
@@ -62,30 +63,35 @@ function ns_combo() {
                     }
                 }, {
                     text: 'Overdue',
+                    className: 'btn-lg',
                     action: () => {
                         this.currentButton = 'overdue';
                         this.dataTable.ajax.reload();
                     }
                 }, {
                     text: 'Authorised',
+                    className: 'btn-lg',
                     action: () => {
                         this.currentButton = 'authorised';
                         this.dataTable.ajax.reload();
                     }
                 }, {
                     text: 'Paid',
+                    className: 'btn-lg',
                     action: () => {
                         this.currentButton = 'paid';
                         this.dataTable.ajax.reload();
                     }
                 }, {
                     text: 'Draft',
+                    className: 'btn-lg',
                     action: () => {
                         this.currentButton = 'draft';
                         this.dataTable.ajax.reload();
                     }
                 }, {
                     text: 'Void',
+                    className: 'btn-lg',
                     action: () => {
                         this.currentButton = 'voided';
                         this.dataTable.ajax.reload();

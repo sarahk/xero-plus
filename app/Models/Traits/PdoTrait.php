@@ -18,7 +18,7 @@ trait PdoTrait
     /**
      * @param string $sql
      * @param array $search_values <string, mixed>
-     * @param string $type
+     * @param string $type - query, update, column, insert
      * @return int|array
      */
     protected function runQuery(string $sql, array $search_values, string $type = 'query'): mixed

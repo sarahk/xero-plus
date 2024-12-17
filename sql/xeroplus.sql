@@ -3,19 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 05, 2024 at 04:22 AM
+-- Generation Time: Dec 04, 2024 at 12:35 AM
 -- Server version: 5.7.44
 -- PHP Version: 8.3.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `xeroplus`
@@ -31,6 +25,7 @@ CREATE TABLE `activity`
 (
     `activity_id`     int(11)     NOT NULL,
     `ckcontact_id`    int(11)     NOT NULL,
+    `contract_id`     int(11)              DEFAULT NULL,
     `contact_id`      char(36)             DEFAULT NULL,
     `activity_type`   varchar(10) NOT NULL DEFAULT 'SMS',
     `activity_date`   datetime             DEFAULT NULL,
@@ -216,6 +211,7 @@ CREATE TABLE `notes`
     `id`         int(11)     NOT NULL,
     `foreign_id` int(11)     NOT NULL,
     `parent`     varchar(25) NOT NULL,
+    `note_type`  varchar(45)          DEFAULT NULL,
     `note`       text        NOT NULL,
     `createdby`  int(11)     NOT NULL,
     `created`    timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -313,6 +309,7 @@ CREATE TABLE `templates`
     `label`       varchar(30) CHARACTER SET utf8 NOT NULL,
     `subject`     varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `body`        text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    `sortorder`   tinyint(3)                                                    DEFAULT NULL,
     `dateupdate`  datetime                       NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
@@ -392,10 +389,10 @@ VALUES (1, '98299269-5603-4c21-8a02-9e5b5b2b373c', 'ae75d056-4af7-484d-b709-9443
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `vamountdue`
+-- Stand-in structure for view `vamount_due`
 -- (See below for the actual view)
 --
-CREATE TABLE `vamountdue`
+CREATE TABLE `vamount_due`
 (
     `contact_id` char(36),
     `total_due`  decimal(32, 2)
@@ -421,6 +418,35 @@ CREATE TABLE `vcombo`
     `date`           datetime,
     `contact_id`     char(36),
     `xerotenant_id`  char(36)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vcontacts`
+-- (See below for the actual view)
+--
+CREATE TABLE `vcontacts`
+(
+    `id`                  int(11),
+    `contact_id`          char(36),
+    `contact_status`      varchar(20),
+    `xero_status`         varchar(20),
+    `name`                varchar(100),
+    `first_name`          varchar(100),
+    `last_name`           varchar(100),
+    `email_address`       varchar(250),
+    `best_way_to_contact` varchar(25),
+    `is_supplier`         tinyint(1),
+    `date_of_birth`       date,
+    `is_customer`         tinyint(1),
+    `website`             varchar(250),
+    `discount`            varchar(100),
+    `updated_date_utc`    datetime,
+    `xerotenant_id`       char(36),
+    `stub`                tinyint(4),
+    `address_line1`       mediumtext,
+    `phone_number`        mediumtext
 );
 
 -- --------------------------------------------------------
@@ -517,11 +543,15 @@ CREATE TABLE `vinvoices`
 CREATE TABLE `vold_debts`
 (
     `xerotenant_id`        char(36),
+    `contract_id`          int(11),
     `repeating_invoice_id` varchar(50),
     `contact_id`           char(36),
     `total_amount`         decimal(32, 2),
     `amount_due`           decimal(32, 2),
     `total_weeks`          bigint(21),
+    `unpaidweek1`          decimal(32, 0),
+    `unpaidweek2`          decimal(32, 0),
+    `unpaidweek3`          decimal(32, 0),
     `oldest`               datetime,
     `newest`               datetime,
     `weeks_due`            bigint(21)
@@ -540,20 +570,42 @@ CREATE TABLE `weeks`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `weeks`
+--
+
+INSERT INTO `weeks` (`week_number`)
+VALUES (0),
+       (1),
+       (2),
+       (3),
+       (4),
+       (5),
+       (6),
+       (7),
+       (8),
+       (9),
+       (10),
+       (11),
+       (12),
+       (13),
+       (14),
+       (15),
+       (16);
+
 -- --------------------------------------------------------
 
 --
--- Structure for view `vamountdue`
+-- Structure for view `vamount_due`
 --
-DROP TABLE IF EXISTS `vamountdue`;
+DROP TABLE IF EXISTS `vamount_due`;
 
-CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vamountdue` AS
-(
-select `invoices`.`contact_id` AS `contact_id`, sum(`invoices`.`amount_due`) AS `total_due`
-from `invoices`
-where (`invoices`.`status` = 'AUTHORISED')
-group by `invoices`.`contact_id`
-order by `invoices`.`contact_id`);
+CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vamount_due` AS
+SELECT `invoices`.`contact_id` AS `contact_id`, sum(`invoices`.`amount_due`) AS `total_due`
+FROM `invoices`
+WHERE (`invoices`.`status` = 'AUTHORISED')
+GROUP BY `invoices`.`contact_id`
+ORDER BY `invoices`.`contact_id` ASC;
 
 -- --------------------------------------------------------
 
@@ -590,6 +642,38 @@ select 'P'                        AS `row_type`,
        `payments`.`contact_id`    AS `contact_id`,
        `payments`.`xerotenant_id` AS `xerotenant_id`
 from `payments`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vcontacts`
+--
+DROP TABLE IF EXISTS `vcontacts`;
+
+CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vcontacts` AS
+SELECT `contacts`.`id`                                                                              AS `id`,
+       `contacts`.`contact_id`                                                                      AS `contact_id`,
+       `contacts`.`contact_status`                                                                  AS `contact_status`,
+       `contacts`.`xero_status`                                                                     AS `xero_status`,
+       `contacts`.`name`                                                                            AS `name`,
+       `contacts`.`first_name`                                                                      AS `first_name`,
+       `contacts`.`last_name`                                                                       AS `last_name`,
+       `contacts`.`email_address`                                                                   AS `email_address`,
+       `contacts`.`best_way_to_contact`                                                             AS `best_way_to_contact`,
+       `contacts`.`is_supplier`                                                                     AS `is_supplier`,
+       `contacts`.`date_of_birth`                                                                   AS `date_of_birth`,
+       `contacts`.`is_customer`                                                                     AS `is_customer`,
+       `contacts`.`website`                                                                         AS `website`,
+       `contacts`.`discount`                                                                        AS `discount`,
+       `contacts`.`updated_date_utc`                                                                AS `updated_date_utc`,
+       `contacts`.`xerotenant_id`                                                                   AS `xerotenant_id`,
+       `contacts`.`stub`                                                                            AS `stub`,
+       group_concat(`addresses`.`address_line1` separator ',')                                      AS `address_line1`,
+       group_concat(concat(`phones`.`phone_area_code`, ' ', `phones`.`phone_number`) separator ',') AS `phone_number`
+FROM ((`contacts` left join `addresses`
+       on (((`addresses`.`ckcontact_id` = `contacts`.`id`) and (`addresses`.`address_line1` > '')))) left join `phones`
+      on (((`phones`.`ckcontact_id` = `contacts`.`id`) and (`phones`.`phone_number` > ''))))
+GROUP BY `contacts`.`id`;
 
 -- --------------------------------------------------------
 
@@ -645,7 +729,7 @@ SELECT `contracts`.`contract_id`          AS `contract_id`,
        `invoices`.`due_date`              AS `due_date`,
        `invoices`.`updated_date_utc`      AS `updated_date_utc`
 FROM (`contracts` left join `invoices` on ((`invoices`.`repeating_invoice_id` = `contracts`.`repeating_invoice_id`)))
-WHERE ((`invoices`.`status` = 'AUTHORISED') AND ((to_days(`invoices`.`date`) - to_days(now())) < -(7)));
+WHERE ((`invoices`.`status` in ('AUTHORISED', 'PAID')) AND ((to_days(`invoices`.`date`) - to_days(now())) < -(7)));
 
 -- --------------------------------------------------------
 
@@ -656,28 +740,31 @@ DROP TABLE IF EXISTS `vold_debts`;
 
 CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`localhost` SQL SECURITY DEFINER VIEW `vold_debts` AS
 SELECT `vinvoices`.`xerotenant_id`        AS `xerotenant_id`,
+       `vinvoices`.`contract_id`          AS `contract_id`,
        `vinvoices`.`repeating_invoice_id` AS `repeating_invoice_id`,
        `vinvoices`.`contact_id`           AS `contact_id`,
-       `agg1`.`total_amount`              AS `total_amount`,
-       `agg1`.`amount_due`                AS `amount_due`,
-       `agg1`.`total_weeks`               AS `total_weeks`,
-       `agg2`.`oldest`                    AS `oldest`,
-       `agg2`.`newest`                    AS `newest`,
-       `agg2`.`weeks_due`                 AS `weeks_due`
-FROM ((`vinvoices` left join (select `vinvoices`.`repeating_invoice_id` AS `repeating_invoice_id`,
-                                     sum(`vinvoices`.`total`)           AS `total_amount`,
-                                     sum(`vinvoices`.`amount_due`)      AS `amount_due`,
-                                     count(`vinvoices`.`invoice_id`)    AS `total_weeks`
-                              from `vinvoices`
-                              group by `vinvoices`.`xerotenant_id`, `vinvoices`.`repeating_invoice_id`) `agg1`
-       on ((`agg1`.`repeating_invoice_id` = `vinvoices`.`repeating_invoice_id`))) left join (select `vinvoices`.`repeating_invoice_id` AS `repeating_invoice_id`,
-                                                                                                    min(`vinvoices`.`date`)            AS `oldest`,
-                                                                                                    max(`vinvoices`.`date`)            AS `newest`,
-                                                                                                    count(0)                           AS `weeks_due`
-                                                                                             from `vinvoices`
-                                                                                             where (`vinvoices`.`amount_due` > 0)
-                                                                                             group by `vinvoices`.`repeating_invoice_id`) `agg2`
-      on ((`agg2`.`repeating_invoice_id` = `vinvoices`.`repeating_invoice_id`)))
+       `agg`.`total_amount`               AS `total_amount`,
+       `agg`.`amount_due`                 AS `amount_due`,
+       `agg`.`total_weeks`                AS `total_weeks`,
+       `agg`.`unpaidweek1`                AS `unpaidweek1`,
+       `agg`.`unpaidweek2`                AS `unpaidweek2`,
+       `agg`.`unpaidweek3`                AS `unpaidweek3`,
+       `agg`.`oldest`                     AS `oldest`,
+       `agg`.`newest`                     AS `newest`,
+       `agg`.`weeks_due`                  AS `weeks_due`
+FROM (`vinvoices` left join (select `vinvoices`.`repeating_invoice_id`                                    AS `repeating_invoice_id`,
+                                    sum(`vinvoices`.`total`)                                              AS `total_amount`,
+                                    sum(`vinvoices`.`amount_due`)                                         AS `amount_due`,
+                                    count(`vinvoices`.`invoice_id`)                                       AS `total_weeks`,
+                                    sum(`getUnpaidWeek`(`vinvoices`.`date`, `vinvoices`.`amount_due`, 1)) AS `unpaidweek1`,
+                                    sum(`getUnpaidWeek`(`vinvoices`.`date`, `vinvoices`.`amount_due`, 2)) AS `unpaidweek2`,
+                                    sum(`getUnpaidWeek`(`vinvoices`.`date`, `vinvoices`.`amount_due`, 3)) AS `unpaidweek3`,
+                                    min(`vinvoices`.`date`)                                               AS `oldest`,
+                                    max(`vinvoices`.`date`)                                               AS `newest`,
+                                    count((case when (`vinvoices`.`amount_due` > 0) then 1 end))          AS `weeks_due`
+                             from `vinvoices`
+                             group by `vinvoices`.`repeating_invoice_id`) `agg`
+      on ((`agg`.`repeating_invoice_id` = `vinvoices`.`repeating_invoice_id`)))
 GROUP BY `vinvoices`.`xerotenant_id`, `vinvoices`.`repeating_invoice_id`, `vinvoices`.`contact_id`;
 
 --
@@ -688,7 +775,12 @@ GROUP BY `vinvoices`.`xerotenant_id`, `vinvoices`.`repeating_invoice_id`, `vinvo
 -- Indexes for table `activity`
 --
 ALTER TABLE `activity`
-    ADD PRIMARY KEY (`activity_id`);
+    ADD PRIMARY KEY (`activity_id`),
+    ADD KEY `activity_date` (`activity_date`),
+    ADD KEY `activity_status` (`activity_status`),
+    ADD KEY `ckcontact_id` (`ckcontact_id`),
+    ADD KEY `contact_id` (`contact_id`),
+    ADD KEY `contract_id` (`contract_id`);
 
 --
 -- Indexes for table `addresses`
@@ -781,7 +873,9 @@ ALTER TABLE `tasks`
 -- Indexes for table `templates`
 --
 ALTER TABLE `templates`
-    ADD PRIMARY KEY (`id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `status` (`status`),
+    ADD KEY `message_type` (`messagetype`);
 
 --
 -- Indexes for table `tenancies`
@@ -892,7 +986,3 @@ ALTER TABLE `vehicles`
 ALTER TABLE `vehicle_log`
     MODIFY `id` int(9) NOT NULL AUTO_INCREMENT;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;

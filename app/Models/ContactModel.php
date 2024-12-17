@@ -64,7 +64,7 @@ class ContactModel extends BaseModel
                         WHERE `id` = :id ";
             $this->runQuery($sql, $save, 'update');
             $this->logInfo('saveXeroStub-existing', $save);
-            $this->logInfo('saveXeroStub-existing', $data['id']);
+            $this->logInfo('saveXeroStub-existing', ['data-id' => $data['id']]);
             return $data['id'];
         }
 
@@ -83,7 +83,7 @@ class ContactModel extends BaseModel
 
         $newId = $this->runQuery($sql, $data, 'insert');
         $this->logInfo('saveXeroStub-new', $data);
-        $this->logInfo('saveXeroStub-new', $newId);
+        $this->logInfo('saveXeroStub-new', ['new-id' => $newId]);
         return $newId;
     }
 

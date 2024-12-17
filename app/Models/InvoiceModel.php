@@ -248,7 +248,7 @@ class InvoiceModel extends BaseModel
         }
 
 
-        if (!empty($params['button']) && $params['button'] !== 'read') {
+        if (!empty($params['button']) && $params['button'] !== 'All') {
             $search_values = array_merge($search_values, [
                 '1week' => date('Y-m-d', strtotime('-7 days')),
                 '2weeks' => date('Y-m-d', strtotime('-14 days')),
@@ -256,23 +256,37 @@ class InvoiceModel extends BaseModel
                 'older' => date('Y-m-d', strtotime('-30 days')),
             ]);
 
+
+            // cant I change this to a match?
             switch ($params['button']) {
+                // reminders options
                 case '1week':
-                    $conditions[] = 'vold_debts.newest <= :1week AND vold_debts.newest > :2weeks';
+                    // they have an invoice that is 1 week old and it's unpaid
+                    //$conditions[] = 'vold_debts.newest <= :1week AND vold_debts.newest > :2weeks';
+                    $conditions[] = 'vold_debts.unpaidweek1 = 1';
                     break;
                 case '2weeks':
-                    $conditions[] = 'vold_debts.newest <= :2weeks AND vold_debts.newest > :3weeks';
+                    // they have an invoice that is 2 weeks old and it is unpaid
+                    //$conditions[] = 'vold_debts.newest <= :2weeks AND vold_debts.newest > :3weeks';
+                    $conditions[] = 'vold_debts.unpaidweek2 = 1';
                     break;
                 case '3weeks':
-                    $conditions[] = 'vold_debts.newest <= :3weeks AND vold_debts.newest > :older ';
+                    // they have an invoice that is 3 weeks old and it is unpaid
+                    //$conditions[] = 'vold_debts.newest <= :3weeks AND vold_debts.newest > :older ';
+                    $conditions[] = 'vold_debts.unpaidweek3 = 1';
                     break;
-                case 'older':
-                    $conditions[] = 'vold_debts.newest <= :older AND vold_debts.newest > 0';
+
+
+                // management options
+                case 'Weekly':
+                    // 3 most recent invoices are unpaid
+                case 'Fortnightly':
+                    // criteria?
+                case 'Monthly':
+                    // Last monthly invoice is 2 weeks overdue
+
             }
 
-        } else {
-            //todo
-            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
         }
 
         if (isset($_GET['repeating_invoice_id'])) {
@@ -281,14 +295,16 @@ class InvoiceModel extends BaseModel
         }
 
         // this clause defines what a bad debt actually is
-        //$conditions[] = "vold_debts.`amount_due` > 0 AND vold_debts.due_date < now()";
+        $conditions[] = "vold_debts.amount_due > 0";
 
 
         // use the view
         $sql = 'SELECT vold_debts.*,
-            contacts.id as ckcontact_id, contacts.name, contacts.first_name, contacts.last_name
+            contacts.id as ckcontact_id, contacts.name, contacts.first_name, contacts.last_name,
+            tenancies.xero_shortcode
             FROM `vold_debts`
-            LEFT JOIN contacts on (`vold_debts`.`contact_id` = `contacts`.`contact_id`)
+            LEFT JOIN contacts on (vold_debts.contact_id = contacts.contact_id)
+            LEFT JOIN tenancies on (vold_debts.xerotenant_id = tenancies.tenant_id)
             WHERE ' . implode(' AND ', $conditions) . "
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
@@ -328,9 +344,16 @@ class InvoiceModel extends BaseModel
                     'weeks_due' => $row['weeks_due'],
                     'total_weeks' => $row['total_weeks'],
                     'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
+                    'flags' => '',
                     'chart' => "$link<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' 
                                     alt=\"Bad Debt history for {$row['name']}\" 
-                                    width='300' height='125'/></a>"
+                                    width='300' height='125'/></a>",
+                    'sent' => $this->getSentToday($row['contact_id']),
+                    'actions' => "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' 
+                        data-tenancyid='{$row['xerotenant_id']}' data-contactid='{$row['contact_id']}' 
+                        data-contractid='{$row['contract_id']}' class='text-end'>View</a><br/>
+                        
+                        <a href='" . $this->getXeroDeeplink('Contact', $row) . "' target='_blank'>Open in Xero</a>"
                 ];
                 // for debugging
                 $output['row'] = $row;
@@ -369,30 +392,51 @@ class InvoiceModel extends BaseModel
      */
     protected function getFormattedContactCell($row): string
     {
-        $output = [];
+        $output = $icons = [];
         if (empty($row['name'])) $row['name'] = $row['contact_id'];
 
         $contacts = new ContactModel($this->pdo);
 
         $email = $contacts->get('contact_id', $row['contact_id']);
+        $this->logInfo('contact', $email);
 
-        $output[] = "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' 
-                        data-tenancyid='{$row['xerotenant_id']}' data-contactid='{$row['contact_id']}' 
-                        data-contractid='{$row['contract_id']}'>{$row['name']}</a>";
+        $link = $this->getContractOverviewLink('91',
+            ['contract_id' => $row['contract_id'], 'contact_id' => $row['contact_id']]
+        );
+        $output[] = "$link{$row['name']}</a>";
         $output[] = "<i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
 
-        if (isset($email['phones']) && count($email['phones'])) {
-            foreach ($email['phones'] as $phone) {
+        if (isset($email['Phone']) && count($email['Phone'])) {
+            foreach ($email['Phone'] as $phone) {
+                if ($phone['phone_type'] === 'MOBILE') {
+                    $icon = '<i class="fa-solid fa-mobile-screen-button"></i>';
+                } else {
+                    $icon = '<i class="fa-solid fa-phone"></i>';
+                }
                 if (!empty($phone['phone_number'])) {
-                    $output[] = "<a href='tel:{$phone['phone_area_code']}{$phone['phone_number']}'>({$phone['phone_area_code']}) {$phone['phone_number']}</a>";
+                    $output[] = "$icon <a href='tel:{$phone['phone_area_code']}{$phone['phone_number']}'>({$phone['phone_area_code']}) {$phone['phone_number']}</a>";
                 }
             }
         }
+
+        // should activity be saved instead of recreated
         $activity = new ActivityModel($this->pdo);
 
-        $output[] = "<i class='fa-solid fa-comment-sms'></i> " . $activity->getLastMessageDate($row['contact_id']);
+        $output[] = "<i class='fa-solid fa-comment-sms'></i> " . $this->readableDate($activity->getLastMessageDate($row['contact_id']));
 
         return implode('<br/>', $output);
+    }
+
+    protected function getSentToday($contact_id): string
+    {
+        // should activity be saved instead of recreated
+        $activity = new ActivityModel($this->pdo);
+
+        $sentToday = $activity->getSentToday($contact_id);
+        if ($sentToday) {
+            return "<span class='text-success'>" . $activity->getSentToday($contact_id) . '</span>';
+        }
+        return '';
     }
 
     //https://ckm:8825/run.php?endpoint=image&imageType=baddebt&contract_id=191

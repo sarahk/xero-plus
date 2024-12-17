@@ -46,6 +46,13 @@ namespace App\Views\modals;
                             </div>
                         </div>
                         <div class="row mb-3">
+                            <label for="contactName" class="col-sm-3 col-form-label">Mobile</label>
+
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="contactMobile">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col-12">
                                 <p class="small" id="internalData"></p>
                             </div>
