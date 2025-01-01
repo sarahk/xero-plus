@@ -303,9 +303,11 @@ try {
 
         case "RepeatingInvoices":
             switch ($action) {
-                case "Read":
+                case "ReadAll":
                     // https://cabinkingmanagement:8890/xero.php?endpoint=RepeatingInvoices&action=Read
-                    echo $xero->getRepeatingInvoice($xeroTenantId, $apiInstance);
+                    break;
+                case 'Read':
+                    echo $xero->getRepeatingInvoice($xeroTenantId, $repeatingInvoiceId);
                     break;
                 default:
                     echo $action . " action not supported in API";

@@ -1478,11 +1478,15 @@ class JsonClass
 
     }
 
-    public function getBadDebtsList($returnObj = false): string
+    public function getBadDebtsList($action): string
     {
         $params = Utilities::getParams();
         $invoice = new InvoiceModel($this->pdo);
-        $output = $invoice->listBadDebts($params);
+        if ($action === 'BadDebts') {
+            $output = $invoice->listBadDebts($params);
+        } else {
+            $output = $invoice->listBadDebtsManagement($params);
+        }
         return json_encode($output);
     }
 

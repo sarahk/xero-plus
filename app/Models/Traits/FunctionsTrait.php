@@ -155,10 +155,49 @@ trait FunctionsTrait
     protected function getXeroDeeplink(string $type, array $data): string
     {
         $base = "https://go.xero.com/organisationlogin/default.aspx?shortcode={$data['xero_shortcode']}";
-        
+
         return match ($type) {
             'Contact' => "$base&redirecturl=/Contacts/View/{$data['contact_id']}",
             default => '',
         };
     }
+
+    protected function getTenanciesWhere(array $params, null|string $altTable = null): string
+    {
+        // use altTable when the xerotenant_id is on left joined table
+        //$table = empty($altTable) ? $this->table : $altTable;
+        $table = $altTable ?? $this->table;
+
+        if (count($params['tenancies']) == 1) {
+            return "`$table`.`xerotenant_id` = '{$params['tenancies'][0]}'";
+        } else {
+            return "`$table`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
+        }
+    }
+
+    protected function getCaseStatement($field, $array): string
+    {
+        $bits = [];
+        foreach ($array as $row) {
+            $bits[] = "WHEN `$field` = '{$row['name']}' THEN '{$row['icon']}' ";
+        }
+
+        return "CASE " . implode($bits) . ' END ';
+    }
+
+    protected function cleanSql(string $sql): string
+    {
+        // Replace escaped quotes with standard double quotes
+        $output = str_replace(['\\"', "\\'"], ['"', "'"], $sql);
+
+        // Replace newlines, carriage returns, and tabs with a single space
+        $output = str_replace(["\n", "\r", "\t"], ' ', $output);
+
+        // Replace multiple spaces with a single space
+        $output = preg_replace('/\s+/', ' ', $output);
+        
+        // Trim leading and trailing spaces
+        return trim($output);
+    }
+
 }

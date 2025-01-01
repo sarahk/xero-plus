@@ -61,24 +61,45 @@ class ContractModel extends BaseModel
      */
     public function saveXeroStub(array $data): int
     {
-        $date = date('Y-m-d H:i:s');
-        $sql = "INSERT INTO `contracts` ( 
+        $data['updated'] = date('Y-m-d H:i:s');
+
+        $contract_id = $this->field('contract_id', 'repeating_invoice_id', $data['repeating_invoice_id']);
+        $this->debug($contract_id);
+        $sql = "INSERT INTO `contracts` (
                     `repeating_invoice_id`,
                     `xerotenant_id`,
-                    `contact_id` ,
+                    `contact_id`,
                     `ckcontact_id`,
                     `reference`,
                     `schedule_unit`,
                     `total`,
                     `tax_type`,
-                    `stub`, 
-                     `date`,
-                     `updated`)
-                    VALUES 
+                    `stub`,
+                    `date`,
+                    `updated`
+                )
+                VALUES 
                     (:repeating_invoice_id, :xerotenant_id, :contact_id, :ckcontact_id,
-                     :reference, :schedule_unit, :total, :tax_type, :stub, '$date', '$date');";
+                     :reference, :schedule_unit, :total, :tax_type, :stub, :updated, :updated);";
 
         return $this->runQuery($sql, $data, 'insert');
+    }
+
+    public function updateXeroStub(int $contract_id, array $data): int
+    {
+        $data['contract_id'] = $contract_id;
+        $data['updated'] = date('Y-m-d H:i:s');
+
+        $sql = "UPDATE contracts SET 
+                    `reference` = :reference,
+                    `schedule_unit` = :schedule_unit,
+                    `total` = :total,
+                    `tax_type` = :tax_type,
+                    `stub` = 0,
+                    `updated` = :updated
+                    WHERE contract_id = :contract_id and repeating_invoice_id = :repeating_invoice_id;";
+        $this->runQuery($sql, $data, 'update');
+        return $contract_id;
     }
 
     //  C O N T R A C T
@@ -210,6 +231,7 @@ class ContractModel extends BaseModel
                     `contracts`.`reference`, contracts.date,`delivery_date`, `pickup_date` , `scheduled_delivery_date`,
                     contracts.`address_line1`, contracts.`address_line2`, contracts.city, contracts.`postal_code`,
                     `contracts`.`cabin_type`, contracts.enquiry_rating,
+                    contracts.schedule_unit,
 	                `contacts`.`id` as `ckcontact_id`, `contacts`.`name`, `contacts`.`email_address`,
                     `contracts`.`xerotenant_id`,
                     (SELECT SUM(`amount_due`) 
@@ -235,6 +257,7 @@ class ContractModel extends BaseModel
 
         $output['recordsTotal'] = $this->getRecordsTotal($tenancies);
         $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
+        $output['result'] = $result;
 
         if (count($result) > 0) {
             foreach ($result as $row) {
@@ -259,7 +282,8 @@ class ContractModel extends BaseModel
                     'date' => $this->getPrettyDate($row['date'] ?? ''),
                     'scheduled_delivery_date' => $this->getPrettyDate($row['scheduled_delivery_date'] ?? ''),
                     'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
-                    'rating' => EnquiryRating::getImage($row['enquiry_rating'] ?? 0)
+                    'rating' => EnquiryRating::getImage($row['enquiry_rating'] ?? 0),
+                    'schedule_unit' => $row['schedule_unit'] ?? '',
                 ];
 // for debugging
                 $output['row'] = $row;

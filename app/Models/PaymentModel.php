@@ -12,7 +12,7 @@ class PaymentModel extends BaseModel
     protected array $hasMany = [];
 
     protected array $nullable = [];
-    protected array $saveKeys = ['payment_id', 'invoice_id', 'date', 'status', 'amount', 'reference',
+    protected array $saveKeys = ['payment_id', 'invoice_id', 'contract_id', 'date', 'status', 'amount', 'reference',
         'is_reconciled', 'updated', 'is_batch', 'updated_date_utc', 'payment_type', 'xerotenant_id', 'contact_id'];
 
     protected array $updateKeys = ['updated', 'is_reconciled', 'status'];

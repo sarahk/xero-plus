@@ -730,13 +730,15 @@ class XeroClass
      * @param string $xeroTenantName
      * @return int
      */
-    public function getInvoiceRefresh(string $xeroTenantName): int
+    public function getInvoiceRefresh(string $xeroTenantName, null|string $updated_date_utc = null): int
     {
 
         $xeroTenantId = $this->getXeroTenantId($xeroTenantName);
 
         $objInvoice = new InvoiceModel($this->pdo);
-        $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
+        if (is_null($updated_date_utc)) {
+            $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
+        }
         $data = $this->getXeroInvoices($xeroTenantId, $updated_date_utc);
 
         $k = 0;
@@ -773,7 +775,8 @@ class XeroClass
                 //$ckcontact_id = $this->getSingleContact($xeroTenantId, $contact_id);
                 $ckcontact_id = $this->saveSingleContactStub($xeroTenantId, $row);
                 //$contract_id = $this->getSingleRepeatingInvoice($xeroTenantId, $row->getRepeatingInvoiceId());
-                $contract_id = $this->saveSingleRepeatingInvoiceStub($xeroTenantId, $row, $ckcontact_id, $contact_id);
+
+                $contract_id = $this->saveSingleRepeatingInvoiceStub($xeroTenantId, $row, $ckcontact_id);
                 $this->handleJoins('contract', $ckcontact_id, $contract_id);
 
                 $values['contract_id'] = $contract_id;
@@ -782,8 +785,8 @@ class XeroClass
 
                 $this->logInfo('getInvoiceRefresh: values', $values);
                 $this->logInfo('getInvoiceRefresh: Row: ', [$row]);
-                $objInvoice->prepAndSave($values);
 
+                $objInvoice->prepAndSave($values);
             }
         }
 
@@ -1232,22 +1235,16 @@ class XeroClass
         return $str;
     }
 
-    public function getRepeatingInvoice(string $xeroTenantId, string $repeating_invoice_id)
+    public function getRepeatingInvoice(string $xeroTenantId, string $repeating_invoice_id): array
     {
-        $str = '';
-
-        //[RepeatingInvoices:Read]
-        // getRepeatingInvoices($xero_tenant_id, $where = null, $order = null)
-        //
-        $where = $repeating_invoice_id;
-        $order = null;
-
-        $result = $this->apiInstance->getRepeatingInvoices($xeroTenantId, $where, $order);
+        $result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
+        $this->debug($result);
         //[/RepeatingInvoices:Read]
-        $str = $str . "Get RepeatingInvoices: " . count($result->getRepeatingInvoices()) . "<br>";
-        $this->debug($result->getRepeatingInvoices());
-
-        return $result->getRepeatingInvoices()[0];
+        $output = [
+            'row' => $result->getRepeatingInvoices()[0],
+            'info' => "Get RepeatingInvoice: " . count($result->getRepeatingInvoices())
+        ];
+        return $output;
 
     }
 
@@ -1262,7 +1259,7 @@ class XeroClass
         "NextScheduledDateString": "2023-10-01"
       }
      */
-    protected function getScheduleFromXeroObject($schedule): array
+    public function getScheduleFromXeroObject($schedule): string
     {
         // for now, we only need the unit
         $parts = [
@@ -1270,17 +1267,18 @@ class XeroClass
             'schedule_unit' => $schedule->getUnit(),
         ];
 
+
         if ($parts['schedule_period'] == 1) {
             $output = $parts['schedule_unit'];
         } else {
             $joined = implode(' ', $parts);
             $output = match ($joined) {
-                '2 WEEKLY' => 'FORTNIGHT',
+                '2 WEEKLY' => 'FORTNIGHTLY',
                 default => $joined
             };
         }
 
-        return ['schedule_unit' => $output];
+        return $output;
     }
 
 
@@ -1289,20 +1287,23 @@ class XeroClass
         $result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
         //[/RepeatingInvoices:Read]
         $contact_id = $result[0]->getContact()->getContactId();
+        $row = $result[0];
         $lineItems = $result[0]->getLineItems();
 
         $output = [
             'repeating_invoice_id' => $repeating_invoice_id,
             'contact_id' => $contact_id,
             'ckcontact_id' => $ckcontact_id,
-            'reference' => $result[0]->getReference(),
-            'total' => $result[0]->getTotal(),
+            'reference' => $row->getReference(),
+            'total' => $row->getTotal(),
             'tax_type' => $lineItems[0]->getTaxType(),
             'stub' => 0,
-            'xerotenant_id' => $xeroTenantId
+            'xerotenant_id' => $xeroTenantId,
+            'raw_schedule_unit' => $row['schedule']->getPeriod() . ' ' . $row['schedule']->getUnit(),
+            'schedule_unit' => $this->getScheduleFromXeroObject($row['schedule'])
         ];
 
-        return array_merge($output, $this->getScheduleFromXeroObject($result[0]['schedule']));
+        return $output;
     }
 
 
@@ -1316,16 +1317,25 @@ class XeroClass
      */
     public function saveSingleRepeatingInvoiceStub(string $xeroTenantId, $row, int $ckcontact_id): int
     {
-        $repeatingInvoiceId = $row->getRepeatingInvoiceId();
+        // in testing it might be an array
+        if (is_object($row)) {
+            $repeatingInvoiceId = $row->getRepeatingInvoiceId();
+        } else {
+            $repeatingInvoiceId = $row['repeating_invoice_id'];
+        }
 
         $objContract = new ContractModel($this->pdo);
         $id = $objContract->field('contract_id', 'repeating_invoice_id', $repeatingInvoiceId);
-        if ($id) return $id;
+        //if ($id) return $id;
 
         $contract = $this->getSingleRepeatingInvoiceStub($xeroTenantId, $repeatingInvoiceId, $ckcontact_id);
 
         //$this->debug(['getSingleRepeatingInvoiceStub' => $contract]);
-
+        if ($id) {
+            $objContract->updateXeroStub($id, $contract);
+            return $id;
+        }
+        //else
         return $objContract->saveXeroStub($contract);
     }
 

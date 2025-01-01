@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ExtraFunctions;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -207,6 +208,7 @@ class InvoiceModel extends BaseModel
         return str_replace('DIR', 'DESC', $columns[2]);
     }
 
+
     /**
      * @param array $params <mixed>
      * @return array<mixed>
@@ -222,295 +224,6 @@ class InvoiceModel extends BaseModel
         return $result[0];
     }
 
-    /**
-     * @param array $params <mixed>
-     * @return array<mixed>
-     */
-    public function listBadDebts(array $params): array
-    {
-        $this->table = 'vold_debts';
-        $tenancyList = $this->getTenancyList();
-
-        $search_values = [];
-        $tenancies = $this->getTenanciesWhere($params);
-        $order = $this->getOrderByBadDebts($params);
-
-        $conditions = [$tenancies];
-        if (!empty($params['search'])) {
-            $search = [
-                "`contacts`.`name` LIKE :search ",
-                "`contacts`.`last_name` LIKE :search ",
-                "`contacts`.`first_name` LIKE :search "
-            ];
-            $search_values['search'] = '%' . $params['search'] . '%';
-
-            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
-        }
-
-
-        if (!empty($params['button']) && $params['button'] !== 'All') {
-            $search_values = array_merge($search_values, [
-                '1week' => date('Y-m-d', strtotime('-7 days')),
-                '2weeks' => date('Y-m-d', strtotime('-14 days')),
-                '3weeks' => date('Y-m-d', strtotime('-21 days')),
-                'older' => date('Y-m-d', strtotime('-30 days')),
-            ]);
-
-
-            // cant I change this to a match?
-            switch ($params['button']) {
-                // reminders options
-                case '1week':
-                    // they have an invoice that is 1 week old and it's unpaid
-                    //$conditions[] = 'vold_debts.newest <= :1week AND vold_debts.newest > :2weeks';
-                    $conditions[] = 'vold_debts.unpaidweek1 = 1';
-                    break;
-                case '2weeks':
-                    // they have an invoice that is 2 weeks old and it is unpaid
-                    //$conditions[] = 'vold_debts.newest <= :2weeks AND vold_debts.newest > :3weeks';
-                    $conditions[] = 'vold_debts.unpaidweek2 = 1';
-                    break;
-                case '3weeks':
-                    // they have an invoice that is 3 weeks old and it is unpaid
-                    //$conditions[] = 'vold_debts.newest <= :3weeks AND vold_debts.newest > :older ';
-                    $conditions[] = 'vold_debts.unpaidweek3 = 1';
-                    break;
-
-
-                // management options
-                case 'Weekly':
-                    // 3 most recent invoices are unpaid
-                case 'Fortnightly':
-                    // criteria?
-                case 'Monthly':
-                    // Last monthly invoice is 2 weeks overdue
-
-            }
-
-        }
-
-        if (isset($_GET['repeating_invoice_id'])) {
-            $conditions[] = "`vold_debts`.`repeating_invoice_id` = :repeating_invoice_id";
-            $search_values['repeating_invoice_id'] = $_GET['repeating_invoice_id'];
-        }
-
-        // this clause defines what a bad debt actually is
-        $conditions[] = "vold_debts.amount_due > 0";
-
-
-        // use the view
-        $sql = 'SELECT vold_debts.*,
-            contacts.id as ckcontact_id, contacts.name, contacts.first_name, contacts.last_name,
-            tenancies.xero_shortcode
-            FROM `vold_debts`
-            LEFT JOIN contacts on (vold_debts.contact_id = contacts.contact_id)
-            LEFT JOIN tenancies on (vold_debts.xerotenant_id = tenancies.tenant_id)
-            WHERE ' . implode(' AND ', $conditions) . "
-            ORDER BY $order 
-            LIMIT {$params['start']}, {$params['length']}";
-
-
-        //  (SELECT CONCAT(phones.phone_area_code, ' ', phones.phone_number) as `phone` from `phones` WHERE phones.ckcontact_id = contacts.id ORDER BY `phone_type` DESC LIMIT 1) AS phone,
-
-        $bad_debts = $this->runQuery($sql, $search_values);
-
-        $output = $params;
-        $output['mainquery'] = $sql;
-        $output['mainsearchvals'] = $search_values;
-        // adds in tenancies because it doesn't use $conditions
-        $recordsTotal = "SELECT count(repeating_invoice_id) FROM `vold_debts` 
-                WHERE $tenancies";
-
-        $recordsFiltered = "SELECT count(repeating_invoice_id) as `filtered` 
-                FROM `vold_debts` 
-                WHERE " . implode(' AND ', $conditions);
-
-
-        $output['recordsTotal'] = $this->runQuery($recordsTotal, [], 'column');
-        $output['recordsFiltered'] = $this->runQuery($recordsFiltered, $search_values, 'column');
-
-
-        if (count($bad_debts) > 0) {
-            foreach ($bad_debts as $row) {
-
-                // overview page
-                $link = $this->getContractOverviewLink(91, $row);
-
-                $output['data'][] = [
-                    'DT_RowId' => $row['repeating_invoice_id'],
-                    'contact' => $this->getFormattedContactCell($row),
-                    'name' => $row['name'],
-                    'amount_due' => $link . $row['amount_due'] . '</a>',
-                    'weeks_due' => $row['weeks_due'],
-                    'total_weeks' => $row['total_weeks'],
-                    'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
-                    'flags' => '',
-                    'chart' => "$link<img src='/run.php?endpoint=image&imageType=baddebt&contract_id={$row['contract_id']}' 
-                                    alt=\"Bad Debt history for {$row['name']}\" 
-                                    width='300' height='125'/></a>",
-                    'sent' => $this->getSentToday($row['contact_id']),
-                    'actions' => "<a href='#' data-bs-toggle='modal' data-bs-target='#contactSingle' 
-                        data-tenancyid='{$row['xerotenant_id']}' data-contactid='{$row['contact_id']}' 
-                        data-contractid='{$row['contract_id']}' class='text-end'>View</a><br/>
-                        
-                        <a href='" . $this->getXeroDeeplink('Contact', $row) . "' target='_blank'>Open in Xero</a>"
-                ];
-                // for debugging
-                $output['row'] = $row;
-            }
-
-        }
-        return $output;
-    }
-
-    public function getChartURL(string $contract_id): string
-    {
-        $data = $this->getChartData($contract_id);
-
-        $parts = [
-            'iid=' . $contract_id,
-            'chco=ff0000',
-            'chs=300x125',
-            'cht=lc',
-            'chxt=x,y',  // label the axis
-            'chxl=' . $data['xaxis'] . $data['yaxis'],
-            'chm=B,FCECF4,0,0,0', // fill
-            'chma=0,0,20,0', //margins
-            'chof=webp',
-            'chd=a:' . $data['data'],
-        ];
-
-        //lc - chart has scale
-        //ls - no scale
-
-        return 'https://image-charts.com/chart?' . implode('&', $parts) . '&';
-    }
-
-    /**
-     * @param $row
-     * @return string
-     */
-    protected function getFormattedContactCell($row): string
-    {
-        $output = $icons = [];
-        if (empty($row['name'])) $row['name'] = $row['contact_id'];
-
-        $contacts = new ContactModel($this->pdo);
-
-        $email = $contacts->get('contact_id', $row['contact_id']);
-        $this->logInfo('contact', $email);
-
-        $link = $this->getContractOverviewLink('91',
-            ['contract_id' => $row['contract_id'], 'contact_id' => $row['contact_id']]
-        );
-        $output[] = "$link{$row['name']}</a>";
-        $output[] = "<i class='fa-solid fa-at'></i> <a href='mailto:{$email['contacts']['email_address']}'>{$email['contacts']['email_address']}</a>";
-
-        if (isset($email['Phone']) && count($email['Phone'])) {
-            foreach ($email['Phone'] as $phone) {
-                if ($phone['phone_type'] === 'MOBILE') {
-                    $icon = '<i class="fa-solid fa-mobile-screen-button"></i>';
-                } else {
-                    $icon = '<i class="fa-solid fa-phone"></i>';
-                }
-                if (!empty($phone['phone_number'])) {
-                    $output[] = "$icon <a href='tel:{$phone['phone_area_code']}{$phone['phone_number']}'>({$phone['phone_area_code']}) {$phone['phone_number']}</a>";
-                }
-            }
-        }
-
-        // should activity be saved instead of recreated
-        $activity = new ActivityModel($this->pdo);
-
-        $output[] = "<i class='fa-solid fa-comment-sms'></i> " . $this->readableDate($activity->getLastMessageDate($row['contact_id']));
-
-        return implode('<br/>', $output);
-    }
-
-    protected function getSentToday($contact_id): string
-    {
-        // should activity be saved instead of recreated
-        $activity = new ActivityModel($this->pdo);
-
-        $sentToday = $activity->getSentToday($contact_id);
-        if ($sentToday) {
-            return "<span class='text-success'>" . $activity->getSentToday($contact_id) . '</span>';
-        }
-        return '';
-    }
-
-    //https://ckm:8825/run.php?endpoint=image&imageType=baddebt&contract_id=191
-    protected function getChartData(string $contract_id): array
-    {
-        $xaxis = [
-            'full' => '0:|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16',
-            'slim' => '0:||2||4||6||8||10||12||14||16',
-            'slim-r' => '0:|16||14||12||10||8||6||4||2'
-        ];
-
-        //$contract = new ContractModel($this->pdo);
-        //$contact_id = $contract->field('contact_id', 'contract_id', $contract_id);
-
-        $sql = "SELECT 
-                    weeks.week_number,
-                        (
-                        SELECT SUM(invoices.total) 
-                        FROM invoices 
-                        WHERE invoices.contract_id = :contract_id
-                          AND FLOOR(DATEDIFF(CURDATE(), invoices.date) / 7) <= weeks.week_number
-                    ) AS `owing`,
-                    (
-                        SELECT SUM(payments.amount) 
-                        FROM payments 
-                        WHERE payments.contract_id = :contract_id
-                          AND FLOOR(DATEDIFF(CURDATE(), payments.date) / 7) <= weeks.week_number
-                    ) AS `paid`
-                FROM 
-                    weeks";
-
-        $output = array_fill(0, 16, 0);
-
-        $result = $this->runQuery($sql, ['contract_id' => $contract_id]);
-        if (count($result)) {
-            foreach ($result as $row) {
-                $output[$row['week_number']] = $row['owing'] - $row['paid'];
-            }
-        }
-
-
-        $max = ceil(max($output) / 10) * 10;
-        $min = floor(min($output) / 10) * 10;
-        $mid = round($min + (($max - $min) / 2));
-        return [
-            'data' => implode(',', array_reverse($output)),
-            'xaxis' => $xaxis['slim-r'],
-            'yaxis' => "1:||$min||$mid||$max"
-        ];
-
-
-//        $this->getStatement($sql);
-//        try {
-//            $this->statement->execute(['contract1' => $contract_id, 'contract2' => $contract_id]);
-//            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-//            $data = array_column($result, 'totaldue');
-//            $data = array_reverse($data);
-//
-//            $max = ceil(max($data) / 10) * 10;
-//            //$number = ceil($input / 10) * 10;
-//            $min = floor(min($data) / 10) * 10;
-//            $mid = round($min + (($max - $min) / 2));
-//            return [
-//                'data' => implode(',', $data),
-//                'xaxis' => $xaxis['slim'],
-//                'yaxis' => "1:||$min||$mid||$max"
-//            ];
-//
-//        } catch (PDOException $e) {
-//            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-//            $this->statement->debugDumpParams();
-//        }
-        //return [];
-    }
 
     public function getPDF(string $invoice_id): void
     {
@@ -565,6 +278,104 @@ class InvoiceModel extends BaseModel
             $this->statement->debugDumpParams();
         }
         return 0;
+    }
+
+    public function getChartURL(string $contract_id): string
+    {
+        $data = $this->getChartData($contract_id);
+
+        $parts = [
+            'iid=' . $contract_id,
+            'chco=ff0000',
+            'chs=300x125',
+            'cht=lc',
+            'chxt=x,y',  // label the axis
+            'chxl=' . $data['xaxis'] . $data['yaxis'],
+            'chm=B,FCECF4,0,0,0', // fill
+            'chma=0,0,20,0', //margins
+            'chof=webp',
+            'chd=a:' . $data['data'],
+        ];
+
+        //lc - chart has scale
+        //ls - no scale
+
+        return 'https://image-charts.com/chart?' . implode('&', $parts) . '&';
+    }
+
+    //https://ckm:8825/run.php?endpoint=image&imageType=baddebt&contract_id=191
+    public function getChartData(string $contract_id): array
+    {
+        $xaxis = [
+            'full' => '0:|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16',
+            'slim' => '0:||2||4||6||8||10||12||14||16',
+            'slim-r' => '0:|16||14||12||10||8||6||4||2'
+        ];
+
+        //$contract = new ContractModel($this->pdo);
+        //$contact_id = $contract->field('contact_id', 'contract_id', $contract_id);
+
+        $sql = "SELECT 
+                    weeks.week_number,
+                        (
+                        SELECT SUM(invoices.total)
+                        FROM invoices 
+                        WHERE invoices.contract_id = :contract_id
+                          AND FLOOR(DATEDIFF(CURDATE(), invoices.date) / 7) >= weeks.week_number
+                    ) AS `owing`,
+                    (
+                        SELECT SUM(payments.amount) 
+                        FROM payments 
+                        WHERE payments.contract_id = :contract_id
+                          AND FLOOR(DATEDIFF(CURDATE(), payments.date) / 7) >= weeks.week_number
+                    ) AS `paid`
+                FROM 
+                    weeks
+                    ORDER BY week_number ASC";
+
+        $output = array_fill(0, 16, 0);
+
+        $result = $this->runQuery($sql, ['contract_id' => $contract_id]);
+
+        if (count($result)) {
+            foreach ($result as $row) {
+                $output[$row['week_number']] = $row['owing'] - $row['paid'];
+            }
+        }
+        var_dump($output);
+
+        $max = ceil(max($output) / 10) * 10;
+        $min = floor(min($output) / 10) * 10;
+        $mid = round($min + (($max - $min) / 2));
+        return [
+            'data' => implode(',', array_reverse($output)),
+            'xaxis' => $xaxis['slim-r'],
+            'yaxis' => "1:||$min||$mid||$max"
+        ];
+
+
+//        $this->getStatement($sql);
+//        try {
+//            $this->statement->execute(['contract1' => $contract_id, 'contract2' => $contract_id]);
+//            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
+//            $data = array_column($result, 'totaldue');
+//            $data = array_reverse($data);
+//
+//            $max = ceil(max($data) / 10) * 10;
+//            //$number = ceil($input / 10) * 10;
+//            $min = floor(min($data) / 10) * 10;
+//            $mid = round($min + (($max - $min) / 2));
+//            return [
+//                'data' => implode(',', $data),
+//                'xaxis' => $xaxis['slim'],
+//                'yaxis' => "1:||$min||$mid||$max"
+//            ];
+//
+//        } catch (PDOException $e) {
+//            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
+//            $this->statement->debugDumpParams();
+//        }
+        //return [];
     }
 
     // only available on invoices for pest testing

@@ -153,7 +153,9 @@ class Utilities
         try {
             $user = 'xeroplus';
             $pass = 'cabins4all';
-            return new PDO('mysql:host=localhost;dbname=xeroplus;charset=utf8mb4', $user, $pass);
+            $pdo = new PDO('mysql:host=localhost;dbname=xeroplus;charset=utf8mb4', $user, $pass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $pdo;
 //"mysql:host=$host;dbname=$db;charset=utf8mb4"
         } catch (PDOException $e) {
             print 'Error!: ' . $e->getMessage() . '<br/>';
@@ -301,7 +303,7 @@ class Utilities
             'data' => [],
             'draw' => $_GET['draw'] ?? 1,
             'start' => $_GET['start'] ?? 0,
-            'length' => $_GET['length'] ?? 10,
+            'length' => ($_GET['length'] ?? 10) == -1 ? 10 : ($_GET['length'] ?? 10),
             'search' => $_GET['search']['value'] ?? '',
             'order' => $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']],
             'invoice_status' => $_GET['invoice_status'] ?? '',

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Dec 04, 2024 at 12:35 AM
+-- Generation Time: Dec 18, 2024 at 07:08 AM
 -- Server version: 5.7.44
--- PHP Version: 8.3.9
+-- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -322,11 +322,13 @@ CREATE TABLE `templates`
 
 CREATE TABLE `tenancies`
 (
-    `tenant_id` char(36)    NOT NULL,
-    `name`      varchar(25) NOT NULL,
-    `shortname` varchar(25) NOT NULL,
-    `colour`    varchar(20) NOT NULL,
-    `sortorder` int(3)      NOT NULL
+    `tenant_id`      char(36)    NOT NULL,
+    `name`           varchar(25) NOT NULL,
+    `shortname`      varchar(25) NOT NULL,
+    `colour`         varchar(20) NOT NULL,
+    `sortorder`      int(3)      NOT NULL,
+    `xero_shortcode` varchar(10) DEFAULT NULL,
+    `bank_account`   varchar(45) DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -334,10 +336,10 @@ CREATE TABLE `tenancies`
 -- Dumping data for table `tenancies`
 --
 
-INSERT INTO `tenancies` (`tenant_id`, `name`, `shortname`, `colour`, `sortorder`)
-VALUES ('ae75d056-4af7-484d-b709-94439130faa4', 'Cabin King', 'auckland', 'yellow', 1),
-       ('e95df930-c903-4c58-aee9-bbc21b78bde7', 'Cabin King Waikato', 'waikato', 'cyan', 2),
-       ('eafd3b39-46c7-41e4-ba4e-6ea6685e39f7', 'Cabin King BoP', 'bop', 'purple', 3);
+INSERT INTO `tenancies` (`tenant_id`, `name`, `shortname`, `colour`, `sortorder`, `xero_shortcode`, `bank_account`)
+VALUES ('ae75d056-4af7-484d-b709-94439130faa4', 'Cabin King', 'auckland', 'yellow', 1, '!srcj-', NULL),
+       ('e95df930-c903-4c58-aee9-bbc21b78bde7', 'Cabin King Waikato', 'waikato', 'cyan', 2, '!VGQx-', NULL),
+       ('eafd3b39-46c7-41e4-ba4e-6ea6685e39f7', 'Cabin King BoP', 'bop', 'purple', 3, '!p90WY', NULL);
 
 -- --------------------------------------------------------
 

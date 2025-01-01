@@ -8,6 +8,8 @@ namespace App;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
+use App\Models\Query\BadDebtsManagementModel;
+use App\Models\Query\BadDebtsReminderModel;
 use App\StorageClass;
 use App\JsonClass;
 use App\Models\TemplateModel;
@@ -282,7 +284,12 @@ try {
                     echo $json->getInvoiceList();
                     break;
                 case 'BadDebts':
-                    echo $json->getBadDebtsList();
+                    $objBDR = new BadDebtsReminderModel();
+                    echo $objBDR->list();
+                    break;
+                case 'BadDebtsManagement':
+                    $objBDM = new BadDebtsManagementModel();
+                    echo $objBDM->list();
                     break;
 
                 case 'BadDebtTotal':

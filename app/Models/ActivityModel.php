@@ -7,7 +7,7 @@ use Twilio\Rest\Client;
 class ActivityModel extends BaseModel
 {
     protected string $insert = 'INSERT INTO activity
-        (activity_type, activity_date, activity_status, ckcontact_id, contact_id, `subject`, `body`)
+        (activity_type, activity_date, activity_status, ckcontact_id, contact_id,subject, body)
         VALUES
         (:activity_type, :activity_date, :activity_status, :ckcontact_id, :contact_id, :subject, :body)';
 
@@ -176,10 +176,11 @@ class ActivityModel extends BaseModel
             'subject' => ''
         ];
         foreach ($result as $row) {
-            $save['contract_id'] = $row['contract_id'];
+            $this->logInfo('Row', $row);
+            //$save['contract_id'] = $row['contract_id'];
             $save['ckcontact_id'] = $row['ckcontact_id'];
             $save['contact_id'] = $row['contact_id'];
-            $save['body'] = str_replace('[first_name]', $row['first_name'] ?? $row['name'], $data['sms_body']);
+            $save['body'] = str_replace('[first_name]', $row['first_name'] ?? $row['name'] ?? '', $data['sms_body']);
             $this->runQuery($this->insert, $save, 'insert');
         }
     }

@@ -20,6 +20,7 @@ require_once '../vendor/autoload.php';
 
 $pdo = Utilities::getPDO();
 $storage = new StorageClass();
+$storage->saveUrl($_SERVER['REQUEST_URI']);
 $provider = Utilities::getProvider();
 
 // if not logged in, will show the login button

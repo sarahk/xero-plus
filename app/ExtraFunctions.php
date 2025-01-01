@@ -7,6 +7,8 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
+use Throwable;
+use RuntimeException;
 
 class ExtraFunctions
 {
@@ -68,6 +70,46 @@ class ExtraFunctions
         }
         echo "</li>";
     }
+
+    public static function debugTable($data): void
+    {
+        try {
+            echo '<table border="1" cellpadding="5" cellspacing="0">';
+            foreach ($data as $k => $row) {
+                if ($k === 1) {
+                    $keys = array_keys($row);
+                    self::debugTableRow($keys, 'th');
+                }
+
+                //todo get the real value using one of the xero processes to check they work
+                self::debugTableRow($row);
+
+            }
+            echo '</tbody></table>';
+            echo '<hr>';
+        } catch (Throwable $e) {
+            ExtraFunctions::debug($row);
+            throw new RuntimeException($e->getMessage(), (int)$e->getCode());
+        }
+    }
+
+    protected static function debugTableRow(array $row, string $tag = 'td'): void
+    {
+        $startTag = "<{$tag}>";
+        $endTag = "</{$tag}>";
+
+        if ($tag === 'th') {
+            echo '<thead>';
+        }
+        echo '<tr>';
+        echo $startTag . implode($endTag . $startTag, $row) . $endTag;
+        echo '</tr>';
+        if ($tag === 'th') {
+            echo '</thead><tbody>';
+        }
+
+    }
+
 
     public static function getElapsedTime($start, $end = null): string
     {

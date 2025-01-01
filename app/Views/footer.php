@@ -85,7 +85,7 @@ include 'Layouts/scripts.php';
 <script type="text/javascript" src="/js/contracts.js"></script>
 <script type="text/javascript" src="/js/enquiry.js"></script>
 <script type="text/javascript" src="/js/invoices.js"></script>
-<script type="text/javascript" src="/js/bad_debts.js"></script>
+<script type="module" src="/js/bad_debts.js"></script>
 <script type="text/javascript" src="/js/templates.js"></script>
 <script type="text/javascript" src="/js/tasks.js"></script>
 <script type="text/javascript" src="/js/vehicles.js"></script>

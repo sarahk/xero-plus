@@ -110,4 +110,14 @@ class StorageClass
             return true;
         }
     }
+
+    public function saveUrl($url): void
+    {
+        $_SESSION['ckm']['url'] = '.' . $url;
+    }
+
+    public function getUrl(): string
+    {
+        return $_SESSION['ckm']['url'] ?? './authorizedResource.php';
+    }
 }

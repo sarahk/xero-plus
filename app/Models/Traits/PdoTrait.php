@@ -17,32 +17,33 @@ trait PdoTrait
 
     /**
      * @param string $sql
-     * @param array $search_values <string, mixed>
+     * @param array $search_values
      * @param string $type - query, update, column, insert
      * @return int|array
      */
-    protected function runQuery(string $sql, array $search_values, string $type = 'query'): mixed
+    
+    protected function runQuery(string $sql, array $search_values = [], string $type = 'query'): mixed
     {
-        $this->getStatement($sql);
 
         $clean_search_vars = $this->cleanSearchVariables($sql, $search_values);
         $this->logInfo('runQuery: ',
             [$sql, $search_values, $clean_search_vars]);
 
 
-        $this->getStatement($sql);
+        //$this->getStatement($sql);
         try {
-            $this->statement->execute($clean_search_vars);
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute($clean_search_vars);
             return match ($type) {
-                'query' => $this->statement->fetchAll(PDO::FETCH_ASSOC),
-                'update' => $this->statement->rowCount(),
-                'column' => $this->statement->fetchColumn(),
+                'column' => $statement->fetchColumn(),
+                'query' => $statement->fetchAll(PDO::FETCH_ASSOC),
+                'update' => $statement->rowCount(),
                 default => $this->pdo->lastInsertId(),
             };
 
         } catch (PDOException $e) {
-            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
+            echo "[list] Error Message for " . get_class($this) . ": " . $e->getMessage() . "\n$sql\n";
+            //$statement->debugDumpParams();
         }
         return 0;
     }
@@ -57,25 +58,14 @@ trait PdoTrait
 
     protected function cleanSearchVariables(string $sql, array $search_values): array
     {
-        // Get the list of variables used in the SQL query
+        // Extract the variables used in the SQL query
         $used_variables = $this->extractBoundVariables($sql);
 
-        // Groom $search_values to only include variables used in the SQL
+        // Filter $search_values to include only the necessary bound variables
         return array_intersect_key($search_values, array_flip($used_variables));
-        //$output = array_intersect_key($search_values, array_flip($used_variables));
-//        if (count($search_values) > 0) {
-//        $this->logInfo('cleanSearchVariables', [
-//            'sql' => $sql,
-//            'search_values' => $search_values,
-//            'used_variables' => $used_variables,
-//            'flipped' => array_flip($used_variables),
-//            'output' => $output
-//        ]);
-//        }
-        // Result: $search_values will only contain the necessary bound variables
-        //return $output;
     }
 
+    // phase out and make obsolete
     protected function getStatement($sql = ''): void
     {
         if (empty($sql)) {
@@ -89,8 +79,15 @@ trait PdoTrait
         try {
             $this->statement = $this->pdo->prepare($sql);
         } catch (PDOException $e) {
-            echo "[getStatement] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-            $this->statement->debugDumpParams();
+            $message = '[getStatement] Error Message for ' . get_class($this) . ': ' . $e->getMessage() . "\n$sql\n";
+            $this->logInfo($message);
+
+            //$this->statement->debugDumpParams();
         }
+    }
+
+    public function testQuery($sql)
+    {
+        return $this->runQuery($sql, []);
     }
 }

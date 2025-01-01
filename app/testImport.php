@@ -10,21 +10,6 @@ require_once '../vendor/autoload.php';
 
 Utilities::checkAccessToken();
 
-function cleanArrayRow($array): array
-{
-    return array_map(function ($value) {
-        print_r($value);
-        echo '<hr>';
-        echo 'is_object: ' . (is_object($value) ? 'true' : 'false');
-        echo '<hr>';
-        echo 'is_resource: ' . (is_resource($value) ? 'true' : 'false');
-        echo '<hr>';
-        if (is_array($value)) {
-            return cleanArrayRow($value);
-        }
-        return is_object($value) || is_resource($value) ? (string)$value : $value;
-    }, (array)$array);
-}
 
 $xero = new XeroClass();
 $auckland = 'ae75d056-4af7-484d-b709-94439130faa4';

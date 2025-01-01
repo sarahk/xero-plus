@@ -191,27 +191,7 @@ class BaseModel
         }
     }
 
-    protected function getTenanciesWhere(array $params, null|string $altTable = null): string
-    {
-        // use altTable when the xerotenant_id is on left joined table
-        $table = empty($altTable) ? $this->table : $altTable;
-
-        if (count($params['tenancies']) == 1) {
-            return "`$table`.`xerotenant_id` = '{$params['tenancies'][0]}'";
-        } else {
-            return "`$table`.`xerotenant_id` IN ('" . implode("','", $params['tenancies']) . "') ";
-        }
-    }
-
-    protected function getCaseStatement($field, $array): string
-    {
-        $bits = [];
-        foreach ($array as $row) {
-            $bits[] = "WHEN `$field` = '{$row['name']}' THEN '{$row['icon']}' ";
-        }
-
-        return "CASE " . implode($bits) . ' END ';
-    }
+    
 
     /*
      * Default values belong in mysql
@@ -277,7 +257,7 @@ class BaseModel
     {
         $save = $this->getSaveValues($data);
         $result = $this->runQuery($this->insert, $save, 'insert');
-        
+
         return $result;
         //return $this->runQuery($this->insert, $save, 'insert');
     }

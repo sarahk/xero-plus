@@ -9,7 +9,7 @@ namespace App\Views\bad_debts;
                     <h3 class="card-title">Outstanding Rent Reminders <span id="badDebtsTitle"
                                                                             class="text-danger"></span></h3>
                 </div>
-
+                
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered text-nowrap border-bottom w-100" id="tBadDebts">

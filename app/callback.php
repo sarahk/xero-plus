@@ -87,9 +87,10 @@ if (!isset($_GET['code'])) {
             echo 'Error: ' . $e->getMessage();
             exit;
         }
+        
 
         // end of  my code
-        header('Location: ' . './authorizedResource.php');
+        header('Location: ' . $storage->getUrl());
         exit();
 
     } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
