@@ -133,7 +133,7 @@ $(document).ready(function () {
                         url: "/json.php",
                         data: {
                             endpoint: "Invoices",
-                            action: "BadDebts",
+                            action: "HomeWatchList",
                         }
                     },
                     processing: true,
@@ -144,9 +144,9 @@ $(document).ready(function () {
                     stateSave: true,
                     lengthChange: false,
                     columns: [
-                        {data: "name"},
-                        {data: "amount_due"},
-                        {data: "weeks_due"}
+                        {data: "name", orderable: false},
+                        {data: "amount_due", orderable: false},
+                        {data: "weeks_due", orderable: false}
                     ],
                     createdRow: (row, data, index) => {
                         row.classList.add('bar-' + data.colour);

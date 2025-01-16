@@ -7,117 +7,19 @@ use Twilio\Rest\Client;
 class ActivityModel extends BaseModel
 {
     protected string $insert = 'INSERT INTO activity
-        (activity_type, activity_date, activity_status, ckcontact_id, contact_id,subject, body)
+        (activity_type, activity_date, activity_status, contract_id, ckcontact_id, contact_id,subject, body)
         VALUES
-        (:activity_type, :activity_date, :activity_status, :ckcontact_id, :contact_id, :subject, :body)';
+        (:activity_type, :activity_date, :activity_status, :contract_id, :ckcontact_id, :contact_id, :subject, :body)';
 
     protected string $table = 'activity';
     protected array $joins = [];
     protected array $virtualFields = [];
 
-    protected array $orderByColumns = [
-        0 => "activity_id DIR",
-        1 => "activity_status DIR",
-        2 => "activity_type DIR",
 
-    ];
     protected string $account_sid = 'ACcca2973426cdb7e4d07756ace82be488';
     protected string $auth_token = '1389609818fc296c08a5f624234cecb8';
     protected string $fromNumber = '+15407798990';
 
-    public function list($params)
-    {
-
-
-        $conditions = $search_values = [];
-
-        $tenancies = $this->getTenanciesWhere($params, 'contracts');
-        $order = $this->getOrderBy($params);
-
-
-        if (!empty($params['search'])) {
-            $search = [
-                "contacts.name LIKE :search",
-            ];
-
-            $search_values['search'] = '%' . $params['search'] . '%';
-            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
-        }
-
-        $contact_id = $_GET['contact_id'] ?? '';
-        if (!empty($contact_id)) {
-            // added to tenancies because we need it to run on the total and filter count queries
-            $tenancies .= " AND `contact_id` = :contact_id";
-            $search_values['contact_id'] = $contact_id;
-        }
-
-        if (!empty($params['contract_id'])) {
-            $tenancies .= " AND `contract_id` = :contract_id";
-            $search_values['contract_id'] = $params['contract_id'];
-        }
-
-        if (!empty($params['button']) && $params['button'] !== 'read') {
-            if ($params['button'] == 'SMS' || $params['button'] !== 'Email') {
-                $search_values['activity_type'] = $params['button'];
-                $conditions[] = "activity_type = :activity_type ";
-
-            } else {
-                $search_values['activity_status'] = 'New';
-                $conditions[] = "activity_status = :activity_status ";
-            }
-        }
-
-        $conds = count($conditions) > 0 ? ' AND ' . implode(' AND ', $conditions) : null;
-        $sql = "SELECT activity.*, contacts.name, contacts.xerotenant_id, tenancies.colour,
-                    activity_id as DT_RowId
-                    FROM activity
-                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
-                    LEFT JOIN contracts on contracts.contract_id = activity.contract_id
-                    LEFT JOIN tenancies ON contacts.xerotenant_id = tenancies.tenant_id
-                    WHERE $tenancies $conds
-                    ORDER BY $order 
-                    LIMIT {$params['start']}, {$params['length']}";
-
-        $result = $this->runQuery($sql, $search_values);
-
-        $output = $params;
-        $output['mainquery'] = $sql;
-        $output['mainsearchvals'] = $search_values;
-        // adds in tenancies because it doesn't use $conditions
-
-        $recordsTotal = "SELECT count(*) FROM activity LEFT JOIN contracts ON contracts.contract_id = activity.contract_id WHERE $tenancies";
-        $recordsFiltered = "SELECT count(*) 
-                                FROM activity 
-                                    LEFT JOIN contacts ON contacts.id = activity.ckcontact_id
-                                    LEFT JOIN contracts ON contracts.contract_id = activity.contract_id 
-                                WHERE $tenancies $conds";
-
-        $output['recordsTotal'] = $this->runQuery($recordsTotal, $search_values, 'column');
-        $output['recordsFiltered'] = $this->runQuery($recordsFiltered, $search_values, 'column');
-
-        if (count($result) > 0) {
-            foreach ($result as $row) {
-                $output['data'][] = array_merge($row, [
-                    'date' => $this->getPrettyDate($row['activity_date']),
-                    'preview' => $this->getPreview($row['activity_type'], $row['subject'], $row['body']),
-                ]);
-// for debugging
-                $output['row'] = $row;
-            }
-
-        }
-
-        return $output;
-    }
-
-    protected function getPreview(string $messagetype, string $subject, string $body): string
-    {
-        if ($messagetype === 'SMS') {
-            return $body;
-        } else {
-            return "<b>$subject</b><br/>$body";
-        }
-    }
 
     public function processQueue(): void
     {
@@ -177,7 +79,7 @@ class ActivityModel extends BaseModel
         ];
         foreach ($result as $row) {
             $this->logInfo('Row', $row);
-            //$save['contract_id'] = $row['contract_id'];
+            $save['contract_id'] = $row['contract_id'];
             $save['ckcontact_id'] = $row['ckcontact_id'];
             $save['contact_id'] = $row['contact_id'];
             $save['body'] = str_replace('[first_name]', $row['first_name'] ?? $row['name'] ?? '', $data['sms_body']);
@@ -214,5 +116,23 @@ class ActivityModel extends BaseModel
             return true;
         }
         return false;
+    }
+
+    public function getLatestActivity(array $contact_ids): array
+    {
+        $sql = "SELECT 
+                    contact_id, MAX(activity_date) AS activity_date
+                FROM
+                    activity
+                WHERE
+                    contact_id IN ('" . implode("','", $contact_ids) . "')
+                GROUP BY contact_id;";
+
+        $result = $this->runQuery($sql, []);
+        $output = [];
+        foreach ($result as $row) {
+            $output[$row['contact_id']] = $row['activity_date'];
+        }
+        return $output;
     }
 }

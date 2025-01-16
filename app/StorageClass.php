@@ -1,6 +1,9 @@
 <?php
 
 namespace App;
+
+use DateTime;
+
 class StorageClass
 {
     function __construct()
@@ -111,7 +114,7 @@ class StorageClass
         }
     }
 
-    public function saveUrl($url): void
+    public function saveUrl(string $url): void
     {
         $_SESSION['ckm']['url'] = '.' . $url;
     }
@@ -119,5 +122,55 @@ class StorageClass
     public function getUrl(): string
     {
         return $_SESSION['ckm']['url'] ?? './authorizedResource.php';
+    }
+
+    public function setNotification($notify): void
+    {
+        $_SESSION['ckm']['notification'] = $notify;
+    }
+
+    public function getNotification(): array
+    {
+        $output = $_SESSION['ckm']['notification'] ?? [];
+        unset($_SESSION['ckm']['notification']);
+        return $output;
+    }
+
+    public function getNextRuntime(string $type): array
+    {
+        $next_runtime = new DateTime($_SESSION['ckm'][$type]['next_runtime'] ?? '');
+        $current_time = new DateTime(); // Get the current time
+        $future = $next_runtime > $current_time; // Compare the times
+        return ['next_runtime' => $next_runtime, 'future' => $future, 'last_batch' => $_SESSION['ckm'][$type]['last_batch']];
+    }
+
+    public function setNextRuntime(string $type): void
+    {
+        $minutes = 30;
+        $date_time = new DateTime();
+        $date_time->modify("+{$minutes} minutes");
+        $next_runtime = $date_time->format('Y-m-d H:i:s');
+        $_SESSION['ckm'][$type]['next_runtime'] = $next_runtime;
+        $_SESSION['ckm'][$type]['last_batch'] = 0;
+    }
+
+    /**
+     * @param string $type
+     * @param int $count
+     * @return void
+     */
+    public function setLastBatch(string $type, int $count): void
+    {
+        $_SESSION['ckm'][$type]['last_batch'] = $count;
+    }
+
+    public function getMonologCheckStatus(): string
+    {
+        return $_SESSION['ckm']['monolog_check_status'] ?? '0';
+    }
+
+    public function setMonologCheckStatus(string $status): void
+    {
+        $_SESSION['ckm']['monolog_check_status'] = $status;
     }
 }

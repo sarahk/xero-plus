@@ -15,7 +15,7 @@ $templates = $templateModel->getSelectChoices('SMS');
                 <form id="sendSmsForm">
                     <div class="row">
                         <div class="col-6">
-                            <div class="mb-3">
+                            <div class="mb-3" id="sendFromList">
                                 <p>Group: <span id="saveSmsGroupLabel"
                                                 style="font-weight: bolder;"></span></p>
                                 <p>SMS to send: <span id="smsCount" style="font-weight: bolder"></span></p>
@@ -24,6 +24,10 @@ $templates = $templateModel->getSelectChoices('SMS');
                                     more. Click here to
                                     <button id="selectAll" class="btn btn-sm btn-primary">Select All</button>
                                 </p>
+                            </div>
+                            <div class="mb-3" id="sendFromSingle">
+                                <p><b>Sending to a single contact</b></p>
+                                <p id="sendSMSname"></p>
                             </div>
                             <hr>
                             <div class="mb-3">

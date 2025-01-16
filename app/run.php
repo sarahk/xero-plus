@@ -78,4 +78,8 @@ switch ($endpoint) {
                 $template->prepAndSave($data);
                 exit;
         }
+        break;
+    case 'MaterialTables':
+        Utilities::refreshMaterialTables();
+        break;
 }

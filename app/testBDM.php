@@ -18,7 +18,9 @@ $payments = new PaymentModel(Utilities::getPDO());
 $payments->repairContractId();
 
 //$contract_id = 190;
-$contract_id = 842;
+$contract_id = 1023;
+echo "<h1>$contract_id</h1>";
+
 $sql = "SELECT 
             *
         FROM

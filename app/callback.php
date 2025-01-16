@@ -29,6 +29,7 @@ if (!isset($_GET['code'])) {
     exit('Invalid state');
 } else {
 
+    Utilities::refreshMaterialTables();
     try {
 
         // Try to get an access token using the authorization code grant.
@@ -87,7 +88,7 @@ if (!isset($_GET['code'])) {
             echo 'Error: ' . $e->getMessage();
             exit;
         }
-        
+
 
         // end of  my code
         header('Location: ' . $storage->getUrl());

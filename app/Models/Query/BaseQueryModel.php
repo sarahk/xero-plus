@@ -50,10 +50,9 @@ class BaseQueryModel
             $direction = strtoupper($orderParams['dir'] ?? 'DESC');
 
             // do we have a name?
-            if (empty($orderParams['name']) && in_array("{$orderParams['name']} DIR", $this->orderByColumns)) {
+            if (!empty($orderParams['name'] ?? '') && in_array("{$orderParams['name']} DIR", $this->orderByColumns)) {
                 // no so we use the column choice
                 $order_by = $orderParams['column'];
-                //$this->logInfo('OrderBy name used', [str_replace('DIR', $direction, $this->orderByColumns[$order_by])]);
                 return str_replace('DIR', $direction, $this->orderByColumns[$order_by]);
 
             } else if (array_key_exists($orderParams['column'], $this->orderByColumns)) {

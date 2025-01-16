@@ -50,4 +50,4 @@ namespace App\Views;
 
 
 <!-- Jquery UI -->
-<link rel="stylesheet" type="text/css" href="/js/plugins/jquery-ui-1.14.0/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="/JS/plugins/jquery-ui-1.14.0/jquery-ui.css"/>

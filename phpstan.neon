@@ -9,5 +9,5 @@ parameters:
     ignoreErrors:
         - '#some known error pattern#'
     excludes_analyse:
-        - *.js
-        - app/js
+        - *.JS
+        - app/JS

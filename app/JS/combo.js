@@ -1,109 +1,112 @@
-function ns_combo() {
-    this.idTag = '#tCombo';
-    this.dataTable;
-    this.currentButton = '';
-    this.contract_id = 0;
+import ComboContractSingle from '/JS/DataTables/comboContractSingle.js';
 
-    this.init_datatable = function () {
+
+const comboContract = new ComboContractSingle(keys ?? {});
+
+
+class ComboList {
+    idTag = '#tCombo';
+    dataTable;
+    currentButtonValue = '';
+    contract_id = 0;
+
+    constructor() {
 
         if ($(this.idTag).length > 0) {
             const urlParams = new URLSearchParams(window.location.search);
             this.contract_id = urlParams.get('contract_id') ?? 0;
 
-            this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
+            this.dataTable = $(this.idTag).DataTable(this.getDataTableOptions());
 
             this.setListeners();
         }
-    };
+    }
 
-    this.setListeners = function () {
+    setListeners() {
 
-    };
+    }
 
-    this.dataTableOptions = {
-        ajax: {
-            url: "/json.php",
-            data: (d) => {
-                d.endpoint = 'Combo';
-                d.action = 'List';
-                d.contract_id = this.contract_id;
-                d.button = this.currentButton;
-            }
-        },
-        processing: true,
-        serverSide: true,
-        paging: true,
-        stateSave: true,
-        columns: [
-            {data: "row_type", name: 'row_type'},
-            {data: "number", name: 'number'},
-            {data: "reference", name: 'reference'},
-            {data: 'name', name: 'name'},
-            {data: 'status', name: 'status'},
-            {data: "amount", name: 'amount'},
-            {data: "amount_due", name: 'amount_due'},
-            {data: "date", name: 'date'},
-        ],
-        createdRow: (row, data, index) => {
-            row.classList.add('bar-' + data.colour);
-        },
-        layout: {
-            topStart: {
-                buttons: ['pageLength', {
-                    extend: 'csv',
-                    text: 'Export',
-                    split: ['copy', 'excel', 'pdf', 'print']
-                }, {
-                    text: 'All',
-                    className: 'btn-lg',
-                    action: () => {
-                        //dt.ajax.reload();
-                        this.currentButton = '';
-                        this.dataTable.ajax.reload();
-                    }
-                }, {
-                    text: 'Overdue',
-                    className: 'btn-lg',
-                    action: () => {
-                        this.currentButton = 'overdue';
-                        this.dataTable.ajax.reload();
-                    }
-                }, {
-                    text: 'Authorised',
-                    className: 'btn-lg',
-                    action: () => {
-                        this.currentButton = 'authorised';
-                        this.dataTable.ajax.reload();
-                    }
-                }, {
-                    text: 'Paid',
-                    className: 'btn-lg',
-                    action: () => {
-                        this.currentButton = 'paid';
-                        this.dataTable.ajax.reload();
-                    }
-                }, {
-                    text: 'Draft',
-                    className: 'btn-lg',
-                    action: () => {
-                        this.currentButton = 'draft';
-                        this.dataTable.ajax.reload();
-                    }
-                }, {
-                    text: 'Void',
-                    className: 'btn-lg',
-                    action: () => {
-                        this.currentButton = 'voided';
-                        this.dataTable.ajax.reload();
-                    }
-                }]
-            }
-        },
-    };
+    getDataTableOptions() {
+        return {
+            ajax: {
+                url: "/json.php",
+                data: (d) => {
+                    d.endpoint = 'Combo';
+                    d.action = 'List';
+                    d.contract_id = this.contract_id;
+                    d.button = this.currentButton;
+                }
+            },
+            processing: true,
+            serverSide: true,
+            paging: true,
+            stateSave: true,
+            columns: [
+                {data: "row_type", name: 'row_type'},
+                {data: "number", name: 'number'},
+                {data: "reference", name: 'reference'},
+                {data: 'name', name: 'name'},
+                {data: 'status', name: 'status'},
+                {data: "amount", name: 'amount'},
+                {data: "amount_due", name: 'amount_due'},
+                {data: "date", name: 'date'},
+            ],
+            createdRow: (row, data, index) => {
+                row.classList.add('bar-' + data.colour);
+            },
+            layout: {
+                topStart: {
+                    buttons: ['pageLength', {
+                        extend: 'csv',
+                        text: 'Export',
+                        split: ['copy', 'excel', 'pdf', 'print']
+                    }, {
+                        text: 'All',
+                        className: 'btn-lg',
+                        action: () => getFilteredData('All')
+                    }, {
+                        text: 'Overdue',
+                        className: 'btn-lg',
+                        action: () => getFilteredData('Overdue')
+                    }, {
+                        text: 'Authorised',
+                        className: 'btn-lg',
+                        action: () => getFilteredData('Authorised')
+                    }, {
+                        text: 'Paid',
+                        className: 'btn-lg',
+                        action: () => getFilteredData('Paid')
+                    }, {
+                        text: 'Draft',
+                        className: 'btn-lg',
+                        action: () => getFilteredData('Draft')
+                    }, {
+                        text: 'Void',
+                        className: 'btn-lg',
+                        action: () => getFilteredData('Voided')
+                    }]
+                }
+            },
+        };
+    }
+
+    getFilteredData(buttonValue) {
+        console.log('this inside button action', this);
+        this.currentButtonValue = buttonValue;
+        this.datatableTitle.text(buttonValue);
+        this.setProcessingColour(buttonValue);
+        this.highlightActiveButton(buttonValue);
+        this.datatable.ajax.reload();
+    }
+
+    highlightActiveButton(activeButton) {
+        $('.dt-buttons button').removeClass('btn-secondary-light'); // Remove active class from all buttons
+        $(`.dt-buttons button:contains(${activeButton})`).addClass('btn-secondary-light'); // Highlight the clicked button
+    }
 }
 
-const nsCombo = new ns_combo();
-nsCombo.init_datatable();
+const nsCombo = new ComboList();
+
 
 // $tCombo
 //     .on('xhr.dt', function (e, settings, json, xhr) {
@@ -128,7 +131,7 @@ function ns_comboContact() {
             this.setListeners();
             setTimeout(() => {
                 // This code will run after .1 second
-                // gives the other js time to run before this slow request
+                // gives the other JS time to run before this slow request
                 this.dataTable = $(this.idTag).DataTable(this.dataTableOptions);
             }, 100);
 

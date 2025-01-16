@@ -200,6 +200,9 @@ switch ($action) {
         if (empty($keys['contact']['id']) & !empty($keys['contract']['contract_id'])) {
             $keys['contact']['id'] = $contract->field('ckcontact_id', 'contract_id', $keys['contract']['contract_id']);
         }
+        if (empty($keys['contract']['repeating_invoice_id']) && $_GET['contract_id'] ?? 0 > 0) {
+            $keys['contract']['repeating_invoice_id'] = $contract->field('repeating_invoice_id', 'contract_id', $_GET['contract_id']);
+        }
         $link_to_enquiry = $contract->getContractOverviewLink('10', array_merge($keys['contact'], $keys['contract']), 'btn btn-secondary');
 
         unset($contract);

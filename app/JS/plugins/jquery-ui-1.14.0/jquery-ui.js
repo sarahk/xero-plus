@@ -1,6 +1,6 @@
 /*! jQuery UI - v1.14.0 - 2024-08-05
 * https://jqueryui.com
-* Includes: widget.js, position.js, data.js, disable-selection.js, effect.js, effects/effect-blind.js, effects/effect-bounce.js, effects/effect-clip.js, effects/effect-drop.js, effects/effect-explode.js, effects/effect-fade.js, effects/effect-fold.js, effects/effect-highlight.js, effects/effect-puff.js, effects/effect-pulsate.js, effects/effect-scale.js, effects/effect-shake.js, effects/effect-size.js, effects/effect-slide.js, effects/effect-transfer.js, focusable.js, form-reset-mixin.js, jquery-patch.js, keycode.js, labels.js, scroll-parent.js, tabbable.js, unique-id.js, widgets/accordion.js, widgets/autocomplete.js, widgets/button.js, widgets/checkboxradio.js, widgets/controlgroup.js, widgets/datepicker.js, widgets/dialog.js, widgets/draggable.js, widgets/droppable.js, widgets/menu.js, widgets/mouse.js, widgets/progressbar.js, widgets/resizable.js, widgets/selectable.js, widgets/selectmenu.js, widgets/slider.js, widgets/sortable.js, widgets/spinner.js, widgets/tabs.js, widgets/tooltip.js
+* Includes: widget.JS, position.JS, data.JS, disable-selection.JS, effect.JS, effects/effect-blind.JS, effects/effect-bounce.JS, effects/effect-clip.JS, effects/effect-drop.JS, effects/effect-explode.JS, effects/effect-fade.JS, effects/effect-fold.JS, effects/effect-highlight.JS, effects/effect-puff.JS, effects/effect-pulsate.JS, effects/effect-scale.JS, effects/effect-shake.JS, effects/effect-size.JS, effects/effect-slide.JS, effects/effect-transfer.JS, focusable.JS, form-reset-mixin.JS, jquery-patch.JS, keycode.JS, labels.JS, scroll-parent.JS, tabbable.JS, unique-id.JS, widgets/accordion.JS, widgets/autocomplete.JS, widgets/button.JS, widgets/checkboxradio.JS, widgets/controlgroup.JS, widgets/datepicker.JS, widgets/dialog.JS, widgets/draggable.JS, widgets/droppable.JS, widgets/menu.JS, widgets/mouse.JS, widgets/progressbar.JS, widgets/resizable.JS, widgets/selectable.JS, widgets/selectmenu.JS, widgets/slider.JS, widgets/sortable.JS, widgets/spinner.JS, widgets/tabs.JS, widgets/tooltip.JS
 * Copyright OpenJS Foundation and other contributors; Licensed MIT */
 
 ( function( factory ) {
@@ -1977,7 +1977,7 @@ jQuery.cssHooks.borderColor = {
 
 // Basic color names only.
 // Usage of any of the other color names requires adding yourself or including
-// jquery.color.svg-names.js.
+// jquery.color.svg-names.JS.
 colors = jQuery.Color.names = {
 
 	// 4.1. Basic color keywords

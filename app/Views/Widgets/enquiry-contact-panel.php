@@ -27,18 +27,31 @@ function getEnquiryContactRow(string $key, array $row): void
         <td>
             <?php
             $counter = 0;
-            foreach (['DEFAULT', 'MOBILE'] as $phone_type) {
 
-                $phone = array_filter($row['Phones'], fn($phone) => $phone['phone_type'] === $phone_type);
+            // Check if $row['Phones'] contains a single phone object
+            if (isset($row['Phones']['phone_type']) && in_array($row['Phones']['phone_type'], ['DEFAULT', 'MOBILE'])) {
+                buildPhoneFormFields($row['Phones'], $key, $counter);
+            } else {
+                // Iterate over phone types for multi-phone scenarios
+                foreach (['DEFAULT', 'MOBILE'] as $phone_type) {
+                    ExtraFunctions::debug($row['Phones']);
+                    ExtraFunctions::debug($phone_type);
 
-                // If a matching phone is found, build the form fields; otherwise, use a default array
-                if (!empty($phone)) {
-                    buildPhoneFormFields(current($phone), $key, $counter);
-                } else {
-                    buildPhoneFormFields(['phone_type' => $phone_type, 'phone_number' => ''], $key, $counter);
+                    // Filter phones by type if $row['Phones'] is an array
+                    $phone = is_array($row['Phones']) ?
+                        array_filter($row['Phones'], fn($phone) => $phone['phone_type'] === $phone_type)
+                        : [];
+
+                    ExtraFunctions::debug($phone);
+
+                    // Use the matching phone or a default placeholder
+                    $phoneData = !empty($phone) ? current($phone) : ['phone_type' => $phone_type, 'phone_number' => ''];
+                    buildPhoneFormFields($phoneData, $key, $counter);
+
+                    $counter++;
                 }
-                $counter++;
             }
+
 
             ?>
         </td>

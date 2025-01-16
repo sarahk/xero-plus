@@ -18,7 +18,7 @@ use PDOException;
 use Exception;
 use TypeError;
 use Throwable;
-
+use RuntimeException;
 
 if (!isset($_SESSION)) {
     session_start();
@@ -241,7 +241,7 @@ class Utilities
         if ($currentTime > $tokens['expires'] - 60) {
             try {
 
-                return self::refreshAccessToken('js');
+                return self::refreshAccessToken('JS');
 
             } catch (RequestException|TypeError|Throwable|Exception $e) {
                 // Catch any other exception or error
@@ -325,5 +325,89 @@ class Utilities
             $params[$item] = $_GET[$item] ?? '';
         }
         return $params;
+    }
+
+    /* todo
+    this doesn't work because the user doesn't have create table permissions. Needs to be a sql script
+    */
+    public static function rebuildMaterialTables()
+    {
+        $tables = [
+            'combo' => ['(`contract_id`,`date`)', '(`xerotenant_id`)'],
+            'old_debts' => ['(`xerotenant_id`,`contact_id`)'],
+            'bdmgmt' => ['(`xerotenant_id`)', '(`ckcontact_id`)']
+        ];
+        echo "start \n";
+        $pdo = self::getPDO();
+        foreach ($tables as $table => $indexes) {
+            echo "$table \n";
+            try {
+                // Begin a transaction for atomicity
+
+// drop can force a commit
+                echo "DROP TABLE IF EXISTS `m{$table}`;";
+                $pdo->exec("DROP TABLE IF EXISTS `m{$table}`;");
+
+                $pdo->beginTransaction();
+
+                $pdo->exec("CREATE TABLE `m{$table}` AS SELECT * FROM `v{$table}`;");
+
+                foreach ($indexes as $k => $index) {
+                    $pdo->exec("CREATE INDEX `idx_m{$table}_{$k}` ON `m{$table}` {$index};");
+                }
+                // Commit the transaction
+                $pdo->commit();
+                echo "Table `m{$table}` rebuilt successfully.\n";
+            } catch (Exception $e) {
+                // Roll back the transaction on error
+
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                throw new RuntimeException("Failed to build m{$table} table: " . $e->getMessage());
+            }
+        }
+        unset($pdo);
+        echo "end \n";
+    }
+
+    public static function refreshMaterialTables()
+    {
+        $tables = ['combo', 'old_debts', 'bdmgmt'];
+        
+        $pdo = self::getPDO();
+        foreach ($tables as $table) {
+            self:: refreshMaterialTable($pdo, $table);
+        }
+        unset($pdo);
+        echo 'done';
+
+    }
+
+    protected static function refreshMaterialTable(PDO $pdo, string $table): void
+    {
+//        drop table if exists mcombo;
+//        CREATE TABLE mcombo AS
+//        SELECT * FROM vcombo;
+//        CREATE INDEX idx_m_contract_date ON mcombo (contract_id, date);
+//        CREATE INDEX idx_m_xerotenant_id ON mcombo (xerotenant_id);
+
+        try {
+            // Begin a transaction for atomicity
+            $pdo->beginTransaction();
+
+            // Clear the existing table
+            $pdo->exec("DELETE FROM m{$table}");
+
+            // Insert new data from vcombo
+            $pdo->exec("INSERT INTO m{$table} SELECT * FROM v{$table}");
+
+            // Commit the transaction
+            $pdo->commit();
+        } catch (Exception $e) {
+            // Roll back the transaction on error
+            $pdo->rollBack();
+            throw new RuntimeException("Failed to refresh m{$table} table: " . $e->getMessage());
+        }
     }
 }

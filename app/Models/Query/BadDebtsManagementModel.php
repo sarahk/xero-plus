@@ -27,7 +27,7 @@ class BadDebtsManagementModel extends BaseQueryModel
         //$tenancyList = $this->getTenancyList();
 
         $search_values = [];
-        $tenancies = $this->getTenanciesWhere($this->params, 'vbad_debts_management');
+        $tenancies = $this->getTenanciesWhere($this->params, 'mbdmgmt');
         $order = $this->getOrderBy();
 
         $conditions = [$tenancies];
@@ -46,10 +46,10 @@ class BadDebtsManagementModel extends BaseQueryModel
         if (!empty($this->params['button'])) {
 
             $clauses = [
-                'Weekly' => '(vbad_debts_management.schedule_unit = "Weekly" AND vbad_debts_management.is_unpaid >= 3)',
-                'Fortnightly' => '(vbad_debts_management.schedule_unit = "FORTNIGHTLY" AND vbad_debts_management.is_unpaid >= 2)',
-                'Monthly' => '(vbad_debts_management.schedule_unit = "MONTHLY" AND vbad_debts_management.is_unpaid >= 1)',
-                'Other' => '(vbad_debts_management.schedule_unit NOT IN ("WEEKLY", "FORTNIGHTLY", "MONTHLY") AND vbad_debts_management.is_unpaid >= 1)'
+                'Weekly' => '(mbdmgmt.schedule_unit = "Weekly" AND mbdmgmt.is_unpaid >= 3)',
+                'Fortnightly' => '(mbdmgmt.schedule_unit = "FORTNIGHTLY" AND mbdmgmt.is_unpaid >= 2)',
+                'Monthly' => '(mbdmgmt.schedule_unit = "MONTHLY" AND mbdmgmt.is_unpaid >= 1)',
+                'Other' => '(mbdmgmt.schedule_unit NOT IN ("WEEKLY", "FORTNIGHTLY", "MONTHLY") AND mbdmgmt.is_unpaid >= 1)'
             ];
             // cant I change this to a match?
             if ($this->params['button'] === 'All') {
@@ -68,13 +68,13 @@ class BadDebtsManagementModel extends BaseQueryModel
         // use the view
         $baseSql = ['select' => 'SELECT  
                        tenancies.xero_shortcode, tenancies.colour,
-                       vbad_debts_management.*,
+                       mbdmgmt.*,
                        contacts.name, contacts.first_name, contacts.last_name,
                        contacts.email_address,
                        contacts.contact_id',
             'joins' => ' FROM tenancies
-                        LEFT JOIN vbad_debts_management on tenancies.tenant_id = vbad_debts_management.xerotenant_id
-                        LEFT JOIN contacts on (vbad_debts_management.ckcontact_id = contacts.id)',
+                        LEFT JOIN mbdmgmt on tenancies.tenant_id = mbdmgmt.xerotenant_id
+                        LEFT JOIN contacts on (mbdmgmt.ckcontact_id = contacts.id)',
             'where' => ' WHERE ' . implode(' AND ', $conditions),
             'order' => " ORDER BY $order 
                          LIMIT {$this->params['start']}, {$this->params['length']}"
@@ -87,13 +87,14 @@ class BadDebtsManagementModel extends BaseQueryModel
         $output = $this->params;
         $output['mainquery'] = $this->cleanSql($sql);
         $output['mainsearchvals'] = $search_values;
+
         // adds in tenancies because it doesn't use $conditions
-        $recordsTotal = "SELECT count(vbad_debts_management.contract_id)"
+        $recordsTotal = "SELECT count(mbdmgmt.contract_id)"
             . $baseSql['joins']
-            . ' WHERE ' . $tenancies;
+            . ' WHERE ' . $tenancies . 'AND (' . implode(' OR ', $clauses) . ')';
 
 
-        $recordsFiltered = "SELECT count(vbad_debts_management.contract_id)"
+        $recordsFiltered = "SELECT count(mbdmgmt.contract_id)"
             . $baseSql['joins']
             . $baseSql['where'];
 
@@ -137,17 +138,17 @@ class BadDebtsManagementModel extends BaseQueryModel
     public function getButtonCounts($tenancies): array
     {
         $sql = "SELECT 
-                    SUM(IF(vbad_debts_management.schedule_unit = 'Weekly' AND vbad_debts_management.is_unpaid >= 3,1,0)) AS weekly,
-                    SUM(IF(vbad_debts_management.schedule_unit = 'Fortnightly' AND vbad_debts_management.is_unpaid >= 2,1,0)) AS fortnightly,
-                    SUM(IF(vbad_debts_management.schedule_unit = 'Monthly' AND vbad_debts_management.is_unpaid >= 1,1,0)) AS monthly,
-                    SUM(IF(vbad_debts_management.schedule_unit not in('Weekly','Fortnightly', 'Monthly')
-                        AND vbad_debts_management.is_unpaid >= 1,1,0)) AS other
+                    SUM(IF(mbdmgmt.schedule_unit = 'Weekly' AND mbdmgmt.is_unpaid >= 3,1,0)) AS weekly,
+                    SUM(IF(mbdmgmt.schedule_unit = 'Fortnightly' AND mbdmgmt.is_unpaid >= 2,1,0)) AS fortnightly,
+                    SUM(IF(mbdmgmt.schedule_unit = 'Monthly' AND mbdmgmt.is_unpaid >= 1,1,0)) AS monthly,
+                    SUM(IF(mbdmgmt.schedule_unit not in('Weekly','Fortnightly', 'Monthly')
+                        AND mbdmgmt.is_unpaid >= 1,1,0)) AS other
                 FROM
                     tenancies
                         LEFT JOIN
-                    vbad_debts_management ON vbad_debts_management.xerotenant_id = tenancies.tenant_id
+                    mbdmgmt ON mbdmgmt.xerotenant_id = tenancies.tenant_id
                         LEFT JOIN
-                    contacts ON (vbad_debts_management.ckcontact_id = contacts.id)
+                    contacts ON (mbdmgmt.ckcontact_id = contacts.id)
                 WHERE $tenancies";
         $result = $this->runQuery($sql);
         $output = $result[0];

@@ -732,6 +732,11 @@ class XeroClass
      */
     public function getInvoiceRefresh(string $xeroTenantName, null|string $updated_date_utc = null): int
     {
+        $storage = new StorageClass();
+        $next_runtime = $storage->getNextRuntime('Invoices');
+        if ($next_runtime['future']) {
+            return 0;
+        }
 
         $xeroTenantId = $this->getXeroTenantId($xeroTenantName);
 
@@ -740,6 +745,18 @@ class XeroClass
             $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
         }
         $data = $this->getXeroInvoices($xeroTenantId, $updated_date_utc);
+
+        if (count($data) === 0) {
+            if ($next_runtime['last_batch'] > 0) {
+                $storage->setNotification([
+                    'class' => 'danger',
+                    'message' => 'Importing of Invoices from Xero is complete. <a onclick="rebuildMTables()">Complete Now</a>Complete Now</a> or wait until next login?'
+                ]);
+            }
+            $storage->setNextRuntime('Invoices');
+            return '0';
+        }
+        $storage->setLastBatch('Invoices', count($data));
 
         $k = 0;
 
@@ -1081,6 +1098,12 @@ class XeroClass
         // $page_size = null)
         //
         //[Payments:Read]
+        $storage = new StorageClass();
+        $next_runtime = $storage->getNextRuntime('Payments');
+        if ($next_runtime['future']) {
+            return '0';
+        }
+
         $tenant = new TenancyModel($this->pdo);
         $xeroTenantId = $tenant->field('tenant_id', 'shortname', $xeroTenantName);
         unset($tenant);
@@ -1089,6 +1112,19 @@ class XeroClass
         //$this->debug($updated_date_utc);
         $page_size = 50;  //100
         $result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
+
+
+        if (count($data) === 0) {
+            if ($next_runtime['last_batch'] > 0) {
+                $storage->setNotification([
+                    'class' => 'danger',
+                    'message' => 'Importing of <b>Payments</b> from Xero is complete. <a onclick="rebuildMTables()">Complete Now</a> or wait until next login?'
+                ]);
+            }
+            $storage->setNextRuntime('Payments');
+            return '0';
+        }
+        $storage->setLastBatch('Payments', count($data));
 
 
         foreach ($result->getPayments() as $row) {

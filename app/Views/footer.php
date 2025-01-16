@@ -27,7 +27,7 @@ use App\ExtraFunctions;
 <?php
 if (isset($modals) && is_array($modals) && count($modals)) {
     foreach ($modals as $filename) {
-        include("Views/modals/$filename");
+        include("Views/Modals/$filename");
     }
 }
 ?>
@@ -39,24 +39,24 @@ include 'Layouts/scripts.php';
 
 <!-- SPARKLINE JS-->
 <!-- tiny bar charts to use in Datatable for bad debts etc -->
-<!--<script src="/assets/js/jquery.sparkline.min.js"></script>-->
+<!--<script src="/assets/JS/jquery.sparkline.min.JS"></script>-->
 <!---->
 <!--<!-- CHART-CIRCLE JS-->-->
-<!--<script src="/assets/js/circle-progress.min.js"></script>-->
+<!--<script src="/assets/JS/circle-progress.min.JS"></script>-->
 
 <!--<!-- CHARTJS CHART JS-->-->
-<!--<script src="/assets/plugins/chart/Chart.bundle.js"></script>-->
-<!--<script src="/assets/plugins/chart/utils.js"></script>-->
+<!--<script src="/assets/plugins/chart/Chart.bundle.JS"></script>-->
+<!--<script src="/assets/plugins/chart/utils.JS"></script>-->
 <!---->
 <!--<!-- PIETY CHART JS-->-->
-<!--<script src="/assets/plugins/peitychart/jquery.peity.min.js"></script>-->
-<!--<script src="/assets/plugins/peitychart/peitychart.init.js"></script>-->
+<!--<script src="/assets/plugins/peitychart/jquery.peity.min.JS"></script>-->
+<!--<script src="/assets/plugins/peitychart/peitychart.init.JS"></script>-->
 <!---->
 <!--<!-- INTERNAL SELECT2 JS -->-->
-<!--<script src="/assets/plugins/select2/select2.full.min.js"></script>-->
+<!--<script src="/assets/plugins/select2/select2.full.min.JS"></script>-->
 <!---->
 <!--<!-- ECHART JS-->-->
-<!--<script src="/assets/plugins/echarts/echarts.js"></script>-->
+<!--<script src="/assets/plugins/echarts/echarts.JS"></script>-->
 
 <!-- APEXCHART JS -->
 <script src="/assets/js/apexcharts.js"></script>
@@ -71,25 +71,26 @@ include 'Layouts/scripts.php';
 
 
 <!-- INDEX JS -->
-<!--<script src="/assets/js/index1.js"></script>-->
+<!--<script src="/assets/JS/index1.JS"></script>-->
 
 <!-- COOKIES JS -->
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 
-<script type="text/javascript" src="/js/functions.js"></script>
-<script type="text/javascript" src="/js/home.js"></script>
-<script type="text/javascript" src="/js/activity.js"></script>
-<script type="text/javascript" src="/js/cabins.js"></script>
-<script type="text/javascript" src="/js/combo.js"></script>
-<script type="text/javascript" src="/js/contacts.js"></script>
-<script type="text/javascript" src="/js/contracts.js"></script>
-<script type="text/javascript" src="/js/enquiry.js"></script>
-<script type="text/javascript" src="/js/invoices.js"></script>
-<script type="module" src="/js/bad_debts.js"></script>
-<script type="text/javascript" src="/js/templates.js"></script>
-<script type="text/javascript" src="/js/tasks.js"></script>
-<script type="text/javascript" src="/js/vehicles.js"></script>
-<script type="text/javascript" src="/js/widgets.js"></script>
+<script type="text/javascript" src="/JS/functions.js"></script>
+<script type="text/javascript" src="/JS/menu.js"></script>
+<script type="text/javascript" src="/JS/home.js"></script>
+<script type="text/javascript" src="/JS/activity.js"></script>
+<script type="text/javascript" src="/JS/cabins.js"></script>
+<script type="module" src="/JS/combo.js"></script>
+<script type="text/javascript" src="/JS/contacts.js"></script>
+<script type="text/javascript" src="/JS/contracts.js"></script>
+<script type="text/javascript" src="/JS/enquiry.js"></script>
+<script type="text/javascript" src="/JS/invoices.js"></script>
+<script type="module" src="/JS/bad_debts.js"></script>
+<script type="text/javascript" src="/JS/templates.js"></script>
+<script type="text/javascript" src="/JS/tasks.js"></script>
+<script type="text/javascript" src="/JS/vehicles.js"></script>
+<script type="module" src="/JS/widgets.js"></script>
 
 <?php
 $action = intval($_GET['action'] ?? 0);
@@ -109,8 +110,8 @@ switch ($action) {
     //});  */ ?>
 
     <?php
-    //  if (file_exists("js/{$endpoint}{$action}.js")):
-    //      echo "jQuery.getScript('/js/{$endpoint}{$action}.js');";
+    //  if (file_exists("JS/{$endpoint}{$action}.JS")):
+    //      echo "jQuery.getScript('/JS/{$endpoint}{$action}.JS');";
     //  endif;
     ?>
 
@@ -204,7 +205,12 @@ switch ($action) {
         function loadContactsFromXero(tenancy) {
             console.log('loadContactsFromXero: ' + tenancy);
             $.ajax({
-                url: "/xero.php?endpoint=Contacts&action=refresh&tenancy=" + tenancy,
+                url: "/xero.php",
+                data: {
+                    endpoint: 'Contacts',
+                    action: 'refresh',
+                    tenancy: tenancy
+                },
                 type: 'GET',
             });
         }
@@ -249,21 +255,6 @@ switch ($action) {
                 }
             }
         }, 100000);
-
-
-        // Save the working with choices using cookies
-        $('#tenancy-auckland').change(function () {
-            Cookies.set('auckland', $('#tenancy-auckland')[0].checked);
-            console.log('auckland cookie');
-        });
-        $('#tenancy-waikato').change(function () {
-            Cookies.set('waikato', $('#tenancy-waikato')[0].checked);
-            console.log('waikato cookie');
-        });
-        $('#tenancy-bop').change(function () {
-            Cookies.set('bop', $('#tenancy-bop')[0].checked);
-            console.log('bop cookie');
-        });
     });
 
 </script>

@@ -67,7 +67,7 @@ trait FunctionsTrait
         return array_column($raw, null, 'tenant_id');
     }
 
-    protected function getPrettyDate(string $val): string
+    protected function getPrettyDate(null|string $val): string
     {
         if (empty($val)) {
             return '';
@@ -195,7 +195,7 @@ trait FunctionsTrait
 
         // Replace multiple spaces with a single space
         $output = preg_replace('/\s+/', ' ', $output);
-        
+
         // Trim leading and trailing spaces
         return trim($output);
     }

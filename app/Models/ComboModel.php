@@ -6,18 +6,18 @@ namespace App\Models;
 // S E A R C H   O N L Y
 class ComboModel extends BaseModel
 {
-    protected string $table = 'vcombo';
+    protected string $table = 'mcombo';
     protected bool $view = true;
     protected int $orderByDefault = 6;
     protected string $orderByDefaultDirection = 'DESC';
 
     protected array $orderByColumns = [
-        0 => "vcombo.invoice_number DIR",
-        2 => "vcombo.reference DIR",
+        0 => "mcombo.invoice_number DIR",
+        2 => "mcombo.reference DIR",
         3 => "contacts.last_name DIR, contacts.first_name ASC",
-        4 => "vcombo.amount DIR",
-        5 => "vcombo.amount_due DIR",
-        6 => "vcombo.date DIR",
+        4 => "mcombo.amount DIR",
+        5 => "mcombo.amount_due DIR",
+        6 => "mcombo.date DIR",
     ];
 
     public function list($params): array
@@ -54,7 +54,7 @@ class ComboModel extends BaseModel
         $conditions = [$tenancies];
         if (!empty($params['search'])) {
             $search = [
-                "vcombo.reference LIKE :search",
+                "mcombo.reference LIKE :search",
                 'contacts.name LIKE :search'
             ];
             $search_values['search'] = '%' . $params['search'] . '%';
@@ -79,39 +79,48 @@ class ComboModel extends BaseModel
 
 
         $fields = [
-            '`row_type`',
-            '`invoice_id`',
+            'row_type',
+            'invoice_id',
             'contract_id',
-            '`status`',
+            'status',
             'contacts.name',
             'invoice_number',
-            '`reference`',
-            '`amount`',
-            '`amount_due`',
-            '`date`',
-            'vcombo.xerotenant_id'
+            'reference',
+            'amount',
+            'amount_due',
+            'date',
+            'due_date',
+            'mcombo.xerotenant_id',
+            "(SELECT SUM(v2.amount * IF(v2.row_type = 'I', 1, - 1))
+                FROM
+                    mcombo AS v2
+                WHERE
+                    v2.contract_id = mcombo.contract_id
+                    AND v2.date <= mcombo.date) AS balance"
         ];
 
+        // Jan 2025
+        // changed to use the materialized table mcombo
 
         $sql = "SELECT " . implode(', ', $fields) . " 
-            FROM `vcombo` 
-            LEFT JOIN contacts on `vcombo`.`contact_id` = `contacts`.`contact_id`
+            FROM `mcombo` 
+            LEFT JOIN contacts on `mcombo`.`contact_id` = `contacts`.`contact_id`
             WHERE " . implode(' AND ', $conditions) . "
-            ORDER BY $order 
+            ORDER BY $order, row_type DESC
             LIMIT {$params['start']}, {$params['length']}";
 
 
         $result = $this->runQuery($sql, $search_values);
 
         $output = $params;
-        $output['mainquery'] = $sql;
+        $output['mainquery'] = $this->cleanSql($sql);
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
-        $records_total = "SELECT COUNT(*) FROM vcombo WHERE $tenancies";
+        $records_total = "SELECT COUNT(*) FROM mcombo WHERE $tenancies";
         $records_filtered = "SELECT COUNT(*) 
-                                FROM vcombo 
-                                LEFT JOIN contacts on `vcombo`.`contact_id` = `contacts`.`contact_id`
+                                FROM mcombo 
+                                LEFT JOIN contacts on `mcombo`.`contact_id` = `contacts`.`contact_id`
                                 WHERE " . implode(' AND ', $conditions);
         $output['recordsTotal'] = $this->runQuery($records_total, $search_values, 'column');
         $output['recordsFiltered'] = $this->runQuery($records_filtered, $search_values, 'column');
@@ -127,17 +136,38 @@ class ComboModel extends BaseModel
                     'name' => "<a href='$url'>{$row['name']}</a>",
                     'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
                     'amount' => $row['amount'],
+                    'invoice_amount' => ($row['row_type'] === 'I' ? $row['amount'] : '&nbsp;'),
+                    'payment_amount' => ($row['row_type'] === 'P' ? $row['amount'] : '&nbsp;'),
                     'amount_due' => $row['amount_due'],
+                    'balance' => $row['balance'],
                     'date' => $this->getPrettyDate($row['date']),
-                    'colour' => $tenancyList[$row['xerotenant_id']]['colour']
+                    'due_date' => $this->getPrettyDate($row['due_date']),
+                    'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
+                    'activity' => $this->getActivityDescription($row),
                 ];
 // for debugging
+                /* todo make these columns available
+                 * {data: "date", name: 'date'},
+                {data: "activity"},
+                {data: "reference", name: 'reference'},
+                {data: "due_date"},
+                {data: "invoice_amount", name: 'amount'},
+                {data: "payment_amount"},
+                {data: "balance"},
+                 */
                 $output['row'] = $row;
             }
 
         }
 
         return $output;
+    }
+
+    protected function getActivityDescription(array $row): string
+    {
+        $url = '/authorizedResource.php?action=12&invoice_id=' . $row['invoice_id'];
+        $display = ($row['row_type'] === 'I' ? 'Invoice #' . $row['invoice_number'] : 'Payment on Invoice #' . $row['invoice_number']);
+        return "<a href='$url' target='_blank'>$display</a>";
     }
 }
 

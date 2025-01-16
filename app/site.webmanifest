@@ -1,0 +1,20 @@
+{
+    "name": "Cabin King Management",
+    "short_name": "CKM",
+    "start_url": "/",
+    "display": "browser",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "/images/cabinkingmanagement-logo-small.webp",
+            "sizes": "164x36",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/cabinkingmanagement-icon.png",
+            "sizes": "138x138",
+            "type": "image/png"
+        }
+    ]
+}

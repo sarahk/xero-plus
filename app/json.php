@@ -8,8 +8,10 @@ namespace App;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
+use App\Models\Query\ActivityQueryModel;
 use App\Models\Query\BadDebtsManagementModel;
 use App\Models\Query\BadDebtsReminderModel;
+use App\Models\Query\HomeWatchList;
 use App\StorageClass;
 use App\JsonClass;
 use App\Models\TemplateModel;
@@ -87,7 +89,9 @@ try {
             switch ($action) {
                 case 'List':
                 case 'list':
-                    echo $json->getActivityList();
+                    $activity = new ActivityQueryModel();
+                    echo $activity->list();
+                    //echo $json->getActivityList();
                     break;
             }
             break;
@@ -286,6 +290,10 @@ try {
                 case 'BadDebts':
                     $objBDR = new BadDebtsReminderModel();
                     echo $objBDR->list();
+                    break;
+                case 'HomeWatchList':
+                    $objHWL = new HomeWatchList();
+                    echo $objHWL->list();
                     break;
                 case 'BadDebtsManagement':
                     $objBDM = new BadDebtsManagementModel();

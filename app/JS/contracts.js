@@ -1,10 +1,15 @@
 $(document).ready(function () {
-
+//todo turn into an ES6 class
+    // is this used?
     if ($('#tContracts').length) {
 
         let tContracts = $('#tContracts').DataTable({
             ajax: {
-                url: "/json.php?endpoint=Contracts&action=List",
+                url: "/json.php",
+                data: {
+                    endpoint: 'Contracts',
+                    action: 'List',
+                }
             },
             processing: true,
             serverSide: true,

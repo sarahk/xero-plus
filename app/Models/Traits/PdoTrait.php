@@ -8,6 +8,8 @@ use PDOException;
 
 trait PdoTrait
 {
+    //use LoggerTrait;
+
     protected PDO $pdo;
 
     protected function initPdo(PDO $pdo): void
@@ -21,13 +23,16 @@ trait PdoTrait
      * @param string $type - query, update, column, insert
      * @return int|array
      */
-    
+
     protected function runQuery(string $sql, array $search_values = [], string $type = 'query'): mixed
     {
 
         $clean_search_vars = $this->cleanSearchVariables($sql, $search_values);
-        $this->logInfo('runQuery: ',
-            [$sql, $search_values, $clean_search_vars]);
+        $this->logInfo('runQuery: ', [
+            'sql' => $sql,
+            'search_values' => $search_values,
+            'clean_search_vars' => $clean_search_vars
+        ]);
 
 
         //$this->getStatement($sql);
@@ -42,7 +47,12 @@ trait PdoTrait
             };
 
         } catch (PDOException $e) {
-            echo "[list] Error Message for " . get_class($this) . ": " . $e->getMessage() . "\n$sql\n";
+            $msg = "runQuery: Error Message for " . get_class($this) . ": " . $e->getMessage();
+            echo $msg;
+            echo '<hr>';
+            echo $sql;
+            echo '<hr>';
+            $this->logError($msg, ['sql' => $sql, 'search_values' => $clean_search_vars]);
             //$statement->debugDumpParams();
         }
         return 0;
@@ -79,13 +89,14 @@ trait PdoTrait
         try {
             $this->statement = $this->pdo->prepare($sql);
         } catch (PDOException $e) {
-            $message = '[getStatement] Error Message for ' . get_class($this) . ': ' . $e->getMessage() . "\n$sql\n";
-            $this->logInfo($message);
+            $message = '[getStatement] Error Message for ' . get_class($this) . ': ' . $e->getMessage();
+            $this->logError($message, ['sql' => $sql]);
 
             //$this->statement->debugDumpParams();
         }
     }
 
+    //todo remove this
     public function testQuery($sql)
     {
         return $this->runQuery($sql, []);

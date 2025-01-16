@@ -3,7 +3,7 @@ namespace App\Layouts;
 ?>
 <div class="sticky">
     <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
-    <aside class="app-sidebar">
+    <aside class="app-sidebar ps ps--active-y" style="top: 40px;">
         <div class="side-header">
             <a class="header-brand1" href="index.php">
                 <img src="/images/cabinkingmanagement-logo-small.webp" class="header-brand-img desktop-logo" alt="logo">
@@ -70,20 +70,27 @@ namespace App\Layouts;
                 </li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=11">Cabin Locations</a></li>
                 <li><a class="side-menu__item" href="/index.php?action=logoff">Log Off</a></li>
-                <li class="sub-category">
+                <!--<li class="sub-category">
                     <h3>Incomplete</h3>
                 </li>
 
                 <li><a class="side-menu__item" href="/vehicleLog.php?action=1">Vehicle Log</a></li>
-                <li><a class="side-menu__item" href="/vehicleLog.php?action=2">Add Trip</a></li>
+                <li><a class="side-menu__item" href="/vehicleLog.php?action=2">Add Trip</a></li>-->
 
                 <li class="sub-category">
-                    <h3>Admin</h3></li>
+                    <h3 title="Sarah Only">Admin</h3></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=6">Get JWT Claims</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=1">Get Organisation Name</a></li>
                 <li><a class="side-menu__item" href="/authorizedResource.php?action=9">Invoices</a></li>
 
-
+                <li class="slide">
+                    <a class="side-menu__item" data-bs-toggle="slide" href="#" id="rebuildMTables"><span
+                                class="side-menu__label">Refresh M Tables</span>
+                        <span class="badge bg-success side-badge d-none" id="rebuildSuccess"><i
+                                    class="fa-solid fa-check"></i></span>
+                        <span class="badge bg-error side-badge d-none" id="rebuildError"><i
+                                    class="fa-solid fa-xmark"></i></span>
+                    </a>
                 </li>
             </ul>
         </div>

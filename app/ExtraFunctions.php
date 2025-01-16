@@ -76,7 +76,7 @@ class ExtraFunctions
         try {
             echo '<table border="1" cellpadding="5" cellspacing="0">';
             foreach ($data as $k => $row) {
-                if ($k === 1) {
+                if ($k === 0) {
                     $keys = array_keys($row);
                     self::debugTableRow($keys, 'th');
                 }

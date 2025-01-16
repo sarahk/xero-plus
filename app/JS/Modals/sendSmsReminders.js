@@ -7,6 +7,7 @@ export default class SendSmsReminders {
     readyToUse = false;
 
     constructor() {
+
         if ($('#saveSmsRequest').length) {
             this.sendSmsModal = new bootstrap.Modal($('#saveSmsRequest'));
 
@@ -18,29 +19,25 @@ export default class SendSmsReminders {
     }
 
     setListeners() {
+        // Prevent duplicate modal event listeners
+        $('#saveSmsRequest').off('show.bs.modal').on('show.bs.modal', () => this.showModal());
 
-        //set up the modal
-        //$('#saveSmsRequest').on('show.bs.modal', () => this.showSmsModal());
+        // Prevent duplicate click listener for sending SMS
+        $('#smsSendButton').off('click').on('click', (e) => this.sendSms(e));
 
-        // save the sms requests
-        $('#smsSendButton').on('click', (e) => this.sendSms(e));
-
-
-        // change the template
-        $('#templateId').on('change', (e) => {
+        // Prevent duplicate change listener for template selection
+        $('#templateId').off('change').on('change', (e) => {
             this.getTemplateBody(e);
         });
 
-
-        // select all the rows in the datatable
-        $('#selectAll').on('click', (e) => {
+        // Prevent duplicate click listener for select all
+        $('#selectAll').off('click').on('click', (e) => {
             e.preventDefault();
             this.selectAll();
         });
 
-        // the text in the sms has changed, show the character count
-        this.smsBody.on('input', (e) => this.updateCharCounter());
-
+        // Prevent duplicate input listener for SMS body character count
+        this.smsBody.off('input').on('input', (e) => this.updateCharCounter());
     }
 
     showModal(groupName) {
@@ -50,7 +47,7 @@ export default class SendSmsReminders {
             return;
         }
         console.log('about to call saveSmsModal');
-        this.sendSmsModal.show();
+        //this.sendSmsModal.show();
         console.log('should be showing');
         $('#saveSmsGroupLabel').text(groupName);
 
@@ -63,6 +60,8 @@ export default class SendSmsReminders {
 
 // Get the count of selected rows
         if (this.popType == 'datatable') {
+            $('#sendFromList').show();
+            $('#sendSMSname').hide();
             let info = this.tBadDebts.page.info();
             let selectedRowCount = this.tBadDebts.rows({selected: true}).count();
             let recordsDisplay = info.recordsDisplay;
@@ -74,7 +73,11 @@ export default class SendSmsReminders {
                 $('#showAddAll').show();
             }
             $('#smsCount').text(selectedRowCount);
+        } else {
+            $('#sendSMSname').show();
+            $('#sendFromList').hide();
         }
+
     }
 
     selectAll() {
@@ -119,17 +122,24 @@ export default class SendSmsReminders {
 
 
     sendSms() {
-        console.log('table', this.tBadDebts);
-        console.log('rows', this.tBadDebts.rows());
-        console.log('selected', this.tBadDebts.rows({selected: true}));
-        console.log('ids', this.tBadDebts.rows({selected: true}).ids());
-        let selectedRowIds = this.tBadDebts.rows({selected: true}).ids().toArray();
         let payload = {
             endpoint: 'Activity',
             action: 'SaveManySMS',
-            repeatingInvoiceIds: selectedRowIds,
-            smsBody: this.smsBody.val(),
+            smsBody: this.smsBody.val()
         };
+
+        if (this.popType == 'datatable') {
+            console.log('table', this.tBadDebts);
+            console.log('rows', this.tBadDebts.rows());
+            console.log('selected', this.tBadDebts.rows({selected: true}));
+            console.log('ids', this.tBadDebts.rows({selected: true}).ids());
+            let selectedRowIds = this.tBadDebts.rows({selected: true}).ids().toArray();
+            payload.repeatingInvoiceIds = selectedRowIds;
+
+        } else {
+            console.log(keys);
+            payload.repeatingInvoiceIds = [keys.contract.repeating_invoice_id];
+        }
         console.log('sendSms Payload:', payload);
         $.ajax({
             url: '/run.php',
@@ -137,7 +147,7 @@ export default class SendSmsReminders {
             method: "POST",
         })
             .done(function (msg) {
-                alert("Data Saved: " + msg);
+                
                 Swal.fire({
                     title: "Good job!",
                     text: "Successfully Queued",

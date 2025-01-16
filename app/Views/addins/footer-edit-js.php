@@ -6,7 +6,7 @@
 <script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
 <!-- DATEPICKER JS -->
-<script src="/js/plugins/jquery-ui-1.14.0/jquery-ui.js"></script>
+<script src="/JS/plugins/jquery-ui-1.14.0/jquery-ui.js"></script>
 <script src="/assets/plugins/input-mask/jquery.maskedinput.js"></script>
 
 <!-- INTERNAL FILE-UPLOADS JS -->
@@ -18,17 +18,17 @@
 
 <?php /*
 <!-- SELECT2 JS -->
-<script src="/assets/plugins/select2/select2.full.min.js"></script>
+<script src="/assets/plugins/select2/select2.full.min.JS"></script>
 
 <!-- BOOTSTRAP-DATERANGEPICKER JS -->
-<script src="/assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
-<script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="/assets/plugins/bootstrap-daterangepicker/moment.min.JS"></script>
+<script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.JS"></script>
 
 <!-- INTERNAL BOOTSTRAP-DATEPICKER JS -->
-<script src="/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+<script src="/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.JS"></script>
 */ ?>
 <!-- INTERNAL SUMOSELECT JS -->
-<!--<script src="/assets/plugins/sumoselect/jquery.sumoselect.js"></script>-->
+<!--<script src="/assets/plugins/sumoselect/jquery.sumoselect.JS"></script>-->
 
 <!-- TIMEPICKER JS -->
 <script src="/assets/plugins/time-picker/jquery.timepicker.js"></script>

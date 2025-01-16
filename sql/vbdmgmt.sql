@@ -1,4 +1,6 @@
-CREATE VIEW `vbad_debts_management` AS
+DROP VIEW IF EXISTS `vbdmgmt`;
+
+CREATE VIEW `vbdmgmt` AS
 SELECT contracts.contract_id,
        contracts.schedule_unit,
        contracts.xerotenant_id,

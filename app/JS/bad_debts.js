@@ -7,10 +7,9 @@
 //let currentButtonValue = '';
 //let $badDebtsTitle = $('#badDebtsTitle');
 
-import SendSmsReminders from './modals/sendSmsReminders.js';
+import SendSmsReminders from './Modals/sendSmsReminders.js';
 
 const sendSmsReminders = new SendSmsReminders();
-
 
 class BadDebtReminders {
 
@@ -41,7 +40,7 @@ class BadDebtReminders {
                     }),
                     method: 'GET',
                     success: (response) => {
-                        console.log('BadDebtReminders success', response);
+                        //console.log('BadDebtReminders success', response);
                         //console.log('BadDebtReminders this', this);
 
                         this.updateButtonCounts(response.buttonCounts);
@@ -114,7 +113,12 @@ class BadDebtReminders {
                         {
                             text: 'SMS',
                             className: 'btn-lg',
-                            action: () => sendSmsReminders.showModal(this.currentButtonValue)
+
+                            //action: () => sendSmsReminders.showModal(this.currentButtonValue)
+                            action: () => {
+                                let saveSmsModal = new bootstrap.Modal($('#saveSmsRequest'));
+                                saveSmsModal.show();
+                            }
                         },
                     ]
                 }
@@ -131,6 +135,7 @@ class BadDebtReminders {
         this.currentButtonValue = buttonValue;
         this.badDebtsTitle.text(buttonValue);
         this.setProcessingColour(buttonValue);
+        this.highlightActiveButton(buttonValue);
         this.tBadDebts.ajax.reload();
     }
 
@@ -139,6 +144,11 @@ class BadDebtReminders {
             this.cancelLoad();
             console.log('User clicked:', $(this).text());
         });
+    }
+
+    highlightActiveButton(activeButton) {
+        $('.dt-buttons button').removeClass('btn-secondary-light'); // Remove active class from all buttons
+        $(`.dt-buttons button:contains(${activeButton})`).addClass('btn-secondary-light'); // Highlight the clicked button
     }
 
     cancelLoad() {
@@ -152,19 +162,19 @@ class BadDebtReminders {
         }
     }
 
-    setProcessingColour(currentButtonValue) {
+    setProcessingColour(currentButton) {
         // https://palettes.shecodes.io/palettes/1377
         // https://www.color-hex.com/color/0275d8
 
         const match = (key) => ({
             'All': '#1b82db',
-            '1week': '#3490df',
-            '2weeks': '#4d9ee3',
-            '3weeks': '#67ace7',
+            '1 Week': '#3490df',
+            '2 Weeks': '#4d9ee3',
+            '3 Weeks': '#67ace7',
         }[key] || '#0275D8');
 
-        let newColour = match(currentButtonValue);
-        //console.log('newColour', newColour);
+        let newColour = match(currentButton);
+
         $('div.dt-processing>div:last-child>div').css({
             'background-color': newColour
         });
@@ -307,7 +317,7 @@ class BadDebtManagement {
         this.currentButtonValue = buttonValue;
         this.badDebtsTitle.text(buttonValue);
         this.setProcessingColour(buttonValue);
-
+        this.highlightActiveButton(buttonValue);
         this.tBadDebtsManagement.ajax.reload();
     }
 
@@ -332,6 +342,11 @@ class BadDebtManagement {
         });
 
     }
+
+    highlightActiveButton(activeButton) {
+        $('.dt-buttons button').removeClass('btn-secondary-light'); // Remove active class from all buttons
+        $(`.dt-buttons button:contains(${activeButton})`).addClass('btn-secondary-light'); // Highlight the clicked button
+    }
 }
 
-const nsBadDebtManagement = new BadDebtManagement()
+const nsBadDebtManagement = new BadDebtManagement();

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Views;
 ?>
 <!doctype html>
@@ -12,6 +13,7 @@ namespace App\Views;
 
     //create constants for the xerotenant_id info
 
+
     if (!\APP\LOGGEDOUT) {
         ?>
         <script>
@@ -19,6 +21,8 @@ namespace App\Views;
         </script>
         <?php
     } ?>
+    <link rel="manifest" href="/site.webmanifest">
+
     <!-- tinymce text editor -->
     <script src="https://cdn.tiny.cloud/1/358b52j7udus5vp44svtm76psq44rezjrxzt0m3gwfosew62/tinymce/7/tinymce.min.js"
             referrerpolicy="origin"></script>
@@ -62,3 +66,4 @@ namespace App\Views;
 
                 <!-- CONTAINER -->
                 <div class="main-container container-fluid">
+                    <?php include 'Widgets/alert.php'; ?>
