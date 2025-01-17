@@ -10,13 +10,13 @@
 
 
 <!-- SIDE-MENU JS -->
-<script src="/JS/plugins/sidemenu/sidemenu.js"></script>
+<script src="/assets/js/sidemenu/sidemenu.js"></script>
 
 <!-- STICKY JS -->
 <script src="/JS/plugins/sticky.js"></script>
 
 <!-- SIDEBAR JS -->
-<script src="/JS/plugins/sidebar/sidebar.js"></script>
+<script src="/assets/js/sidebar/sidebar.js"></script>
 
 
 <!-- COLOR THEME JS -->
@@ -27,6 +27,3 @@
 
 <!-- CUSTOM JS -->
 <script src="/JS/plugins/custom.js"></script>
-
-
-
