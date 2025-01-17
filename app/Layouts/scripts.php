@@ -21,13 +21,13 @@
 
 
 <!-- SIDE-MENU JS -->
-<script src="/assets/plugins/sidemenu/sidemenu.js"></script>
+<script src="/JS/plugins/sidemenu/sidemenu.js"></script>
 
 <!-- STICKY JS -->
-<script src="/assets/js/sticky.js"></script>
+<script src="/JS/plugins/sticky.js"></script>
 
 <!-- SIDEBAR JS -->
-<script src="/assets/plugins/sidebar/sidebar.js"></script>
+<script src="/JS/plugins/sidebar/sidebar.js"></script>
 
 <!-- PERFECT SCROLLBAR JS-->
 <script src="/assets/plugins/p-scroll/perfect-scrollbar.js"></script>

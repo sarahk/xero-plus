@@ -5,7 +5,7 @@ composer.lock
 **/.DS_Store
 # Zanex files
 /pages/
-/app/assets/
+/app/assets_old/
 /node_modules/
 pestresults.txt
 
