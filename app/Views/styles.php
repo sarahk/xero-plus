@@ -4,7 +4,6 @@ namespace App\Views;
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-
 <!-- META DATA -->
 <meta charset="UTF-8">
 <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
@@ -27,15 +26,6 @@ namespace App\Views;
 <link href="/assets/css/icons.css" rel="stylesheet">
 
 <link href="/css/ckm-styles.css" rel="stylesheet">
-
-<!-- OWL CAROUSEL -->
-<link href="/assets/plugins/owl-carousel/owl.carousel.min.css" rel="stylesheet">
-
-<!-- SLICK SLIDER -->
-<link rel="stylesheet" type="text/css" href="/assets/plugins/slick/slick.css"/>
-<!-- Add the new slick-theme.css if you want the default styling -->
-<link rel="stylesheet" type="text/css" href="/assets/plugins/slick/slick-theme.css"/>
-
 
 <!-- Jquery UI -->
 <link rel="stylesheet" type="text/css" href="/JS/plugins/jquery-ui-1.14.0/jquery-ui.css"/>

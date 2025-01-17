@@ -15,6 +15,7 @@ class Loader
         $this->addCookies();
         $this->addPerfectScrollbar();
         $this->addSweetAlert();
+        $this->addGoogleFonts();
     }
 
     public function outputJS(): void
@@ -41,6 +42,14 @@ class Loader
     {
         $this->js[] = 'https://cdn.datatables.net/v/bs4/jszip-3.10.1/dt-2.1.4/b-3.1.1/b-html5-3.1.1/b-print-3.1.1/fh-4.0.1/r-3.0.2/sl-2.0.5/sr-1.4.1/datatables.min.js';
         $this->css[] = 'https://cdn.datatables.net/v/bs4/jszip-3.10.1/dt-2.1.4/b-3.1.1/b-html5-3.1.1/b-print-3.1.1/fh-4.0.1/r-3.0.2/sl-2.0.5/sr-1.4.1/datatables.min.css';
+
+        // todo - check that these are up-to-date and used
+
+        $this->js[] = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js";
+        $this->js[] = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js";
+        $this->js[] = "https://cdn.datatables.net/v/bs4/jszip-3.10.1/dt-2.1.4/b-3.1.1/b-html5-3.1.1/b-print-3.1.1/fh-4.0.1/r-3.0.2/sl-2.0.5/sr-1.4.1/datatables.min.js";
+
+
     }
 
     private function addFontAwesome(): void
@@ -60,7 +69,6 @@ class Loader
         $this->css[] = 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css';
         //cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css
         //cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js
-
     }
 
     private function addCookies(): void
@@ -74,13 +82,29 @@ class Loader
         $this->js[] = 'https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js';
         // Google Fonts -->
         $this->css[] = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap";
-//<!-- MDB -->
+        //<!-- MDB -->
         $this->css[] = "https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.css";
     }
 
     private function addSweetAlert(): void
     {
-        $this->css[] = "https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" rel = "stylesheet" >
+        $this->css[] = "https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css";
+    }
+
+    /**
+     * Adds pretty tooltips - was called Popper
+     * https://floating-ui.com/docs/getting-started
+     * @return void
+     */
+    public function addPopper(): void
+    {
+        $this->js[] = "https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.8";
+        $this->js[] = "https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.12";
+    }
+
+    private function addGoogleFonts(): void
+    {
+        $this->css[] = "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap";
     }
 }
 
