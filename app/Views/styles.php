@@ -5,15 +5,6 @@ namespace App\Views;
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" rel="stylesheet">
-
-
-<!-- D A T A T A B L E S -->
-<link href="https://cdn.datatables.net/v/bs4/jszip-3.10.1/dt-2.1.4/b-3.1.1/b-html5-3.1.1/b-print-3.1.1/fh-4.0.1/r-3.0.2/sl-2.0.5/sr-1.4.1/datatables.min.css"
-      rel="stylesheet">
-<!-- / D A T A T A B L E S -->
-
-
 <!-- META DATA -->
 <meta charset="UTF-8">
 <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
@@ -27,9 +18,6 @@ namespace App\Views;
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
-
-<!-- BOOTSTRAP CSS -->
-<link id="style" href="/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- STYLE CSS -->
 <link href="/assets/css/style.css" rel="stylesheet">

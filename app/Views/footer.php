@@ -2,6 +2,7 @@
 namespace App\Views\Footer;
 
 use App\ExtraFunctions;
+use App\Loader;
 
 ?>
 </div>
@@ -58,23 +59,13 @@ include 'Layouts/scripts.php';
 <!--<!-- ECHART JS-->-->
 <!--<script src="/assets/plugins/echarts/echarts.JS"></script>-->
 
-<!-- APEXCHART JS -->
-<script src="/assets/js/apexcharts.js"></script>
+<?php
+if (!isset($loader)) {
+    $loader = new Loader();
+}
+$loader->outputJS();
+?>
 
-<!-- Proper Font Awesome -->
-<script src="https://kit.fontawesome.com/816ff03c37.js" crossorigin="anonymous"></script>
-
-<!-- OWL CAROUSEL -->
-<script src="/assets/plugins/owl-carousel/owl.carousel.min.js"></script>
-<!-- SLICK SLIDER -->
-<script type="text/javascript" src="/assets/plugins/slick/slick.min.js"></script>
-
-
-<!-- INDEX JS -->
-<!--<script src="/assets/JS/index1.JS"></script>-->
-
-<!-- COOKIES JS -->
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 
 <script type="text/javascript" src="/JS/functions.js"></script>
 <script type="text/javascript" src="/JS/menu.js"></script>
@@ -91,6 +82,7 @@ include 'Layouts/scripts.php';
 <script type="text/javascript" src="/JS/tasks.js"></script>
 <script type="text/javascript" src="/JS/vehicles.js"></script>
 <script type="module" src="/JS/widgets.js"></script>
+<script type="module" src="/JS/autorun.js"></script>
 
 <?php
 $action = intval($_GET['action'] ?? 0);
@@ -102,161 +94,17 @@ switch ($action) {
 }
 ?>
 
-
 <script type="text/javascript">
-    <?php /*
-    document.addEventListener("DOMContentLoaded", function () {
-    //    loadGet("<?php echo implode('","', $loadGet); ?>");
-    //});  */ ?>
+    // todo - is this obsolete?
+    $('input[name="dates"]').mouseup(getInvoiceRedraw);
 
-    <?php
-    //  if (file_exists("JS/{$endpoint}{$action}.JS")):
-    //      echo "jQuery.getScript('/JS/{$endpoint}{$action}.JS');";
-    //  endif;
-    ?>
+    function getInvoiceRedraw() {
+        let getInvoiceTable = $('#getInvoiceTable').DataTable();
 
-    $(document).ready(function () {
-        // Event listener for the date input
-        $('input[name="dates"]').mouseup(getInvoiceRedraw);
-
-        function getInvoiceRedraw() {
-            let getInvoiceTable = $('#getInvoiceTable').DataTable();
-
-            setTimeout(function () {
-                getInvoiceTable.draw(false);
-            }, 100);
-        }
-
-        // Initialize owlCarousel if it exists
-        if ($('.owl-carousel').length) {
-            let homeScreen = getScreenBreakpoint();
-            let homeCarousel = (homeScreen === 'xs' || homeScreen === 'sm') ? 1 : 5;
-
-            $(".owl-carousel").owlCarousel({
-                URLhashListener: true,
-                margin: 5,
-                startPosition: '#today',
-                responsiveClass: true,
-                responsive: {
-                    0: {items: 1},
-                    400: {items: 2},
-                    740: {items: 5},
-                    940: {items: 5}
-                },
-                nav: true,
-                stagePadding: 50,
-            });
-        }
-
-        // Initialize slick slider if it exists
-        if ($('.slick-stock').length) {
-            $('.slick-stock').slick({
-                dots: false,
-                arrows: true,
-                slidesToShow: 4,
-                slidesToScroll: 1,
-                centerMode: true,
-                initialSlide: daysSincePreviousMonday(),
-                responsive: [
-                    {
-                        breakpoint: 1024,
-                        settings: {
-                            slidesToShow: 3,
-                            slidesToScroll: 3,
-                            dots: true
-                        }
-                    },
-                    {
-                        breakpoint: 600,
-                        settings: {
-                            slidesToShow: 2,
-                            slidesToScroll: 2
-                        }
-                    },
-                    {
-                        breakpoint: 480,
-                        settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1
-                        }
-                    }
-                ],
-            });
-        }
-
-        // Functions to load data from Xero
-        function loadInvoicesFromXero(tenancy) {
-            console.log(['loadInvoicesFromXero', tenancy]);
-            $('#loadfromxerospinner').show();
-            $.ajax({
-                url: "/xero.php",
-                data: {
-                    endpoint: 'Invoices',
-                    action: 'refresh',
-                    tenancy: tenancy
-                },
-                type: 'GET',
-                complete: function () {
-                    $('#loadfromxerospinner').hide();
-                }
-            });
-        }
-
-        function loadContactsFromXero(tenancy) {
-            console.log('loadContactsFromXero: ' + tenancy);
-            $.ajax({
-                url: "/xero.php",
-                data: {
-                    endpoint: 'Contacts',
-                    action: 'refresh',
-                    tenancy: tenancy
-                },
-                type: 'GET',
-            });
-        }
-
-        function loadPaymentsFromXero(tenancy) {
-            console.log('loadPaymentsFromXero: ' + tenancy);
-            $.ajax({
-                url: "/xero.php",
-                data: {
-                    endpoint: 'Payments',
-                    action: 'readAll',
-                    tenancy: tenancy
-                },
-                type: 'GET',
-            });
-        }
-
-        // Set an interval to check the token every minute
-        const intervalId = setInterval(function () {
-            $.ajax({
-                url: "/json.php",
-                data: {endpoint: "Xero"}
-            })
-                .done(function (data) {
-                    console.log(data);
-                    if (!data.result) {
-                        clearInterval(intervalId);
-                    }
-                })
-                .fail(function (jqXHR, textStatus, errorThrown) {
-                    console.error('setInterval Ajax request failed:', textStatus, errorThrown);
-                    clearInterval(intervalId);
-                });
-
-
-            // Load data for each tenancy if the cookie is set
-            const tenancies = ['auckland', 'waikato', 'bop'];
-            for (let i = 0; i < tenancies.length; i++) {
-                if (Cookies.get(tenancies[i]) === 'true') {
-                    loadInvoicesFromXero(tenancies[i]);
-                    loadPaymentsFromXero(tenancies[i]);
-                }
-            }
-        }, 100000);
-    });
-
+        setTimeout(function () {
+            getInvoiceTable.draw(false);
+        }, 100);
+    }
 </script>
 </body>
 

@@ -38,6 +38,8 @@ $id = intval($_GET['id'] ?? 0);
 $json = new JsonClass();
 define("TENANCIES", $json->getOrganisationList());
 
+$loader = new Loader();
+
 
 switch ($action) {
     case 1:
