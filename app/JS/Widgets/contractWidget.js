@@ -77,4 +77,4 @@ class ContractWidget {
     }
 }
 
-export const nsContractWidget = new ContractWidget(keys);
+export const nsContractWidget = new ContractWidget(getKeys());

@@ -157,10 +157,10 @@
                                                 <div class="d-flex">
                                                     <h5 class="mb-1">Olivia</h5>
                                                     <small class="text-muted ms-auto text-end">
-                                                        45 mintues ago
+                                                        45 minutes ago
                                                     </small>
                                                 </div>
-                                                <span>New Schedule Realease......</span>
+                                                <span>New Schedule Release......</span>
                                             </div>
                                         </a>
                                         <a class="dropdown-item d-flex" href="chat.php">
@@ -188,7 +188,7 @@
                                    class="nav-link leading-none d-flex px-1">
 													<span>
 															<img src="/assets/images/users/8.jpg" alt="profile-user"
-                                                                 class="avatar  profile-user brround cover-image">
+                                                                 class="avatar  profile-user br-round cover-image">
 														</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">

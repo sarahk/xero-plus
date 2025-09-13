@@ -1,7 +1,8 @@
 import ComboContractSingle from '/JS/DataTables/comboContractSingle.js';
 
-
-const comboContract = new ComboContractSingle(keys ?? {});
+// do we need this?
+//const comboContract = new ComboContractSingle(keys ?? {});
+const comboContract = new ComboContractSingle(typeof keys !== 'undefined' && keys !== null ? keys : {});
 
 
 class ComboList {

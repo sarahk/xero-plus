@@ -36,3 +36,7 @@ function daysSincePreviousMonday() {
 
     return daysSinceMonday + 7;
 }
+
+function getKeys() {
+    return typeof keys !== 'undefined' && keys !== null ? keys : {};
+}

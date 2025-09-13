@@ -6,7 +6,7 @@ export default class ComboContractSingle {
     contractId;
 
     //this.contract_id = 0;
-
+// todo remove debugging console.log calls
     constructor(keys = {}) {
         console.log('in ComboContractSingle');
         this.keys = keys;

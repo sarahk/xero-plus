@@ -1,26 +1,26 @@
 {
-  "name": "xeroapi/xero-php-oauth2-starter",
-  "description": "Xero App for Cabin King",
+  "name": "sarahk/xero-plus",
+  "description": "Xero Plus App for Cabin King",
   "type": "project",
   "require": {
-    "xeroapi/xero-php-oauth2": "^7.3",
-    "monolog/monolog": "^3.7",
-    "guzzlehttp/guzzle": "^7.9.2",
-    "tinymce/tinymce": "^7.4.1",
+    "xeroapi/xero-php-oauth2": "^9.1",
+    "monolog/monolog": "^3.9",
+    "guzzlehttp/guzzle": "^7.9.3",
+    "tinymce/tinymce": "^7.9.0",
     "ext-pdo": "*",
-    "twilio/sdk": "^8.3"
+    "twilio/sdk": "^8.6.1"
   },
   "license": "MIT",
   "authors": [
     {
-      "name": "Xero API Team",
-      "email": "api@xero.com"
+      "name": "Sarah King",
+      "email": "rainchx@gmail.com"
     }
   ],
   "require-dev": {
-    "pestphp/pest": "^3.5.0",
-    "phpstan/phpstan": "^1.12.7",
-    "psalm/phar": "^5.26"
+    "pestphp/pest": "^3.8.2",
+    "phpstan/phpstan": "^1.12.27",
+    "psalm/phar": "^5.26.1"
   },
   "config": {
     "allow-plugins": {

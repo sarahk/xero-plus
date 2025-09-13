@@ -4,17 +4,20 @@ namespace App\Views;
 
 use App\Loader;
 
-$loader = new Loader();
 ?>
 <!doctype html>
 <html lang="en">
 <head>
     <title>Cabin King Addons</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
     <?php
+    include 'styles.php';
 
+    if (!isset($loader)) $loader = new Loader();
     $loader->outputCSS();
-
+    $loader->outputJS('head');
 
     //create constants for the xerotenant_id info
 
@@ -28,10 +31,6 @@ $loader = new Loader();
     } ?>
     <link rel="manifest" href="/site.webmanifest">
 
-    <!-- tinymce text editor -->
-    <script src="https://cdn.tiny.cloud/1/358b52j7udus5vp44svtm76psq44rezjrxzt0m3gwfosew62/tinymce/7/tinymce.min.js"
-            referrerpolicy="origin"></script>
-
 </head>
 
 <body class="app sidebar-mini ltr light-mode">
@@ -41,7 +40,7 @@ $loader = new Loader();
     <img src="/assets/images/loader.svg" class="loader-img" alt="Loader">
 </div>-->
 <!-- /GLOBAL-LOADER -->
-
+<div id="loader" class="d-none"><img src="/assets/images/media/loader.svg" alt=""></div>
 <!-- PAGE -->
 <div class="page">
     <div class="page-main">

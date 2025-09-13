@@ -1,7 +1,9 @@
 <style>
     <?php
     foreach (json_decode(TENANCIES, true) as $row):
-    $colour = "var(--bs-{$row['colour']})";
+    //May '25, something changed in how Bootstrap defines its colours! grr!
+    //$colour = "var(--bs-{$row['colour']})";
+    $colour = "var(--{$row['colour']})";
     $class = ".{$row['shortname']}";
     echo "
     .custom-checkbox $class::before {

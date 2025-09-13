@@ -179,6 +179,7 @@ $(document).ready(function () {
         });
     }
     // Initialize slick slider if it exists
+    // shows the cabin movement records
     if ($('.slick-stock').length) {
         $('.slick-stock').slick({
             dots: false,

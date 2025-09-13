@@ -17,52 +17,43 @@ use App\Loader;
     <div class="container">
         <div class="row align-items-center flex-row-reverse">
             <div class="col-md-12 col-sm-12 text-center">
-                Copyright © <span id="year"></span> <a href="javascript:void(0);">Zanex</a>. Designed with <span
-                        class="fa fa-heart text-danger"></span> by <a href="javascript:void(0);"> Spruko </a> All rights
-                reserved
+                Copyright © <span id="year"><?php echo date('Y'); ?></span> <a href="https://cabinking.nz/">Cabin King
+                    NZ Ltd</a>.
+
             </div>
         </div>
     </div>
 </footer>
 </div>
+</div>
+</div>
+</div>
+<!-- BACK-TO-TOP -->
+<!--<a href="#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>-->
+
 <?php
-if (isset($modals) && is_array($modals) && count($modals)) {
-    foreach ($modals as $filename) {
-        include("Views/Modals/$filename");
-    }
+//include 'widgets/scroll_to_top.php';
+?>
+
+<div id="responsive-overlay"></div>
+<?php
+if (!isset($loader)) {
+    $loader = new Loader();
 }
+$loader->outputModals();
+
+//todo remove code below, should be handled by loader
+//if (isset($modals) && is_array($modals) && count($modals)) {
+//    foreach ($modals as $filename) {
+//        include("Views/Modals/$filename");
+//    }
+//}
 ?>
 
 <?php
 // scripts not specified by the theme
 include 'Layouts/scripts.php';
-?>
 
-<!-- SPARKLINE JS-->
-<!-- tiny bar charts to use in Datatable for bad debts etc -->
-<!--<script src="/assets/JS/jquery.sparkline.min.JS"></script>-->
-<!---->
-<!--<!-- CHART-CIRCLE JS-->-->
-<!--<script src="/assets/JS/circle-progress.min.JS"></script>-->
-
-<!--<!-- CHARTJS CHART JS-->-->
-<!--<script src="/assets/plugins/chart/Chart.bundle.JS"></script>-->
-<!--<script src="/assets/plugins/chart/utils.JS"></script>-->
-<!---->
-<!--<!-- PIETY CHART JS-->-->
-<!--<script src="/assets/plugins/peitychart/jquery.peity.min.JS"></script>-->
-<!--<script src="/assets/plugins/peitychart/peitychart.init.JS"></script>-->
-<!---->
-<!--<!-- INTERNAL SELECT2 JS -->-->
-<!--<script src="/assets/plugins/select2/select2.full.min.JS"></script>-->
-<!---->
-<!--<!-- ECHART JS-->-->
-<!--<script src="/assets/plugins/echarts/echarts.JS"></script>-->
-
-<?php
-if (!isset($loader)) {
-    $loader = new Loader();
-}
 $loader->outputJS();
 ?>
 
@@ -82,7 +73,11 @@ $loader->outputJS();
 <script type="text/javascript" src="/JS/tasks.js"></script>
 <script type="text/javascript" src="/JS/vehicles.js"></script>
 <script type="module" src="/JS/widgets.js"></script>
-<script type="module" src="/JS/autorun.js"></script>
+
+<?php if (!\App\LOGGEDOUT) {
+    echo '<script type="module" src="/JS/autorun.js"></script>';
+}
+?>
 
 <?php
 $action = intval($_GET['action'] ?? 0);

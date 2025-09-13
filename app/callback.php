@@ -17,6 +17,8 @@ require '../vendor/autoload.php';
 $storage = new StorageClass();
 $provider = Utilities::getProvider();
 
+
+var_dump($_GET);
 // If we don't have an authorization code then get one
 if (!isset($_GET['code'])) {
     echo "Something went wrong, no authorization code found";

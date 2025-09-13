@@ -1114,7 +1114,7 @@ class XeroClass
         $result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
 
 
-        if (count($data) === 0) {
+        if (count($result) === 0) {
             if ($next_runtime['last_batch'] > 0) {
                 $storage->setNotification([
                     'class' => 'danger',
@@ -1124,7 +1124,7 @@ class XeroClass
             $storage->setNextRuntime('Payments');
             return '0';
         }
-        $storage->setLastBatch('Payments', count($data));
+        $storage->setLastBatch('Payments', count($result));
 
 
         foreach ($result->getPayments() as $row) {

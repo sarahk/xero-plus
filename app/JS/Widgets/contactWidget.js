@@ -110,4 +110,4 @@ class ContactWidget {
     }
 }
 
-export const nsContactWidget = new ContactWidget(keys);
+export const nsContactWidget = new ContactWidget(getKeys());

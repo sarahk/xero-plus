@@ -9,8 +9,8 @@ use App\Models\InvoiceModel;
 use App\Models\TasksModel;
 use DateTime;
 
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
+//ini_set('display_errors', 'On');
+//error_reporting(E_ALL);
 
 require_once '../vendor/autoload.php';
 
@@ -36,8 +36,10 @@ $id = intval($_GET['id'] ?? 0);
 //$userId = $_SESSION['user']['user_id'];
 
 $json = new JsonClass();
-define("TENANCIES", $json->getOrganisationList());
+define("TENANCIES", (new JsonClass())->getOrganisationList());
+unset($json);
 
+// manages modals, javascript and css
 $loader = new Loader();
 
 
@@ -80,7 +82,7 @@ switch ($action) {
 
         $keys = ['contract' => ['contract_id' => $contract_id]];
 
-        // we're opening in enquiry mode but this takes us to the overview mode
+        // we're opening in enquiry mode, but this takes us to the overview mode
 
         $link_to_contract = $contracts->getContractOverviewLink('91', ['contract_id' => $contract_id], 'btn btn-secondary');
 
@@ -95,12 +97,9 @@ switch ($action) {
     case 100:
         // list contracts and enquiries
         // ajax data only
-        break;
-
     case 11:
         // map of cabin locations
         // do nothing?
-
         break;
 
     case 12:
@@ -130,7 +129,7 @@ switch ($action) {
 
     case 13:
         // list of cabins
-        $modals = ['cabin-single.php'];
+        $loader->addModal('cabin-single.php');
         break;
 
     case 14:
@@ -159,21 +158,20 @@ switch ($action) {
 
         $tasks = new TasksModel($pdo);
         $data['tasks'] = $tasks->getChildren('cabins', $_GET['cabin_id'], false);
-        $modals = ['task-single.php', 'cabin-edit-basics.php'];
+        $loader->addModal('task-single.php');
+        $loader->addModal('cabin-edit-basics.php');
         break;
 
     case 15:
         // single task record
-        break;
-
     case 16:
         // bad debts management
         break;
-
     case 17:
         // Message Templates
+        $loader->addTinyMCE();
+        $loader->addModal('template-single.php');
         break;
-
     case 18:
         // activity
         break;
@@ -243,6 +241,8 @@ switch ($action) {
                     'id' => $date->format('Ymd')
                 ];
         }
+        $loader->addSlickSlider();
+        //$loader->addOwlCarousel();
 
         break;
 }

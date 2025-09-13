@@ -1,6 +1,3 @@
-<!-- BACK-TO-TOP -->
-<a href="#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
-
 <!-- JQUERY JS -->
 <!--<script src="/assets/js/jquery.min.js"></script>-->
 <script
@@ -10,20 +7,20 @@
 
 
 <!-- SIDE-MENU JS -->
-<script src="/assets/js/sidemenu/sidemenu.js"></script>
+<script src="/assets/js/slidemenu/slide_menu.js"></script>
 
 <!-- STICKY JS -->
 <script src="/JS/plugins/sticky.js"></script>
 
-<!-- SIDEBAR JS -->
-<script src="/assets/js/sidebar/sidebar.js"></script>
-
-
 <!-- COLOR THEME JS -->
 <script src="/assets/js/themeColors.js"></script>
 
+<!-- CUSTOM JS, handles scrolling -->
+<script src="/assets/js/custom.js"></script>
+
 <!-- SWITCHER STYLES JS -->
-<script src="/assets/js/swither-styles.js"></script>
+<script src="/assets/js/switcher-styles.js"></script>
 
 <!-- CUSTOM JS -->
 <script src="/JS/plugins/custom.js"></script>
+

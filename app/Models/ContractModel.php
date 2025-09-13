@@ -207,7 +207,7 @@ class ContractModel extends BaseModel
                     break;
                 case 'Waiting':
                     $conditions[] = 'contracts.status = "Yes"';
-                    $conditions[] = '(contracts.delivery_date = "" OR contracts.delivery_date IS NULL)';
+                    $conditions[] = 'contracts.delivery_date IS NULL';
             }
         }
 
@@ -261,7 +261,7 @@ class ContractModel extends BaseModel
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-// todo change the xero links to ones that work
+// todo change the Xero links to ones that work
                 $idCell = [];
                 if (!empty($row['repeating_invoice_id'])) {
                     $idCell[] = "<a href='/authorizedResource.php?action=10&id={$row['ckcontact_id']}'>{$row['contract_id']}</a>";

@@ -1,31 +1,24 @@
-function setContactsAsSortable() {
+const setContactsAsSortable = () => {
+    const $table = $('#enquiryContacts');
+    if (!$table.length) return;
 
-    if ($('#enquiryContacts').length) {
-        let $tBody = $('#enquiryContacts tbody');
-        $tBody.sortable({
-            stop: function (event, ui) {
-                // This function will trigger when sorting has stopped
-                $tBody.find('tr').each(function (index) {
-                    // 'index' will act as the incrementing key (like $i in PHP)
-                    let key = $(this).attr('data-key');
-                    console.log(['key', key, index]);
-                    // Find the hidden input field within this row and set its value to the index
-                    let sortOrderKey = "#sortorder" + key;
-                    $(this).find(sortOrderKey).val(index);
-                });
-            }
-        });
-    }
-}
+    const $tBody = $table.find('tbody');
+    $tBody.sortable({
+        stop: () => {
+            $tBody.find('tr').each((index, el) => {
+                const $row = $(el);
+                const key = $row.data('key');            // prefer data()
+                $row.find(`#sortorder${key}`).val(index); // template literal
+            });
+        }
+    });
+};
 
-function getRadioButtonValue(radioName) {
-    let pointer = `input[name='${radioName}']:checked`;
+const getRadioButtonValue = (name, fallback = null) => {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : fallback;
+};
 
-    if ($(pointer).length > 0) {
-        return $(pointer).val();
-    }
-    return false;
-}
 
 function serializeToNestedObject(serializedArray) {
     let result = {};

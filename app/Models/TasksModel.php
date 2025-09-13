@@ -197,10 +197,15 @@ FROM `tasks`";
 
     /*
      * bootstrap class w-0, w-25, w-50, w-75, w-100
-     * this function gets the quarter amount
+     * This function gets the quarter amount
      */
     protected function quarter($num, $total): int
     {
+        // I've added the null check but I'm not sure if that's right
+        if ($total === 0 || $num === 0) {
+            return 0;
+        }
+
         return round(($num / $total) * 4) / 0.04;
     }
 }

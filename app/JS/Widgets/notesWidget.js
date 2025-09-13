@@ -3,7 +3,7 @@ class NotesWidget {
     formId = '#notesCardForm';
     tableBodySelector = '#notesCardTable tbody';
 
-    constructor(keys) {
+    constructor(keys = {}) {
         this.keys = keys;
         if ($(this.tagId).length) {
             console.log('found the card');
@@ -91,4 +91,5 @@ class NotesWidget {
     }
 }
 
-export const nsNotesWidget = new NotesWidget(keys);
+//typeof keys !== 'undefined' && keys !== null ? keys : {}
+export const nsNotesWidget = new NotesWidget(getKeys());
