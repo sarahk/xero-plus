@@ -104,7 +104,7 @@ class JsonClass
     {
         $cabins = new Models\CabinModel($this->pdo);
         $params = $this->getParams();
-        return json_encode($cabins->list($params));
+        return $cabins->list($params);
     }
 
     public function getCabinSingle()

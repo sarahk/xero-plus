@@ -30,7 +30,7 @@ class ComboModel extends BaseModel
         <th>Due</th>
         <th>Date</th>
 */
-        $tenancyList = $this->getTenancyList();
+        $tenancy_list = $this->getTenancyList();
 
         $search_values = [];
 
@@ -127,11 +127,11 @@ class ComboModel extends BaseModel
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-                
+
 // todo change the links if it's payment
-                $url = "/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}";
+                $url = "/page.php?action=12&invoice_id={$row['invoice_id']}";
                 $output['data'][] = [
-                    'row_type' => "{$tenancyList[$row['xerotenant_id']]['shortname']} <b>{$row['row_type']}</b>",
+                    'row_type' => "{$tenancy_list[$row['xerotenant_id']]['shortname']} <b>{$row['row_type']}</b>",
                     'number' => "<a href='$url'>{$row['invoice_number']}</a>",
                     'reference' => $row['reference'],
                     'name' => "<a href='$url'>{$row['name']}</a>",
@@ -143,7 +143,7 @@ class ComboModel extends BaseModel
                     'balance' => $row['balance'],
                     'date' => $this->getPrettyDate($row['date']),
                     'due_date' => $this->getPrettyDate($row['due_date']),
-                    'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
+                    'colour' => $tenancy_list[$row['xerotenant_id']]['colour'],
                     'activity' => $this->getActivityDescription($row),
                 ];
 // for debugging
@@ -166,7 +166,7 @@ class ComboModel extends BaseModel
 
     protected function getActivityDescription(array $row): string
     {
-        $url = '/authorizedResource.php?action=12&invoice_id=' . $row['invoice_id'];
+        $url = '/page.php?action=12&invoice_id=' . $row['invoice_id'];
         $display = ($row['row_type'] === 'I' ? 'Invoice #' . $row['invoice_number'] : 'Payment on Invoice #' . $row['invoice_number']);
         return "<a href='$url' target='_blank'>$display</a>";
     }

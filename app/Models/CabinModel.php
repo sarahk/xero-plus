@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Models\Enums\CabinPainted;
 use App\Models\Enums\CabinStyle;
+use PDOException;
+use PDO;
 
 class CabinModel extends BaseModel
 {
@@ -136,10 +138,12 @@ class CabinModel extends BaseModel
             }
         } else $order = "cabins.cabinnumber ASC";
 
-        $tenancies = $this->getWhereInSQL($params['tenancies'], 'tenancy');
+        //$tenancies = $this->getWhereInSQL($params['tenancies'], 'tenancy');
+        $tenancy_list = $this->getTenancyList();
+        $tenancies = $this->getTenanciesWhere($params);
 
-        $conditions = ["`cabins`.`xerotenant_id` IN ({$tenancies['sql']})"];
-        $conditions_values = $tenancies['bind_vars'];
+        $conditions = [$tenancies];
+        $search_values = [];
 
         if (is_array($params['search']) && array_key_exists('value', $params['search'])) {
             $search_value = $params['search']['value'];
@@ -149,14 +153,14 @@ class CabinModel extends BaseModel
                 $choice[] = "`addresses`.`address_line1` LIKE :search_like";
                 $choice[] = "`addresses`.`address_line2` LIKE :search_like";
                 $conditions[] = '(' . implode(' OR ', $choice) . ')';
-                $conditions_values['search_value'] = $search_value;
-                $conditions_values['search_like'] = "%$search_value%";
+                $search_values['search_value'] = $search_value;
+                $search_values['search_like'] = "%$search_value%";
             }
         }
 
         if (!empty($output['button'])) {
             $conditions[] = "`cabins`.`status` = :status";
-            $conditions_values['status'] = strtoupper($output['button']);
+            $search_values['status'] = strtoupper($output['button']);
         } else {
             $conditions[] = "`cabins`.`status` = 'active'";
         }
@@ -168,63 +172,75 @@ class CabinModel extends BaseModel
             'cabins.status',
             'cabins.style',
             'cabins.paintinside',
-            'contracts.delivery_date',
-            'contracts.pickup_date',
-            'contracts.scheduled_pickup_date',
+            'cabins.xerotenant_id',
+            'vcabin_contracts.contract_id',
+            'vcabin_contracts.delivery_date',
+            'vcabin_contracts.pickup_date',
+            'vcabin_contracts.scheduled_pickup_date',
             'contacts.name'
         ];
 
 
         $sql = "SELECT " . implode(', ', $fields) . " FROM `cabins` 
-            LEFT JOIN `contracts` ON (cabins.cabin_id = contracts.cabin_id) 
-            LEFT JOIN `contacts` ON (contracts.contact_id = contacts.contact_id) 
+            LEFT JOIN `vcabin_contracts` ON (cabins.cabin_id = vcabin_contracts.cabin_id) 
+            LEFT JOIN `contacts` ON (vcabin_contracts.contact_id = contacts.contact_id) 
             LEFT JOIN `addresses` ON (contacts.contact_id = addresses.contact_id AND addresses.address_type = 'STREET')
         WHERE " . implode(' AND ', $conditions) . "
         ORDER BY {$order} 
-        LIMIT :start, :length";
+        LIMIT {$params['start']}, {$params['length']}";
 
 
-        $this->getStatement($sql);
-        try {
+        $cabins = $this->runQuery($sql, $search_values);
 
-            foreach ($conditions_values as $k => $v) {
-                $this->statement->bindValue(':' . $k, $v);
-            }
-            $this->statement->bindValue(':start', $params['start'], PDO::PARAM_INT);
-            $this->statement->bindValue(':length', $params['length'], PDO::PARAM_INT);
+//        $output['recordsTotal'] = $this->getTotalRecordCount($conditions[0], $tenancies['bind_vars']);
+//        $output['recordsFiltered'] = $this->getFilteredRecordCount($conditions, $search_values);
+        $records_total = "SELECT COUNT(*) FROM cabins WHERE $tenancies";
+        $records_filtered = "SELECT COUNT(*) 
+                                FROM cabins 
+                                LEFT JOIN `vcabin_contracts` ON (cabins.cabin_id = vcabin_contracts.cabin_id) 
+            LEFT JOIN `contacts` ON (vcabin_contracts.contact_id = contacts.contact_id) 
+            LEFT JOIN `addresses` ON (contacts.contact_id = addresses.contact_id AND addresses.address_type = 'STREET')
+            WHERE " . implode(' AND ', $conditions);
 
-            $this->statement->execute();
-            $cabins = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-
-        } catch (PDOException $e) {
-            echo "Error Message: " . $e->getMessage() . "\n";
-            $this->statement->debugDumpParams();
-        }
-
-        $output['recordsTotal'] = $this->getTotalRecordCount($conditions[0], $tenancies['bind_vars']);
-        $output['recordsFiltered'] = $this->getFilteredRecordCount($conditions, $conditions_values);
-
+        $output['recordsTotal'] = $this->runQuery($records_total, $search_values, 'column');
+        $output['recordsFiltered'] = $this->runQuery($records_filtered, $search_values, 'column');
 
         if (count($cabins)) {
             foreach ($cabins as $k => $row) {
 
                 $output['data'][] = [
-                    'number' => "<button type='button' class='btn btn-link' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</button>",
-                    //'number' => "<a href='/authorizedResource.php?action=14' data-toggle='modal' data-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>",
-                    'style' => lists::getCabinStyle($row['style']),
+                    'number' => "<a class='' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>",
+                    //'number' => "<button type='button' class='btn btn-link' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</button>",
+                    //'number' => "<a href='/page.php?action=14' data-toggle='modal' data-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>",
+                    'style' => CabinStyle::getLabel($row['style']),
                     'status' => $row['status'],
-                    'contact' => "{$row['name']} <a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}' class='text-right'><i class='fas fa-edit'></i></a>",
+                    'contact' => $this->getCabinUserLabel($row),
                     'paintinside' => $row['paintinside'],
-                    'actions' => "<a href='/get.php?endpoint=Contracts&action=Read&key={$row['cabin_id']}'><i class='fas fa-th-list' data-key=''></i></a>"
+                    'actions' => "<a href='/get.php?endpoint=Contracts&action=Read&key={$row['cabin_id']}'><i class='fas fa-th-list' data-key=''></i></a>",
+                    'colour' => $tenancy_list[$row['xerotenant_id']]['colour']
                 ];
             }
             //$output['row'] = $row;
         }
 
+
         return json_encode($output);
 
+    }
 
-        return $output;
+    protected function getCabinUserLabel($row): string
+    {
+        if (is_null($row['contract_id'])) {
+            return "<a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}'>In Yard</a>";
+        }
+
+        if ($row['pickup_date'] == '0000-00-00') {
+            return "<a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}'>{$row['name']}</a>";
+        }
+
+        return "<a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}'>{$row['name']}</a>
+ <br/>Pickup: {$row['scheduled_pickup_date']}";
+
     }
 
     protected function getTotalRecordCount($where, $vars): int

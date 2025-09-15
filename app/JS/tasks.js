@@ -62,10 +62,10 @@ $(document).ready(function () {
 
 
                 $('#taskedit').on('click', function () {
-                    window.open('/authorizedResource.php?action=14&cabin_id=' + key);
+                    window.open('/page.php?action=14&cabin_id=' + key);
                 });
                 $('#closetask').on('click', function () {
-                    window.open('/authorizedResource.php?action=15&cabin_id=' + key);
+                    window.open('/page.php?action=15&cabin_id=' + key);
                 });
             });
             $('#modalSpinnerCabin').hide();

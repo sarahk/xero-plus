@@ -119,7 +119,7 @@ class StorageClass
     {
         $isTesting = filter_var(CKM_TESTING_MODE, FILTER_VALIDATE_BOOLEAN);
         $bypass = filter_var(CKM_BYPASS_EXPIRY, FILTER_VALIDATE_BOOLEAN);
-        
+
         return $isTesting && $bypass;
     }
 
@@ -130,7 +130,7 @@ class StorageClass
 
     public function getUrl(): string
     {
-        return $_SESSION['ckm']['url'] ?? './authorizedResource.php';
+        return $_SESSION['ckm']['url'] ?? './page.php';
     }
 
     public function setNotification($notify): void

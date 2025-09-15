@@ -31,7 +31,7 @@ namespace App\Layouts;
                     }
                     ?>
                     <li class="slide">
-                        <a href="/authorizedResource.php?action=10"
+                        <a href="/page.php?action=10"
                            class="btn btn-md btn-success btn-block tracking-wide">
                             <i class="side-menu__icon fa-solid fa-plus"></i>
                             <span class='side-menu__label'><strong>Add An Enquiry</strong></span></a></li>
@@ -42,18 +42,18 @@ namespace App\Layouts;
                     </li>
 
                     <li class="slide active">
-                        <a href="/authorizedResource.php" class="side-menu__item active"> <i
+                        <a href="/page.php" class="side-menu__item active"> <i
                                     class="fe fe-home side-menu__icon"></i>
                             <span class="side-menu__label">Dashboard</span>
                         </a></li>
 
-                    <li class="slide"><a class="side-menu__item" href="/authorizedResource.php?action=100"><i
+                    <li class="slide"><a class="side-menu__item" href="/page.php?action=100"><i
                                     class="side-menu__icon fe fe-help-circle"></i><span
                                     class="side-menu__label">Enquiries</span></a></li>
                     <?php
                     function simpleMenuItem($action, $icon, $label): string
                     {
-                        return fullMenuItem("/authorizedResource.php?action=$action", '', $icon, $label);
+                        return fullMenuItem("/page.php?action=$action", '', $icon, $label);
                     }
 
                     function fullMenuItem($url, $id, $icon, $label): string
@@ -74,7 +74,7 @@ namespace App\Layouts;
 
                     <li class="slide has-sub is-expanded">
                         <a class="side-menu__item" data-bs-toggle="slide"
-                           href="/authorizedResource.php?action=16"><i
+                           href="/page.php?action=16"><i
                                     class="side-menu__icon fe fe-alert-circle"></i><span
                                     class="side-menu__label">Outstanding Rents</span><i
                                     class="angle fa fa-angle-right"></i></a>

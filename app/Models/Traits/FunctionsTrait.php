@@ -138,7 +138,7 @@ trait FunctionsTrait
      */
     public function getContractOverviewLink(string $action, array $row, string $class = ''): string
     {
-        $variables = ["/authorizedResource.php?action=$action"];
+        $variables = ["/page.php?action=$action"];
         foreach ($row as $key => $val) {
             $variables[] = "&$key=$val";
         }

@@ -16,7 +16,7 @@ ExtraFunctions::outputKeysAsJs($keys);
     <div>
         <h1 class="page-title">Contract: <strong><?= $keys['contact']['name']; ?></strong></h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/authorizedResource.php?action=90">Contracts</a></li>
+            <li class="breadcrumb-item"><a href="/page.php?action=90">Contracts</a></li>
             <li class="breadcrumb-item active" aria-current="page">Contract
                 #<?= $keys['contract']['contract_id']; ?></li>
         </ol>

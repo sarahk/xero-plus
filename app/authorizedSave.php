@@ -71,4 +71,4 @@ switch ($action) {
 
 ExtraFunctions::debug($_GET);
 exit;
-header("Location: /authorizedResource.php?action={$action}&id={$id}");
+header("Location: /page.php?action={$action}&id={$id}");

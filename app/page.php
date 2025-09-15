@@ -143,7 +143,7 @@ switch ($action) {
         $cabin_id = $_GET['cabin_id'] ?? 0;
         if (!$cabin_id) {
             //reload the dashboard
-            header('Location: authorizedResource.php');
+            header('Location: page.php');
             exit;
         }
 

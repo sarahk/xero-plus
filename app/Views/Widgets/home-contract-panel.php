@@ -3,7 +3,7 @@
         <div class="card-header justify-content-between">
             <h5 class="card-title">Enquiries
             </h5>
-            <a class="btn btn-sm btn-primary" href="/authorizedResource.php?action=100">See All</a>
+            <a class="btn btn-sm btn-primary" href="/page.php?action=100">See All</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -27,7 +27,7 @@
         <div class="card-header justify-content-between">
             <h5 class="card-title">Wait List
             </h5>
-            <a class="btn btn-sm btn-primary" href="/authorizedResource.php?action=16">See All</a>
+            <a class="btn btn-sm btn-primary" href="/page.php?action=16">See All</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -52,7 +52,7 @@
             <h5 class="card-title"><i class="fa-solid fa-comments-dollar text-danger"></i> Watchlist: $
                 <span id="watchlistTotal" style="font-weight: bold"></span>
             </h5>
-            <a class="btn btn-sm btn-primary" href="/authorizedResource.php?action=16">See All</a>
+            <a class="btn btn-sm btn-primary" href="/page.php?action=16">See All</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">

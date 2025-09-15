@@ -25,7 +25,9 @@ $(document).ready(function () {
             ],
             paging: true,
             dom: "<'row'<'col-sm-12 col-lg-3' l >" + "<'col-sm-12 col-lg-6' B ><'col-sm-12 col-lg-3' f >>" + "trip",
-
+            createdRow: (row, data, index) => {
+                row.classList.add('bar-' + data.colour);
+            },
             buttons: [{
                 text: 'All',
                 className: 'btn mr-1',
@@ -56,6 +58,12 @@ $(document).ready(function () {
                 className: 'btn mr-1',
                 action: function (e, dt, node, config) {
                     tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read&button=disposed').load();
+                }
+            }, {
+                text: 'Yard',
+                className: 'btn mr-1',
+                action: function (e, dt, node, config) {
+                    tCabins.ajax.url('/json.php?endpoint=Cabins&action=Read&button=yard').load();
                 }
             }]
 
@@ -101,7 +109,7 @@ $(document).ready(function () {
                         let newRow = $("<tr></tr>");
 
                         // Add table data (columns) to the row
-                        newRow.append("<td><a href='/authorizedResource.php?action=15&id=" + key + "'>" + task.name + "</a></td>");
+                        newRow.append("<td><a href='/page.php?action=15&id=" + key + "'>" + task.name + "</a></td>");
                         newRow.append("<td>" + task.status + "</td>");
                         newRow.append("<td>" + formatDate(task.due_date) + "</td>");
                         newRow.append("<td><button id='closetask" + key + "'>Close</button></td>");
@@ -120,10 +128,10 @@ $(document).ready(function () {
                     $("#cabintasks tbody").append(newRow);
                 }
                 $('#cabinedit').on('click', function () {
-                    window.open('/authorizedResource.php?action=14&cabin_id=' + key);
+                    window.open('/page.php?action=14&cabin_id=' + key);
                 });
                 $('#addtask').on('click', function () {
-                    window.open('/authorizedResource.php?action=15&cabin_id=' + key);
+                    window.open('/page.php?action=15&cabin_id=' + key);
                 });
             });
             $('#modalSpinnerCabin').hide();

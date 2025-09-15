@@ -42,13 +42,12 @@ class BaseModel
     protected array $defaults = [];
     protected bool $hasStub = false;
     protected bool $view = false;
-
-
+    
     function __construct(PDO $pdo)
     {
-
         $this->initPdo($pdo);
         $this->initLogger($this->table . 'Model');
+
     }
 
     // just to ensure the mysql connection is closed
@@ -191,7 +190,7 @@ class BaseModel
         }
     }
 
-    
+
 
     /*
      * Default values belong in mysql
@@ -337,20 +336,20 @@ class BaseModel
     }
 
 
-    protected function getWhereInSQL($tenancies, $label): array
+    protected function getWhereInSQL(array $list, string $label): array
     {
-        $values = [];
+        $bind_vars = [];
         $keys = [];
 
-        foreach ($tenancies as $k => $val) {
+        foreach ($list as $k => $val) {
             $key = $label . $k;
             $keys[] = ':' . $key;
-            $values[$key] = $val; // collecting values into key-value array
+            $bind_vars[$key] = $val; // collecting values into key-value array
         }
 
         return [
             'sql' => implode(', ', $keys),
-            'bind_vars' => $values
+            'bind_vars' => $bind_vars
         ];
     }
 

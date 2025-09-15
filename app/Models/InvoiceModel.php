@@ -166,7 +166,7 @@ class InvoiceModel extends BaseModel
                     $contact_name = "<a href='#' data-toggle='modal' data-target='#contactSingle' data-contactid='{$row['contact_id']}'>{$row['name']}</a>";
                 }
                 $output['data'][] = [
-                    'number' => "<a href='/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}'>{$row['invoice_number']}</a>",
+                    'number' => "<a href='/page.php?action=12&invoice_id={$row['invoice_id']}'>{$row['invoice_number']}</a>",
                     'reference' => $row['reference'],
                     'contact' => $contact_name,
                     'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",

@@ -4,7 +4,6 @@
  */
 declare(strict_types=1);
 
-
 require_once __DIR__ . '/../bootstrap/runtime.php';
 
 use App\Models\ContactModel;

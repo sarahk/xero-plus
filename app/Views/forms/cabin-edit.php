@@ -16,7 +16,7 @@ echo '<pre>' . var_export($data) . '</pre>';
     <div class="page-header">
         <div><h1 class="page-title"><?= $label; ?></h1>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/authorizedResource.php?action=13">Cabins</a></li>
+                <li class="breadcrumb-item"><a href="/page.php?action=13">Cabins</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><?= $label; ?></li>
             </ol>
         </div>

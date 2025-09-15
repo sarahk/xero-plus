@@ -18,7 +18,7 @@
             </a>
             <!-- LOGO -->
             <div class="main-header-center ms-3 d-none d-lg-block">
-                <form action="/authorizedResource.php" method="get">
+                <form action="/page.php" method="get">
                     <input type="hidden" name="action" value="5">
                     <?php $search_term = $_GET['search_term'] ?? ''; ?>
                     <input class="form-control" name="search_term" placeholder="Search for anything..." type="search"

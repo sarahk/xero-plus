@@ -264,7 +264,7 @@ class ContractModel extends BaseModel
 // todo change the Xero links to ones that work
                 $idCell = [];
                 if (!empty($row['repeating_invoice_id'])) {
-                    $idCell[] = "<a href='/authorizedResource.php?action=10&id={$row['ckcontact_id']}'>{$row['contract_id']}</a>";
+                    $idCell[] = "<a href='/page.php?action=10&id={$row['ckcontact_id']}'>{$row['contract_id']}</a>";
                     $idCell[] = "<img src='/images/Xero_software_logo.svg' height='15' width='15' style='margin-left: .5em' alt='Record is in Xero'>";
                 } else {
                     $idCell[] = "<img src='/images/Xero_disabled.svg' height='15' width='15' style='margin-left: .5em' alt='Record is NOT in Xero'>";
@@ -273,7 +273,7 @@ class ContractModel extends BaseModel
                 $output['data'][] = [
                     'contract_id' => implode($idCell),
                     'status' => $row['status'],
-                    'name' => "<a href='/authorizedResource.php?action=10&id={$row['ckcontact_id']}'>{$row['name']}</a>",
+                    'name' => "<a href='/page.php?action=10&id={$row['ckcontact_id']}'>{$row['name']}</a>",
                     'details' => $this->getDetailsCell($row),
                     'reference' => $row['reference'],
                     'address' => $this->formatAddress($row),
@@ -305,7 +305,7 @@ class ContractModel extends BaseModel
 
         $output = "{$row['name']}, {$row['address_line1']}, {$row['address_line2']}. {$row['cabin_type']}";
         //todo add a url
-        $url = "authorizedResource.php?action=10&id={$row['ckcontact_id']}&contract_id={$row['contract_id']}";
+        $url = "page.php?action=10&id={$row['ckcontact_id']}&contract_id={$row['contract_id']}";
 
         return "<a href='$url'>$output</a>";
     }
