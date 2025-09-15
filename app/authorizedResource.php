@@ -9,10 +9,15 @@ use App\Models\InvoiceModel;
 use App\Models\TasksModel;
 use DateTime;
 
+use Dotenv\Dotenv;
+
 //ini_set('display_errors', 'On');
 //error_reporting(E_ALL);
 
-require_once '../vendor/autoload.php';
+//require_once '../vendor/autoload.php';
+//Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
+
+require __DIR__ . '/../bootstrap/runtime.php';
 
 //var_dump($_GET);
 //exit;
@@ -249,33 +254,33 @@ switch ($action) {
 
 require_once(SITE_ROOT . '/Views/header.php');
 
-$view = match ($action) {
-    1 => 'Views/organisations_list.php',
-    5 => 'Views/contacts_index.php',
-    9 => 'Views/invoices_index.php',
-    90 => 'Views/combo-index.php',
-    91 => 'Views/contract_single.php',
-    10 => 'Views/enquiry-edit.php',
-    100 => 'Views/contracts_index.php',
-    11 => 'Views/cabin-locations.php',
-    12 => 'Views/invoice_single.php',
-    13 => 'Views/cabins-index.php',
-    14 => 'Views/cabin-single.php',
-    16 => 'Views/bad_debts_index.php',
-    160 => 'Views/bad_debts_management.php',
-    17 => 'Views/templates-index.php',
-    18 => 'Views/activity-index.php',
-    200 => 'Views/home2.php',
-    default => 'Views/home.php',
-};
+$view = __DIR__ . '/' . match ($action) {
+        1 => 'Views/organisations_list.php',
+        5 => 'Views/contacts_index.php',
+        9 => 'Views/invoices_index.php',
+        90 => 'Views/combo-index.php',
+        91 => 'Views/contract_single.php',
+        10 => 'Views/enquiry-edit.php',
+        100 => 'Views/contracts_index.php',
+        11 => 'Views/cabin-locations.php',
+        12 => 'Views/invoice_single.php',
+        13 => 'Views/cabins-index.php',
+        14 => 'Views/cabin-single.php',
+        16 => 'Views/bad_debts_index.php',
+        160 => 'Views/bad_debts_management.php',
+        17 => 'Views/templates-index.php',
+        18 => 'Views/activity-index.php',
+        200 => 'Views/home2.php',
+        default => 'Views/home.php',
+    };
 
 ?>
 
 <div>
     <?php
-    include $view;
+    require $view;
     ?>
 </div>
 <?php
-require_once('Views/footer.php');
+require_once 'Views/footer.php';
 ?>

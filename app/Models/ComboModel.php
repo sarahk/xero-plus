@@ -127,6 +127,7 @@ class ComboModel extends BaseModel
 
         if (count($result) > 0) {
             foreach ($result as $row) {
+                
 // todo change the links if it's payment
                 $url = "/authorizedResource.php?action=12&invoice_id={$row['invoice_id']}";
                 $output['data'][] = [

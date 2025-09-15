@@ -2,8 +2,10 @@
 /*
  * Handles local database requests and returns json
  */
+declare(strict_types=1);
 
-namespace App;
+
+require_once __DIR__ . '/../bootstrap/runtime.php';
 
 use App\Models\ContactModel;
 use App\Models\ContractModel;
@@ -17,27 +19,21 @@ use App\JsonClass;
 use App\Models\TemplateModel;
 use \XeroAPI\XeroPHP\Configuration;
 use \XeroAPI\XeroPHP\Api\AccountingApi;
+use App\Utilities;
 
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 header('Access-Control-Allow-Origin: *');
 header("Content-type: application/json; charset=utf-8");
-
-$path = '../vendor/autoload.php';
-require $path;
 
 //require_once('CKMProvider.php');
 
 $provider = Utilities::getProvider();
 // Storage Class uses sessions for storing token
 $storage = new StorageClass();
-$xeroTenantId = (string)$storage->getSession()['tenant_id'];
+$xeroTenantId = (string)$storage->getSession()['tenant_id'] ?? '';
 
 // Check if Access Token is expired
 // if so - refresh token
-if ($storage->getHasExpired()) {
+if ($storage->hasExpired()) {
     //$provider = Utilities::getProvider();
 
     $newAccessToken = $provider->getAccessToken('refresh_token', [
@@ -50,17 +46,18 @@ if ($storage->getHasExpired()) {
     );
 }
 
-$config = \XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
-
-$config->setHost("https://api.xero.com/api.xro/2.0");
-
-$apiInstance = new \XeroAPI\XeroPHP\Api\AccountingApi(
-    new \GuzzleHttp\Client(),
-    $config
-);
+//$config = \XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
+//
+//$config->setHost("https://api.xero.com/api.xro/2.0");
+//
+//$apiInstance = new \XeroAPI\XeroPHP\Api\AccountingApi(
+//    new \GuzzleHttp\Client(),
+//    $config
+//);
 
 // ALL methods are demonstrated using this class
-$json = new JsonClass($apiInstance, $xeroTenantId);
+//$json = new JsonClass($apiInstance, $xeroTenantId);
+$json = new JsonClass();
 //$json = new JsonClass();
 //$json->setup($apiInstance);
 

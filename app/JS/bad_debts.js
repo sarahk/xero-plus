@@ -1,352 +1,242 @@
-//import Swal from "sweetalert2";
-
-
-// to run the saveSms modal - either from the bad debts screen or a contract page
-// ES6 style class
-
-//let currentButtonValue = '';
-//let $badDebtsTitle = $('#badDebtsTitle');
-
+// Keep your import:
 import SendSmsReminders from './Modals/sendSmsReminders.js';
 
 const sendSmsReminders = new SendSmsReminders();
 
-class BadDebtReminders {
+/**
+ * Base table with shared wiring for DataTables v2 + jQuery.
+ * - serverSide AJAX with spread data
+ * - named buttons (so count updates don't break when you reorder)
+ * - CSS variable coloring for processing/selection
+ * - defers rendering for speed
+ */
+class BaseBadDebtTable {
+    constructor({
+                    tableSel,
+                    titleSel = '#badDebtsTitle',
+                    endpoint,
+                    action,
+                    columns,
+                    buttons,
+                    valueToNameMap,
+                    valueToColorMap
+                }) {
+        this.$title = $(titleSel);
+        this.$table = $(tableSel);
+        if (!this.$table.length) return; // silently no-op if table not present
 
-    tBadDebts;
-    badDebtsTitle;
-    ajaxRequest;
-    currentButtonValue = 'All';//1week
+        this.endpoint = endpoint;
+        this.action = action;
+        this.columns = columns;
+        this.buttons = buttons;
+        this.valueToNameMap = valueToNameMap;
+        this.valueToColorMap = valueToColorMap;
+        this.currentButtonValue = 'All';
+        this.xhr = null;
 
-    constructor() {
-        this.badDebtsTitle = $('#badDebtsTitle');
-        if ($('#tBadDebts').length) {
-            //this.addListeners();
-            this.loadTable();
-        }
+        this.initTable();
     }
 
-    loadTable() {
-
-        this.tBadDebts = $('#tBadDebts').DataTable({
-            ajax: (data, callback, settings) => {
-                // Store the Ajax request in `ajaxRequest`
-                this.ajaxRequest = $.ajax({
-                    url: "/json.php",
-                    data: $.extend({}, data, {
-                        button: this.currentButtonValue, // Add your custom parameters
-                        endpoint: 'Invoices',
-                        action: 'BadDebts'
-                    }),
-                    method: 'GET',
-                    success: (response) => {
-                        //console.log('BadDebtReminders success', response);
-                        //console.log('BadDebtReminders this', this);
-
-                        this.updateButtonCounts(response.buttonCounts);
-
-                        callback(response); // Pass the response to DataTable
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.error('BadDebtReminders Ajax error:', textStatus, errorThrown);
-                    }
-                });
-            },
-
-            processing: true,
+    initTable() {
+        this.dt = this.$table.DataTable({
             serverSide: true,
-            paging: true,
+            processing: true,
             stateSave: true,
+            deferRender: true,
+            searchDelay: 300,
             rowId: 'DT_RowId',
-            columns: [
-                {
-                    data: null,
-                    targets: 0,
-                    searchable: false,
-                    orderable: false,
-                    render: DataTable.render.select(),
-                },
-                {data: "contact", name: "contact"},
-                {data: "amount_due", name: "amount_due"},
-                {data: 'sent', name: "sent", orderable: false},
-                {data: 'actions', orderable: false},
-            ],
-            fixedColumns: {
-                start: 1
+            scrollX: true,
+            fixedColumns: {start: 1},
+            columns: this.columns,
+            select: {style: 'multi', selector: 'td:first-child'},
+            layout: {topStart: {buttons: this.buttons}},
+            ajax: {
+                url: '/json.php',
+                type: 'GET',
+                data: (d) => ({
+                    ...d,
+                    button: this.currentButtonValue,
+                    endpoint: this.endpoint,
+                    action: this.action
+                })
             },
-            select: {
-                style: 'multi',
-                selector: 'td:first-child'
-            },
-            layout: {
-                topStart: {
-                    buttons: [
-                        'pageLength',
-                        {
-                            extend: 'csv',
-                            text: 'Export',
-                            split: ['copy', 'excel', 'pdf', 'print']
-                        },
-                        {
-                            text: 'All',
-                            className: 'btn-lg',
-                            action: () =>
-                                this.getFilteredData('All')
-                        },
-                        {
-                            text: '1 week',
-                            className: 'btn-lg',
-                            action: () =>
-                                this.getFilteredData('1 Week')
-                        },
-                        {
-                            text: '2 weeks',
-                            className: 'btn-lg',
-                            action: () =>
-                                this.getFilteredData('2 Weeks')
-                        },
-                        {
-                            text: '3 weeks',
-                            className: 'btn-lg',
-                            action: () => this.getFilteredData('3 Weeks')
-                        },
-                        {
-                            text: 'SMS',
-                            className: 'btn-lg',
-
-                            //action: () => sendSmsReminders.showModal(this.currentButtonValue)
-                            action: () => {
-                                let saveSmsModal = new bootstrap.Modal($('#saveSmsRequest'));
-                                saveSmsModal.show();
-                            }
-                        },
-                    ]
-                }
-            },
-            createdRow: (row, data, index) => {
+            createdRow: (row, data) => {
                 row.classList.add('bar-' + data.colour);
-            },
+            }
         });
 
-    }
+        // capture the xhr so you *can* abort if you ever want to
+        this.dt.on('preXhr.dt', (e, settings, data, xhr) => {
+            this.xhr = xhr;
+        });
 
-    getFilteredData(buttonValue) {
-        console.log('this inside button action', this);
-        this.currentButtonValue = buttonValue;
-        this.badDebtsTitle.text(buttonValue);
-        this.setProcessingColour(buttonValue);
-        this.highlightActiveButton(buttonValue);
-        this.tBadDebts.ajax.reload();
-    }
+        // set colours while processing shows
+        this.dt.on('processing.dt', (e, settings, processing) => {
+            if (processing) this.setProcessingColour(this.currentButtonValue);
+        });
 
-    addListeners() {
-        $(document).on('click', 'a, button', function () {
-            this.cancelLoad();
-            console.log('User clicked:', $(this).text());
+        // update button counts whenever new JSON arrives
+        this.dt.on('xhr.dt', (e, settings, json) => {
+            if (json?.buttonCounts) this.updateButtonCounts(json.buttonCounts);
         });
     }
 
-    highlightActiveButton(activeButton) {
-        $('.dt-buttons button').removeClass('btn-secondary-light'); // Remove active class from all buttons
-        $(`.dt-buttons button:contains(${activeButton})`).addClass('btn-secondary-light'); // Highlight the clicked button
+    /** External entry to filter & reload */
+    filter(value) {
+        this.currentButtonValue = value;
+        this.$title?.text(value);
+        this.highlightActiveButton(value);
+        this.setProcessingColour(value);
+        this.dt.ajax.reload();
     }
 
+    /** Name mapped buttons get highlighted */
+    highlightActiveButton(value) {
+        const name = this.valueToNameMap[value];
+        const $container = $(this.dt.table().container());
+        $container.find('.dt-buttons button').removeClass('btn-secondary-light');
+        if (name) this.dt.button(`${name}:name`).nodes().to$().addClass('btn-secondary-light');
+    }
+
+    /** Use CSS vars on the table wrapper for robust styling */
+    setProcessingColour(value) {
+        const color = this.valueToColorMap[value] || '#0275D8';
+        $(this.dt.table().container()).css({
+            '--processing-bg': color,
+            '--selection-bg': color
+        });
+    }
+
+    /** Optional: abort in-flight request */
     cancelLoad() {
-
-        if (ajaxRequest) {
-            console.log('aborting datatable load', ajaxRequest);
-            this.ajaxRequest.abort(); // Cancel the ongoing Ajax request
-            this.ajaxRequest = null;  // Reset the request tracker
-            console.log('DataTable loading cancelled.');
-            console.log(this.ajaxRequest);
+        if (this.xhr?.abort) {
+            this.xhr.abort();
+            this.xhr = null;
         }
     }
 
-    setProcessingColour(currentButton) {
-        // https://palettes.shecodes.io/palettes/1377
-        // https://www.color-hex.com/color/0275d8
-
-        const match = (key) => ({
-            'All': '#1b82db',
-            '1 Week': '#3490df',
-            '2 Weeks': '#4d9ee3',
-            '3 Weeks': '#67ace7',
-        }[key] || '#0275D8');
-
-        let newColour = match(currentButton);
-
-        $('div.dt-processing>div:last-child>div').css({
-            'background-color': newColour
-        });
-
-
-        //todo change the selected colour to match the processing colour
-        // $('table.dataTable.table>tbody>tr.selected>*').css({
-        //     'box-shadow': newColour
-        // });
-        $('tr.selected > *').css('box-shadow', `inset 0 0 0 9999px ${newColour} !important`);
-
-        //$('.dataTable .selected TDs').css({'background-color': newColour});
-    }
-
-    updateButtonCounts(counts) {
-        this.tBadDebts.button(2).text(`All <small>(${counts.total})</small>`);
-        this.tBadDebts.button(3).text(`1 Week <small>(${counts.week1})</small>`);
-        this.tBadDebts.button(4).text(`2 Weeks <small>(${counts.week2})</small>`);
-        this.tBadDebts.button(5).text(`3 Weeks <small>(${counts.week3})</small>`);
+    /** Subclasses override to set labels/counts */
+    updateButtonCounts(_counts) {
     }
 }
 
-const nsReminders = new BadDebtReminders();
-
-// reminders
-class BadDebtManagement {
-
-    badDebtsTitle;
-    tBadDebtsManagement;
-    currentButtonValue = 'All';
-    ajaxRequest;
-
+/** ========== BadDebtReminders ========== */
+class BadDebtRemindersTable extends BaseBadDebtTable {
     constructor() {
-        this.badDebtsTitle = $('#badDebtsTitle');
-        this.loadTable();
-    }
-
-    loadTable() {
-        if ($('#tBadDebtsManagement').length) {
-            this.tBadDebtsManagement = $('#tBadDebtsManagement').DataTable({
-                ajax: (data, callback, settings) => {
-                    // Store the Ajax request in `ajaxRequest`
-                    this.ajaxRequest = $.ajax({
-                        url: "/json.php",
-                        data: $.extend({}, data, {
-                            button: this.currentButtonValue, // Add your custom parameters
-                            endpoint: 'Invoices',
-                            action: 'BadDebtsManagement'
-                        }),
-                        method: 'GET',
-                        success: (response) => {
-                            this.updateButtonCounts(response.buttonCounts);
-                            callback(response); // Pass the response to DataTable
+        super({
+            tableSel: '#tBadDebts',
+            endpoint: 'Invoices',
+            action: 'BadDebts',
+            valueToNameMap: {
+                'All': 'all',
+                '1 Week': 'week1',
+                '2 Weeks': 'week2',
+                '3 Weeks': 'week3'
+            },
+            valueToColorMap: {
+                'All': '#1b82db',
+                '1 Week': '#3490df',
+                '2 Weeks': '#4d9ee3',
+                '3 Weeks': '#67ace7'
+            },
+            columns: [
+                {data: null, searchable: false, orderable: false, render: $.fn.dataTable.render.select()},
+                {data: 'contact', name: 'contact'},
+                {data: 'amount_due', name: 'amount_due'},
+                {data: 'sent', name: 'sent', orderable: false},
+                {data: 'actions', orderable: false}
+            ],
+            buttons: [
+                'pageLength',
+                {extend: 'csv', text: 'Export', split: ['copy', 'excel', 'pdf', 'print']},
+                {text: 'All', name: 'all', className: 'btn-lg', action: () => this.filter('All')},
+                {text: '1 Week', name: 'week1', className: 'btn-lg', action: () => this.filter('1 Week')},
+                {text: '2 Weeks', name: 'week2', className: 'btn-lg', action: () => this.filter('2 Weeks')},
+                {text: '3 Weeks', name: 'week3', className: 'btn-lg', action: () => this.filter('3 Weeks')},
+                {
+                    text: 'SMS',
+                    name: 'sms',
+                    className: 'btn-lg',
+                    action: () => {
+                        // Prefer your ES module modal
+                        if (sendSmsReminders?.showModal) {
+                            sendSmsReminders.showModal(this.currentButtonValue);
+                            return;
                         }
-                    });
-                },
-
-                processing: true,
-                serverSide: true,
-                paging: true,
-                stateSave: true,
-                rowId: 'DT_RowId',
-                columns: [
-                    {
-                        data: null,
-                        targets: 0,
-                        searchable: false,
-                        orderable: false,
-                        render: DataTable.render.select(),
-                    },
-                    {data: "contact", name: "contact"},
-                    {data: "amount_due", name: "amount_due"},
-                    {data: "weeks_due", name: "weeks_due"},
-                    {data: "total_weeks", name: "total_weeks"},
-                    {data: "flags", name: "flags"},
-                    {data: 'chart', orderable: false,}
-                ],
-                fixedColumns: {
-                    start: 1
-                },
-                select: {
-                    style: 'multi',
-                    selector: 'td:first-child'
-                },
-                layout: {
-                    topStart: {
-                        buttons: [
-                            'pageLength',
-                            {
-                                extend: 'csv',
-                                text: 'Export',
-                                split: ['copy', 'excel', 'pdf', 'print']
-                            },
-                            {
-                                text: 'All',
-                                className: 'btn-lg',
-                                action: () => this.getFilteredData('All'),
-                            },
-                            {
-                                text: 'Weekly',
-                                className: 'btn-lg',
-                                action: () => this.getFilteredData('Weekly'),
-                            },
-                            {
-                                text: 'Fortnightly',
-                                className: 'btn-lg',
-                                action: () => this.getFilteredData('Fortnightly'),
-                            },
-                            {
-                                text: 'Monthly',
-                                className: 'btn-lg',
-                                action: () => this.getFilteredData('Monthly'),
-                            },
-                            {
-                                text: 'Other',
-                                className: 'btn-lg',
-                                action: () => this.getFilteredData('Other'),
-                            },
-                        ]
+                        // Fallbacks
+                        const el = document.getElementById('saveSmsRequest');
+                        if (el && window.bootstrap?.Modal) new bootstrap.Modal(el).show();
+                        else $('#saveSmsRequest').modal?.('show');
                     }
-                },
-                createdRow: (row, data, index) => {
-                    row.classList.add('bar-' + data.colour);
-                },
-            });
-        }
-    }
-
-    updateButtonCounts(counts) {
-        this.tBadDebtsManagement.button(2).text(`All <small>(${counts.all})</small>`);
-        this.tBadDebtsManagement.button(3).text(`Weekly <small>(${counts.weekly})</small>`);
-        this.tBadDebtsManagement.button(4).text(`Fortnightly <small>(${counts.fortnightly})</small>`);
-        this.tBadDebtsManagement.button(5).text(`Monthly <small>(${counts.monthly})</small>`);
-        this.tBadDebtsManagement.button(6).text(`Other <small>(${counts.other})</small>`);
-    }
-
-    getFilteredData(buttonValue) {
-        //console.log('this inside button action', this);
-        //console.log('this inside button action', buttonValue);
-        this.currentButtonValue = buttonValue;
-        this.badDebtsTitle.text(buttonValue);
-        this.setProcessingColour(buttonValue);
-        this.highlightActiveButton(buttonValue);
-        this.tBadDebtsManagement.ajax.reload();
-    }
-
-    setProcessingColour(buttonValue) {
-
-        // https://palettes.shecodes.io/palettes/1377
-        // https://www.color-hex.com/color/0275d8
-
-        const match = (key) => ({
-            'All': '#1b82db',
-            'Weekly': '#3490df',
-            'Fortnightly': '#4d9ee3',
-            'Monthly': '#67ace7',
-            'Other': '#80baeb',
-
-        }[key] || '#0275D8');
-
-        let newColour = match(buttonValue);
-
-        $('div.dt-processing>div:last-child>div').css({
-            'background-color': newColour
+                }
+            ]
         });
-
     }
 
-    highlightActiveButton(activeButton) {
-        $('.dt-buttons button').removeClass('btn-secondary-light'); // Remove active class from all buttons
-        $(`.dt-buttons button:contains(${activeButton})`).addClass('btn-secondary-light'); // Highlight the clicked button
+    updateButtonCounts(c) {
+        this.dt.button('all:name').text(`All <small>(${c.total})</small>`);
+        this.dt.button('week1:name').text(`1 Week <small>(${c.week1})</small>`);
+        this.dt.button('week2:name').text(`2 Weeks <small>(${c.week2})</small>`);
+        this.dt.button('week3:name').text(`3 Weeks <small>(${c.week3})</small>`);
     }
 }
 
-const nsBadDebtManagement = new BadDebtManagement();
+/** ========== BadDebtManagement ========== */
+class BadDebtManagementTable extends BaseBadDebtTable {
+    constructor() {
+        super({
+            tableSel: '#tBadDebtsManagement',
+            endpoint: 'Invoices',
+            action: 'BadDebtsManagement',
+            valueToNameMap: {
+                'All': 'all',
+                'Weekly': 'weekly',
+                'Fortnightly': 'fortnightly',
+                'Monthly': 'monthly',
+                'Other': 'other'
+            },
+            valueToColorMap: {
+                'All': '#1b82db',
+                'Weekly': '#3490df',
+                'Fortnightly': '#4d9ee3',
+                'Monthly': '#67ace7',
+                'Other': '#80baeb'
+            },
+            columns: [
+                {data: null, searchable: false, orderable: false, render: $.fn.dataTable.render.select()},
+                {data: 'contact', name: 'contact'},
+                {data: 'amount_due', name: 'amount_due'},
+                {data: 'weeks_due', name: 'weeks_due'},
+                {data: 'total_weeks', name: 'total_weeks'},
+                {data: 'flags', name: 'flags'},
+                {data: 'chart', orderable: false}
+            ],
+            buttons: [
+                'pageLength',
+                {extend: 'csv', text: 'Export', split: ['copy', 'excel', 'pdf', 'print']},
+                {text: 'All', name: 'all', className: 'btn-lg', action: () => this.filter('All')},
+                {text: 'Weekly', name: 'weekly', className: 'btn-lg', action: () => this.filter('Weekly')},
+                {
+                    text: 'Fortnightly',
+                    name: 'fortnightly',
+                    className: 'btn-lg',
+                    action: () => this.filter('Fortnightly')
+                },
+                {text: 'Monthly', name: 'monthly', className: 'btn-lg', action: () => this.filter('Monthly')},
+                {text: 'Other', name: 'other', className: 'btn-lg', action: () => this.filter('Other')}
+            ]
+        });
+    }
+
+    updateButtonCounts(c) {
+        this.dt.button('all:name').text(`All <small>(${c.all})</small>`);
+        this.dt.button('weekly:name').text(`Weekly <small>(${c.weekly})</small>`);
+        this.dt.button('fortnightly:name').text(`Fortnightly <small>(${c.fortnightly})</small>`);
+        this.dt.button('monthly:name').text(`Monthly <small>(${c.monthly})</small>`);
+        this.dt.button('other:name').text(`Other <small>(${c.other})</small>`);
+    }
+}
+
+/** Instantiate only if tables exist */
+const nsReminders = new BadDebtRemindersTable();
+const nsBadDebtManagement = new BadDebtManagementTable();

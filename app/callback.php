@@ -18,7 +18,20 @@ $storage = new StorageClass();
 $provider = Utilities::getProvider();
 
 
-var_dump($_GET);
+//var_dump($_GET);
+/* example return
+ * array(4) {
+  ["code"]=>
+  string(43) "RhVnYC0JrKYm72Z9jBeAIWWugv_sZk5DAdeEhKVpF2c"
+  ["scope"]=>
+  string(187) "openid email profile assets projects accounting.settings accounting.transactions accounting.contacts accounting.journals.read accounting.reports.read accounting.attachments offline_access"
+  ["state"]=>
+  string(32) "f70c62ca29fe15fc7ad7c88aaa9936db"
+  ["session_state"]=>
+  string(66) "rJxHfcGj3J6I7O6OgS1YFEQ8rfUlLXjP9sXm0-Na3Lk.h4jvQPDbOp0Oyh4FxM8Paw"
+}
+ */
+
 // If we don't have an authorization code then get one
 if (!isset($_GET['code'])) {
     echo "Something went wrong, no authorization code found";

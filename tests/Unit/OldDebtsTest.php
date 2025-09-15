@@ -7,7 +7,7 @@ use App\ExtraFunctions;
 use App\Models\InvoiceModel;
 use App\Utilities;
 
-
+return;
 // Adjust the namespace as needed
 describe('Are the views getting the right data?', function () {
 

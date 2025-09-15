@@ -80,3 +80,16 @@ table.dataTable {
     font-size: 2rem;
     font-weight: 800;
 }
+
+/* data tables processing */
+/* Processing state uses --processing-bg */
+.dataTables_wrapper .dataTables_processing {
+    background: var(--processing-bg, #0275D8);
+}
+
+/* Selected rows tinted via --selection-bg */
+table.dataTable tr.selected > * {
+    box-shadow: inset 0 0 0 9999px var(--selection-bg, rgba(2, 117, 216, .15));
+}
+
+/* end of data tables processing */

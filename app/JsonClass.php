@@ -48,7 +48,8 @@ class JsonClass
 
     public $addressOptions = ['address_line1', 'address_line2', 'city', 'postal_code'];
 
-    function __construct($apiInstance = '', $xeroTenantId = '')
+    //function __construct($apiInstance = '', $xeroTenantId = '')
+    function __construct()
     {
         $storage = new StorageClass();
         $config = \XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken((string)$storage->getSession()['token']);
@@ -58,10 +59,9 @@ class JsonClass
         );
 
         //$this->apiInstance = $apiInstance;
-        $pdo = Utilities::getPDO();
-        $this->pdo = $pdo;
+        $this->pdo = Utilities::getPDO();
 
-        $this->xeroTenantId = $xeroTenantId;
+        //$this->xeroTenantId = $xeroTenantId;
     }
 
     public function init($arg)

@@ -175,38 +175,49 @@ function refreshCabinList() {
     }
 }
 
-function initializeDatepicker() {
+// Shared defaults (NZ-friendly format)
+const DATEPICKER_DEFAULTS = Object.freeze({
+    dateFormat: 'dd-mm-yy',
+    showOtherMonths: true,
+    selectOtherMonths: true,
+    changeMonth: true,
+    changeYear: true,
+    constrainInput: true
+});
+
+// Helper: apply a datepicker to any selector/element/jQuery collection
+const initDatepicker = (target, opts = {}) => {
+    const $el = $(target);
+    if (!$el.length) return null;
+    return $el.datepicker({...DATEPICKER_DEFAULTS, ...opts});
+};
+
+// 1) When used as a jQuery handler where `this` is the input element
+const initializeDatepicker = function () {
     console.log(['enquiryContacts datepicker', this]);
-    $(this).datepicker({
-        dateFormat: 'dd-mm-yy',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-    });
-}
+    return initDatepicker(this);
+};
 
-function initializeDatepickerById(inputId) {
-    console.log(['initializeDatepickerById', inputId]);
-    $(inputId).datepicker({
-        dateFormat: 'dd-mm-yy',
-        showOtherMonths: true,
-        selectOtherMonths: true,
-    });
-}
+// 2) Initialize by selector (id/class/anything)
+const initializeDatepickerById = (selector) => {
+    console.log(['initializeDatepickerById', selector]);
+    return initDatepicker(selector);
+};
 
-function initializeFutureDatepicker(identifier) {
-// jquery ui
-    let $datePicker = $(identifier);
-    if ($datePicker.length) {
-        console.log($datePicker);
-        $datePicker.datepicker({
-            dateFormat: 'dd-mm-yy',
-            showOtherMonths: true,
-            selectOtherMonths: true,
-            numberOfMonths: 2,
-            beforeShowDay: $.datepicker.noWeekends
-        });
-    }
-}
+// 3) Future-only picker, 2 months, no weekends
+const initializeFutureDatepicker = (selector) => {
+    const opts = {
+        numberOfMonths: 2,
+        minDate: 0, // today onward
+        beforeShowDay: $.datepicker.noWeekends
+    };
+    return initDatepicker(selector, opts);
+};
+
+$(document).on('focus', '.js-datepicker', function () {
+    if (!$(this).hasClass('hasDatepicker')) initializeDatepicker.call(this);
+});
+
 
 function appendRowWithPromise(newRow, key) {
     return new Promise((resolve) => {

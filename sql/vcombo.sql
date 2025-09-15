@@ -11,7 +11,7 @@ SELECT 'I'                         AS `row_type`,
        `invoices`.`total`          AS `amount`,
        `invoices`.`amount_due`     AS `amount_due`,
        `invoices`.`date`           AS `date`,
-       invoices.due_date,
+       `invoices`.`due_date`,
        `invoices`.`contact_id`     AS `contact_id`,
        `invoices`.`xerotenant_id`  AS `xerotenant_id`
 FROM `invoices`
@@ -30,4 +30,4 @@ SELECT 'P'                        AS `row_type`,
        `payments`.`contact_id`    AS `contact_id`,
        `payments`.`xerotenant_id` AS `xerotenant_id`
 FROM `payments`
-         left join invoices as i2 on payments.invoice_id = i2.invoice_id;
+         left join `invoices` as `i2` on `payments`.`invoice_id` = `i2`.`invoice_id`;

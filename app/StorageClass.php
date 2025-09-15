@@ -3,6 +3,7 @@
 namespace App;
 
 use DateTime;
+use Dotenv\Dotenv;
 
 class StorageClass
 {
@@ -11,9 +12,9 @@ class StorageClass
         $this->startSession();
     }
 
-    public function getSession()
+    public function getSession(): array
     {
-        return $_SESSION['oauth2'] ?? null;
+        return $_SESSION['oauth2'] ?? ['tenant_id' => '', 'oauth2' => []];
     }
 
     public function startSession()
@@ -78,7 +79,7 @@ class StorageClass
 
     public function getRefreshToken()
     {
-        return $_SESSION['oauth2']['refresh_token'];
+        return $_SESSION['oauth2']['refresh_token'] ?? '';
     }
 
     public static function getRefreshTokenStatic()
@@ -101,17 +102,25 @@ class StorageClass
         return $_SESSION['oauth2']['id_token'];
     }
 
-    public function getHasExpired()
+    public function hasExpired()
     {
-        if (!empty($this->getSession())) {
-            if (time() > $this->getExpires()) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
+        if ($this->shouldBypassExpiry()) {
+            return false;
+        }
+        if (empty($this->getSession())) {
             return true;
         }
+
+        // Expiry check
+        return time() > (int)$this->getExpires();
+    }
+
+    private function shouldBypassExpiry(): bool
+    {
+        $isTesting = filter_var(CKM_TESTING_MODE, FILTER_VALIDATE_BOOLEAN);
+        $bypass = filter_var(CKM_BYPASS_EXPIRY, FILTER_VALIDATE_BOOLEAN);
+        
+        return $isTesting && $bypass;
     }
 
     public function saveUrl(string $url): void

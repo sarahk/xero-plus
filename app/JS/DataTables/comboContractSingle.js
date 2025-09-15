@@ -1,137 +1,119 @@
 export default class ComboContractSingle {
     idTag = '#tComboContractSingle';
-    dataTable;
-    currentButton = '';
-    first = true;
-    contractId;
+    $table;
+    dt = null;
+    keys = {};
+    contractId = 0;
+    _xhr = null; // if you want to abort later
 
-    //this.contract_id = 0;
-// todo remove debugging console.log calls
     constructor(keys = {}) {
-        console.log('in ComboContractSingle');
-        this.keys = keys;
-        console.log('keys', keys);
-        this.findContractId();
-        console.log('do we have a table?', $(this.idTag).length);
-        console.log('contractId', this.getContractId());
-        if ($(this.idTag).length > 0 && this.getContractId() > 0) {
-            console.log('found the table');
-            this.setComboContactName();
-            this.setListeners();
-            this.loadTable();
+        this.keys = keys || {};
+        this.$table = $(this.idTag);
+        this.contractId = this._resolveContractId();
+
+        if (this.$table.length && this.contractId > 0) {
+            this._setComboContactName();
+            this._setListeners();
+            this._initTable();
         }
     }
 
-    loadTable() {
-        // This code will run after .1 second
-        // gives the other JS time to run before this slow request
-        let delay = 0  // was 100
-
-
-        setTimeout(() => {
-            this.dataTable = $(this.idTag).DataTable(this.getDataTableOptions());
-        }, delay);
+    _resolveContractId() {
+        const fromKeys = this.keys?.invoice?.contract_id ?? this.keys?.contract?.contract_id;
+        const fromQuery = new URLSearchParams(window.location.search).get('contract_id');
+        const id = parseInt(fromKeys ?? fromQuery ?? 0, 10);
+        return Number.isFinite(id) && id > 0 ? id : 0;
     }
 
-    setListeners() {
-
-    }
-
-    // this.getSearchTerm = function () {
-    //     if (this.first) {
-    //         this.first = false;
-    //         return new URLSearchParams(window.location.search).get('search');
-    //     }
-    //     return this.dataTable.search();
-    // }
-    findContractId() {
-
-        this.contractId = this.keys.invoice?.contract_id ??
-            this.keys.contract?.contract_id ??
-            new URLSearchParams(window.location.search).get('contract_id') ?? 0;
-        return this.contractId;
-    }
-
-
-    getContractId() {
-
-        return this.contractId ?? this.findContractId();
-        // return this.keys.invoice?.contract_id ??
-        //     this.keys.contract?.contract_id ??
-        //     new URLSearchParams(window.location.search).get('contract_id') ?? 0;
-    }
-
-    getDataTableOptions() {
-        return {
-            ajax: {
-                url: "/json.php",
-                data: (d) => {
-                    d.endpoint = 'Combo';
-                    d.action = 'List';
-                    d.contract_id = this.getContractId();
-                    d.repeating_invoice_id = this.keys.contract.repeating_invoice_id ?? 0;
-                    d.order = [
-                        {
-                            column: 6,
-                            dir: 'DESC',
-                            name: 'date'
-                        }
-                    ];
-                }
-            },
-            processing: true,
+    _initTable() {
+        this.dt = this.$table.DataTable({
             serverSide: true,
-            paging: true,
+            processing: true,
             stateSave: true,
+            deferRender: true,     // ✅ faster initial paint
+            searchDelay: 300,      // ✅ debounce server hits
+            paging: true,
             ordering: false,
-            searching: false,
+            rowId: 'DT_RowId',
+            ajax: {
+                url: '/json.php',
+                type: 'GET',
+                data: d => ({
+                    ...d,
+                    endpoint: 'Combo',
+                    action: 'List',
+                    contract_id: this.contractId,
+                    repeating_invoice_id: this.keys?.contract?.repeating_invoice_id ?? 0
+                    // If your server expects DataTables-standard sorting, leave it to DT.
+                    // If your server expects a custom 'order' block, add it here.
+                })
+                // dataSrc: 'data' // uncomment if your JSON nests rows under .data
+            },
             columns: [
-                {data: "date", name: 'date'},
-                {data: "activity"},
-                {data: "reference", name: 'reference'},
-                {data: "due_date"},
-                {data: "invoice_amount", name: 'amount', className: 'text-end'},
-                {data: "payment_amount", className: 'text-end'},
-                {data: "balance"},
+                {data: 'date', name: 'date'},
+                {data: 'activity'},
+                {data: 'reference', name: 'reference'},
+                {data: 'due_date'},
+                {data: 'invoice_amount', name: 'amount', className: 'text-end'},
+                {data: 'payment_amount', className: 'text-end'},
+                {data: 'balance'}
             ],
-            createdRow: (row, data, index) => {
+            createdRow: (row, data) => {
                 row.classList.add('bar-' + data.colour);
             },
             layout: {
                 topStart: {
-                    buttons: ['pageLength', {
-                        extend: 'csv',
-                        text: 'Export',
-                        split: ['copy', 'excel', 'pdf', 'print']
-
-                    }]
+                    buttons: [
+                        'pageLength',
+                        {extend: 'csv', text: 'Export', split: ['copy', 'excel', 'pdf', 'print']}
+                    ]
                 }
             },
             language: {
-                emptyTable: "No invoices or payments for this contract"  // Custom message
-            },
-        };
+                emptyTable: 'No invoices or payments for this contract'
+            }
+        });
+
+        // Keep a handle to the xhr (optional)
+        this.dt.on('preXhr.dt', (e, settings, data, xhr) => {
+            this._xhr = xhr;
+        });
     }
 
+    reload(newContractId) {
+        if (newContractId != null) {
+            const id = parseInt(newContractId, 10);
+            if (Number.isFinite(id) && id > 0) this.contractId = id;
+        }
+        if (this.contractId > 0) this.dt?.ajax.reload();
+    }
 
-    setComboContactName() {
-        if ($('#comboContactName').length) {
-            $.ajax({
-                dataType: "json",
-                url: "/json.php",
-                data: {
-                    endpoint: 'Contacts',
-                    action: 'Field',
-                    field: 'name',
-                    key: 'id',
-                    keyVal: this.keys.contact.id ?? 0,
-                },
-                success: (data) => {
-                    $('#comboContactName').text(data);
-                }
-            });
+    _setListeners() {
+        // Add future table-specific listeners here (row click, etc.)
+    }
+
+    _setComboContactName() {
+        const contactId = this.keys?.contact?.id ?? 0;
+        const $el = $('#comboContactName');
+        if (!contactId || !$el.length) return;
+
+        $.getJSON('/json.php', {
+            endpoint: 'Contacts',
+            action: 'Field',
+            field: 'name',
+            key: 'id',
+            keyVal: contactId
+        }).done((data) => {
+            // accept either a plain string or { name: '...' }
+            $el.text(typeof data === 'string' ? data : (data?.name ?? ''));
+        });
+    }
+
+    // Optional: cancel an in-flight server call
+    cancelLoad() {
+        if (this._xhr?.abort) {
+            this._xhr.abort();
+            this._xhr = null;
         }
     }
 }
-
-//export const nsComboContract = new ComboContract(keys ?? {});
