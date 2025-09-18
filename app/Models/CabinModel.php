@@ -209,7 +209,7 @@ class CabinModel extends BaseModel
             foreach ($cabins as $k => $row) {
 
                 $output['data'][] = [
-                    'number' => "<a class='' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>",
+                    'number' => "<a href='#' class='' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']} <sup><span class='badge badge-info'>4</span></sup></a>",
                     //'number' => "<button type='button' class='btn btn-link' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</button>",
                     //'number' => "<a href='/page.php?action=14' data-toggle='modal' data-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>",
                     'style' => CabinStyle::getLabel($row['style']),
@@ -231,14 +231,14 @@ class CabinModel extends BaseModel
     protected function getCabinUserLabel($row): string
     {
         if (is_null($row['contract_id'])) {
-            return "<a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}'>In Yard</a>";
+            return "<a href='#' data-bs-toggle='modal' data-bs-target='#contractSingle' data-key='{$row['cabin_id']}'>In Yard</a>";
         }
 
         if ($row['pickup_date'] == '0000-00-00') {
-            return "<a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}'>{$row['name']}</a>";
+            return "<a href='#' data-bs-toggle='modal' data-bs-target='#contractSingle' data-key='{$row['cabin_id']}'>{$row['name']}</a>";
         }
 
-        return "<a href='#' data-toggle='modal' data-target='#contractSingle' data-key='{$row['cabin_id']}'>{$row['name']}</a>
+        return "<a href='#' data-bs-toggle='modal' data-bs-target='#contractSingle' data-key='{$row['cabin_id']}'>{$row['name']}</a>
  <br/>Pickup: {$row['scheduled_pickup_date']}";
 
     }
@@ -297,7 +297,7 @@ class CabinModel extends BaseModel
             AND (contracts.`pickup_date` >= now() OR contracts.`pickup_date` IS NULL)
             LIMIT 1";
 
-        return $this->runQuery($sql, [':cabin_id' => $cabin_id]);
+        return $this->runQuery($sql, ['cabin_id' => $cabin_id]);
     }
 }
 

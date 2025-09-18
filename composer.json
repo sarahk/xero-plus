@@ -2,14 +2,6 @@
   "name": "sarahk/xero-plus",
   "description": "Xero Plus App for Cabin King",
   "type": "project",
-  "require": {
-    "xeroapi/xero-php-oauth2": "^9.1",
-    "monolog/monolog": "^3.9",
-    "guzzlehttp/guzzle": "^7.9.3",
-    "tinymce/tinymce": "^7.9.0",
-    "ext-pdo": "*",
-    "twilio/sdk": "^8.6.1"
-  },
   "license": "MIT",
   "authors": [
     {
@@ -17,21 +9,42 @@
       "email": "rainchx@gmail.com"
     }
   ],
+  "require": {
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "guzzlehttp/guzzle": "^7.10.0",
+    "matthiasmullie/minify": "^1.3",
+    "monolog/monolog": "^3.9",
+    "npm-asset/bootstrap": "^5.3",
+    "npm-asset/datatables.net": "^2.3",
+    "npm-asset/datatables.net-bs5": "^2.3",
+    "npm-asset/datatables.net-buttons": "^3.2",
+    "npm-asset/datatables.net-buttons-bs5": "^3.2",
+    "npm-asset/datatables.net-responsive": "^3.0",
+    "npm-asset/datatables.net-responsive-bs5": "^3.0",
+    "npm-asset/datatables.net-select": "^2.1",
+    "npm-asset/datatables.net-select-bs5": "^2.1",
+    "npm-asset/jquery": "^3.7",
+    "npm-asset/jquery-ui-dist": "^1.13",
+    "npm-asset/js-cookie": "^3.0",
+    "npm-asset/jszip": "*",
+    "npm-asset/mdb-ui-kit": "^3.11",
+    "npm-asset/pdfmake": "^0.2",
+    "npm-asset/simplebar": "^6",
+    "npm-asset/sweetalert2": "^11",
+    "tinymce/tinymce": "^7.9.0",
+    "xeroapi/xero-php-oauth2": "^9.1"
+  },
   "require-dev": {
     "pestphp/pest": "^3.8.2",
     "phpstan/phpstan": "^1.12.27",
     "psalm/phar": "^5.26.1",
     "mockery/mockery": "^1.6"
   },
-  "config": {
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
-  },
   "repositories": [
     {
-      "type": "git",
-      "url": "https://github.com/guzzle/guzzle.git"
+      "type": "composer",
+      "url": "https://asset-packagist.org"
     }
   ],
   "autoload": {
@@ -41,14 +54,25 @@
     },
     "files": [
       "app/constants.php",
-      "app/ExtraFunctions.php",
-      "app/StorageClass.php",
-      "app/Utilities.php"
+      "app/ExtraFunctions.php"
     ]
   },
   "scripts": {
-    "test": "pestphp",
-    "analyse": "phpstan analyse",
-    "phpstan": "\"vendor/bin/phpstan -c phpstan.neon\""
+    "test": "vendor/bin/pest",
+    "analyse": "vendor/bin/phpstan -c phpstan.neon",
+    "phpstan": "vendor/bin/phpstan -c phpstan.neon",
+    "post-install-cmd": [
+      "php build/build-assets.php"
+    ],
+    "post-update-cmd": [
+      "php build/build-assets.php"
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

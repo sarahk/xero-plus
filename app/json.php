@@ -75,6 +75,9 @@ try {
                 case 'Single':
                     echo $json->getCabinSingle();
                     break;
+                case 'Edit':
+                    echo $json->getCabinEditData();
+                    break;
                 case 'Enquiry':
                     echo $json->getEnquiryCabinList();
             }

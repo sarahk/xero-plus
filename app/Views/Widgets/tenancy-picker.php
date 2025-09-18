@@ -12,9 +12,12 @@
     }
 ";
      endforeach; ?>
+    .sidenav-toggled #workingWith {
+        display: none;
+    }
 </style>
 
-<div class="form-group ml-4">
+<div class="form-group ml-4" id="workingWith">
     <div class="form-label">Working With:</div>
     <div class="custom-controls-stacked">
         <?php foreach (json_decode(TENANCIES, true) as $row):

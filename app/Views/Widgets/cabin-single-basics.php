@@ -1,16 +1,10 @@
 <?php
 
-namespace App\Views\Widgets;
-
 use App\ExtraFunctions;
 use App\Models\Enums\CabinOwners;
 use App\Models\Enums\CabinPainted;
 use App\Models\Enums\CabinStatus;
 use App\Models\Enums\CabinStyle;
-
-$tenancies = json_decode(TENANCIES, true);
-$tenantsById = array_column($tenancies, null, 'tenant_id');
-$operator = $tenantsById[$data['cabins']['xerotenant_id']]['name'];
 
 ?>
 <table class="table">
@@ -31,18 +25,17 @@ $operator = $tenantsById[$data['cabins']['xerotenant_id']]['name'];
         <td><?= CabinPainted::getLabel($data['cabins']['paintinside']); ?></td>
     </tr>
     <tr>
-        <td>Operator</td>
-        <td><?= $operator; ?></td>
+        <td>Region</td>
+        <td><?php echo CabinOwners::getLabelPlus($data['cabins']['owner'], $data['xerotenant_id']) ?></td>
     </tr>
-    <tr>
-        <td>Owner</td>
-        <td><?php echo CabinOwners::getLabel($data['cabins']['owner']) ?></td>
-    </tr>
+
     <tr>
         <td>Last Updated</td>
         <td><?= ExtraFunctions::toNormalDate($data['cabins']['updated']); ?></td>
     </tr>
     <tr>
-        <td colspan="2" class=" text-xl-right"><a href="#" class="btn btn-primary">Edit</a></td>
+        <td colspan="2" class=" text-right"><a href="#" data-bs-toggle='modal' data-bs-target='#cabinEditBasicsModal'
+                                               data-key='<?= $data['cabins']['cabin_id']; ?>'
+                                               class="btn btn-primary">Edit</a></td>
     </tr>
 </table>

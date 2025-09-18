@@ -33,3 +33,10 @@ FROM cabins AS ca
                                              FROM contracts c3
                                              WHERE c3.cabin_id = ca.cabin_id
                                                AND c3.delivery_date = ct.delivery_date);
+
+
+ALTER TABLE `xeroplus`.`cabins`
+    ADD COLUMN `status_old`    VARCHAR(20) NULL DEFAULT NULL AFTER `xerotenant_id`,
+    ADD COLUMN `status_change` DATE        NULL AFTER `status_old`,
+    ADD COLUMN `style_old`     VARCHAR(20) NULL DEFAULT NULL AFTER `status_change`,
+    ADD COLUMN `style_change`  DATE        NULL DEFAULT NULL AFTER `style_old`;

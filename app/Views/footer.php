@@ -51,28 +51,30 @@ $loader->outputModals();
 ?>
 
 <?php
-// scripts not specified by the theme
-include 'Layouts/scripts.php';
 
-$loader->outputJS();
+//$loader->outputJS();
+
+// scripts not specified by the theme
+//include __DIR__ . '/../Layouts/scripts.php';
+
 ?>
 
 
-<script type="text/javascript" src="/JS/functions.js"></script>
-<script type="text/javascript" src="/JS/menu.js"></script>
-<script type="text/javascript" src="/JS/home.js"></script>
-<script type="text/javascript" src="/JS/activity.js"></script>
-<script type="text/javascript" src="/JS/cabins.js"></script>
-<script type="module" src="/JS/combo.js"></script>
-<script type="text/javascript" src="/JS/contacts.js"></script>
-<script type="text/javascript" src="/JS/contracts.js"></script>
-<script type="text/javascript" src="/JS/enquiry.js"></script>
-<script type="text/javascript" src="/JS/invoices.js"></script>
-<script type="module" src="/JS/bad_debts.js"></script>
-<script type="text/javascript" src="/JS/templates.js"></script>
-<script type="text/javascript" src="/JS/tasks.js"></script>
-<script type="text/javascript" src="/JS/vehicles.js"></script>
-<script type="module" src="/JS/widgets.js"></script>
+<script defer type="text/javascript" src="/JS/functions.js"></script>
+<script defer type="text/javascript" src="/JS/menu.js"></script>
+<script defer type="text/javascript" src="/JS/home.js"></script>
+<script defer type="text/javascript" src="/JS/activity.js"></script>
+<script defer type="text/javascript" src="/JS/cabins.js"></script>
+<script defer type="module" src="/JS/combo.js"></script>
+<script defer type="text/javascript" src="/JS/contacts.js"></script>
+<script defer type="text/javascript" src="/JS/contracts.js"></script>
+<script defer type="text/javascript" src="/JS/enquiry.js"></script>
+<script defer type="text/javascript" src="/JS/invoices.js"></script>
+<script defer type="module" src="/JS/bad_debts.js"></script>
+<script defer type="text/javascript" src="/JS/templates.js"></script>
+<script defer type="text/javascript" src="/JS/tasks.js"></script>
+<!--<script type="text/javascript" src="/JS/vehicles.js"></script>-->
+<script defer type="module" src="/JS/widgets.js"></script>
 
 <?php if (!\App\LOGGEDOUT) {
     echo '<script type="module" src="/JS/autorun.js"></script>';
@@ -91,15 +93,15 @@ switch ($action) {
 
 <script type="text/javascript">
     // todo - is this obsolete?
-    $('input[name="dates"]').mouseup(getInvoiceRedraw);
-
-    function getInvoiceRedraw() {
-        let getInvoiceTable = $('#getInvoiceTable').DataTable();
-
-        setTimeout(function () {
-            getInvoiceTable.draw(false);
-        }, 100);
-    }
+    // $('input[name="dates"]').mouseup(getInvoiceRedraw);
+    //
+    // function getInvoiceRedraw() {
+    //     let getInvoiceTable = $('#getInvoiceTable').DataTable();
+    //
+    //     setTimeout(function () {
+    //         getInvoiceTable.draw(false);
+    //     }, 100);
+    // }
 </script>
 </body>
 

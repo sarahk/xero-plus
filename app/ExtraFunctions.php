@@ -136,9 +136,15 @@ class ExtraFunctions
 
     public static function getCard(string $filename, string $label, string $cardId, array $data): void
     {
+        $class = '';
+        if ($data['xerotenant_id']) {
+            $tenancy = self::getTenancyInfo($data['xerotenant_id']);
+            $class = $tenancy['shortname'];
+        }
+
         ?>
-        <div class="card" id="$cardId">
-            <div class="card-header">
+        <div class="card" id="<?= $cardId; ?>">
+            <div class="card-header <?= $class ?>">
                 <h3 class="card-title"><?= $label; ?><span class="cardHeaderExtra"></span></h3>
             </div>
             <div class="card-body">
@@ -214,6 +220,26 @@ class ExtraFunctions
             </div>
         </div>
         <?php
+    }
+
+    private static function getTenancyInfo($xerotenant_id): array
+    {
+        if (defined('TENANCIES')) {
+
+            foreach (json_decode(TENANCIES, true) as $row) {
+
+                if ($row['tenant_id'] === $xerotenant_id) {
+                    return $row;
+                }
+            }
+        }
+        return [];
+    }
+
+    public static function getTenantField($xerotenant_id, $fld): string
+    {
+        $tenancy = self::getTenancyInfo($xerotenant_id);
+        return $tenancy[$fld];
     }
 
     public static function hasIdValue(string $name, string $fld = ''): bool

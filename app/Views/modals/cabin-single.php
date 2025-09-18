@@ -1,16 +1,5 @@
 <!-- Modal -->
-<style>
-    <?php
-    foreach (json_decode(TENANCIES, true) as $row):
-    $colour = "var(--bs-{$row['colour']})";
-    $class = ".{$row['shortname']}";
-    echo "
-    .modal-header$class {
-        border-bottom: 4px solid $colour;
-    }
-";
-     endforeach; ?>
-</style>
+
 <div class='modal fade' id='cabinSingle' tabindex='-1' role='dialog' aria-labelledby='cabinSingleLabel'
      aria-hidden='true'>
     <div class='modal-dialog modal-dialog-centered' role='document'>

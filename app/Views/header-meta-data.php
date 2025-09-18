@@ -1,9 +1,3 @@
-<?php
-namespace App\Views;
-?>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
 <!-- META DATA -->
 <meta charset="UTF-8">
 <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
@@ -18,14 +12,5 @@ namespace App\Views;
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 
-<!-- STYLE CSS -->
-<link href="/assets/css/style.css" rel="stylesheet">
-<link href="/assets/css/plugins.css" rel="stylesheet">
 
-<!--- FONT-ICONS CSS -->
-<link href="/assets/css/icons.css" rel="stylesheet">
 
-<link href="/css/ckm-styles.css" rel="stylesheet">
-
-<!-- Jquery UI -->
-<link rel="stylesheet" type="text/css" href="/JS/plugins/jquery-ui-1.14.0/jquery-ui.css"/>

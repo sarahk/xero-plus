@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Views;
 
@@ -13,7 +14,7 @@ use App\Loader;
 
 
     <?php
-    include 'styles.php';
+    include __DIR__ . '/header-meta-data.php';
 
     if (!isset($loader)) $loader = new Loader();
     $loader->outputCSS();
@@ -30,7 +31,25 @@ use App\Loader;
         <?php
     } ?>
     <link rel="manifest" href="/site.webmanifest">
-
+    <style>
+        <?php
+        if (defined('TENANCIES')):
+        foreach (json_decode(TENANCIES, true) as $row):
+        $colour = "var(--bs-{$row['colour']})";
+        $class = ".{$row['shortname']}";
+        echo "
+        .card-header$class,
+        .modal-header$class {
+            border-bottom: 4px solid $colour;
+        }
+    ";
+         endforeach;
+         endif;
+         ?>
+    </style>
+    <?php
+    $loader->outputJS();
+    ?>
 </head>
 
 <body class="app sidebar-mini ltr light-mode">

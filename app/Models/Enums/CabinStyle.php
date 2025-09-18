@@ -12,11 +12,6 @@ enum CabinStyle: string
     case Large = 'large';
     case XL = 'xl';
 
-    public static function getCabinStyleLabel(string $style): string
-    {
-        return self::getLabel($style);
-    }
-
     public static function getLabel(string $val): string
     {
         $pointer = self::tryFrom($val);
@@ -46,6 +41,19 @@ enum CabinStyle: string
             self::Standard => " `cabins`.`style` in ('" . implode("','", [self::Standard->value, self::Left->value, self::Right->value]) . "')",
             self::Left, self::Right, self::Large, self::XL => "`cabins`.`style` = '$val'",
             default => ''
+        };
+    }
+
+    private static function allowedNext(self $from): array
+    {
+        return match ($from) {
+            self::Standard => [self::Standard, self::Left, self::Right],
+            self::Left => [self::Left],
+            self::Right => [self::Right],
+            self::Large => [self::Large],
+            self::XL => [self::XL],
+
+            default => [self::Standard, self::Left, self::Right, self::Large, self::XL],
         };
     }
 

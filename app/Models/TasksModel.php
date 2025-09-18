@@ -41,17 +41,17 @@ class TasksModel extends BaseModel
     }
 
 
-    public function getCurrentCabin(int $cabin_id): array
+    public function getCurrentCabin(string $cabin_id): array
     {
         $sql = "SELECT * " . $this->getVirtuals() . " 
             FROM `tasks`
-            WHERE `cabin_id` = :cabin_id
-            AND `status` != 'closed'";
+            WHERE `tasks`.`cabin_id` = :cabin_id
+            AND `tasks`.`status` != 'closed'";
 
-        return $this->runQuery($sql, [":cabin_id" => $cabin_id]);
+        return $this->runQuery($sql, ["cabin_id" => $cabin_id]);
     }
 
-    public function getLastWOFDate(int $cabin_id)
+    public function getLastWOFDate(string $cabin_id)
     {
         $sql = "SELECT max(`updated`) as `wofdate`
             FROM `tasks`
@@ -60,7 +60,7 @@ class TasksModel extends BaseModel
             AND `task_type`  = 'wof'
             GROUP BY `cabin_id`";
 
-        $data = $this->runQuery($sql, [":cabin_id" => $cabin_id]);
+        $data = $this->runQuery($sql, ["cabin_id" => $cabin_id]);
         if ($data) {
             return $data['0']['wofdate'];
         } else return 'unknown';
@@ -182,11 +182,14 @@ class TasksModel extends BaseModel
 
     public function getCounts(): array
     {
+        $today = date('Y-m-d', strtotime('today'));
+        $monday = date('Y-m-d', strtotime('monday this week'));
+        $two_weeks = date('Y-m-d', strtotime('friday next week'));
         $sql = "SELECT 
-SUM(if( `due_date` < '2023-11-03' AND `status` = 'open' , 1 , 0 )) AS `overdue`,
-SUM(if(  `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'open' ,1 , 0)) AS `due`,
-SUM(if(  `due_date` >= '2023-11-03' AND `due_date` < '2023-11-10' AND `status` = 'complete' ,1 , 0)) AS `complete`
-FROM `tasks`";
+                    SUM(if( `due_date` < '$today' AND `status` = 'open' , 1 , 0 )) AS `overdue`,
+                    SUM(if(  `due_date` >= '$today' AND `due_date` <= '$two_weeks' AND `status` = 'open' ,1 , 0)) AS `due`,
+                    SUM(if(  `due_date` >= '$monday' AND `due_date` <= '$two_weeks' AND `status` = 'complete' ,1 , 0)) AS `complete`
+                    FROM `tasks`";
         $stmt = $this->pdo->query($sql);
         $output = $stmt->fetch();
 

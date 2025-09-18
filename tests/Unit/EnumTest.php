@@ -36,9 +36,9 @@ describe('Test of CabinStatus Enum', function () {
     });
 
     it('returns the correct label for each status', function () {
-        expect(CabinStatus::getCabinStatusLabel('new'))->toBeString()->toBe('New')
-            ->and(CabinStatus::getCabinStatusLabel('active'))->toBeString()->toBe('Active')
-            ->and(CabinStatus::getCabinStatusLabel('sold'))->toBeString()->toBe('Sold');
+        expect(CabinStatus::getLabel('new'))->toBeString()->toBe('New')
+            ->and(CabinStatus::getLabel('active'))->toBeString()->toBe('Active')
+            ->and(CabinStatus::getLabel('sold'))->toBeString()->toBe('Sold');
     });
 
     it('returns all the names for Cabin Status', function () {

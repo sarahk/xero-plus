@@ -209,7 +209,7 @@ const initializeFutureDatepicker = (selector) => {
     const opts = {
         numberOfMonths: 2,
         minDate: 0, // today onward
-        beforeShowDay: $.datepicker.noWeekends
+        //beforeShowDay: $.datepicker.noWeekends
     };
     return initDatepicker(selector, opts);
 };

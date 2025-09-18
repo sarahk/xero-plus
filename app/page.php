@@ -9,8 +9,6 @@ use App\Models\InvoiceModel;
 use App\Models\TasksModel;
 use DateTime;
 
-use Dotenv\Dotenv;
-
 //ini_set('display_errors', 'On');
 //error_reporting(E_ALL);
 
@@ -41,7 +39,7 @@ $id = intval($_GET['id'] ?? 0);
 //$userId = $_SESSION['user']['user_id'];
 
 $json = new JsonClass();
-define("TENANCIES", (new JsonClass())->getOrganisationList());
+define('TENANCIES', $json->getOrganisationList());
 unset($json);
 
 // manages modals, javascript and css

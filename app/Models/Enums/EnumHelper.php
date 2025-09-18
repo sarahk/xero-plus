@@ -42,6 +42,39 @@ trait EnumHelper
             $label = self::getLabel($enum_value->value);
             $output[] = "<option value='$enum_value->value' $selected>$label</option>";
         }
+
         return implode(PHP_EOL, $output);
+    }
+
+    /*
+     * value isn't used, but it might be needed when there's a flow
+     */
+    public static function getSelectOptionsArray(string $val): array
+    {
+        $output = [];
+
+        foreach (self::cases() as $enum_value) {
+            $label = self::getLabel($enum_value->value);
+            $output[] = ['value' => $enum_value->value, 'label' => $label];
+        }
+
+        return $output;
+    }
+
+    private static function allowedNext(self $from): array
+    {
+        return self::cases(); // all options
+    }
+
+
+    public static function allowedNextAsArray(string $from): array
+    {
+        $pointer = self::from($from);
+        $list = self::allowedNext($pointer);
+        $output = [];
+        foreach ($list as $val) {
+            $output[] = ['value' => $val->value, 'label' => self::getLabel($val->value)];
+        }
+        return $output;
     }
 }

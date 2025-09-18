@@ -3,18 +3,24 @@
 namespace App;
 
 //use App\Models\AddressModel;
-//use App\Models\CabinModel;
+use App\Models\CabinModel;
 use App\Models\ActivityModel;
 use App\Models\ComboModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 
+use App\Models\Enums\CabinStatus;
 use App\Models\InvoiceModel;
 
 //use App\Models\PhoneModel;
-//use App\Models\TasksModel;
+use App\Models\TasksModel;
+
 //use App\Models\TenancyModel;
+
+
+// E N U M S
 use App\Models\Enums\CabinStyle;
+use App\Models\Enums\CabinOwners;
 
 
 use App\Models\PaymentModel;
@@ -24,6 +30,7 @@ use App\Models\Traits\LoggerTrait;
 use Hoa\Math\Util;
 use PDO;
 use DateTime;
+use DateTimeImmutable;
 
 use \XeroAPI\XeroPHP\Api\AccountingApi;
 
@@ -90,7 +97,7 @@ class JsonClass
 
     public function getEnquiryCabinList()
     {
-        $cabins = new Models\CabinModel($this->pdo);
+        $cabins = new CabinModel($this->pdo);
         $params = $this->getParams();
         $params['xerotenant_id'] = $_GET['xerotenant_id'] ?? '';
         $params['cabin_id'] = $_GET['cabin_id'] ?? '';
@@ -102,20 +109,20 @@ class JsonClass
 
     public function getCabins()
     {
-        $cabins = new Models\CabinModel($this->pdo);
+        $cabins = new CabinModel($this->pdo);
         $params = $this->getParams();
         return $cabins->list($params);
     }
 
-    public function getCabinSingle()
+    public function getCabinSingle(): string
     {
-        $cabins = new Models\CabinModel($this->pdo);
+        $cabins = new CabinModel($this->pdo);
         $params = $this->getParams();
 
         $cabin = $cabins->get('cabin_id', $params['key'])['cabins'];
 
-        $cabin['cabinstyle'] = Models\Enums\CabinStyle::getLabel($cabin['style']);
-        $cabin['ownername'] = Models\Enums\CabinOwners::getLabel($cabin['owner']);
+        $cabin['cabinstyle'] = CabinStyle::getLabel($cabin['style'] ?? '');
+        $cabin['ownername'] = CabinOwners::getLabel($cabin['owner'] ?? '');
 
 
         $tenancies = new Models\TenancyModel($this->pdo);
@@ -124,12 +131,54 @@ class JsonClass
         $cabin['tenancycolour'] = $tenancy['colour'];
         $cabin['tenancyshortname'] = $tenancy['shortname'];
 
-        $tasks = new Models\TasksModel($this->pdo);
+        $tasks = new TasksModel($this->pdo);
         $cabin['tasklist'] = $tasks->getCurrentCabin($params['key']);
         $cabin['wof'] = $tasks->getLastWOFDate($params['key']);
         // todo - add a wof status and a wof status colour
 
         return json_encode($cabin);
+    }
+
+    public function getCabinEditData(): string
+    {
+        $cabins = new CabinModel($this->pdo);
+        $params = $this->getParams();
+
+        $cabin = $cabins->get('cabin_id', $params['key']);
+
+        // C A B I N   S T Y L E
+        $cabin['cabinstyleoptions'] = CabinStyle::allowedNextAsArray($cabin['cabins']['style'] ?? '');
+        if (self::allowRollBack($cabin['cabins']['style_old'] ?? '', $cabin['cabins']['style_change'])) {
+            $old = ['value' => $cabin['cabins']['style_old'], 'label' => CabinStyle::getLabel($cabin['cabins']['style_old'])];
+            $cabin['cabinstyleoptions'] = array_merge($old, $cabin['cabinstyleoptions']);
+        }
+
+        // C A B I N   S T A T U S
+        $cabin['cabinstatusoptions'] = CabinStatus::allowedNextAsArray($cabin['cabins']['status'] ?? '');
+        if (self::allowRollBack($cabin['cabins']['status_old'] ?? '', $cabin['cabins']['status_change'])) {
+            $old = ['value' => $cabin['cabins']['status_old'], 'label' => CabinStatus::getLabel($cabin['cabins']['status_old'])];
+            $cabin['cabinstatusoptions'] = array_merge($old, $cabin['cabinstatusoptions']);
+        }
+
+        $cabin['cabinOwners'] = CabinOwners::getSelectOptionsArray($cabin['cabins']['owner'] ?? '');
+        $cabin['tenancyoptions'] = [];
+        foreach ($this->tenancies as $tenant) {
+            $cabin['tenancyoptions'][] = ['value' => $tenant['tenant_id'], 'label' => $tenant['name']];
+        }
+        return json_encode($cabin);
+    }
+
+    private function allowRollBack($oldVal, $changeDate): bool
+    {
+        if (empty($oldVal) || empty($changeDate)) {
+            return false;
+        }
+
+        $now = new DateTimeImmutable('today');   // start of today
+        $change = new DateTimeImmutable($changeDate);    // start of that day
+
+        $diff = $change->diff($now);
+        return ($diff->invert === 0) && ($diff->days < 3);
     }
 
     public function getActivityList()
