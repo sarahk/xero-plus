@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
-
 use PDO;
 
+/**
+ *
+ */
 class TenancyModel extends BaseModel
 {
     protected string $table = 'tenancies';
@@ -37,9 +38,13 @@ class TenancyModel extends BaseModel
                 $output[] = $row['tenant_id'];
             }
         }
-        
+
         return $output;
     }
 
+    public function prepAndSave(array $data): string
+    {
+        return '';
+    }
 
 }

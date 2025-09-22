@@ -173,12 +173,12 @@ class StorageClass
         $_SESSION['ckm'][$type]['last_batch'] = $count;
     }
 
-    public function getMonologCheckStatus(): string
+    public function getMonologLastCleanupDate(): string
     {
         return $_SESSION['ckm']['monolog_check_status'] ?? '0';
     }
 
-    public function setMonologCheckStatus(string $status): void
+    public function setMonologLastCleanupDate(string $status): void
     {
         $_SESSION['ckm']['monolog_check_status'] = $status;
     }

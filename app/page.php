@@ -88,7 +88,7 @@ switch ($action) {
         // we're opening in enquiry mode, but this takes us to the overview mode
 
         $link_to_contract = $contracts->getContractOverviewLink('91', ['contract_id' => $contract_id], 'btn btn-secondary');
-
+        $loader->addGoogleMaps();
         if ($debug) {
             //debug($_SESSION);
 

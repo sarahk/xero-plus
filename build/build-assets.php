@@ -1,12 +1,14 @@
 #!/usr/bin/env php
 <?php
 declare(strict_types=1);
-
+// run with
+// php build/build-assets.php
+//
 // project root
 $root = dirname(__DIR__);
 $publicBuild = $root . '/app/build';
 
-require $root . '/vendor/autoload.php';
+require $root. '/vendor/autoload.php';
 
 // Ensure output dir
 if (!is_dir($publicBuild) && !mkdir($publicBuild, 0775, true) && !is_dir($publicBuild)) {
@@ -55,7 +57,6 @@ addIfExists($js, $root, 'vendor/npm-asset/datatables.net-select-bs5/js/select.bo
 // Runtime deps for Buttons HTML5 export
 // If you removed these from Composer (due to conflicts), place self-hosted copies in public/vendor and we pick them up.
 addIfExists($js, $root, 'vendor/npm-asset/jszip/vendor/FileSaver.js');
-//addIfExists($js, $root, 'vendor/npm-asset/jszip/dist/jszip.min.js');
 //addIfExists($js, $root, 'vendor/npm-asset/pdfmake/build/pdfmake.min.js');
 //addIfExists($js, $root, 'vendor/npm-asset/pdfmake/build/vfs_fonts.js');
 
@@ -67,7 +68,7 @@ addIfExists($js, $root, 'vendor/npm-asset/simplebar/dist/simplebar.min.js');
 addIfExists($js, $root, 'vendor/npm-asset/mdb-ui-kit/js/mdb.min.js');
 
 // Your app file(s) if any
-addIfExists($js, $root, 'app/js/app.js');
+//addIfExists($js, $root, 'app/js/app.js');
 
 $jsOut = $publicBuild . '/app.vendor.min.js';
 $js->minify($jsOut);

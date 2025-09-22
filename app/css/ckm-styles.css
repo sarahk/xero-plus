@@ -1,4 +1,4 @@
-@import url("/assets/iconfonts/font-awesome/css/font-awesome.min.css");
+/*@import url("/assets/iconfonts/font-awesome/css/font-awesome.min.css");*/
 
 
 .card-pay .tabs-menu li {
@@ -64,7 +64,7 @@ darker: #8c8e90
 }
 
 .tab-content .btn i {
-    color: var(--bs-primary);;
+    /*  color: var(--bs-primary);*/
 }
 
 
@@ -93,3 +93,27 @@ table.dataTable tr.selected > * {
 }
 
 /* end of data tables processing */
+
+/* R I P P L E   F I X */
+/* .modal-footer .btn,*/
+.btn.ripple-surface,
+.ripple-wave.active {
+    display: inline-flex; /* stable inline sizing */
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* clip ripple without needing extra width */
+    min-width: auto !important; /* neutralize inline min-width from plugin */
+    flex: 0 0 auto; /* don't let flexbox stretch it */
+}
+
+/* Avoid animating width/height/padding/font changes */
+.btn {
+    transition-property: color, background-color, border-color, box-shadow;
+}
+
+.btn:hover, .btn:active, .btn:focus {
+    transform: none;
+    letter-spacing: normal;
+}
+
+/* end of R I P P L E   F I X */

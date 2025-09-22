@@ -211,4 +211,12 @@ class TasksModel extends BaseModel
 
         return round(($num / $total) * 4) / 0.04;
     }
+
+    public function prepAndSave(array $data): string
+    {
+        // TODO: Implement prepAndSave() method.
+        $save = $this->getSaveValues($data);
+        $result = $this->runQuery($this->insert, $save, 'insert');
+        return $result;
+    }
 }

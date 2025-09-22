@@ -7,6 +7,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
+use DateTime;
 
 trait LoggerTrait
 {
@@ -17,7 +18,7 @@ trait LoggerTrait
     {
         if ($this->saveLog) {
             $day_name = date('l');
-            $log_path = __DIR__ . "../../../monolog/{$day_name}/";
+            $log_path = __DIR__ . "/../../../monolog/{$day_name}/";
 
             $this->cleanOldLogsByDate($log_path);
             $output = "%level_name% | %datetime% > %message% | %context% %extra%\n";
@@ -64,35 +65,55 @@ trait LoggerTrait
         $this->log('error', $message, $context);
     }
 
-    function cleanOldLogsByDate(string $log_Path): void
+    function cleanOldLogsByDate(string $logPath): int
     {
+        // Normalize path
+        $logPath = rtrim($logPath, DIRECTORY_SEPARATOR);
+
+        if (!is_dir($logPath)) {
+            mkdir($logPath, 0775, true);
+        }
+
+        // 0) Only once per calendar day
         $storage = new StorageClass();
-        $checked = $storage->getMonologCheckStatus();
-        if ($checked === '1') {
-            return;
-        }
-        // Ensure the folder exists
-        if (!is_dir($log_Path)) {
-            return;
+        $today = (new DateTime('today'))->format('Y-m-d');
+        $lastRun = $storage->getMonologLastCleanupDate();
+
+        if ($lastRun === $today) {
+            //return 0; // already cleaned today
         }
 
-        // Get today's date (start of the day) as a timestamp
-        $start_of_today = strtotime('today');
+        // 1) Folder must exist
+        if (!is_dir($logPath)) {
+            $storage->setMonologLastCleanupDate($today); // avoid trying again this request
+            return 0;
+        }
 
-        // Iterate through all files in the folder
-        $files = glob("$log_Path/*");
+        // 2) Find files safely (glob can return false)
+        $files = glob($logPath . '/*') ?: [];
+        if (!$files) {
+            $storage->setMonologLastCleanupDate($today);
+            return 0;
+        }
+
+        $startOfToday = strtotime('today');
+        $deleted = 0;
+
         foreach ($files as $file) {
-            if (is_file($file)) {
-                // Get the file's last modification time
-                $file_mod_time = filemtime($file);
+            if (!is_file($file)) continue;
 
-                // Check if the file's modification date is before today
-                if ($file_mod_time < $start_of_today) {
-                    unlink($file);
+            $mtime = @filemtime($file) ?: 0;
+            if ($mtime < $startOfToday) {
+                // Optional: check writability, helpful on macOS if owner/perm differ
+                if (is_writable($file)) {
+                    if (@unlink($file)) {
+                        $deleted++;
+                    }
                 }
             }
         }
-        $storage->setMonologCheckStatus('1');
-        unset($storage);
+
+        $storage->setMonologLastCleanupDate($today);
+        return $deleted;
     }
 }

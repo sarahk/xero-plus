@@ -14,7 +14,7 @@ use App\ExtraFunctions;
             </div>
 
             <div class=" text-xl-right">
-                <a href="#" class="btn btn-primary">Add</a>
+                <a href="#" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Add</a>
             </div>
         </form>
     </div>

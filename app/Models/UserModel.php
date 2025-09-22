@@ -51,4 +51,12 @@ class UserModel extends BaseModel
 
         return $result[0]['user_id'];
     }
+
+    public function prepAndSave(array $data): string
+    {
+        // TODO: Implement prepAndSave() method.
+        $save = $this->getSaveValues($data);
+        $result = $this->runQuery($this->insert, $save, 'insert');
+        return $result;
+    }
 }

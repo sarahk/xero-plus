@@ -240,13 +240,13 @@ class Loader
         $this->js['low'][] = "/JS/plugins/sticky.js";
 
 //<!-- COLOR THEME JS -->
-        $this->js['low'][] = "/assets/js/themeColors.js";
+        //$this->js['low'][] = "/assets/js/themeColors.js";
 
 //<!-- CUSTOM JS, handles scrolling -->
         $this->js['low'][] = "/assets/js/custom.js";
 
 //<!-- SWITCHER STYLES JS -->
-        $this->js['low'][] = "/assets/js/switcher-styles.js";
+        //$this->js['low'][] = "/assets/js/switcher-styles.js";
 
 //<!-- CUSTOM JS -->
         $this->js['low'][] = "/JS/plugins/custom.js";
@@ -258,9 +258,14 @@ class Loader
 //<!--- FONT-ICONS CSS -->
         // are we using all of these?
         $this->css['low'][] = "/assets/css/icons.css";
-
         $this->css['low'][] = "/css/ckm-styles.css";
 
     }
+
+    public function addGoogleMaps(): void
+    {
+        $this->js['low'][] = "https://maps.googleapis.com/maps/api/js?key=AIzaSyB32Z6abVU4CzDmYdxfGX1kW4H6slcLjUw&libraries=places";
+    }
+
 }
 

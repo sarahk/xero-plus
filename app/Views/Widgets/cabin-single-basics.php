@@ -34,8 +34,8 @@ use App\Models\Enums\CabinStyle;
         <td><?= ExtraFunctions::toNormalDate($data['cabins']['updated']); ?></td>
     </tr>
     <tr>
-        <td colspan="2" class=" text-right"><a href="#" data-bs-toggle='modal' data-bs-target='#cabinEditBasicsModal'
-                                               data-key='<?= $data['cabins']['cabin_id']; ?>'
-                                               class="btn btn-primary">Edit</a></td>
+        <td colspan="2" class=" text-end"><a href="#" data-bs-toggle='modal' data-bs-target='#cabinEditBasicsModal'
+                                             data-key='<?= $data['cabins']['cabin_id']; ?>'
+                                             class="btn btn-primary"><i class="fa-solid fa-pen me-2"></i>Edit</a></td>
     </tr>
 </table>

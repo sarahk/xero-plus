@@ -155,6 +155,8 @@ class Utilities
             $pass = 'cabins4all';
             $pdo = new PDO('mysql:host=localhost;dbname=xeroplus;charset=utf8mb4', $user, $pass);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            //$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            //$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             return $pdo;
 //"mysql:host=$host;dbname=$db;charset=utf8mb4"
         } catch (PDOException $e) {
@@ -374,7 +376,7 @@ class Utilities
     public static function refreshMaterialTables()
     {
         $tables = ['combo', 'old_debts', 'bdmgmt'];
-        
+
         $pdo = self::getPDO();
         foreach ($tables as $table) {
             self:: refreshMaterialTable($pdo, $table);

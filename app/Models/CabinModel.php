@@ -17,8 +17,6 @@ class CabinModel extends BaseModel
     function __construct($pdo)
     {
         parent::__construct($pdo);
-
-
     }
 
     public function enquiryList(array $params): array
@@ -298,6 +296,35 @@ class CabinModel extends BaseModel
             LIMIT 1";
 
         return $this->runQuery($sql, ['cabin_id' => $cabin_id]);
+    }
+
+    public function prepAndSave(array $data): string
+    {
+        $this->logInfo('passed to prepAndSave: ', $data);
+        //todo add insert sql
+        $save = [
+            'cabin_id' => $data['cabin_id'],
+            'xerotenant_id' => $data['xerotenant_id'],
+            'updated' => date('Y-m-d H:i:s'),
+        ];
+        if ($data['cabinstyle'] !== $data['cabinstylecurrent']) {
+            $save['style'] = $data['cabinstyle'];
+            $save['style_old'] = $data['cabinstylecurrent'];
+            $save['style_change'] = date('Y-m-d H:i:s');
+        }
+        if ($data['cabinstatus'] !== $data['cabinstatuscurrent']) {
+            $save['status'] = $data['cabinstatus'];
+            $save['status_old'] = $data['cabinstatuscurrent'];
+            $save['status_change'] = date('Y-m-d H:i:s');
+        }
+        $bits = [];
+        foreach ($save as $k => $v) {
+            $bits[] = "`$k` = :$k";
+        }
+        $sql = "UPDATE cabins SET " . implode(', ', $bits) . " WHERE cabin_id = :cabin_id;";
+        $this->logInfo('Update SQL: ', [$sql]);
+        $this->runQuery($sql, $save, 'update');
+        return $data['cabin_id'];
     }
 }
 

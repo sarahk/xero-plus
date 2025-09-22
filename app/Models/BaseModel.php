@@ -14,7 +14,7 @@ use PDOStatement;
 
 //use App\XeroClass;
 
-class BaseModel
+abstract class BaseModel
 {
     use PdoTrait;
     use DebugTrait;
@@ -42,25 +42,18 @@ class BaseModel
     protected array $defaults = [];
     protected bool $hasStub = false;
     protected bool $view = false;
-    
-    function __construct(PDO $pdo)
+
+    public function __construct(PDO $pdo)
     {
         $this->initPdo($pdo);
         $this->initLogger($this->table . 'Model');
 
     }
-
-    // just to ensure the mysql connection is closed
-    function __destruct()
-    {
-        unset($this->pdo);
-    }
-
-
+    
     /**
      * @param String $fieldname
      * @param String $key
-     * @param mixed $keyVal
+     * @param mixed $key_val
      * @return mixed
      */
     public function field(string $fieldname, string $key, mixed $key_val): mixed
@@ -252,14 +245,8 @@ class BaseModel
         return null;
     }
 
-    public function prepAndSave(array $data): string
-    {
-        $save = $this->getSaveValues($data);
-        $result = $this->runQuery($this->insert, $save, 'insert');
+    abstract public function prepAndSave(array $data): string;
 
-        return $result;
-        //return $this->runQuery($this->insert, $save, 'insert');
-    }
 
     protected function checkNullableValues($data)
     {
@@ -313,7 +300,7 @@ class BaseModel
     }
 
 
-    public function getIdFromXeroContactId($xerotenant_id, $xerocontact_id, $row): int
+    public function getIdFromXeroContactId($xerotenant_id, $xerocontact_id, $row): string
     {
         $sql = "SELECT `id` FROM `$this->table` WHERE `contact_id` = :contact_id";
         $this->getStatement($sql);

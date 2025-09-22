@@ -75,34 +75,14 @@ $loader->outputModals();
 <script defer type="text/javascript" src="/JS/tasks.js"></script>
 <!--<script type="text/javascript" src="/JS/vehicles.js"></script>-->
 <script defer type="module" src="/JS/widgets.js"></script>
+<script defer type="text/javascript" src="/assets/js/custom.js"></script>
+<script defer type="module" src="/JS/fixes.js"></script>
 
 <?php if (!\App\LOGGEDOUT) {
-    echo '<script type="module" src="/JS/autorun.js"></script>';
+    // todo autorun is throwing api errors
+    //echo '<script type="module" src="/JS/autorun.js"></script>';
 }
 ?>
 
-<?php
-$action = intval($_GET['action'] ?? 0);
-// switch will be expanded over time
-switch ($action) {
-    case 10:
-        include_once 'addins/footer-edit-js.php';
-        break;
-}
-?>
-
-<script type="text/javascript">
-    // todo - is this obsolete?
-    // $('input[name="dates"]').mouseup(getInvoiceRedraw);
-    //
-    // function getInvoiceRedraw() {
-    //     let getInvoiceTable = $('#getInvoiceTable').DataTable();
-    //
-    //     setTimeout(function () {
-    //         getInvoiceTable.draw(false);
-    //     }, 100);
-    // }
-</script>
 </body>
-
 </html>
