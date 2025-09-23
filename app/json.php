@@ -121,9 +121,14 @@ try {
 
         case 'Notes':
         case 'notes':
+            $note = new NoteModel(Utilities::getPDO());
             switch ($action) {
+                case 'list':
+                case 'List':
+                    echo json_encode($note->listJson(Utilities::getParams()));
+                    break;
                 case 'ListAssociated':
-                    $note = new NoteModel(Utilities::getPDO());
+
                     echo json_encode($note->listAssociated(Utilities::getParams()));
                     break;
             }

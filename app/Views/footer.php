@@ -41,7 +41,7 @@ if (!isset($loader)) {
     $loader = new Loader();
 }
 $loader->outputModals();
-
+$loader->outputJS('footer');
 //todo remove code below, should be handled by loader
 //if (isset($modals) && is_array($modals) && count($modals)) {
 //    foreach ($modals as $filename) {

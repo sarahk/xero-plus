@@ -5,6 +5,7 @@ use App\Views\ViewFunctions;
 
 
 $formFields = [
+    ['type' => 'hidden', 'formType' => 'cabin'],
     ['type' => 'hidden', 'fieldId' => 'cabin_id'],
     ['type' => 'input', 'fieldId' => 'cabinnumber', 'label' => 'Cabin Number', 'placeholder' => "Enter the new cabin number"],
     ['type' => 'select', 'fieldId' => 'cabinstyle', 'label' => 'Style'],

@@ -87,6 +87,8 @@ addIfExists($css, $root, 'vendor/npm-asset/sweetalert2/dist/sweetalert2.min.css'
 addIfExists($css, $root, 'vendor/npm-asset/simplebar/dist/simplebar.min.css');
 // your overrides
 //addIfExists($css, $root, 'app/css/app.css');
+// Optional MDB (can conflict with BS)
+addIfExists($js, $root, 'vendor/npm-asset/mdb-ui-kit/css/mdb.min.css');
 
 $cssOut = $publicBuild . '/app.vendor.min.css';
 $css->minify($cssOut);

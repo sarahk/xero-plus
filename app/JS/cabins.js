@@ -136,5 +136,7 @@ if ($('#cabinSingle').length) {
             swal('Good job!', 'Task closed', 'success');
         });
     });
+
+    
 }
 

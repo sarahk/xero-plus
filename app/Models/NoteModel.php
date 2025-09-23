@@ -25,6 +25,7 @@ class NoteModel extends BaseModel
         if ($this->hasNote($data) && $this->hasIdAndParent($data)) {
 
             $data['note']['created'] = date('Y-m-d H:i:s');
+            $data['note']['createdby'] = $_SESSION['user_id'];
             $checked = $this->checkNullableValues($data['note']);
             $save = $this->getSaveValues($checked);
 
@@ -40,10 +41,6 @@ class NoteModel extends BaseModel
      */
     protected function hasNote(array $data): bool
     {
-//        if (!array_key_exists('note', $data)) return false;
-//        if (!array_key_exists('note', $data['note'])) return false;
-//        if (!empty($data['note']['note'])) return true;
-//        return false;
         return !empty($data['note']['note'] ?? '');
     }
 
@@ -71,6 +68,11 @@ class NoteModel extends BaseModel
         $search_values = ['parent' => $parent, 'foreign_id' => $foreign_id];
 
         return $this->runQuery($sql, $search_values);
+    }
+
+    public function listJson($params): string
+    {
+        return json_encode($this->list($params['parent'], $params['foreign_id']));
     }
 
     public function listAssociated(array $params): array

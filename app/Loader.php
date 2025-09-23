@@ -6,27 +6,16 @@ namespace App;
 class Loader
 {
     private array $priorities = ['high', 'med', 'low'];
-    private array $js = ['high' => [], 'med' => [], 'low' => []];
+    private array $js = ['head' => [], 'high' => [], 'med' => [], 'low' => []];
     private array $css = ['high' => [], 'med' => [], 'low' => []];
+    private array $preconnect = [];
     private array $modals = [];
 
     public function __construct()
     {
         $this->addBuilderFiles();
-//        $this->addJquery();
-//        $this->addBootstrap();
-//        $this->addJqueryUI();
-//        $this->addDataTables();
         $this->addFontAwesome();
-//        $this->addCookies();
-        // todo find out why perfect scrollbar makes datatable buttons look good.
-        // todo not using perfect scrollbar anywhere
-        //$this->addPerfectScrollbar();
-        //
-        //$this->addSweetAlert();
         $this->addGoogleFonts();
-        //$this->addSimpleBar();
-
         $this->addMiscScripts();
     }
 
@@ -34,12 +23,9 @@ class Loader
     {
         echo '<!-- L O A D E R   J S -->' . PHP_EOL;
 
-        if ($where === 'footer') {
-            $priorities = $this->priorities;
-        } else {
-            //This allows JavaScript like tinymce to be placed in the header
-            $priorities = ['head'];
-        }
+//This allows JavaScript like tinymce to be placed in the header
+        $priorities = ($where === 'footer') ? $this->priorities : ['head'];
+        $defer = ($where === 'footer') ? 'defer ' : '';// keep space at the end of the word defer
 
         foreach ($priorities as $priority) {
             if (isset($this->js[$priority]) && count($this->js[$priority])) {
@@ -50,9 +36,9 @@ class Loader
                         $innards = implode(' ', array_map(function ($key, $value) {
                             return "$key='$value'";
                         }, array_keys($source), $source));
-                        echo '<script defer ' . $innards . '></script>' . PHP_EOL;
+                        echo "<script $defer $innards ></script>" . PHP_EOL;
                     } else {
-                        echo "<script defer src='$source'></script>" . PHP_EOL;
+                        echo "<script $defer src='$source'></script>" . PHP_EOL;
                     }
                 }
             }
@@ -62,6 +48,8 @@ class Loader
 
     public function outputCSS(): void
     {
+        $this->outputPreconnect();
+
         echo '<!-- L O A D E R   C S S -->' . PHP_EOL;
 
         foreach ($this->priorities as $priority) {
@@ -72,6 +60,13 @@ class Loader
             }
         }
         echo '<!-- /L O A D E R   C S S -->' . PHP_EOL;
+    }
+
+    private function outputPreconnect(): void
+    {
+        foreach ($this->preconnect as $preconnect) {
+            echo "<link rel='preconnect' href='{$preconnect['href']}' crossorigin='{$preconnect['crossorigin']}' />" . PHP_EOL;
+        }
     }
 
     public function outputModals(): void
@@ -91,6 +86,14 @@ class Loader
         $this->modals[] = $modal;
     }
 
+    public function addJS(string $src, $priority = 'low'): void
+    {
+        if (!in_array($priority, $this->priorities)) {
+            $priority = 'low';
+        }
+        $this->js[$priority][] = $src;
+    }
+
     /*
      * to regenerate these files run
      * php build/build-assets.php
@@ -108,38 +111,6 @@ class Loader
         $this->css['med'][] = 'https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.3.0/apexcharts.min.css';
     }
 
-    private function addDataTables(): void
-    {
-        $this->css['med'][] = 'https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css';
-        $this->js['med'][] = 'https://cdn.datatables.net/2.3.4/js/dataTables.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js';
-
-        // add buttons
-        $this->css['med'][] = 'https://cdn.datatables.net/buttons/3.2.5/css/buttons.bootstrap5.min.css';
-        $this->js['med'][] = 'https://cdn.datatables.net/buttons/3.2.5/js/dataTables.buttons.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/buttons/3.2.5/js/buttons.bootstrap5.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/buttons/3.2.5/js/buttons.colVis.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/buttons/3.2.5/js/buttons.print.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/buttons/3.2.5/js/buttons.html5.min.js';
-
-        // responsive
-        $this->css['med'][] = 'https://cdn.datatables.net/responsive/3.0.6/css/responsive.bootstrap5.min.css';
-        $this->js['med'][] = 'https://cdn.datatables.net/responsive/3.0.6/js/dataTables.responsive.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/responsive/3.0.6/js/responsive.bootstrap5.min.js';
-
-        // select
-        $this->css['med'][] = 'https://cdn.datatables.net/select/3.1.0/css/select.bootstrap5.min.css';
-        $this->js['med'][] = 'https://cdn.datatables.net/select/3.1.0/js/dataTables.select.min.js';
-        $this->js['med'][] = 'https://cdn.datatables.net/select/3.1.0/js/select.bootstrap5.min.js';
-//    $this->js['med'][] = 'https://cdn.datatables.net/v/bs4/jszip-3.10.1/dt-2.1.4/b-3.1.1/b-html5-3.1.1/b-print-3.1.1/fh-4.0.1/r-3.0.2/sl-2.0.5/sr-1.4.1/datatables.min.js';
-//        $this->css['med'][] = 'https://cdn.datatables.net/v/bs4/jszip-3.10.1/dt-2.1.4/b-3.1.1/b-html5-3.1.1/b-print-3.1.1/fh-4.0.1/r-3.0.2/sl-2.0.5/sr-1.4.1/datatables.min.css';
-
-        // todo - check that these are up-to-date and used
-
-        $this->js['low'][] = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js";
-        $this->js['low'][] = "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js";
-
-    }
 
     private function addFontAwesome(): void
     {
@@ -161,12 +132,6 @@ class Loader
         //cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js
     }
 
-    public function addSimpleBar(): void
-    {
-        $this->js['med'][] = 'https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js';
-        $this->css['med'][] = 'https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.css';
-    }
-
 
     private function addCookies(): void
     {
@@ -174,53 +139,11 @@ class Loader
         $this->js['med'][] = 'https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js';
     }
 
-    /* I'm using SimpleBar */
-    private function addPerfectScrollbar(): void
-    {
-        $this->js['med'][] = 'https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js';
-        // Google Fonts -->
-        $this->css['med'][] = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap";
-        //<!-- MDB -->
-        $this->css['med'][] = "https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.css";
-    }
-
-    private function addSweetAlert(): void
-    {
-        $this->css['med'][] = "https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css";
-    }
-
-    private function addJquery(): void
-    {
-        $this->js['high'][] = 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js';
-    }
-
-    private function addJqueryUI(): void
-    {
-        $this->js['med'][] = 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js';
-        $this->css['med'][] = 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.min.css';
-    }
-
-    /**
-     * Adds pretty tooltips - was called Popper
-     * https://floating-ui.com/docs/getting-started
-     * @return void
-     */
-    private function addBootstrap(): void
-    {
-        $this->js['high'][] = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.min.js';
-        $this->css['high'][] = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css';
-        $this->css['high'][] = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap-grid.min.css';
-        $this->css['high'][] = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap-reboot.min.css';
-
-        //$this->js['high'][] = 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/cjs/popper-lite.min.js';
-
-
-        $this->js['low'][] = "https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.8";
-        $this->js['low'][] = "https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.12";
-    }
 
     private function addGoogleFonts(): void
     {
+        $this->preconnect[] = ['href' => 'https://fonts.gstatic.com', 'crossorigin' => 'anonymous'];
+
         $this->css['low'][] = "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap";
     }
 

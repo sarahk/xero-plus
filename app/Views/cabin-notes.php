@@ -1,38 +1,32 @@
 <?php
 
-namespace App\Views;
-
 use App\ExtraFunctions;
 
 ?>
-    <div class="row">
-        <form id="addNote">
-            <div class="form-group ">
-                <label class="form-label" for="notes">New Note</label>
-                <textarea class="form-control" id="notes" name="data[note][note]" placeholder="Notes" rows="3"
-                          data-gramm="false" spellcheck="false"></textarea>
-            </div>
+<div class="row mb-2">
+    <form id="addNote">
+        <input type="hidden" name="action" value="<?= $_GET['action'] ?>">
+        <input type="hidden" name="formType" value="notes">
+        <input type="hidden" name="data[note][foreign_id]" value="">
+        <input type="hidden" name="data[note][parent]" value="cabins">
+        <label class="form-label" for="notes">New Note</label>
+        <textarea class="form-control" id="notes" name="data[note][note]" rows="3"></textarea>
 
-            <div class=" text-xl-right">
-                <a href="#" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Add</a>
-            </div>
-        </form>
-    </div>
-    <?php
+        <div class="text-xl-right">
 
+            <button type="submit" class="btn btn-primary" data-role="submit">
+                <i class="fa-solid fa-plus me-2"></i>Add
+            </button>
 
-if (count($data['Note'])) :
-    ?>
+        </div>
+    </form>
+</div>
+<script type="module">
+    import {NotesTabWidget} from '/JS/Widgets/notesTabWidget.js';
+
+    NotesTabWidget.init('#addNote');
+</script>
+<div class="row">
     <div class="accordion" id="cabinNotesList">
-        <?php
-        foreach ($data['Note'] as $k => $note) {
-            $active = ($k === 0) ? ' active ' : '';
-            $date = date('d M, y', strtotime($note['created']));
-            $label = $date . ' ' . substr($note['note'], 0, 100);
-            $body = "<p><strong>$date</strong></p>
-                    <p>{$note['note']}</p>";
-            ExtraFunctions::getAccordionItem($k, 'cabinNotesList', $label, $body);
-        }
-        ?>
     </div>
-<?php endif;
+</div>

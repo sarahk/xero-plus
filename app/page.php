@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App;
 
 use App\Models\CabinModel;
@@ -161,8 +162,10 @@ switch ($action) {
 
         $tasks = new TasksModel($pdo);
         $data['tasks'] = $tasks->getChildren('cabins', $_GET['cabin_id'], false);
+
         $loader->addModal('task-single.php');
         $loader->addModal('cabin-edit-basics.php');
+        $loader->addJS('/JS/Widgets/notesTabAccordionWidget.js');
         break;
 
     case 15:
@@ -250,7 +253,7 @@ switch ($action) {
         break;
 }
 
-require_once(SITE_ROOT . '/Views/header.php');
+require_once(__DIR__ . '/Views/header.php');
 
 $view = __DIR__ . '/' . match ($action) {
         1 => 'Views/organisations_list.php',

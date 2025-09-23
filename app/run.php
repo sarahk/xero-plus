@@ -62,13 +62,7 @@ switch ($endpoint) {
     case 'Save':
 
         switch ($form) {
-            case 'notesCard':
-
-                $note = new NoteModel($pdo);
-                $data['note'] = $_GET['payload'];
-
-                echo $note->prepAndSave($data);
-                exit;
+            
 
             case 'template':
             case 'Template':

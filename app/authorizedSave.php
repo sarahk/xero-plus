@@ -64,12 +64,18 @@ switch ($action) {
         break;
 
     case 14:
-
-        $cabin = new CabinModel($pdo);
-        $id = $cabin->prepAndSave($data);
-        $output['id'] = $id;
-        $output['message'] = 'Cabin saved';
-        break;
-
+        switch ($_POST['formType']) {
+            case 'cabin':
+                $cabin = new CabinModel($pdo);
+                $id = $cabin->prepAndSave($data);
+                $output['id'] = $id;
+                $output['message'] = 'Cabin saved';
+                break;
+            case 'notes':
+                $note = new NoteModel($pdo);
+                $output['result'] = $note->prepAndSave($data);
+                $output['message'] = 'Note saved';
+                break;
+        }
 }
 echo json_encode($output);

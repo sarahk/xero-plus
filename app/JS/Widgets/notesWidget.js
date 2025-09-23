@@ -12,18 +12,6 @@ class NotesWidget {
         }
     }
 
-    setListeners() {
-        $(this.formId).off('submit').submit((event) => {
-            event.preventDefault();
-            console.log('trying to save');
-            this.saveNote();
-        });
-
-        $("#notesCardText").off('input').on('input', () => {
-            $('#notesCardSubmit').prop("disabled", false);
-        });
-
-    }
 
     populateTable() {
         $.getJSON('/json.php', {
@@ -93,3 +81,6 @@ class NotesWidget {
 
 //typeof keys !== 'undefined' && keys !== null ? keys : {}
 export const nsNotesWidget = new NotesWidget(getKeys());
+
+
+

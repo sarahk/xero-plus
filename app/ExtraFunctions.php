@@ -190,31 +190,49 @@ class ExtraFunctions
     public static function getTabs($tabList, $active, $data): void
     {
         ?>
-        <div class="col-lg-12 col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-pay">
-                        <ul class="nav tabs-menu">
-                            <?php
-                            foreach ($tabList as $tab) {
-                                $class = ($tab['name'] === $active) ? ' active ' : '';
-                                echo "<li><a href='#tab-{$tab['name']}' class='{$class}' data-bs-toggle='tab'>{$tab['label']}</a></li>";
-                            }
+        <div class="card">
+            <div class="card-body">
+                <div class="container">
+                    <ul class="nav nav-tabs" id="cabinTabs" role="tablist">
+                        <?php foreach ($tabList as $tab):
+                            $isActive = ($tab['name'] === $active);
+                            $paneId = 'tab-' . $tab['name'];
+                            $linkId = $paneId . '-tab';
+                            // px-4 makes the tabs narrower
                             ?>
-                        </ul>
-                    </div>
+                            <li class="nav-item" role="presentation">
+                                <a
+                                        class="nav-link<?= $isActive ? ' active' : '' ?> px-4"
+                                        id="<?= $linkId ?>"
+                                        href="#<?= $paneId ?>"
+                                        data-bs-toggle="tab"
+                                        role="tab"
+                                        aria-controls="<?= $paneId ?>"
+                                        aria-selected="<?= $isActive ? 'true' : 'false' ?>"
+                                >
+                                    <?= htmlspecialchars($tab['label'], ENT_QUOTES) ?>
+                                    <span id="<?= $paneId ?>Badge"
+                                          class="translate-middle badge rounded-pill bg-gray ms-4"></span>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
 
-                    <div class="panel-body tabs-menu-body">
-                        <div class="tab-content">
-                            <?php
-                            foreach ($tabList as $tab) {
-                                $class = ($tab['name'] === $active) ? ' active ' : '';
-                                echo "<div class='tab-pane {$class}' id='tab-{$tab['name']}'>";
-                                include(SITE_ROOT . $tab['filename']);
-                                echo '</div>';
-                            } ?>
-
-                        </div>
+                    <div class="tab-content" id="cabinTabsContent">
+                        <?php foreach ($tabList as $tab):
+                            $isActive = ($tab['name'] === $active);
+                            $paneId = 'tab-' . $tab['name'];
+                            ?>
+                            <div
+                                    class="tab-pane fade<?= $isActive ? ' show active' : '' ?>"
+                                    id="<?= $paneId ?>"
+                                    role="tabpanel"
+                                    aria-labelledby="<?= $paneId ?>-tab"
+                                    tabindex="0"
+                            >
+                                <?php include $tab['filename']; ?>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
