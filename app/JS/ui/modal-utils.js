@@ -6,6 +6,7 @@ export const SELECTORS = {
     titleFromDb: '[data-ck="title-from-db"]',
     updated: '[data-ck="updated"]',
     updateFromDb: '[data-ck="updated-from-db"]',
+    formType: '[data-ck="form-type"]',
 };
 
 export function initGuard(el, flag = 'ckInited') {
@@ -27,9 +28,15 @@ export function hideAlert(alertEl) {
     alertEl.textContent = '';
 }
 
-export function populateSelect(selectEl, options = [], selected) {
+export function populateSelect(selectEl, options = [], selected = '', allowEmpty = false) {
     if (!selectEl) return;
     selectEl.innerHTML = '';
+    if (allowEmpty) {
+        const blank = document.createElement('option');
+        blank.value = '';
+        blank.textContent = '';
+        selectEl.appendChild(blank);
+    }
     for (const o of options) {
         const opt = document.createElement('option');
         if (typeof o === 'string' || typeof o === 'number') {
@@ -43,15 +50,29 @@ export function populateSelect(selectEl, options = [], selected) {
         }
         selectEl.appendChild(opt);
     }
-    if (selected != null) selectEl.value = String(selected);
+    
+    const hasValue =
+        selected !== null &&
+        selected !== undefined &&
+        (String(selected).trim() !== "" || allowEmpty);
+
+    if (hasValue) {
+        selectEl.value = String(selected);
+    } else {
+        for (const o of selectEl.options) o.selected = false;
+        selectEl.options[0].selected = true;
+        selectEl.selectedIndex = 0;
+        selectEl.value = selectEl.options[0].value;
+    }  // doesn't allow for placeholders, disabled options but I'm not using them
     selectEl.dispatchEvent(new Event('change', {bubbles: true}));
+
 }
 
 export function toDDMMYY(s) {
     if (!s) return '';
     const [date] = String(s).split(/\s+/);
     const [y, m, d] = date.split('-');
-    return `${d}/${m}/${y.slice(-2)}`;
+    return `${d}-${m}-${y.slice(-2)}`;
 }
 
 export async function fetchJSON(url, opts = {}) {
@@ -63,4 +84,28 @@ export async function fetchJSON(url, opts = {}) {
 export function getFormPayload(formEl) {
     return new FormData(formEl);
     //return Object.fromEntries(new FormData(formEl).entries());
+}
+
+export function checkFieldNotEmpty(fieldEl) {
+    if (!fieldEl) return;
+    const val = (fieldEl.value || '').trim();
+    if (!val) {
+        fieldEl.classList.add('is-invalid');
+        fieldEl.setCustomValidity('Please enter a task name.');
+        throw new Error('Field is empty');
+    }
+    fieldEl.classList.remove('is-invalid');
+    fieldEl.setCustomValidity(''); // clear error
+}
+
+export function initClickableAlerts(root = document) {
+    root.querySelectorAll('[data-ck="alert"].alert').forEach((el) => {
+        if (el.dataset.ckInited === '1') return;        // prevent double-binding
+        el.dataset.ckInited = '1';
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Use Bootstrap 5 Alert API (requires bootstrap.bundle.js)
+            bootstrap.Alert.getOrCreateInstance(el).close();
+        });
+    });
 }

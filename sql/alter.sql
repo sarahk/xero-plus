@@ -40,3 +40,13 @@ ALTER TABLE `xeroplus`.`cabins`
     ADD COLUMN `status_change` DATE        NULL AFTER `status_old`,
     ADD COLUMN `style_old`     VARCHAR(20) NULL DEFAULT NULL AFTER `status_change`,
     ADD COLUMN `style_change`  DATE        NULL DEFAULT NULL AFTER `style_old`;
+
+ALTER TABLE `xeroplus`.`tasks`
+    CHANGE COLUMN `id` `task_id` INT NOT NULL AUTO_INCREMENT,
+    ADD COLUMN `assigned_to` INT NULL;
+
+ALTER TABLE `xeroplus`.`tasks`
+    CHANGE COLUMN `status` `status` VARCHAR(25) NOT NULL DEFAULT 'active';
+
+ALTER TABLE `xeroplus`.`tasks`
+    ADD COLUMN `scheduled_date` DATE NULL DEFAULT NULL AFTER `due_date`;

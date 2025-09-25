@@ -9,6 +9,7 @@ require_once __DIR__ . '/../bootstrap/runtime.php';
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
+use App\Models\UserModel;
 use App\Models\Query\ActivityQueryModel;
 use App\Models\Query\BadDebtsManagementModel;
 use App\Models\Query\BadDebtsReminderModel;
@@ -531,6 +532,10 @@ try {
             switch ($action) {
                 case "Read":
                     echo $json->getUser($xeroTenantId, $apiInstance);
+                    break;
+                case "selectList":
+                    $user = new UserModel(Utilities::getPDO());
+                    echo json_encode($user->getSelectOptionsArray());
                     break;
                 default:
                     echo json_encode($action . " action not supported in API");

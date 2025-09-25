@@ -10,6 +10,8 @@ enum TaskType: string
     case Buy = 'buy';
     case Repair = 'repair';
 
+    case New = 'new';
+
 
     public static function getLabel(string $val): string
     {
@@ -18,6 +20,7 @@ enum TaskType: string
             self::WOF => 'WOF',
             self::Buy => 'Buy',
             self::Repair => 'Repair',
+            default => 'New',
         };
     }
 
@@ -69,6 +72,7 @@ enum TaskType: string
             self::WOF => 'bolt-lightning',
             self::Buy => 'cart-shopping',
             self::Repair => 'hammer',
+            self::New => 'file',
         };
     }
 

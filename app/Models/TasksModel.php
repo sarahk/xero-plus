@@ -3,20 +3,23 @@
 namespace App\Models;
 
 use App\Models\Enums\TaskType;
+use App\Models\Enums\TaskStatus;
+use App\Models\Enums\TaskDateStatus;
+use App\ExtraFunctions;
 use PDO;
 
 class TasksModel extends BaseModel
 {
     protected string $table = 'tasks';
 
-    protected array $saveKeys = ['id', 'xerotenant_id', 'cabin_id', 'name', 'details', 'task_type', 'due_date', 'status', 'updated'];
-    protected array $updateKeys = ['name', 'details', 'status', 'updated'];
+    protected array $saveKeys = ['task_id', 'xerotenant_id', 'cabin_id', 'name', 'details', 'task_type', 'due_date', 'scheduled_date', 'status', 'updated'];
+    protected array $updateKeys = ['name', 'details', 'status', 'task_type', 'due_date', 'scheduled_date', 'updated'];
     protected array $nullable = ['cabin_id', 'details'];
     protected array $joins = ['cabins' => "`tasks`.`cabin_id` = :id1"];
     protected string $orderBy = 'tasks.due_date DESC';
 
     protected array $orderByColumns = [
-        1 => "tasks.id DIR",
+        0 => "tasks.task_id DIR",
         2 => "tasks.name DIR",
         3 => "tasks.due_date DIR",
         4 => "tasks.status DIR"
@@ -98,14 +101,15 @@ class TasksModel extends BaseModel
     public function list($params): array
     {
 
-
+//        var_dump($params);
+//        exit;
         /*
         <th>&nbsp;</th>  <-- icon
             <th>#</th>
             <th>Name</th>
             <th>Due Date</th>
 */
-
+//todo add sorting
         $searchValues = [];
 
         $tenancies = $this->getTenanciesWhere($params);
@@ -121,12 +125,23 @@ class TasksModel extends BaseModel
                     $now = date('Y-m-d');
                     $nextweek = date('Y-m-d', strtotime('14 days after today'));
                     $conditions[] = "(
-                    (`tasks`.`due_date` >= '$now' OR `tasks`.`status` IN ('open')
+                    (`tasks`.`due_date` >= '$now' OR `tasks`.`status` IN ('active','hold','scheduled')
                     ) AND `tasks`.`due_date` < $nextweek)";
             }
         }
 
-        $order = $this->getOrderBy($params);
+
+        switch ($params['order']['name']) {
+            case 'icon':
+                $order = "tasks.task_type " . $params['order']['dir'];
+                break;
+            case 'extra':
+                $order = "tasks.scheduled_date " . $params['order']['dir'];
+                break;
+            default:
+                $order = $this->getOrderBy($params);
+
+        }
 
         if (!empty($params['search'])) {
             $search = [
@@ -142,7 +157,8 @@ class TasksModel extends BaseModel
         }
 
 
-        $sql = "SELECT *" . $this->getVirtuals() . " FROM `tasks` 
+        $sql = "SELECT tasks.*, tenancies.colour" . $this->getVirtuals() . " FROM `tasks` 
+            LEFT JOIN `tenancies` ON `tasks`.`xerotenant_id` = `tenancies`.`tenant_id`
             WHERE " . implode(' AND ', $conditions) . "
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
@@ -168,18 +184,47 @@ class TasksModel extends BaseModel
 
                 $output['data'][] = [
                     'icon' => "<i class='fa fa-{$row['icon']}' aria-hidden='false'></i>",
-                    'id' => "<button type='button' class='btn btn-link' data-bs-toggle='modal' data-bs-target='#taskSingle' data-key='{$row['id']}'>{$row['id']}</button>",
-                    'name' => "<button type='button' class='btn btn-link' data-bs-toggle='modal' data-bs-target='#taskSingle' data-key='{$row['id']}'>{$row['name']}</button>",
-                    'status' => $row['status'],
-                    'due_date' => date('d F Y', strtotime($row['due_date']))
+                    'task_id' => "<span  data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}'>{$row['task_id']}</span>",
+                    'name' => "<span data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}'>{$row['name']}</span>",
+                    'status' => TaskStatus::getTaskStatusBadge($row['status']),
+                    'due_date' => $this->getDateWithOrnaments($row['status'], $row['due_date']),
+                    'scheduled_date' => $this->getPrettyDate($row['scheduled_date']),
+                    'extra' => $this->getDateWithOrnaments($row['status'], $row['scheduled_date'], 'clock') . '<br>' . $row['assigned_to'],
+                    'colour' => $row['colour']
                 ];
                 $output['row'] = $row;
             }
 
         }
+        $output['taskCounts'] = $this->getTaskCounts('Cabin', $params['key']);
         return $output;
     }
 
+    private function getDateWithOrnaments(string $status, string $date, string $icon = null): string
+    {
+        $label = $this->getPrettyDate($date);
+        return (TaskStatus::taskNeedsAttention($status) ? TaskDateStatus::getDateLabelPlus($date, $label, $icon) : $label);
+    }
+
+    private function getTaskCounts($for = 'All', $key = ''): array
+    {
+        $sql = 'select * from `vTaskCounts`';
+
+        switch ($for) {
+            case 'Cabin':
+                $sql .= " where cabin_id = :key";
+                break;
+            case 'Operator':
+                $sql .= " where xerotenant_id = :key";
+                break;
+        }
+        $result = $this->runQuery($sql, ['key' => $key], 'query');
+
+        return $result[0] ?? [];
+    }
+
+
+    // obsolete, use the view
     public function getCounts(): array
     {
         $today = date('Y-m-d', strtotime('today'));
@@ -216,6 +261,8 @@ class TasksModel extends BaseModel
     {
         // TODO: Implement prepAndSave() method.
         $save = $this->getSaveValues($data);
+        $save['updated'] = date('Y-m-d H:i:s');
+        var_dump([$save, $this->insert]);
         $result = $this->runQuery($this->insert, $save, 'insert');
         return $result;
     }

@@ -3,14 +3,16 @@
 /** @var string|null $modalStub */
 /** @var string|null $title */
 /** @var string|null $bodyHtml */
+/** @var string|null $validation */
 /** @var string|null $jsFunction */
 /** @var string|null $jsFile */
+/** @var string|null $formType */
 ?>
 <div class="modal fade" id="<?= $modalStub; ?>Modal" tabindex="-1" role="dialog"
      aria-labelledby="<?= $modalStub; ?>Modal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document" aria-modal="true">
         <div class="modal-content">
-            <form id="<?= $modalStub; ?>Form" novalidate data-ck="form">
+            <form id="<?= $modalStub; ?>Form" <?= $validation; ?> data-ck="form">
                 <div class="modal-header" id="modal-header" data-ck="header">
                     <h4 class="modal-title">
                         <?= $title; ?> <strong><span data-ck="title-from-db"></span></strong>
@@ -26,6 +28,7 @@
                          aria-live="polite"
                          data-ck="alert"></div>
                     <input type="hidden" name="action" data-ck="action" value="<?= $modalAction; ?>">
+                    <input type="hidden" name="formType" data-ck="form-type" value="<?= $formType ?? ''; ?>">
                     <?= $bodyHtml; ?>
                 </div>
 

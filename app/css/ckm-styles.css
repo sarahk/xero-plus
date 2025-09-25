@@ -1,5 +1,15 @@
 /*@import url("/assets/iconfonts/font-awesome/css/font-awesome.min.css");*/
 
+:root {
+    --ck-active: #2ca02c; /* green */
+    --ck-hold: #ef476f; /* coral */
+    --ck-done: #17a2b8; /* blue/teal */
+    --ck-cancel: #5f5a72; /* white text */
+    --ck-scheduled: #ecb403;
+    --ck-due: #2ca02c;
+    --ck-overdue: #ef476f;
+    --ck-future: #5f5a72;
+}
 
 .card-pay .tabs-menu li {
     width: 25%;
@@ -11,6 +21,21 @@ select.form-control {
     background-repeat: no-repeat;
     background-position: right;
     color: var(--bs-primary);
+}
+
+.text-due,
+.text-due i {
+    color: var(--ck-due);
+}
+
+.text-overdue,
+.text-overdue i {
+    color: var(--ck-overdue);
+}
+
+.text-future,
+.text-future i {
+    color: var(--ck-future);
 }
 
 /* if the colours for the tenancies change they need to be added here */
@@ -26,18 +51,61 @@ select.form-control {
     border-bottom: 1px solid #867efc;
 }
 
+.border-bottom-coral {
+    border-bottom: 1px solid #ef476f;
+}
+
 tr.bar-yellow td:nth-child(1) {
-    border-left: 0.75em solid #ecb403 !important;
+    border-left: 0.25em solid #ecb403 !important;
 }
 
 tr.bar-cyan td:nth-child(1) {
-    border-left: 0.75em solid #17a2b8 !important;
+    border-left: 0.25em solid #17a2b8 !important;
 }
 
 tr.bar-purple td:nth-child(1) {
-    border-left: 0.75em solid #867efc !important;
+    border-left: 0.25em solid #867efc !important;
 }
 
+tr.bar-coral td:nth-child(2) {
+    border-left: 0.25em solid #ef476f !important;
+}
+
+
+.badge-active,
+.badge-active i {
+    background: var(--ck-active);
+    color: #fff;
+}
+
+
+.badge-hold,
+.badge-hold i {
+    background: var(--ck-hold);
+    color: #000;
+}
+
+.badge-done,
+.badge-done i {
+    background: var(--ck-done);
+    color: #fff;
+}
+
+.badge-cancel,
+.badge-cancel i {
+    background: var(--ck-cancel);
+    color: #fff;
+}
+
+.badge-scheduled,
+.badge-scheduled i {
+    background: var(--ck-scheduled);
+    color: #000;
+}
+
+.bg-scheduled-soft {
+    background: color-mix(in oklab, var(--ck-scheduled) 18%, white);
+}
 
 /* original colour
 #eaedf1
@@ -96,6 +164,7 @@ table.dataTable tr.selected > * {
 
 /* R I P P L E   F I X */
 /* .modal-footer .btn,*/
+/* todo, actually fix it */
 .btn.ripple-surface,
 .ripple-wave.active {
     display: inline-flex; /* stable inline sizing */
@@ -117,3 +186,47 @@ table.dataTable tr.selected > * {
 }
 
 /* end of R I P P L E   F I X */
+
+/* datepicker */
+.ui-datepicker .ui-datepicker-calendar td a.ui-state-active {
+    background: #5965f9; /* or background-color */
+    color: #fff;
+    border-color: #003eff; /* if you want the 1px border visible */
+}
+
+
+/* styles lost because we're not using switcher */
+.app-sidebar .side-menu__item.active {
+    color: #fff;
+    background: linear-gradient(to bottom right, var(--primary-color) 0, var(--primary06) 100%);
+    border-start-start-radius: 0;
+    border-start-end-radius: 60px;
+    border-end-end-radius: 60px;
+    border-end-start-radius: 0;
+    box-shadow: 0 7px 12px 0 var(--primary02);
+}
+
+[data-nav-layout=vertical] .app-sidebar .side-menu__item {
+    margin: 2px 0;
+}
+
+.app-sidebar .side-menu__item.active {
+    font-weight: 600;
+}
+
+.app-sidebar .side-menu__item.active, .app-sidebar .side-menu__item:hover {
+    color: var(--menu-prime-color);
+    background-color: rgba(var(--light-rgb), .5);
+}
+
+.app-sidebar .side-menu__item {
+    padding: 10px 30px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: .813rem;
+    color: var(--menu-prime-color);
+    font-weight: 500;
+    border-radius: .313rem;
+}

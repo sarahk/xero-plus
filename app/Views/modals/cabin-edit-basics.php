@@ -1,6 +1,5 @@
 <?php
 
-use App\ExtraFunctions;
 use App\Views\ViewFunctions;
 
 

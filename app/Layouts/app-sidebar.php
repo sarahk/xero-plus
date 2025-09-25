@@ -32,19 +32,19 @@ namespace App\Layouts;
                     ?>
                     <li class="slide">
                         <a href="/page.php?action=10"
-                           class="btn btn-md btn-success btn-block tracking-wide">
+                           class="btn btn-success d-block tracking-wide" role="button">
                             <i class="side-menu__icon fa-solid fa-plus"></i>
-                            <span class='side-menu__label'><strong>Add An Enquiry</strong></span></a></li>
+                            <span class='side-menu__label fw-semibold'><strong>Add An Enquiry</strong></span></a></li>
                     <!-- btn-block m-3 p-2 btn-success -->
 
                     <li class="sub-category">
                         <h3>Main</h3>
                     </li>
 
-                    <li class="slide active">
-                        <a href="/page.php" class="side-menu__item active"> <i
+                    <li class="slide">
+                        <a href="/page.php" class="side-menu__item" role="button"> <i
                                     class="fe fe-home side-menu__icon"></i>
-                            <span class="side-menu__label">Dashboard</span>
+                            <span class="side-menu__label fw-semibold">Dashboard</span>
                         </a></li>
 
                     <li class="slide"><a class="side-menu__item" href="/page.php?action=100"><i

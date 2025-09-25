@@ -145,7 +145,7 @@ class ExtraFunctions
         ?>
         <div class="card" id="<?= $cardId; ?>">
             <div class="card-header <?= $class ?>">
-                <h3 class="card-title"><?= $label; ?><span class="cardHeaderExtra"></span></h3>
+                <h3 class="card-title">OLD OLD OLD<?= $label; ?><span class="cardHeaderExtra"></span></h3>
             </div>
             <div class="card-body">
                 <?php include SITE_ROOT . $filename; ?>
@@ -187,60 +187,8 @@ class ExtraFunctions
         return implode('<br>', $address);
     }
 
-    public static function getTabs($tabList, $active, $data): void
-    {
-        ?>
-        <div class="card">
-            <div class="card-body">
-                <div class="container">
-                    <ul class="nav nav-tabs" id="cabinTabs" role="tablist">
-                        <?php foreach ($tabList as $tab):
-                            $isActive = ($tab['name'] === $active);
-                            $paneId = 'tab-' . $tab['name'];
-                            $linkId = $paneId . '-tab';
-                            // px-4 makes the tabs narrower
-                            ?>
-                            <li class="nav-item" role="presentation">
-                                <a
-                                        class="nav-link<?= $isActive ? ' active' : '' ?> px-4"
-                                        id="<?= $linkId ?>"
-                                        href="#<?= $paneId ?>"
-                                        data-bs-toggle="tab"
-                                        role="tab"
-                                        aria-controls="<?= $paneId ?>"
-                                        aria-selected="<?= $isActive ? 'true' : 'false' ?>"
-                                >
-                                    <?= htmlspecialchars($tab['label'], ENT_QUOTES) ?>
-                                    <span id="<?= $paneId ?>Badge"
-                                          class="translate-middle badge rounded-pill bg-gray ms-4"></span>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
 
-                    <div class="tab-content" id="cabinTabsContent">
-                        <?php foreach ($tabList as $tab):
-                            $isActive = ($tab['name'] === $active);
-                            $paneId = 'tab-' . $tab['name'];
-                            ?>
-                            <div
-                                    class="tab-pane fade<?= $isActive ? ' show active' : '' ?>"
-                                    id="<?= $paneId ?>"
-                                    role="tabpanel"
-                                    aria-labelledby="<?= $paneId ?>-tab"
-                                    tabindex="0"
-                            >
-                                <?php include $tab['filename']; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php
-    }
-
-    private static function getTenancyInfo($xerotenant_id): array
+    public static function getTenancyInfo($xerotenant_id): array
     {
         if (defined('TENANCIES')) {
 

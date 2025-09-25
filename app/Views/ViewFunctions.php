@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Views;
 
+use App\ExtraFunctions;
 use RuntimeException;
 
 final class ViewFunctions
@@ -19,12 +20,13 @@ final class ViewFunctions
         $viewFile = __DIR__ . '/' . $template;
 
         if (!is_file($viewFile)) {
-            throw new \RuntimeException("View not found: {$viewFile}");
+            throw new RuntimeException("View not found: {$viewFile}");
         }
 
         // Isolated scope: expose $data as local vars, don’t overwrite existing
         extract($data, \EXTR_SKIP);
-
+        $validate = $validate ?? false;
+        $validation = $validate ? 'class="needs-validation"' : 'novalidate';
         ob_start();
         include $viewFile;
         return (string)ob_get_clean();
@@ -43,42 +45,142 @@ final class ViewFunctions
         foreach ($formFields as $row) {
             // add additional form types as needed
             // expected to have values added by javascript
-            switch ($row['type']) {
-                case 'input':
-                    $output[] = self::getInput($row);
-                    break;
-                case 'select':
-                    $output[] = self::getSelect($row);
-                    break;
-                case 'hidden':
-                    $output[] = self::getHidden($row);
-                    break;
-            }
+            $output[] = self::getField($row, '');
         }
         return implode("\n", $output);
     }
 
+    private static function getField($row, $class = ''): string
+    {
+        switch ($row['type']) {
+            case 'input':
+                return self::getInput($row, $class);
+
+            case 'select':
+                return self::getSelect($row, $class);
+
+            case 'hidden':
+                return self::getHidden($row);
+
+            case 'textarea':
+                return self::getTextarea($row, $class);
+
+            case 'row':
+                $output = [];
+                $class = 'col-12 col-sm-6';
+                foreach ($row['fields'] as $field) {
+                    $output[] = self::getField($field, $class);
+                }
+                return '<div class="row g-3">' . implode("\n", $output) . '</div>';
+        }
+        return '';
+    }
+
+    // only hidden gets a value and it's a constant
     private static function getHidden(array $vars): string
     {
         extract($vars);
-        return "<input type='hidden' name='data[$fieldId]'>";
+        $value = $value ?? '';
+        return "<input type='hidden' name='data[$fieldId]' value='$value'>";
     }
 
-    private static function getSelect(array $vars): string
+    private static function getSelect(array $vars, string $class = ''): string
     {
         extract($vars);
-        return "<div class='mb-3'>
+        return "<div class='$class mb-3'>
                 <label for='$fieldId' class='form-label'>$label</label>
                 <select id='$fieldId' name='data[$fieldId]' class='form-control'></select>
             </div>";
     }
 
-    private static function getInput(array $vars): string
+    private static function getInput(array $vars, string $class = ''): string
     {
         extract($vars);
-        return "<div class='mb-3'>
+        $required = $required ?? false;
+        $required_attr = $required ? 'required' : '';
+        $required_html = $required ? '<div class="invalid-feedback">Required Field.</div>' : '';
+        return "<div class='$class mb-3'>
                 <label for='$fieldId' class='form-label'>$label</label>
-                <input type='text' class='form-control' id='$fieldId' name='data[$fieldId]' placeholder='$placeholder'>
+                <input type='text' id='$fieldId' class='form-control'
+                    name='data[$fieldId]' placeholder='$placeholder' $required_attr autocomplete='off'>
+                $required_html
             </div>";
+    }
+
+    private static function getTextarea(array $vars, string $class = ''): string
+    {
+        extract($vars);
+
+        $placeholder = $placeholder ?? '';
+        return "<div class='$class mb-3'>
+                    <label for='$fieldId' class='form-label'>$label</label>
+                    <textarea class='form-control' id='$fieldId' name='data[$fieldId]' placeholder='$placeholder' rows='3'></textarea>
+                </div>";
+    }
+
+    private static function getTabTab($paneId, $linkId, $label, $isActive): string
+    {
+        $active = $isActive ? ' active' : '';
+        $aria_selected = $isActive ? 'true' : 'false';
+        $output = ['<li class="nav-item" role="presentation">'];
+        $output[] = "<a class='nav-link $active px-4' id='$linkId'
+                    href='#$paneId' data-bs-toggle='tab'
+                    role='tab' aria-controls='$paneId'
+                     aria-selected='$aria_selected'>";
+        $output[] = htmlspecialchars($label, ENT_QUOTES);
+        $output[] = "<span id='{$paneId}Badge'
+              class='translate-middle badge rounded-pill bg-gray ms-4'></span>";
+        $output[] = '</a></li>';
+        return implode('', $output);
+    }
+
+    private static function getTabBody($paneId, $filename, $isActive, $data): string
+    {
+        $output = [];
+        $show_active = $isActive ? ' show active' : '';
+
+        $output[] = "<div class='tab-pane fade $show_active' id='$paneId'
+                                    role='tabpanel'
+                                    aria-labelledby='{$paneId}-tab'
+                                    tabindex='0'
+                            >";
+
+        $output[] = self::render($filename, $data);;
+        $output[] = '</div>';
+        return implode('', $output);
+    }
+
+    public static function getTabs($tabList, $active, $data): string
+    {
+        $tabs = [];
+        $tab_body = [];
+        foreach ($tabList as $tab):
+            $isActive = ($tab['name'] === $active);
+            $paneId = 'tab-' . $tab['name'];
+            $linkId = $paneId . '-tab';
+            $tabs[] = self::getTabTab($paneId, $linkId, $tab['label'], $isActive);
+            $tab_body[] = self::getTabBody($paneId, $tab['filename'], $isActive, $data);
+        endforeach;
+
+        $show = [
+            'tabs' => implode('', $tabs),
+            'tab_body' => implode('', $tab_body)
+        ];
+
+        return self::render('components/tabs.php', $show);
+    }
+
+//string $label, string $cardId,
+    public static function getCard(array $options, array $data): string
+    {
+        $class = '';
+        if ($data['xerotenant_id']) {
+            $tenancy = ExtraFunctions::getTenancyInfo($data['xerotenant_id']);
+            $data['class'] = $tenancy['shortname'];
+        }
+        $data = array_merge($data, $options);
+        $data['bodyHTML'] = self::render($options['filename'], $data);
+        return self::render('components/card.php', $data);
+
     }
 }

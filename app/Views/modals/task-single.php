@@ -1,43 +1,40 @@
 <!-- Modal -->
-<style>
-    <?php
-    foreach (json_decode(TENANCIES, true) as $row):
-    $colour = "var(--bs-{$row['colour']})";
-    $class = ".{$row['shortname']}";
-    echo "
-    .modal-header$class {
-        border-bottom: 4px solid $colour;
-    }
-";
-     endforeach; ?>
-</style>
-<div class='modal fade' id='taskSingle' tabindex='-1' role='dialog' aria-labelledby='taskSingleLabel'
-     aria-hidden='true'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
-        <div class='modal-content'>
-            <div class='modal-header' id="modal-header">
-                <h4 class='modal-title' id='taskSingleLabel'>Task <strong><span id="taskId"></span></strong></h4>
-                <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'>
-                    <span aria-hidden='true'>&times;</span>
-                </button>
-            </div>
-            <div class='modal-body'>
-                <div class='container'>
-                    <ul class="list-group" id="taskdetails">
-                    </ul>
-                </div>
+<?php
 
-            </div>
-            <div class='modal-footer'>
-                <div class="spinner-grow text-warning" role="status" id='modalSpinnerTask'
-                     style='display: none; font-size: 2em;padding: 1em;'>
-                    <span class="sr-only">Loading...</span>
-                </div>
+use App\Views\ViewFunctions;
 
-                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
-                <button type='button' class='btn btn-primary' id='taskEdit'>Edit</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- /Modal -->
+
+$formFields = [
+    ['type' => 'hidden', 'fieldId' => 'task_id'],
+    ['type' => 'hidden', 'fieldId' => 'cabin_id'],
+    ['type' => 'input', 'fieldId' => 'name', 'label' => 'Name', 'placeholder' => "Enter the task name", 'required' => true],
+    ['type' => 'textarea', 'fieldId' => 'details', 'label' => 'Details'],
+    ['type' => 'row', 'fields' => [
+        ['type' => 'select', 'fieldId' => 'task_type', 'label' => 'Type'],
+        ['type' => 'input', 'fieldId' => 'due_date', 'label' => 'Due', 'placeholder' => "Due Date", 'required' => true]
+    ]],
+    ['type' => 'row', 'fields' => [
+        ['type' => 'select', 'fieldId' => 'status', 'label' => 'Status'],
+        ['type' => 'input', 'fieldId' => 'scheduled_date', 'label' => 'Scheduled Date', 'placeholder' => "Scheduled Date"]
+    ]],
+    ['type' => 'row', 'fields' => [
+        ['type' => 'select', 'fieldId' => 'xerotenant_id', 'label' => 'Operator'],
+        ['type' => 'select', 'fieldId' => 'assigned_to', 'label' => 'Assigned To']
+    ]],
+];
+
+//                    <div class="mb-3">
+//                        <label for='lastupdated' class='form-label'>Last Updated</label>
+//                        <input type='text' name='lastupdated' class='form-control' id='lastupdated' readonly>
+//                    </div>";
+
+echo ViewFunctions::render('components/modal.php', [
+    'modalAction' => intval($_GET['action']),
+    'modalStub' => 'cabinTaskEdit',
+    'title' => 'Tasks',
+    'bodyHtml' => ViewFunctions::getFormFields($formFields),
+    'validate' => true,
+    'jsFunction' => 'initTaskEdit',
+    'jsFile' => 'Modals/taskEdit.js',
+    'formType' => 'task'
+]);

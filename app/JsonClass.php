@@ -262,15 +262,32 @@ class JsonClass
         $tasks = new Models\TasksModel($this->pdo);
         $params = $this->getParams();
 
-        $task = $tasks->get('id', $params['key'])['tasks'];
+        $record = $tasks->get('task_id', $params['key'])['tasks'];
+        if ($params['key']) {
+            $task[0] = $record;
+        } else {
+            $task[0] = $record[0];
 
-        $task['type'] = Models\Enums\TaskType::from($task['task_type']);
+        }
 
-        $tenancies = new TenancyModel($this->pdo);
-        $tenancy = $tenancies->get('tenant_id', $task['xerotenant_id'])['tenancies'];
-        $task['tenancy'] = $tenancy['name'];
-        $task['tenancycolour'] = $tenancy['colour'];
-        $task['tenancyshortname'] = $tenancy['shortname'];
+        $task['tasktypesoptions'] = Models\Enums\TaskType::getSelectOptionsArray();
+        $task['statusoptions'] = Models\Enums\TaskStatus::getSelectOptionsArray();
+        $user = new Models\UserModel($this->pdo);
+        $task['assignedtooptions'] = $user->getSelectOptionsArray();
+
+        //$task['type'] = Models\Enums\TaskType::tryFrom($task['task_type']);
+
+        $tenancies = $this->getTenancyList();
+        $task['tenancies'] = $tenancies;
+        //$tenancy = $tenancies->get('tenant_id', $task['xerotenant_id'])['tenancies'];
+        //$task['tenancyshortname'] = $tenancy['name'] ?? '';
+        $map = array_column($tenancies, 'shortname', 'tenant_id');
+
+        $task['tenancyshortname'] = $map[$task[0]['xerotenant_id']] ?? null;
+        $task['tenancyoptions'] = array_map(
+            fn($t) => ['label' => $t['name'], 'value' => $t['tenant_id']],
+            $tenancies
+        );
 
         if (!empty($task['cabin_id'])) {
             $cabins = new Models\CabinModel($this->pdo);

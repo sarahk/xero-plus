@@ -49,7 +49,7 @@ trait EnumHelper
     /*
      * value isn't used, but it might be needed when there's a flow
      */
-    public static function getSelectOptionsArray(string $val): array
+    public static function getSelectOptionsArray(string $val = ''): array
     {
         $output = [];
 

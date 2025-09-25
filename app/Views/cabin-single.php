@@ -11,8 +11,8 @@ else $label = 'Cabin #' . $data['cabins']['cabinnumber'];
 
 ?>
 <script>
-    let cabin_id = <?=$data['cabins']['cabin_id'];?>;
-    let parent_type = 'cabins';
+    window.cabin_id = <?=$data['cabins']['cabin_id'];?>;
+    window.parent_type = 'cabins';
 </script>
 <div class='main-container container-fluid'>
     <div class="page-header">
@@ -30,29 +30,25 @@ else $label = 'Cabin #' . $data['cabins']['cabinnumber'];
 
             <?php
             $data['xerotenant_id'] = $data['cabins']['xerotenant_id'];
-            ExtraFunctions::getCard('/Views/widgets/cabin-single-basics.php', 'Basics', 'cabinBasics', $data);
+            $options = ['label' => 'The Basics', 'cardId' => 'cabinBasics', 'filename' => 'Widgets/cabin-single-basics.php'];
+            echo ViewFunctions::getCard($options, $data);
             ?>
 
         </div>
         <div class="col-md-6">
-            <?php ExtraFunctions::getCard('/Views/cabin-current-contract.php', 'Current Contract', 'cabinContract', $data); ?>
-
             <?php
+            $options = ['label' => 'Current Contract', 'cardId' => 'cabinContract', 'filename' => 'Widgets/cabin-current-contract.php'];
+            echo ViewFunctions::getCard($options, $data);
+
             $tabs = [
-                ['name' => 'notes', 'label' => 'Notes', 'filename' => __DIR__ . '/cabin-notes.php'],
-                ['name' => 'tasks', 'label' => 'Tasks', 'filename' => __DIR__ . '/cabin-tasks.php'],
-                ['name' => 'contracts', 'label' => 'Contracts', 'filename' => __DIR__ . '/cabin-contracts.php'],
-                ['name' => 'photos', 'label' => 'Photos', 'filename' => __DIR__ . '/cabin-photos.php'],
+                ['name' => 'notes', 'label' => 'Notes', 'filename' => '/cabin-notes.php'],
+                ['name' => 'tasks', 'label' => 'Tasks', 'filename' => '/Widgets/cabin-tasks.php'],
+                ['name' => 'contracts', 'label' => 'Contracts', 'filename' => '/Widgets/cabin-contracts.php'],
+                ['name' => 'photos', 'label' => 'Photos', 'filename' => '/cabin-photos.php'],
             ];
-            ExtraFunctions::getTabs($tabs, 'notes', $data);
-            //getCard('/Views/cabin-contracts.php', 'Contracts', $data);
+            echo ViewFunctions::getTabs($tabs, 'notes', $data);
             ?>
         </div>
-
-        <?php //ExtraFunctions::getCard('/Views/cabin-tasks.php', 'Tasks', 'cabinTasks', $data);
-        echo __DIR__ . '/cabin-notes.php';
-        ?>
-
     </div>
 </div>
 

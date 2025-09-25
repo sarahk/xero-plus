@@ -49,7 +49,7 @@ abstract class BaseModel
         $this->initLogger($this->table . 'Model');
 
     }
-    
+
     /**
      * @param String $fieldname
      * @param String $key
@@ -96,6 +96,7 @@ abstract class BaseModel
 
                 }
             }
+
             return $output;
         } else if (!$defaults) return [];
         else {
@@ -267,11 +268,32 @@ abstract class BaseModel
         }
 
         $save = [];
-        foreach ($this->saveKeys as $v) {
-            if (!array_key_exists($v, $data)) $save[$v] = NULL;
-            else $save[$v] = $data[$v];
+        foreach ($this->saveKeys as $key) {
+            if (!array_key_exists($key, $data)) {
+                $save[$key] = null;
+                continue;
+            }
+
+            $val = $data[$key];
+
+            if ($this->isIdField($key)) {
+                if (is_string($val)) {
+                    $val = trim($val);
+                }
+                // Only convert truly empty strings to NULL
+                if ($val === '') {
+                    $val = null;
+                }
+            }
+            $save[$key] = $val;
         }
         return $save;
+    }
+
+    private function isIdField(string $key): bool
+    {
+        // matches exactly "id" or any name ending with "_id" (case-insensitive)
+        return (bool)preg_match('/(^id$|_id$)/i', $key);
     }
 
     public function getUpdatedDate($xeroTenantId)

@@ -40,8 +40,9 @@ use App\Loader;
 if (!isset($loader)) {
     $loader = new Loader();
 }
-$loader->outputModals();
+
 $loader->outputJS('footer');
+$loader->outputModals();
 //todo remove code below, should be handled by loader
 //if (isset($modals) && is_array($modals) && count($modals)) {
 //    foreach ($modals as $filename) {
@@ -49,16 +50,6 @@ $loader->outputJS('footer');
 //    }
 //}
 ?>
-
-<?php
-
-//$loader->outputJS();
-
-// scripts not specified by the theme
-//include __DIR__ . '/../Layouts/scripts.php';
-
-?>
-
 
 <script defer type="text/javascript" src="/JS/functions.js"></script>
 <script defer type="text/javascript" src="/JS/menu.js"></script>
@@ -72,7 +63,6 @@ $loader->outputJS('footer');
 <script defer type="text/javascript" src="/JS/invoices.js"></script>
 <script defer type="module" src="/JS/bad_debts.js"></script>
 <script defer type="text/javascript" src="/JS/templates.js"></script>
-<script defer type="text/javascript" src="/JS/tasks.js"></script>
 <!--<script type="text/javascript" src="/JS/vehicles.js"></script>-->
 <script defer type="module" src="/JS/widgets.js"></script>
 <script defer type="text/javascript" src="/assets/js/custom.js"></script>

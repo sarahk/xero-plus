@@ -59,4 +59,108 @@ class UserModel extends BaseModel
         $result = $this->runQuery($this->insert, $save, 'insert');
         return $result;
     }
+
+
+    /**
+     * @param $xerotenant_id
+     * @return array
+     */
+    public function getSelectOptionsArray($xerotenant_id = null): array
+    {
+        // todo if we ever employ 2 people with the same name we'll need to expand on this
+        $sql = "SELECT `id`, `first_name` FROM `users` ";
+        if ($xerotenant_id) {
+            $sql .= 'LEFT JOIN `userstenancies` on users.user_id = userstenancies.xerouser_id
+             WHERE userstenanies.`xerotenant_id` = :xerotenant_id';
+            $vars['xerotenant_id'] = $xerotenant_id;
+        }
+        $sql .= " ORDER BY `first_name`";
+        $result = $this->runQuery($sql, $vars ?? []);
+        $output = [];
+        if (count($result) == 0) {
+            return $output;
+        }
+        foreach ($result as $row) {
+            $output[] = ['value' => $row['id'], 'label' => $row['first_name']];
+        }
+        return $output;
+    }
+
+    public function list($params): array
+    {
+//todo add sorting
+        $searchValues = [];
+
+        $tenancies = $this->getTenanciesWhere($params);
+        $conditions = [$tenancies];
+
+        if (array_key_exists('specialise', $params)) {
+            switch ($params['specialise']) {
+                case  'cabin':
+                    $conditions[] = "`tasks`.`cabin_id` = :cabin_id";
+                    $searchValues['cabin_id'] = $params['key'];
+                    break;
+                case 'home':
+                    $now = date('Y-m-d');
+                    $nextweek = date('Y-m-d', strtotime('14 days after today'));
+                    $conditions[] = "(
+                    (`tasks`.`due_date` >= '$now' OR `tasks`.`status` IN ('open')
+                    ) AND `tasks`.`due_date` < $nextweek)";
+            }
+        }
+
+        $order = $this->getOrderBy($params);
+
+        if (!empty($params['search'])) {
+            $search = [
+                "`tasks`.`name` LIKE :search ",
+                "`tasks`.`status` LIKE :search ",
+                "`tasks`.`details` LIKE :search ",
+                "`tasks`.`task_type` LIKE :search ",
+                "`tasks`.`due_date` LIKE :search "
+            ];
+            $searchValues['search'] = '%' . $params['search'] . '%';
+
+            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
+        }
+
+
+        $sql = "SELECT *" . $this->getVirtuals() . " FROM `tasks` 
+            WHERE " . implode(' AND ', $conditions) . "
+            ORDER BY $order 
+            LIMIT {$params['start']}, {$params['length']}";
+
+        $result = $this->runQuery($sql, $searchValues);
+
+        $output = $params;
+        // adds in tenancies because it doesn't use $conditions
+        $recordsTotal = "SELECT count(*) FROM `tasks` 
+                WHERE $tenancies"
+            . (empty($params['key']) ? '' : ' AND `tasks`.`cabin_id` = ' . $params['key']);
+
+        $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
+        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
+
+
+        //$output['refreshInvoice'] = $refreshInvoice;
+        // $output['refreshContact'] = $refreshContact;
+
+
+        if (count($result) > 0) {
+            foreach ($result as $row) {
+
+                $output['data'][] = [
+                    'icon' => "<i class='fa fa-{$row['icon']}' aria-hidden='false'></i>",
+                    'task_id' => "<button type='button' class='btn btn-link p-0' data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}'>{$row['task_id']}</button>",
+                    'name' => "<button type='button' class='btn btn-link p-0 text-wrap' data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}'>{$row['name']}</button>",
+                    'status' => $row['status'],
+                    'due_date' => $this->getPrettyDate($row['due_date']),
+                ];
+                $output['row'] = $row;
+            }
+
+        }
+        $output['taskCounts'] = $this->getTaskCounts('Cabin', $params['key']);
+        return $output;
+    }
 }

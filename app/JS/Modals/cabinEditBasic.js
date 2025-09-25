@@ -1,6 +1,6 @@
 import {
     SELECTORS, initGuard, showAlert, hideAlert, populateSelect,
-    toDDMMYY, fetchJSON, getFormPayload
+    toDDMMYY, fetchJSON, getFormPayload, initClickableAlerts
 } from '/JS/ui/modal-utils.js';
 
 export function initCabinEditBasicsModal(modalEl) {
@@ -26,6 +26,8 @@ export function initCabinEditBasicsModal(modalEl) {
         hideAlert(alertEl);
         const key = evt.relatedTarget?.dataset?.key;
         if (!key) return showAlert(alertEl, 'Missing cabin key.');
+
+        initClickableAlerts();
 
         try {
             const qs = new URLSearchParams({endpoint: 'Cabins', action: 'Edit'});

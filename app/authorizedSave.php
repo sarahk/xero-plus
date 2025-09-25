@@ -11,6 +11,7 @@ use App\Models\ContactJoinModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
+use App\Models\TasksModel;
 
 
 ini_set('display_errors', 'On');
@@ -76,6 +77,10 @@ switch ($action) {
                 $output['result'] = $note->prepAndSave($data);
                 $output['message'] = 'Note saved';
                 break;
+            case 'task':
+                $task = new TasksModel($pdo);
+                $output['result'] = $task->prepAndSave($data);
+                $output['message'] = 'Task saved';
         }
 }
 echo json_encode($output);
