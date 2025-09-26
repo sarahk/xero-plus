@@ -4,8 +4,7 @@
 export function attachIsoMirror(input, {
     $ = window.jQuery,
     displayFormat = 'dd-mm-yy',
-    submitFormat = 'yy-mm-dd',
-    hiddenNameSuffix = '',   // e.g., '_iso' if you prefer name+_iso instead of original name
+    submitFormat = 'yy-mm-dd'
 } = {}) {
     const $input = $(input);
     if ($input.data('mirrorAttached')) return;
@@ -13,14 +12,13 @@ export function attachIsoMirror(input, {
     const originalName = $input.attr('name');
     if (!originalName) return;
 
-    // Create hidden field with the ORIGINAL name (or suffixed if you want both submitted)
-    const hiddenName = hiddenNameSuffix ? (originalName + hiddenNameSuffix) : originalName;
+    // Create hidden field with the ORIGINAL name
+    const hiddenName = originalName;
     const $hidden = $('<input>', {type: 'hidden', name: hiddenName});
 
-    // If we keep original name for hidden, rename visible so it won't overwrite it
-    if (!hiddenNameSuffix) {
-        $input.attr('name', originalName + '_display');
-    }
+    //  rename visible so it won't overwrite it
+    $input.attr('name', originalName + '_display');
+
     $input.after($hidden);
     $input.data('mirrorAttached', true);
 
@@ -88,4 +86,43 @@ export function initDateMirrors(selector = 'input.js-date', options = {}) {
             attachIsoMirror(this, options);
         });
     });
+}
+
+
+export function primeDateWithMirror(formEl, el) {
+    const $el = jQuery(el);
+    const raw = ($el.val() || '').trim();
+    let d = null;
+
+    // Parse explicitly based on detected format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+        // ISO (yyyy-mm-dd) from DB
+        d = jQuery.datepicker.parseDate('yy-mm-dd', raw);
+    } else if (/^\d{1,2}-\d{1,2}-\d{2,4}$/.test(raw)) {
+        // Display format dd-mm-yy
+        d = jQuery.datepicker.parseDate('dd-mm-yy', raw);
+    }
+
+
+    let hidden = el.nextElementSibling;
+    if (!(hidden && hidden.tagName === 'INPUT' && hidden.type === 'hidden')) {
+        // Fallback: look up by original name (visible is "..._display")
+        const hiddenName = el.name.replace(/_display$/, '');
+        hidden = formEl.elements[hiddenName] || formEl.querySelector(`[name="${hiddenName}"]`);
+    }
+
+    if (d) {
+        // This will re-render the visible input in its display format
+        $el.datepicker('setDate', d);
+
+        // Try to update the hidden mirror in case onSelect wasn't called
+        const iso = jQuery.datepicker.formatDate('yy-mm-dd', d);
+        if (hidden) hidden.value = iso;
+
+        // Notify listeners/plugins
+        $el.trigger('change');
+    } else {
+        // Nothing parsable: clear hidden if it exists
+        if (hidden) hidden.value = '';
+    }
 }

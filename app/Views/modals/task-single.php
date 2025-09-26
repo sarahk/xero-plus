@@ -33,7 +33,7 @@ echo ViewFunctions::render('components/modal.php', [
     'modalStub' => 'cabinTaskEdit',
     'title' => 'Tasks',
     'bodyHtml' => ViewFunctions::getFormFields($formFields),
-    'validate' => true,
+    'validate' => false,
     'jsFunction' => 'initTaskEdit',
     'jsFile' => 'Modals/taskEdit.js',
     'formType' => 'task'

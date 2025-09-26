@@ -3,7 +3,7 @@ import {
     toDDMMYY, fetchJSON, getFormPayload, checkFieldNotEmpty, initClickableAlerts
 } from '/JS/ui/modal-utils.js';
 
-import {attachIsoMirror} from '/JS/ui/datepicker-mirror.js';
+import {attachIsoMirror, primeDateWithMirror} from '/JS/ui/datepicker-mirror.js';
 
 export function initTaskEditModal(modalEl) {
     if (!initGuard(modalEl)) return;
@@ -63,17 +63,12 @@ export function initTaskEditModal(modalEl) {
                 [inputDueDate, inputScheduledDate].forEach(el => {
                     if (el) {
                         attachIsoMirror(el);
+                        primeDateWithMirror(formEl, el);
                     }
                     // visible shows dd-mm-yy, hidden submits yy-mm-dd
                 });
 
 
-                // $(inputDueDate).datepicker({
-                //     dateFormat: 'dd-mm-yy' // change to what you store (e.g., 2025-09-23)
-                // });
-                // $(inputScheduledDate).datepicker({
-                //     dateFormat: 'dd-mm-yy' // change to what you store (e.g., 2025-09-23)
-                // });
             }
             populateSelect(selTaskType, data.tasktypesoptions ?? [], thisTask.task_type);
             populateSelect(selStatus, data.statusoptions ?? [], thisTask.status);
@@ -107,7 +102,7 @@ export function initTaskEditModal(modalEl) {
         if (!formEl.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
-            form.classList.add('was-validated');
+            formEl.classList.add('was-validated');
             inputName.focus();
             return;
         }

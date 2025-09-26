@@ -262,7 +262,7 @@ class TasksModel extends BaseModel
         // TODO: Implement prepAndSave() method.
         $save = $this->getSaveValues($data);
         $save['updated'] = date('Y-m-d H:i:s');
-        var_dump([$save, $this->insert]);
+        
         $result = $this->runQuery($this->insert, $save, 'insert');
         return $result;
     }
