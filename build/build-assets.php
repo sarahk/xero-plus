@@ -1,6 +1,10 @@
 #!/usr/bin/env php
 <?php
 declare(strict_types=1);
+
+use MatthiasMullie\Minify\JS;
+use MatthiasMullie\Minify\CSS;
+
 // run with
 // php build/build-assets.php
 //
@@ -9,6 +13,7 @@ $root = dirname(__DIR__);
 $publicBuild = $root . '/app/build';
 
 require $root. '/vendor/autoload.php';
+require 'build-helpers.php';
 
 // Ensure output dir
 if (!is_dir($publicBuild) && !mkdir($publicBuild, 0775, true) && !is_dir($publicBuild)) {
@@ -16,8 +21,7 @@ if (!is_dir($publicBuild) && !mkdir($publicBuild, 0775, true) && !is_dir($public
     exit(1);
 }
 
-use MatthiasMullie\Minify\JS;
-use MatthiasMullie\Minify\CSS;
+
 
 function addIfExists($min, string $root, string $rel): void {
     $path = $root . '/' . ltrim($rel, '/');
@@ -88,10 +92,37 @@ addIfExists($css, $root, 'vendor/npm-asset/simplebar/dist/simplebar.min.css');
 // your overrides
 //addIfExists($css, $root, 'app/css/app.css');
 // Optional MDB (can conflict with BS)
-addIfExists($js, $root, 'vendor/npm-asset/mdb-ui-kit/css/mdb.min.css');
+addIfExists($css, $root, 'vendor/npm-asset/mdb-ui-kit/css/mdb.min.css');
 
 $cssOut = $publicBuild . '/app.vendor.min.css';
 $css->minify($cssOut);
 echo "CSS → $cssOut\n";
+
+$jqUiBase   = $root . '/vendor/npm-asset/jquery-ui-dist/dist/themes/base';
+$jqUiImgSrc = $jqUiBase . '/images';
+$jqUiImgDst = $publicBuild . '/jquery-ui/images';
+
+// 1) copy sprites to /build/jquery-ui/images
+rcopy($jqUiImgSrc, $jqUiImgDst);
+
+// 2) rewrite any jQuery-UI image URLs inside the bundled CSS
+css_replace($cssOut, function (string $css) use ($jqUiBase) {
+    // normalize url(...) spacing/quotes a bit
+    // Replace any path that ends with the jQuery-UI theme images directory to our public build path
+    // Handles variants produced by minifiers/path converters (relative or vendor-prefixed)
+    $patterns = [
+        // ../vendor/.../themes/base/images/FILE
+        '~url\((["\']?)(?:\.\./)*vendor/npm-asset/jquery-ui-dist/dist/themes/base/images/([^)\s"\'?]+)\1\)~i',
+        // themes/base/images/FILE (in case converter stripped the vendor prefix)
+        '~url\((["\']?).*?/themes/base/images/([^)\s"\'?]+)\1\)~i',
+        // plain images/FILE (fallback)
+        '~url\((["\']?)\.?/images/([^)\s"\'?]+)\1\)~i',
+    ];
+    foreach ($patterns as $rx) {
+        $css = preg_replace($rx, 'url($1/build/jquery-ui/images/$2$1)', $css);
+    }
+    return $css;
+});
+
 
 echo "Done.\n";

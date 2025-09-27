@@ -230,3 +230,58 @@ table.dataTable tr.selected > * {
     font-weight: 500;
     border-radius: .313rem;
 }
+
+/* end of D A T E P I C K E R  */
+/* Make the prev/next anchors the positioning box for ::before */
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next {
+    position: relative;
+    width: 1.75rem;
+    height: 1.75rem;
+    line-height: 1.75rem;
+    text-indent: 0; /* no big negative indent on the anchors */
+    background: transparent; /* kill any bg */
+    border: 0;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+/* Hide jQuery-UI's inner sprite span so only ::before shows */
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev .ui-icon,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next .ui-icon {
+    display: none !important; /* simplest & safest for just these two */
+    background: none !important;
+}
+
+/* Your custom arrows via Font Awesome 6 Free (solid) */
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next::before {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900; /* solid style */
+    font-size: 16px;
+    line-height: 1;
+    color: #6c757d;
+    pointer-events: none; /* clicks pass through to anchor */
+}
+
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev::before {
+    content: "\f104";
+    left: 6px;
+}
+
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next::before {
+    content: "\f105";
+    right: 6px;
+}
+
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:hover::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next:hover::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:focus::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next:focus::before {
+    color: #343a40;
+}
+
+/* end of datepicker */

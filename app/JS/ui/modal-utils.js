@@ -50,7 +50,7 @@ export function populateSelect(selectEl, options = [], selected = '', allowEmpty
         }
         selectEl.appendChild(opt);
     }
-    
+
     const hasValue =
         selected !== null &&
         selected !== undefined &&
@@ -108,4 +108,18 @@ export function initClickableAlerts(root = document) {
             bootstrap.Alert.getOrCreateInstance(el).close();
         });
     });
+}
+
+export function manageModalBranding(modalEl, shortname) {
+    // remove old then add new
+    console.log(['manageModalBranding', shortname]);
+    const headerEl = modalEl.querySelector(SELECTORS.header);
+    if (headerEl.dataset.shortname && headerEl.dataset.shortname === shortname) {
+        return;
+    }
+    if (headerEl.dataset.shortname) {
+        headerEl.classList.remove(headerEl.dataset.shortname);
+    }
+    headerEl.classList.add(shortname);
+    headerEl.dataset.shortname = shortname; // remember for later removal
 }

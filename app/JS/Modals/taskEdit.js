@@ -1,22 +1,25 @@
 import {
     SELECTORS, initGuard, showAlert, hideAlert, populateSelect,
-    toDDMMYY, fetchJSON, getFormPayload, checkFieldNotEmpty, initClickableAlerts
+    toDDMMYY, fetchJSON, getFormPayload, checkFieldNotEmpty, initClickableAlerts,
+    manageModalBranding
 } from '/JS/ui/modal-utils.js';
+import {initDates} from '/JS/ui/datepicker-mirror.js';
 
-import {attachIsoMirror, primeDateWithMirror} from '/JS/ui/datepicker-mirror.js';
+const modalEl = document.getElementById('cabinTaskEditModal');
+const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
 export function initTaskEditModal(modalEl) {
     if (!initGuard(modalEl)) return;
 
     const formEl = modalEl.querySelector(SELECTORS.form);
     const alertEl = modalEl.querySelector(SELECTORS.alert);
-    const headerEl = modalEl.querySelector(SELECTORS.header);
     const titleFromDb = modalEl.querySelector(SELECTORS.titleFromDb);
     const updatedWrap = modalEl.querySelector(SELECTORS.updated);
     const updatedDate = modalEl.querySelector(SELECTORS.updateFromDb);
     const formType = modalEl.querySelector(SELECTORS.formType);
 
     const hiddenCabinId = modalEl.querySelector('[name="data[cabin_id]"]');
+    const inputCabinNo = modalEl.querySelector('[name="data[cabinnumber]"]');
     const hiddenTaskId = modalEl.querySelector('[name="data[task_id]"]');
     const inputName = modalEl.querySelector('[name="data[name]"]');
     const inputDetails = modalEl.querySelector('[name="data[details]"]');
@@ -27,67 +30,100 @@ export function initTaskEditModal(modalEl) {
     const selTenancy = modalEl.querySelector('[name="data[xerotenant_id]"]');
     const selAssignedTo = modalEl.querySelector('[name="data[assigned_to]"]');
 
-
-    modalEl.addEventListener('hidden.bs.modal', () => hideAlert(alertEl));
-
-    modalEl.addEventListener('show.bs.modal', async (evt) => {
+    modalEl.addEventListener('hidden.bs.modal', () => {
         hideAlert(alertEl);
-        const key = evt.relatedTarget?.dataset?.key;
-        //if (!key) return showAlert(alertEl, 'Missing Task key.');
+        modalEl._data = null;             // so next open refetches
+        modalEl._openTrigger = null;
+    });
+
+    modalEl.addEventListener('show.bs.modal', async (e) => {
+        hideAlert(alertEl);
         initClickableAlerts();
 
-        //https://ckm.local:8890/json.php?endpoint=Tasks&action=Single
+        // if we already have data (re-show), let it proceed
+        if (modalEl._data || modalEl._loadingData) return;
+
+        // first time for this open → stop show, fetch, then re-show
+        e.preventDefault();
+
+        const trigger = e.relatedTarget;
+        modalEl._openTrigger = trigger || null;
+
+        const key = trigger?.dataset?.key || '';
+        const qs = new URLSearchParams({endpoint: 'Tasks', action: 'Single'});
+        if (key) qs.append('search[key]', key);
+
         try {
-            const qs = new URLSearchParams({endpoint: 'Tasks', action: 'Single'});
-            qs.append('search[key]', String(key));
-            const data = await fetchJSON(`/json.php?${qs.toString()}`);
-
-            if (headerEl && data.tenancyshortname) headerEl.classList.add(data.tenancyshortname);
-
-
-            formType.value = 'task';
-            hiddenCabinId.value = cabin_id ?? 'on main page';
-
-
-            const thisTask = data?.[0] ?? data?.['0'] ?? data?.task ?? {};
-            console.log(thisTask);
-            hiddenTaskId.value = thisTask.task_id ?? '';
-            hiddenCabinId.value = thisTask.cabin_id ?? window.cabin_id ?? '';
-            inputName.value = thisTask.name ?? '';
-            titleFromDb.textContent = thisTask.name ?? '';
-            inputDetails.value = thisTask.details ?? '';
-            inputDueDate.value = thisTask.due_date ?? '';
-            inputScheduledDate.value = thisTask.scheduled_date ?? '';
-            if (window.jQuery && $.fn.datepicker) {
-
-                [inputDueDate, inputScheduledDate].forEach(el => {
-                    if (el) {
-                        attachIsoMirror(el);
-                        primeDateWithMirror(formEl, el);
-                    }
-                    // visible shows dd-mm-yy, hidden submits yy-mm-dd
-                });
-
-
-            }
-            populateSelect(selTaskType, data.tasktypesoptions ?? [], thisTask.task_type);
-            populateSelect(selStatus, data.statusoptions ?? [], thisTask.status);
-            populateSelect(selTenancy, data.tenancyoptions ?? [], thisTask.xerotenant_id);
-            populateSelect(selAssignedTo, data.assignedtooptions ?? [], thisTask.assigned_to, true);
-
-            const rawUpdated = data?.cabins?.updated ?? data?.updated ?? '';
-            if (updatedWrap && updatedDate) {
-                if (rawUpdated) {
-                    updatedDate.textContent = toDDMMYY(rawUpdated);
-                    updatedWrap.classList.remove('d-none');
-                } else {
-                    updatedWrap.classList.add('d-none');
-                }
-            }
-        } catch (e) {
-            console.error(e);
+            modalEl._loadingData = true;
+            // Expect JSON with task + options; adjust destructure to your API shape
+            const json = await fetchJSON(`/json.php?${qs.toString()}`);
+            modalEl._data = json;   // stash for shown handler
+        } catch (err) {
+            console.error(err);
             showAlert(alertEl, 'Failed to load task details.');
+            modalEl._data = {};     // fallback so it can still open
+        } finally {
+            modalEl._loadingData = false;
         }
+
+        // now actually show (guard above prevents re-fetch / re-loop)
+        bsModal.show();
+    });
+
+    modalEl.addEventListener('shown.bs.modal', () => {
+        const data = modalEl._data || {};
+        // Depending on your API, grab the task record and option lists:
+        const thisTask = data.task ?? data?.[0] ?? data ?? {};
+        console.log(['shown', thisTask]);
+        // Branding class (auckland/waikato/bop…)
+        manageModalBranding(modalEl, data.tenancyshortname || '');
+
+        formType.value = 'task';
+
+        const trigger = modalEl._openTrigger;
+        const cabinnumber = trigger?.dataset?.cabinno || '';
+
+        hiddenTaskId.value = thisTask.task_id ?? '';
+        hiddenCabinId.value = thisTask.cabin_id ?? window.cabin_id ?? '';
+        if (inputCabinNo) inputCabinNo.value = cabinnumber;
+
+        inputName.value = thisTask.name ?? '';
+        titleFromDb.textContent = thisTask.name ?? '';
+        inputDetails.value = thisTask.details ?? '';
+        inputDueDate.value = thisTask.due_date ?? '';
+        inputScheduledDate.value = thisTask.scheduled_date ?? '';
+
+        // Populate selects (adjust keys to your payload)
+        populateSelect(selTaskType, data.tasktypesoptions ?? [], thisTask.task_type);
+        populateSelect(selStatus, data.statusoptions ?? [], thisTask.status);
+        populateSelect(selTenancy, data.tenancyoptions ?? [], thisTask.xerotenant_id);
+        populateSelect(selAssignedTo, data.assignedtooptions ?? [], thisTask.assigned_to, true);
+
+        const rawUpdated = data?.cabins?.updated ?? data?.updated ?? '';
+        if (updatedWrap && updatedDate) {
+            if (rawUpdated) {
+                updatedDate.textContent = toDDMMYY(rawUpdated);
+                updatedWrap.classList.remove('d-none');
+            } else {
+                updatedWrap.classList.add('d-none');
+            }
+        }
+
+        // Date mirrors
+        const dateFields = [
+            {
+                display: '[name="data[due_date_display]"]',
+                hidden: '[name="data[due_date]"]',
+                iso: thisTask.due_date ?? ''
+            },
+            {
+                display: '[name="data[scheduled_date_display]"]',
+                hidden: '[name="data[scheduled_date]"]',
+                iso: thisTask.scheduled_date ?? ''
+            },
+        ];
+        console.log(['dateFields', dateFields]);
+        initDates(formEl, dateFields);
     });
 
     formEl?.addEventListener('submit', async (e) => {
@@ -97,40 +133,26 @@ export function initTaskEditModal(modalEl) {
         checkFieldNotEmpty(inputName);
         checkFieldNotEmpty(inputDueDate);
 
-
-        // If any field invalid, stop submission and show feedback
         if (!formEl.checkValidity()) {
-            e.preventDefault();
             e.stopPropagation();
             formEl.classList.add('was-validated');
             inputName.focus();
             return;
         }
 
-
         const payload = getFormPayload(formEl);
-        console.log(payload);
+
         try {
-            const res = await fetch('/authorizedSave.php', {
-                method: 'POST',
-                body: payload,
-            });
+            const res = await fetch('/authorizedSave.php', {method: 'POST', body: payload});
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             bootstrap.Modal.getInstance(modalEl)?.hide();
-
-            // Let the app react (append the new note, toast, etc.)
-            formEl.dispatchEvent(new CustomEvent('task:created', {
-                bubbles: true,
-            }));
-
-
+            formEl.dispatchEvent(new CustomEvent('task:created', {bubbles: true}));
         } catch (err) {
             console.error(err);
             showAlert(alertEl, 'Save failed. Please try again.');
         }
     });
 
-    // Live-clear error while typing
     inputName.addEventListener('input', () => {
         if ((inputName.value || '').trim()) {
             inputName.setCustomValidity('');

@@ -167,6 +167,7 @@ class Loader
 
 //<!-- CUSTOM JS, handles scrolling -->
         $this->js['low'][] = "/assets/js/custom.js";
+        $this->js['low'][] = "/assets/JS/sidebar.js";
 
 //<!-- SWITCHER STYLES JS -->
         //$this->js['low'][] = "/assets/js/switcher-styles.js";

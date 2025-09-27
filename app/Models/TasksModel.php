@@ -29,9 +29,7 @@ class TasksModel extends BaseModel
 
     // TODO assign a colour to the tasks by their amount of overdue-ness
     protected array $virtualFields = [
-        'date_status' => "CASE WHEN DATEDIFF(due_date, now()) < -90 THEN 'overdue' 
-                WHEN datediff(due_date, now()) < 90 THEN 'due'
-                ELSE 'future' END",
+        'date_status' => "task_window_bucket(tasks.due_date, tasks.scheduled_date)",
 
     ];
 
@@ -101,14 +99,6 @@ class TasksModel extends BaseModel
     public function list($params): array
     {
 
-//        var_dump($params);
-//        exit;
-        /*
-        <th>&nbsp;</th>  <-- icon
-            <th>#</th>
-            <th>Name</th>
-            <th>Due Date</th>
-*/
 //todo add sorting
         $searchValues = [];
 
@@ -122,16 +112,16 @@ class TasksModel extends BaseModel
                     $searchValues['cabin_id'] = $params['key'];
                     break;
                 case 'home':
-                    $now = date('Y-m-d');
-                    $nextweek = date('Y-m-d', strtotime('14 days after today'));
-                    $conditions[] = "(
-                    (`tasks`.`due_date` >= '$now' OR `tasks`.`status` IN ('active','hold','scheduled')
-                    ) AND `tasks`.`due_date` < $nextweek)";
+                    $conditions[] = "(task_window_bucket(tasks.due_date, tasks.scheduled_date) IN ('due','overdue') 
+                        AND `tasks`.`status` IN ('active','hold','scheduled'))";
+                    $params['start'] = 0;
+                    $params['length'] = 10;
             }
         }
 
-
-        switch ($params['order']['name']) {
+//        var_dump($params);
+//        exit;
+        switch ($params['order'][0]['name']) {
             case 'icon':
                 $order = "tasks.task_type " . $params['order']['dir'];
                 break;
@@ -157,13 +147,16 @@ class TasksModel extends BaseModel
         }
 
 
-        $sql = "SELECT tasks.*, tenancies.colour" . $this->getVirtuals() . " FROM `tasks` 
+        $sql = "SELECT tasks.*, tenancies.colour, cabins.cabinnumber" . $this->getVirtuals() . " FROM `tasks` 
             LEFT JOIN `tenancies` ON `tasks`.`xerotenant_id` = `tenancies`.`tenant_id`
+            LEFT JOIN `cabins` ON `tasks`.`cabin_id` = `cabins`.`cabin_id`
             WHERE " . implode(' AND ', $conditions) . "
             ORDER BY $order 
             LIMIT {$params['start']}, {$params['length']}";
 
+
         $result = $this->runQuery($sql, $searchValues);
+
 
         $output = $params;
         // adds in tenancies because it doesn't use $conditions
@@ -184,12 +177,13 @@ class TasksModel extends BaseModel
 
                 $output['data'][] = [
                     'icon' => "<i class='fa fa-{$row['icon']}' aria-hidden='false'></i>",
-                    'task_id' => "<span  data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}'>{$row['task_id']}</span>",
-                    'name' => "<span data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}'>{$row['name']}</span>",
+                    'cabin_id' => $row['cabin_id'],
+                    'task_id' => "<span  data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}' data-cabinno='{$row['cabinnumber']}'>{$row['task_id']}</span>",
+                    'name' => "<span data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}' data-cabinno='{$row['cabinnumber']}'>{$row['name']}</span>",
                     'status' => TaskStatus::getTaskStatusBadge($row['status']),
-                    'due_date' => $this->getDateWithOrnaments($row['status'], $row['due_date']),
+                    'due_date' => $this->getDateWithOrnaments($row['status'], $row['due_date'] ?? ''),
                     'scheduled_date' => $this->getPrettyDate($row['scheduled_date']),
-                    'extra' => $this->getDateWithOrnaments($row['status'], $row['scheduled_date'], 'clock') . '<br>' . $row['assigned_to'],
+                    'extra' => $this->getDateWithOrnaments($row['status'], $row['scheduled_date'] ?? '', 'clock') . '<br>' . $row['assigned_to'],
                     'colour' => $row['colour']
                 ];
                 $output['row'] = $row;
@@ -200,7 +194,7 @@ class TasksModel extends BaseModel
         return $output;
     }
 
-    private function getDateWithOrnaments(string $status, string $date, string $icon = null): string
+    private function getDateWithOrnaments(string $status, string $date, string $icon = ''): string
     {
         $label = $this->getPrettyDate($date);
         return (TaskStatus::taskNeedsAttention($status) ? TaskDateStatus::getDateLabelPlus($date, $label, $icon) : $label);
@@ -260,9 +254,19 @@ class TasksModel extends BaseModel
     public function prepAndSave(array $data): string
     {
         // TODO: Implement prepAndSave() method.
+        if ($data['cabinnumber'] && !$data['cabin_id']) {
+            $cabin = new CabinModel($this->pdo);
+            $data['cabin_id'] = $cabin->field('cabin_id', 'cabinnumber', $data['cabinnumber']);
+        }
         $save = $this->getSaveValues($data);
         $save['updated'] = date('Y-m-d H:i:s');
-        
+        if ($save['scheduled_date'] == '') {
+            $save['scheduled_date'] = null;
+        }
+        $save = $this->checkNullableValues($save);
+        var_dump($save);
+        echo $this->insert;
+
         $result = $this->runQuery($this->insert, $save, 'insert');
         return $result;
     }

@@ -135,4 +135,14 @@ class ActivityModel extends BaseModel
         }
         return $output;
     }
+
+    public function prepAndSave(array $data): string
+    {
+        // TODO: Implement prepAndSave() method.
+        $save = $this->getSaveValues($data);
+        $save['updated'] = date('Y-m-d H:i:s');
+
+        $result = $this->runQuery($this->insert, $save, 'insert');
+        return $result;
+    }
 }

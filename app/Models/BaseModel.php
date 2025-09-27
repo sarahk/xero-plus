@@ -269,26 +269,36 @@ abstract class BaseModel
 
         $save = [];
         foreach ($this->saveKeys as $key) {
-            if (!array_key_exists($key, $data)) {
-                $save[$key] = null;
-                continue;
-            }
-
-            $val = $data[$key];
-
-            if ($this->isIdField($key)) {
-                if (is_string($val)) {
-                    $val = trim($val);
-                }
-                // Only convert truly empty strings to NULL
-                if ($val === '') {
-                    $val = null;
-                }
-            }
+            list($key, $val) = $this->getKeyValuePair($key, $data);
             $save[$key] = $val;
+        }
+        foreach ($this->updateKeys as $key) {
+            list($newkey, $val) = $this->getKeyValuePair($key, $data, 'upd8_');
+            $save[$newkey] = $val;
         }
         return $save;
     }
+
+    protected function getKeyValuePair($key, $data, $prefix = ''): array
+    {
+        if (!array_key_exists($key, $data)) {
+            return [$prefix . $key, null];
+        }
+
+        $val = $data[$key];
+
+        if ($this->isIdField($key)) {
+            if (is_string($val)) {
+                $val = trim($val);
+            }
+            // Only convert truly empty strings to NULL
+            if ($val === '') {
+                $val = null;
+            }
+        }
+        return [$prefix . $key, $val];
+    }
+
 
     private function isIdField(string $key): bool
     {
@@ -317,7 +327,7 @@ abstract class BaseModel
     protected function updateImplode(): string
     {
         $output = [];
-        foreach ($this->updateKeys as $v) $output[] = "`$v` = :$v";
+        foreach ($this->updateKeys as $v) $output[] = "`$v` = :upd8_$v";
         return implode(', ', $output);
     }
 

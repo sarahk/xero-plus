@@ -33,6 +33,13 @@ $data = $_POST['data'] ?? [];
 $output = ['action' => $action, 'message' => 'no API calls'];
 
 switch ($action) {
+    case 0:
+        // dashboard
+    
+        $task = new TasksModel($pdo);
+        $output['result'] = $task->prepAndSave($data);
+        $output['message'] = 'Task saved';
+        break;
 
     case 10:
         // enquiries

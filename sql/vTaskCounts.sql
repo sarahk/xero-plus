@@ -4,9 +4,7 @@ SELECT `t`.`xerotenant_id` AS `xerotenant_id`,
        SUM((CASE
                 WHEN
                     ((`t`.`status` = 'active')
-                        AND (CAST(GREATEST(IFNULL(`t`.`due_date`, '1000-01-01'),
-                                           IFNULL(`t`.`scheduled_date`, '1000-01-01'))
-                                 AS DATE) < CURDATE()))
+                        AND (TASK_WINDOW_BUCKET(`t`.`due_date`, `t`.`scheduled_date`) = 'overdue'))
                     THEN
                     1
                 ELSE 0
@@ -14,10 +12,7 @@ SELECT `t`.`xerotenant_id` AS `xerotenant_id`,
        SUM((CASE
                 WHEN
                     ((`t`.`status` = 'active')
-                        AND (((`t`.`due_date` IS NOT NULL)
-                            AND (`t`.`due_date` BETWEEN CURDATE() AND `d`.`friday_next_week`))
-                            OR ((`t`.`scheduled_date` IS NOT NULL)
-                                AND (`t`.`scheduled_date` BETWEEN CURDATE() AND `d`.`friday_next_week`))))
+                        AND (TASK_WINDOW_BUCKET(`t`.`due_date`, `t`.`scheduled_date`) = 'due'))
                     THEN
                     1
                 ELSE 0
@@ -25,10 +20,7 @@ SELECT `t`.`xerotenant_id` AS `xerotenant_id`,
        SUM((CASE
                 WHEN
                     ((`t`.`status` = 'hold')
-                        AND (((`t`.`due_date` IS NOT NULL)
-                            AND (`t`.`due_date` BETWEEN CURDATE() AND `d`.`friday_next_week`))
-                            OR ((`t`.`scheduled_date` IS NOT NULL)
-                                AND (`t`.`scheduled_date` BETWEEN CURDATE() AND `d`.`friday_next_week`))))
+                        AND (TASK_WINDOW_BUCKET(`t`.`due_date`, `t`.`scheduled_date`) = 'due'))
                     THEN
                     1
                 ELSE 0
@@ -36,10 +28,7 @@ SELECT `t`.`xerotenant_id` AS `xerotenant_id`,
        SUM((CASE
                 WHEN
                     ((`t`.`status` = 'done')
-                        AND (((`t`.`due_date` IS NOT NULL)
-                            AND (`t`.`due_date` BETWEEN CURDATE() AND `d`.`friday_next_week`))
-                            OR ((`t`.`scheduled_date` IS NOT NULL)
-                                AND (`t`.`scheduled_date` BETWEEN CURDATE() AND `d`.`friday_next_week`))))
+                        AND (TASK_WINDOW_BUCKET(`t`.`due_date`, `t`.`scheduled_date`) = 'due'))
                     THEN
                     1
                 ELSE 0
@@ -47,13 +36,10 @@ SELECT `t`.`xerotenant_id` AS `xerotenant_id`,
        SUM((CASE
                 WHEN
                     ((`t`.`status` = 'active')
-                        AND (IFNULL(`t`.`due_date`, '1000-01-01') > `d`.`friday_next_week`)
-                        AND (IFNULL(`t`.`scheduled_date`, '1000-01-01') > `d`.`friday_next_week`))
+                        AND (TASK_WINDOW_BUCKET(`t`.`due_date`, `t`.`scheduled_date`) = 'future'))
                     THEN
                     1
                 ELSE 0
            END))           AS `future`
-FROM (`tasks` `t`
-    JOIN (SELECT (CURDATE() - INTERVAL WEEKDAY(CURDATE()) DAY)                     AS `monday_this_week`,
-                 ((CURDATE() - INTERVAL WEEKDAY(CURDATE()) DAY) + INTERVAL 11 DAY) AS `friday_next_week`) `d`)
+FROM `tasks` `t`
 GROUP BY `t`.`xerotenant_id`, `t`.`cabin_id`

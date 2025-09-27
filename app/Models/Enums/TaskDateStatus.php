@@ -27,6 +27,9 @@ enum TaskDateStatus: string
         $fridayNextWeek = $mondayThisWeek->modify('+1 week')->modify('friday this week');
 
         // Normalize the input date to midnight in the same timezone (date-only comparison).
+        if (empty($date_string)) {
+            return 'due';
+        }
         $d = (new DateTimeImmutable('@' . $date->getTimestamp()))
             ->setTime(0, 0, 0);
 

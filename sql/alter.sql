@@ -50,3 +50,30 @@ ALTER TABLE `xeroplus`.`tasks`
 
 ALTER TABLE `xeroplus`.`tasks`
     ADD COLUMN `scheduled_date` DATE NULL DEFAULT NULL AFTER `due_date`;
+
+ALTER DATABASE xeroplus CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+ALTER TABLE tasks
+    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+ALTER TABLE tasks
+    MODIFY status VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+SET NAMES utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+SET collation_connection = 'utf8mb4_0900_ai_ci';
+
+-- Convert whole tables (updates all text columns)
+ALTER TABLE tasks
+    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+ALTER TABLE tenancies
+    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+ALTER TABLE tasks
+    MODIFY status VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+    MODIFY task_type VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+    MODIFY xerotenant_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+ALTER TABLE tenancies
+    MODIFY tenant_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+    MODIFY colour VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+

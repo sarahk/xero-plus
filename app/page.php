@@ -248,6 +248,7 @@ switch ($action) {
                 ];
         }
         $loader->addSlickSlider();
+        $loader->addModal('task-single.php');
         //$loader->addOwlCarousel();
 
         break;

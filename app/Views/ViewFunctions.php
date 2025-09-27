@@ -56,6 +56,9 @@ final class ViewFunctions
             case 'input':
                 return self::getInput($row, $class);
 
+            case 'date':
+                return self::getDateInput($row, $class);
+
             case 'select':
                 return self::getSelect($row, $class);
 
@@ -105,6 +108,18 @@ final class ViewFunctions
                     name='data[$fieldId]' placeholder='$placeholder' $required_attr autocomplete='off'>
                 $required_html
             </div>";
+    }
+
+    private static function getDateInput(array $vars, string $class = ''): string
+    {
+        $displayVars = $vars;
+        $displayVars['fieldId'] .= '_display';
+        $output = [
+            self::getInput($displayVars, $class),
+            self::getHidden($vars)
+        ];
+
+        return implode("\n", $output);
     }
 
     private static function getTextarea(array $vars, string $class = ''): string
