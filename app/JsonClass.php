@@ -244,18 +244,10 @@ class JsonClass
     {
         $params = $this->getParams();
         $params['specialise'] = $for;
-        $tasks = new Models\TasksModel($this->pdo);
+        $tasks = new TasksModel($this->pdo);
         return json_encode($tasks->list($params));
     }
 
-    public function ListTasksForCabin(): string
-    {
-        $params = $this->getParams();
-        $params['specialise'] = 'cabin';
-        $tasks = new TasksModel($this->pdo);
-        return json_encode($tasks->List($params));
-        //return json_encode($params);
-    }
 
     public function getTaskSingle()
     {

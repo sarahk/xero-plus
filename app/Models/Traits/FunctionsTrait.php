@@ -69,7 +69,7 @@ trait FunctionsTrait
 
     protected function getPrettyDate(null|string $val): string
     {
-        if (empty($val)) {
+        if (empty($val) || is_null($val)) {
             return '';
         }
 

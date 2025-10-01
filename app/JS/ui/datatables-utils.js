@@ -13,3 +13,26 @@ export function waitForDataTables({timeout = 10000, interval = 50} = {}) {
         else window.addEventListener('load', check, {once: true});
     });
 }
+
+export function dtAddClassToRow(row, data, field = 'colour', {prefix = '', map} = {}) {
+
+    if (!data) return;
+    const val = data[field];
+    if (!val) return;
+    const cls = map ? map(val, data) : `${prefix}${val}`;
+    if (cls) row.classList.add(cls);
+}
+
+export function dtAddColourToRow(row, data) {
+    dtAddClassToRow(row, data, 'colour', {prefix: 'bar-'});
+}
+
+/* if I ever need custom mapping...
+createdRow: dtAddClassToRow('colour', {
+  map: (val) => `bar-${val === 'cyan' ? 'teal' : val}`
+})
+
+the code it replaces...
+createdRow: (row, data) => { if (data?.colour) row.classList.add('bar-' + data.colour); }
+
+ */

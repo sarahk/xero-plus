@@ -2,7 +2,7 @@
     <div class="card h-100">
         <div class="card-header d-flex align-items-center">
             <h5 class="card-title mb-0"><i class="fa-solid fa-list"></i> Tasks</h5>
-            <a class="btn btn-sm btn-primary ms-auto" href="/page.php?action=100">See All</a>
+            <a class="btn btn-sm btn-primary ms-auto" href="/page.php?action=300">See All</a>
         </div>
         <div class="card-body">
 

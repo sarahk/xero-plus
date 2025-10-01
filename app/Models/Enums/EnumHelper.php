@@ -77,4 +77,11 @@ trait EnumHelper
         }
         return $output;
     }
+
+    public static function isValid(mixed $value): bool
+    {
+        // allow passing the enum itself or a backed value
+        if ($value instanceof self) return true;
+        return self::tryFrom($value) !== null;
+    }
 }

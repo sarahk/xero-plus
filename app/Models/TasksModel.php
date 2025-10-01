@@ -38,7 +38,7 @@ class TasksModel extends BaseModel
         parent::__construct($pdo);
         $this->buildInsertSQL();
 
-        $this->virtualFields['icon'] = $this->getCaseStatement('task_type', TaskType::getTaskTypes());
+        //$this->virtualFields['icon'] = $this->getCaseStatement('task_type', TaskType::getTaskTypes());
     }
 
 
@@ -99,7 +99,6 @@ class TasksModel extends BaseModel
     public function list($params): array
     {
 
-//todo add sorting
         $searchValues = [];
 
         $tenancies = $this->getTenanciesWhere($params);
@@ -107,7 +106,7 @@ class TasksModel extends BaseModel
 
         if (array_key_exists('specialise', $params)) {
             switch ($params['specialise']) {
-                case  'cabin':
+                case 'cabin':
                     $conditions[] = "`tasks`.`cabin_id` = :cabin_id";
                     $searchValues['cabin_id'] = $params['key'];
                     break;
@@ -116,34 +115,56 @@ class TasksModel extends BaseModel
                         AND `tasks`.`status` IN ('active','hold','scheduled'))";
                     $params['start'] = 0;
                     $params['length'] = 10;
+                    break;
+                //case 'index': nothing to do
             }
         }
 
-//        var_dump($params);
-//        exit;
+        $taskFilter = $_GET['taskFilter'] ?? 'all';
+        switch ($taskFilter) {
+            case 'overdue':
+                $conditions[] = "task_window_bucket(tasks.due_date, tasks.scheduled_date) ='overdue'";
+                break;
+            case 'due':
+                $conditions[] = "task_window_bucket(tasks.due_date, tasks.scheduled_date) ='due'";
+                break;
+
+            case 'myjobs':
+                $conditions[] = "tasks.assigned_to = :assigned_to";
+                $searchValues['assigned_to'] = $_SESSION['user_id'];
+                break;
+
+            default:
+                if (TaskType::isValid($taskFilter)) {
+                    $conditions[] = "tasks.task_type = :taskFilter";
+                    $searchValues['taskFilter'] = $taskFilter;
+                }
+                break;
+        }
+
+
         switch ($params['order'][0]['name']) {
             case 'icon':
-                $order = "tasks.task_type " . $params['order']['dir'];
+                $order = "tasks.task_type " . $params['order']['dir'] ?? 'ASC';
                 break;
             case 'extra':
-                $order = "tasks.scheduled_date " . $params['order']['dir'];
+                $order = "tasks.scheduled_date " . $params['order']['dir'] ?? 'DESC';
                 break;
             default:
                 $order = $this->getOrderBy($params);
-
         }
 
         if (!empty($params['search'])) {
-            $search = [
-                "`tasks`.`name` LIKE :search ",
-                "`tasks`.`status` LIKE :search ",
-                "`tasks`.`details` LIKE :search ",
-                "`tasks`.`task_type` LIKE :search ",
-                "`tasks`.`due_date` LIKE :search "
+            $search_columns = [
+                '`tasks`.`name`',
+                '`tasks`.`status`',
+                '`tasks`.`details`',
+                '`tasks`.`task_type`',
+                '`tasks`.`due_date`',
+                '`cabins`.`cabinnumber`'
             ];
-            $searchValues['search'] = '%' . $params['search'] . '%';
-
-            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
+            $conditions[] = "CONCAT_WS(' '," . implode(',', $search_columns) . ") LIKE :search";
+            $searchValues[':search'] = '%' . $params['search'] . '%';
         }
 
 
@@ -165,6 +186,7 @@ class TasksModel extends BaseModel
             . (empty($params['key']) ? '' : ' AND `tasks`.`cabin_id` = ' . $params['key']);
 
         $output['recordsTotal'] = $this->pdo->query($recordsTotal)->fetchColumn();
+
         $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
 
 
@@ -174,31 +196,54 @@ class TasksModel extends BaseModel
 
         if (count($result) > 0) {
             foreach ($result as $row) {
+                $taskId = (int)($row['task_id'] ?? 0);
+                $cabinId = (int)($row['cabin_id'] ?? 0);
+                $cabinNo = htmlspecialchars($row['cabinnumber'] ?? '', ENT_QUOTES, 'UTF-8');
+                $name = htmlspecialchars($row['name'] ?? '', ENT_QUOTES, 'UTF-8');
+                $iconName = TaskType::getTaskTypeIcon(htmlspecialchars($row['task_type'] ?? '', ENT_QUOTES, 'UTF-8'));
+                $assigned = (int)($row['assigned_to'] ?? null);
+                $statusRaw = $row['status'] ?? '';
+                $colour = htmlspecialchars($row['colour'] ?? '', ENT_QUOTES, 'UTF-8');
 
                 $output['data'][] = [
-                    'icon' => "<i class='fa fa-{$row['icon']}' aria-hidden='false'></i>",
-                    'cabin_id' => $row['cabin_id'],
-                    'task_id' => "<span  data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}' data-cabinno='{$row['cabinnumber']}'>{$row['task_id']}</span>",
-                    'name' => "<span data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}' data-cabinno='{$row['cabinnumber']}'>{$row['name']}</span>",
-                    'status' => TaskStatus::getTaskStatusBadge($row['status']),
-                    'due_date' => $this->getDateWithOrnaments($row['status'], $row['due_date'] ?? ''),
+                    'DT_RowId' => "row_$taskId",
+                    'DT_RowClass' => "bar-$colour",
+                    'icon' => "<i class='fa fa-{$iconName}' aria-hidden='false'></i>",
+                    'cabinnumber' => "<a href='/page.php?action=14&cabin_id={$cabinId}'>$cabinNo</a>",
+                    'task_id' => "<span  data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='$taskId' data-cabinno='$cabinNo'>$taskId</span>",
+                    'name' => "<span data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}' data-cabinno='$cabinNo'>$name</span>",
+                    'status' => TaskStatus::getTaskStatusBadge($statusRaw),
+                    'due_date' => $this->getDateWithOrnaments($statusRaw, $row['due_date'] ?? ''),
                     'scheduled_date' => $this->getPrettyDate($row['scheduled_date']),
-                    'extra' => $this->getDateWithOrnaments($row['status'], $row['scheduled_date'] ?? '', 'clock') . '<br>' . $row['assigned_to'],
-                    'colour' => $row['colour']
+                    'extra' => $this->getDateWithOrnaments($statusRaw, $row['scheduled_date'] ?? '', 'clock') . '<br>' . $assigned,
+                    'assigned' => $assigned,
+                    'buttons' => TaskStatus::getButtons($row['task_id'], $statusRaw)
                 ];
                 $output['row'] = $row;
             }
 
         }
+
+        // if key is empty, it gets all the tasks
         $output['taskCounts'] = $this->getTaskCounts('Cabin', $params['key']);
+
         return $output;
     }
 
-    private function getDateWithOrnaments(string $status, string $date, string $icon = ''): string
+    private function getDateWithOrnaments(string $status, string $date, ?string $icon = null): string
     {
+        $date = trim($date);
+        if ($date === '' || $date === '0000-00-00') {
+            return '';
+        }
+
         $label = $this->getPrettyDate($date);
-        return (TaskStatus::taskNeedsAttention($status) ? TaskDateStatus::getDateLabelPlus($date, $label, $icon) : $label);
+
+        return TaskStatus::taskNeedsAttention($status)
+            ? TaskDateStatus::getDateLabelPlus($date, $label, $icon)
+            : $label;
     }
+
 
     private function getTaskCounts($for = 'All', $key = ''): array
     {

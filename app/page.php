@@ -213,6 +213,10 @@ switch ($action) {
 
         unset($contract);
         break;
+
+    case 300:
+        $loader->addModal('task-single.php');
+        break;
     case 200:
     default:
         // main dash
@@ -273,6 +277,7 @@ $view = __DIR__ . '/' . match ($action) {
         17 => 'Views/templates-index.php',
         18 => 'Views/activity-index.php',
         200 => 'Views/home2.php',
+        300 => 'Views/tasks-index.php',
         default => 'Views/home.php',
     };
 

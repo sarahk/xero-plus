@@ -160,6 +160,26 @@ table.dataTable tr.selected > * {
     box-shadow: inset 0 0 0 9999px var(--selection-bg, rgba(2, 117, 216, .15));
 }
 
+
+/*#0d6efd8f*/
+/*table.dataTable {*/
+/*    --dt-row-selected: 13, 10, 253; !* #ecb403 *!*/
+/*    --dt-row-selected-text: 33, 37, 41; !* #212529 *!*/
+/*}*/
+table.table.dataTable.table-striped > tbody > tr.selected > * {
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), .28) !important;
+    color: rgb(var(--dt-row-selected-text)) !important;
+}
+
+/* 3) Neutralise the odd-row stripe when selected */
+table.table.dataTable.table-striped > tbody > tr.selected:nth-of-type(odd) > * {
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), .28) !important;
+}
+
+.dt-buttons .btn.active {
+    background-color: #e6432b !important;
+}
+
 /* end of data tables processing */
 
 /* R I P P L E   F I X */
@@ -285,3 +305,5 @@ table.dataTable tr.selected > * {
 }
 
 /* end of datepicker */
+
+

@@ -484,10 +484,13 @@ try {
                     echo $json->closeTask();
                     break;
                 case 'List':
-                    echo $json->ListTasksForCabin();
+                    echo $json->ListTasks('cabin');
                     break;
                 case 'ListHome':
                     echo $json->ListTasks('home');
+                    break;
+                case 'ListIndex':
+                    echo $json->ListTasks('index');
                     break;
                 case 'Single':
                     echo $json->getTaskSingle();

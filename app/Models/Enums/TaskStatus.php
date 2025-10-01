@@ -21,6 +21,7 @@ enum TaskStatus: string
             self::Scheduled => 'Scheduled',
             self::Cancelled => 'Cancelled',
             self::Done => 'Done',
+            
         };
     }
 
@@ -46,6 +47,16 @@ enum TaskStatus: string
         return $output;
     }
 
+    private static function allowedNext(self $from): array
+    {
+        return match ($from) {
+            self::Active, self::Scheduled => [self::Active, self::Hold, self::Scheduled, self::Cancelled, self::Done],
+            self::Hold => [self::Active, self::Hold, self::Cancelled, self::Done],
+            self::Cancelled => [self::Active, self::Cancelled],
+            self::Done => [self::Done],
+        };
+    }
+
     public static function taskNeedsAttention(string $val): bool
     {
         $taskStatus = self::from($val);
@@ -54,4 +65,34 @@ enum TaskStatus: string
             self::Done, self::Cancelled => false,
         };
     }
+
+    private static function getButtonClass(self $val): string
+    {
+        return match ($val) {
+            self::Active => 'btn-primary',
+            self::Hold => 'btn-warning',
+            self::Scheduled => 'btn-info',
+            self::Cancelled => 'btn-danger',
+            self::Done => 'btn-success',
+        };
+    }
+
+    public static function getButtons($task_id, $task_status): string
+    {
+        $pointer = self::from($task_status);
+        $buttons = self::allowedNext($pointer);
+        $output = [];
+        $output[] = "<div class='btn-group btn-group-sm' role='group' aria-label='task buttons'>";
+        foreach ($buttons as $button) {
+
+            if ($button !== $pointer && $button !== self::Scheduled) {
+                $label = self::getLabel($button->value);
+                $class = self::getButtonClass($button);
+                $output[] = "<button href='' data-task_id='$task_id' data-status='{$button->value}' class='btn $class' data-mdb-ripple-init>$label</button>";
+            }
+        }
+        $output[] = "</div>";
+        return implode($output);
+    }
 }
+

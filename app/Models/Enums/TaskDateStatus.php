@@ -48,7 +48,7 @@ enum TaskDateStatus: string
         return match ($pointer) {
             self::Overdue => 'Overdue',
             self::Due => 'Due',
-            self::Future => 'Scheduled'
+            self::Future => 'Future'
         };
     }
 
@@ -59,7 +59,6 @@ enum TaskDateStatus: string
             self::Overdue => 'calendar-xmark',
             self::Due => 'calendar-day',
             self::Future => 'calendar-plus',
-
         };
     }
 
