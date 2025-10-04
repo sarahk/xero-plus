@@ -249,14 +249,31 @@ abstract class BaseModel
     abstract public function prepAndSave(array $data): string;
 
 
-    protected function checkNullableValues($data)
+    protected function checkNullableValues($data, $force_add)
     {
         if (count($this->nullable) == 0) {
             return $data;
         }
         foreach ($this->nullable as $v) {
-            if (!array_key_exists($v, $data)) $data[$v] = NULL;
-            if (empty($data[$v])) $data[$v] = NULL;
+            if (array_key_exists($v, $data)) {
+                // Normalize present values: treat "" and whitespace as NULL
+                $val = is_string($data[$v]) ? trim($data[$v]) : $data[$v];
+
+                // If you also want to treat '0000-00-00' as NULL, include it here
+                if ($val === '' || $val === '0000-00-00') {
+                    $val = null;
+                }
+
+                $data[$v] = $val;
+                $data["upd8_$v"] = $val;      // keep the mirror in sync
+                continue;
+            }
+
+            // Not present in $data:
+            if ($force_add) {
+                $data[$v] = null;
+                $data["upd8_$v"] = null;
+            }
         }
         return $data;
     }

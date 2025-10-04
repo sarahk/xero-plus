@@ -17,6 +17,8 @@ class Loader
         $this->addFontAwesome();
         $this->addGoogleFonts();
         $this->addMiscScripts();
+        $this->addModal('cabin-single.php'); //used by sidebar
+        $this->addModal('task-single.php'); //used by sidebar
     }
 
     public function outputJS($where = 'footer'): void
@@ -83,7 +85,9 @@ class Loader
     public function addModal(string $modal): void
     {
         // no hierarchy with modals
-        $this->modals[] = $modal;
+        if (!in_array($modal, $this->modals)) {
+            $this->modals[] = $modal;
+        }
     }
 
     public function addJS(string $src, $priority = 'low'): void
@@ -167,7 +171,6 @@ class Loader
 
 //<!-- CUSTOM JS, handles scrolling -->
         $this->js['low'][] = "/assets/js/custom.js";
-        $this->js['low'][] = "/assets/JS/sidebar.js";
 
 //<!-- SWITCHER STYLES JS -->
         //$this->js['low'][] = "/assets/js/switcher-styles.js";

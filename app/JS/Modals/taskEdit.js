@@ -1,6 +1,7 @@
+import {toDDMMYY, fetchJSON} from '/JS/ui/helpers.js';
 import {
     SELECTORS, initGuard, showAlert, hideAlert, populateSelect,
-    toDDMMYY, fetchJSON, getFormPayload, checkFieldNotEmpty, initClickableAlerts,
+    getFormPayload, checkFieldNotEmpty, initClickableAlerts,
     manageModalBranding
 } from '/JS/ui/modal-utils.js';
 import {initDates} from '/JS/ui/datepicker-mirror.js';

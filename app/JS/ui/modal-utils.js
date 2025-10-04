@@ -68,18 +68,6 @@ export function populateSelect(selectEl, options = [], selected = '', allowEmpty
 
 }
 
-export function toDDMMYY(s) {
-    if (!s) return '';
-    const [date] = String(s).split(/\s+/);
-    const [y, m, d] = date.split('-');
-    return `${d}-${m}-${y.slice(-2)}`;
-}
-
-export async function fetchJSON(url, opts = {}) {
-    const res = await fetch(url, {headers: {'Accept': 'application/json'}, ...opts});
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-}
 
 export function getFormPayload(formEl) {
     return new FormData(formEl);

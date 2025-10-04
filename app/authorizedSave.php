@@ -28,14 +28,17 @@ Utilities::checkAccessToken();
 $pdo = Utilities::getPDO();
 
 // P O S T    *****
-$action = $_POST['action'] ?? 0;
+// this is a workaround to a task being saved from the sidebar
+// todo find a better way to do this
+$formType = $_POST['formType'] ?? 'unknown';
+$action = $formType === 'task' ? 14 : (int)$_POST['action'] ?? 0;
 $data = $_POST['data'] ?? [];
-$output = ['action' => $action, 'message' => 'no API calls'];
+$output = ['action' => $action, 'formType' => $formType, 'message' => 'no API calls for action'];
 
 switch ($action) {
     case 0:
         // dashboard
-    
+
         $task = new TasksModel($pdo);
         $output['result'] = $task->prepAndSave($data);
         $output['message'] = 'Task saved';

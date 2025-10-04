@@ -21,7 +21,7 @@ enum TaskStatus: string
             self::Scheduled => 'Scheduled',
             self::Cancelled => 'Cancelled',
             self::Done => 'Done',
-            
+
         };
     }
 
@@ -39,12 +39,19 @@ enum TaskStatus: string
 
     public static function getTaskStatusBadge(string $val): string
     {
-        $icon = self::getIcon($val);
+        $iconHtml = self::getIconHtml($val);
         $label = self::getLabel($val);
         $first_letter = substr($label, 0, 1);
-        $output = "<span class='badge badge-$val rounded-pill gap-1 px-2 py-1' title='$label'><i class='fa-solid fa-$icon'></i>$first_letter</span>";
+        $output = "<span class='badge badge-$val rounded-pill gap-1 px-2 py-1' title='$label'>{$iconHtml}{$first_letter}</span>";
         // $output = "<span class='badge badge-$val' title='$label'><i class='fa fa-$icon me-2'></i>$first_letter</span>";
         return $output;
+    }
+
+    public static function getIconHtml(string $val): string
+    {
+        $icon = self::getIcon($val);
+
+        return "<i class='fa-solid fa-$icon text-$val'></i>";
     }
 
     private static function allowedNext(self $from): array
@@ -93,6 +100,21 @@ enum TaskStatus: string
         }
         $output[] = "</div>";
         return implode($output);
+    }
+
+    public static function getStatusBadgeAsArray(): array
+    {
+        //return array_map(fn($case) => ['name' => $case->value, 'badge' => self::getTaskStatusBadge($case->value)], self::cases());
+        return array_map(fn($case) => ['name' => $case->value, 'badge' => self::getIconHtml($case->value)], self::cases());
+    }
+
+    public static function allowQuickClose(string $val): bool
+    {
+        $pointer = self::from($val);
+        return match ($pointer) {
+            self::Active, self::Hold, self::Scheduled => true,
+            self::Done, self::Cancelled => false,
+        };
     }
 }
 

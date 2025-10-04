@@ -492,6 +492,9 @@ try {
                 case 'ListIndex':
                     echo $json->ListTasks('index');
                     break;
+                case 'ListSidebar':
+                    echo $json->ListTasks('sidebar');
+                    break;
                 case 'Single':
                     echo $json->getTaskSingle();
                     break;

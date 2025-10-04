@@ -14,7 +14,7 @@ class TasksModel extends BaseModel
 
     protected array $saveKeys = ['task_id', 'xerotenant_id', 'cabin_id', 'name', 'details', 'task_type', 'due_date', 'scheduled_date', 'status', 'updated'];
     protected array $updateKeys = ['name', 'details', 'status', 'task_type', 'due_date', 'scheduled_date', 'updated'];
-    protected array $nullable = ['cabin_id', 'details'];
+    protected array $nullable = ['cabin_id', 'details', 'scheduled_date'];
     protected array $joins = ['cabins' => "`tasks`.`cabin_id` = :id1"];
     protected string $orderBy = 'tasks.due_date DESC';
 
@@ -98,11 +98,9 @@ class TasksModel extends BaseModel
 
     public function list($params): array
     {
-
-        $searchValues = [];
-
         $tenancies = $this->getTenanciesWhere($params);
         $conditions = [$tenancies];
+        $searchValues = [];
 
         if (array_key_exists('specialise', $params)) {
             switch ($params['specialise']) {
@@ -116,6 +114,26 @@ class TasksModel extends BaseModel
                     $params['start'] = 0;
                     $params['length'] = 10;
                     break;
+                case 'sidebar':
+                    if (is_array($_GET['task_status'])) {
+                        if (count($_GET['task_status']) === 1) {
+                            $conditions[] = "tasks.status = :task_status";
+                            $searchValues['task_status'] = $_GET['task_status'][0];
+                        } else {
+                            $bits = [];
+                            foreach ($_GET['task_status'] as $i => $checked_status) {
+                                if (TaskStatus::isValid($checked_status)) {
+                                    $key = "status{$i}";
+                                    $bits[] = ":$key";
+                                    $searchValues[$key] = $checked_status;
+                                }
+                            }
+                            if (count($bits) > 0) {
+                                $conditions[] = "tasks.status IN (" . implode(',', $bits) . ")";
+                            }
+                        }
+                    }
+                    break;
                 //case 'index': nothing to do
             }
         }
@@ -123,10 +141,9 @@ class TasksModel extends BaseModel
         $taskFilter = $_GET['taskFilter'] ?? 'all';
         switch ($taskFilter) {
             case 'overdue':
-                $conditions[] = "task_window_bucket(tasks.due_date, tasks.scheduled_date) ='overdue'";
-                break;
             case 'due':
-                $conditions[] = "task_window_bucket(tasks.due_date, tasks.scheduled_date) ='due'";
+                $conditions[] = "task_window_bucket(tasks.due_date, tasks.scheduled_date) = :taskFilter";
+                $searchValues['taskFilter'] = $taskFilter;
                 break;
 
             case 'myjobs':
@@ -143,12 +160,14 @@ class TasksModel extends BaseModel
         }
 
 
-        switch ($params['order'][0]['name']) {
+        $order_column = $this->getOrderByArray($params);
+
+        switch ($order_column['name']) {
             case 'icon':
-                $order = "tasks.task_type " . $params['order']['dir'] ?? 'ASC';
+                $order = "tasks.task_type " . $order_column['dir'] ?? 'ASC';
                 break;
             case 'extra':
-                $order = "tasks.scheduled_date " . $params['order']['dir'] ?? 'DESC';
+                $order = "tasks.scheduled_date " . $order_column['dir'] ?? 'DESC';
                 break;
             default:
                 $order = $this->getOrderBy($params);
@@ -176,10 +195,13 @@ class TasksModel extends BaseModel
             LIMIT {$params['start']}, {$params['length']}";
 
 
+        $output = $params;
+        //$output['sql'] = $sql;
+        //$output['searchValues'] = $searchValues;
+
+
         $result = $this->runQuery($sql, $searchValues);
 
-
-        $output = $params;
         // adds in tenancies because it doesn't use $conditions
         $recordsTotal = "SELECT count(*) FROM `tasks` 
                 WHERE $tenancies"
@@ -217,15 +239,18 @@ class TasksModel extends BaseModel
                     'scheduled_date' => $this->getPrettyDate($row['scheduled_date']),
                     'extra' => $this->getDateWithOrnaments($statusRaw, $row['scheduled_date'] ?? '', 'clock') . '<br>' . $assigned,
                     'assigned' => $assigned,
-                    'buttons' => TaskStatus::getButtons($row['task_id'], $statusRaw)
+                    'buttons' => TaskStatus::getButtons($row['task_id'], $statusRaw),
+                    'quick_close' => TaskStatus::allowQuickClose($statusRaw),
+                    'raw' => $row
                 ];
-                $output['row'] = $row;
+                $output['row'] = $row; // this is only
             }
 
         }
 
         // if key is empty, it gets all the tasks
         $output['taskCounts'] = $this->getTaskCounts('Cabin', $params['key']);
+        $output['task_badges'] = TaskStatus::getStatusBadgeAsArray();
 
         return $output;
     }
@@ -298,21 +323,53 @@ class TasksModel extends BaseModel
 
     public function prepAndSave(array $data): string
     {
-        // TODO: Implement prepAndSave() method.
-        if ($data['cabinnumber'] && !$data['cabin_id']) {
+
+        $update_many = (array_keys($data) === ['task_id']) && is_array($data['task_id']);
+        if ($update_many) {
+
+            $output = [];
+            foreach ($data['task_id'] as $task_id => $switch) {
+                if ($switch) {
+                    $new_save = [
+                        'task_id' => $task_id,
+                        'status' => 'done'
+                    ];
+
+                    $output[] = $this->prepAndUpdate($new_save);
+                }
+            }
+
+            return implode(',', $output);
+        }
+        if (!empty($data['cabinnumber']) && empty($data['cabin_id'])) {
             $cabin = new CabinModel($this->pdo);
             $data['cabin_id'] = $cabin->field('cabin_id', 'cabinnumber', $data['cabinnumber']);
         }
+        // now convert data into saveable values
         $save = $this->getSaveValues($data);
-        $save['updated'] = date('Y-m-d H:i:s');
-        if ($save['scheduled_date'] == '') {
-            $save['scheduled_date'] = null;
-        }
+        $save['updated'] = $save['upd8_updated'] = date('Y-m-d H:i:s');
+
         $save = $this->checkNullableValues($save);
-        var_dump($save);
-        echo $this->insert;
 
         $result = $this->runQuery($this->insert, $save, 'insert');
         return $result;
+    }
+
+    private function prepAndUpdate(array $data): string
+    {
+        $save = ['task_id' => $data['task_id']];
+        foreach ($data as $key => $value) {
+            if (in_array($key, $this->updateKeys)) {
+                $save[$key] = $value;
+            }
+        }
+        // now convert data into saveable values
+        $save = $this->checkNullableValues($save, false);
+
+        $cols = array_diff(array_keys($save), ['task_id']);
+        $setClause = implode(', ', array_map(fn($c) => "`$c` = :$c", $cols));
+        $sql = "UPDATE `tasks` SET $setClause, `updated` = NOW() WHERE task_id = :task_id;";
+
+        return $this->runQuery($sql, $save, 'updates');
     }
 }
