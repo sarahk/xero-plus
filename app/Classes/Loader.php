@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\classes;
+namespace App\Classes;
 
 class Loader
 {
@@ -185,7 +185,7 @@ class Loader
 //<!--- FONT-ICONS CSS -->
         // are we using all of these?
         $this->css['low'][] = "/assets/css/icons.css";
-        $this->css['low'][] = "/css/ckm-styles.css";
+        $this->css['low'][] = "/CSS/ckm-styles.css";
 
     }
 

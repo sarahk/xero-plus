@@ -55,7 +55,7 @@
     },
     "files": [
       "app/constants.php",
-      "app/classes/ExtraFunctions.php"
+      "app/Classes/ExtraFunctions.php"
     ]
   },
   "scripts": {

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Views;
 
-use App\classes\Loader;
+use App\Classes\Loader;
 
 ?>
 <!doctype html>

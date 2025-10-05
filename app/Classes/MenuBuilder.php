@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\classes;
+namespace App\Classes;
+
+use App\Classes\ExtraFunctions;
 
 
 class MenuBuilder
@@ -53,7 +55,7 @@ class MenuBuilder
             ['type' => 'simple', 'action' => '18', 'icon' => 'fa-solid fa-message', 'label' => 'Messages Sent'],
             ['type' => 'simple', 'action' => '5', 'icon' => 'fa-solid fa-person', 'label' => 'Customers'],
             ['type' => 'simple', 'action' => '11', 'icon' => 'fa-solid fa-map-location-dot', 'label' => 'Cabin Locations'],
-            ['type' => 'full', 'url' => '/index.php?action=logoff', 'icon' => 'fa-solid fa-power-off', 'label' => 'Log Off'],
+            ['type' => 'full', 'url' => '/index.php?action=logoff', 'id' => 'logoff', 'icon' => 'fa-solid fa-power-off', 'label' => 'Log Off'],
             ['type' => 'heading', 'label' => 'Admin', 'title' => 'Sarah Only'],
             ['type' => 'simple', 'action' => '6', 'icon' => 'fa-solid fa-triangle-exclamation', 'label' => 'Get JWT Claims'],
             ['type' => 'simple', 'action' => '1', 'icon' => 'fa-solid fa-triangle-exclamation', 'label' => 'Get Organisation'],

@@ -3,8 +3,8 @@
 namespace App;
 
 use App\Models\UserModel;
-use App\classes\StorageClass;
-use App\classes\Utilities;
+use App\Classes\StorageClass;
+use App\Classes\Utilities;
 use GuzzleHttp\Exception\RequestException;
 use \XeroAPI\XeroPHP\Configuration;
 

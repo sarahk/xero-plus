@@ -1,8 +1,8 @@
 <?php
 namespace App\Views\Footer;
 
-use App\classes\ExtraFunctions;
-use App\classes\Loader;
+use App\Classes\ExtraFunctions;
+use App\Classes\Loader;
 
 ?>
 </div>

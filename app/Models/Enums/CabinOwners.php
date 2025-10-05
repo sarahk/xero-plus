@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums;
 
-use App\ExtraFunctions;
+use App\Classes\ExtraFunctions;
 
 enum CabinOwners: string
 {

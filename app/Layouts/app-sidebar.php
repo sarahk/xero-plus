@@ -1,6 +1,6 @@
 <?php
 
-use App\classes\MenuBuilder;
+use App\Classes\MenuBuilder;
 
 ?>
 <div class="sticky">

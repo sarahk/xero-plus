@@ -1,9 +1,9 @@
 <?php
 
-use App\Views\ViewFunctions;
+use App\Classes\ViewFunctions;
 
 
-$formFields = [
+$form_fields = [
     ['type' => 'hidden', 'formType' => 'cabin'],
     ['type' => 'hidden', 'fieldId' => 'cabin_id'],
     ['type' => 'input', 'fieldId' => 'cabinnumber', 'label' => 'Cabin Number', 'placeholder' => "Enter the new cabin number"],
@@ -27,7 +27,7 @@ echo ViewFunctions::render('components/modal.php', [
     'modalAction' => intval($_GET['action']),
     'modalStub' => 'cabinEditBasics',
     'title' => 'Cabin',
-    'bodyHtml' => ViewFunctions::getFormFields($formFields),
+    'bodyHtml' => ViewFunctions::getFormFields($form_fields),
     'jsFunction' => 'initCabinEditBasics',
     'jsFile' => 'Modals/cabinEditBasic.js'
 ]);

@@ -1,7 +1,7 @@
 <!-- Modal -->
 <?php
 
-use App\Views\ViewFunctions;
+use App\Classes\ViewFunctions;
 
 function getCabinFieldFromGet(): ?array
 {

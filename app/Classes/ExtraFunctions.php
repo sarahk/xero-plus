@@ -1,6 +1,6 @@
 <?php
 
-namespace App\classes;
+namespace App\Classes;
 
 use DateTime;
 use Monolog\Formatter\LineFormatter;
@@ -24,7 +24,7 @@ class ExtraFunctions
         return date('Y-m-d H:i:s', $raw);
     }
 
-// if using one of the classes use $this->debug rather than this function
+// if using one of the Classes use $this->debug rather than this function
     public static function debug($val): void
     {
         echo '<ul>';

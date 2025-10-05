@@ -1,6 +1,6 @@
 <?php
 
-namespace App\classes;
+namespace App\Classes;
 
 use DateTime;
 use League\OAuth2\Client\Token\AccessTokenInterface;

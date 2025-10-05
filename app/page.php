@@ -8,10 +8,10 @@ use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
 use App\Models\TasksModel;
-use App\classes\JsonClass;
-use App\classes\StorageClass;
-use App\classes\Utilities;
-use App\classes\Loader;
+use App\Classes\JsonClass;
+use App\Classes\StorageClass;
+use App\Classes\Utilities;
+use App\Classes\Loader;
 use DateTime;
 
 //ini_set('display_errors', 'On');

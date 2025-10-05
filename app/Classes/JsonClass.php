@@ -1,6 +1,6 @@
 <?php
 
-namespace App\classes;
+namespace App\Classes;
 
 //use App\Models\AddressModel;
 use App\Models\CabinModel;
@@ -15,8 +15,7 @@ use App\Models\InvoiceModel;
 //use App\Models\PhoneModel;
 use App\Models\TasksModel;
 
-//use App\Models\TenancyModel;
-use App\classes\StorageClass;
+use App\Classes\StorageClass;
 
 // E N U M S
 use App\Models\Enums\CabinStyle;
@@ -127,7 +126,7 @@ class JsonClass
         $cabin['ownername'] = CabinOwners::getLabel($cabin['owner'] ?? '');
 
 
-        $tenancies = new Models\TenancyModel($this->pdo);
+        $tenancies = new TenancyModel($this->pdo);
         $tenancy = $tenancies->get('tenant_id', $cabin['xerotenant_id'])['tenancies'];
         $cabin['tenancy'] = $tenancy['name'];
         $cabin['tenancycolour'] = $tenancy['colour'];

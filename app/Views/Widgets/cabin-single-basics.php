@@ -1,6 +1,6 @@
 <?php
 
-use App\ExtraFunctions;
+use App\Classes\ExtraFunctions;
 use App\Models\Enums\CabinOwners;
 use App\Models\Enums\CabinPainted;
 use App\Models\Enums\CabinStatus;

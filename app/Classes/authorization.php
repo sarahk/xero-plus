@@ -5,8 +5,8 @@ namespace App;
 ini_set('display_errors', 'On');
 require '../vendor/autoload.php';
 
-use App\classes\StorageClass;
-use App\classes\Utilities;
+use App\Classes\StorageClass;
+use App\Classes\Utilities;
 
 // Storage Class uses sessions for storing access token (demo only)
 // you'll need to extend to your Database for a scalable solution

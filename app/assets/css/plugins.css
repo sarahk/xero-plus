@@ -5275,7 +5275,7 @@ footer .pull-center {
     padding-top: 4px;
 }
 
-/* classes attached to <body> */
+/* Classes attached to <body> */
 /* TODO: make fc-event selector work when calender in shadow DOM */
 .fc-not-allowed {
     /* override events' custom cursors */
@@ -5425,7 +5425,7 @@ footer .pull-center {
 Lots taken from Flatly (MIT): https://bootswatch.com/4/flatly/bootstrap.css
 
 These styles only apply when the standard-theme is activated.
-When it's NOT activated, the fc-button classes won't even be in the DOM.
+When it's NOT activated, the fc-button Classes won't even be in the DOM.
 */
 .fc {
     /* reset */
@@ -18758,7 +18758,7 @@ div.dtr-bs-modal table.table tr:first-child td {
 
 /* All the default sidebar styles */
 /* toggle button settings */
-/* Note: this disables the navbar-toggle class's hide function. set visibility with the boostrap visible/hidden classes */
+/* Note: this disables the navbar-toggle class's hide function. set visibility with the boostrap visible/hidden Classes */
 /* Note: this also disables the navbar-header class positioning settings in small screens. */
 .navbar.navbar-static .navbar-header {
     float: left;
@@ -18897,7 +18897,7 @@ div.dtr-bs-modal table.table tr:first-child td {
     transition: transform 300ms ease;
 }
 
-/* Left panel positioning classes */
+/* Left panel positioning Classes */
 .sidebar.sidebar-left {
     -webkit-transform: translate(-100%, 0);
     -moz-transform: translate(-100%, 0);

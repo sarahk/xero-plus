@@ -9,7 +9,7 @@
     --ck-due: #2ca02c;
     --ck-overdue: #ef476f;
     --ck-future: #5f5a72;
-    --menu-prime-color: #495984;
+    --menu-prime-color: #312c65;
     --body-bg-rgb: 242, 243, 249;
     --primary-rgb: 98, 89, 202;
     --secondary-rgb: 251, 107, 37;
@@ -25,11 +25,12 @@
     --purple-rgb: 137, 39, 236;
 }
 
+/* --menu-prime-color: orig: #495984, tried: #272350 */
 .card-pay .tabs-menu li {
     width: 25%;
 }
 
-select.form-control {
+select. form-control {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     background-size: 10px auto;
     background-repeat: no-repeat;

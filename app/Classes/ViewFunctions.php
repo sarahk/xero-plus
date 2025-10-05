@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Views;
+namespace App\Classes;
 
-use App\ExtraFunctions;
+use App\Classes\ExtraFunctions;
 use RuntimeException;
+use const ENT_QUOTES;
+use const EXTR_SKIP;
 
 final class ViewFunctions
 {
@@ -17,34 +19,34 @@ final class ViewFunctions
     {
         // Resolve file path
 
-        $viewFile = __DIR__ . '/' . $template;
+        $view_file = __DIR__ . '/../Views/' . $template;
 
-        if (!is_file($viewFile)) {
-            throw new RuntimeException("View not found: {$viewFile}");
+        if (!is_file($view_file)) {
+            throw new RuntimeException("View not found: {$view_file}");
         }
 
         // Isolated scope: expose $data as local vars, don’t overwrite existing
-        extract($data, \EXTR_SKIP);
+        extract($data, EXTR_SKIP);
         $validate = $validate ?? false;
         $validation = $validate ? 'class="needs-validation"' : 'novalidate';
         ob_start();
-        include $viewFile;
+        include $view_file;
         return (string)ob_get_clean();
     }
 
     /** Simple escape helper you can call inside templates */
     public static function e(string $v): string
     {
-        return htmlspecialchars($v, \ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
     }
 
 
-    public static function getFormFields($formFields)
+    public static function getFormFields($formFields): string
     {
         $output = [];
         foreach ($formFields as $row) {
             // add additional form types as needed
-            // expected to have values added by javascript
+            // expected to have values added by JavaScript
             $output[] = self::getField($row, '');
         }
         return implode("\n", $output);
@@ -112,10 +114,10 @@ final class ViewFunctions
 
     private static function getDateInput(array $vars, string $class = ''): string
     {
-        $displayVars = $vars;
-        $displayVars['fieldId'] .= '_display';
+        $display_vars = $vars;
+        $display_vars['fieldId'] .= '_display';
         $output = [
-            self::getInput($displayVars, $class),
+            self::getInput($display_vars, $class),
             self::getHidden($vars)
         ];
 
@@ -170,11 +172,11 @@ final class ViewFunctions
         $tabs = [];
         $tab_body = [];
         foreach ($tabList as $tab):
-            $isActive = ($tab['name'] === $active);
-            $paneId = 'tab-' . $tab['name'];
-            $linkId = $paneId . '-tab';
-            $tabs[] = self::getTabTab($paneId, $linkId, $tab['label'], $isActive);
-            $tab_body[] = self::getTabBody($paneId, $tab['filename'], $isActive, $data);
+            $is_active = ($tab['name'] === $active);
+            $pane_id = 'tab-' . $tab['name'];
+            $link_id = $pane_id . '-tab';
+            $tabs[] = self::getTabTab($pane_id, $link_id, $tab['label'], $is_active);
+            $tab_body[] = self::getTabBody($pane_id, $tab['filename'], $is_active, $data);
         endforeach;
 
         $show = [

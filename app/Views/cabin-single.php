@@ -2,8 +2,9 @@
 
 namespace App\Views;
 
-use App\ExtraFunctions;
-use App\Utilities;
+use App\Classes\ExtraFunctions;
+use App\Classes\Utilities;
+use App\Classes\ViewFunctions;
 
 if (empty($data['cabins']['cabinnumber'])) $label = 'New Cabin';
 else $label = 'Cabin #' . $data['cabins']['cabinnumber'];
