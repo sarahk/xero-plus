@@ -7,7 +7,7 @@ use App\Models\Traits\DebugTrait;
 use App\Models\Traits\FunctionsTrait;
 use App\Models\Traits\LoggerTrait;
 use App\Models\Traits\PdoTrait;
-use App\Utilities;
+use App\classes\Utilities;
 use PDO;
 
 class BaseQueryModel

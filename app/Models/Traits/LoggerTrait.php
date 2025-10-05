@@ -2,7 +2,7 @@
 
 namespace App\Models\Traits;
 
-use App\StorageClass;
+use App\classes\StorageClass;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;

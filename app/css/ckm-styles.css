@@ -9,6 +9,20 @@
     --ck-due: #2ca02c;
     --ck-overdue: #ef476f;
     --ck-future: #5f5a72;
+    --menu-prime-color: #495984;
+    --body-bg-rgb: 242, 243, 249;
+    --primary-rgb: 98, 89, 202;
+    --secondary-rgb: 251, 107, 37;
+    --warning-rgb: 247, 183, 49;
+    --info-rgb: 69, 170, 242;
+    --success-rgb: 9, 173, 149;
+    --danger-rgb: 248, 38, 73;
+    --light-rgb: 242, 242, 249;
+    --dark-rgb: 52, 58, 64;
+    --orange-rgb: 252, 115, 3;
+    --pink-rgb: 252, 82, 150;
+    --teal-rgb: 28, 175, 159;
+    --purple-rgb: 137, 39, 236;
 }
 
 .card-pay .tabs-menu li {
@@ -245,7 +259,7 @@ table.table.dataTable.table-striped > tbody > tr.selected:nth-of-type(odd) > * {
     background-color: rgba(var(--light-rgb), .5);
 }
 
-.app-sidebar .side-menu__item {
+.app-sidebar .side-menu .side-menu__item {
     padding: 10px 30px;
     position: relative;
     display: flex;
@@ -253,7 +267,7 @@ table.table.dataTable.table-striped > tbody > tr.selected:nth-of-type(odd) > * {
     text-decoration: none;
     font-size: .813rem;
     color: var(--menu-prime-color);
-    font-weight: 500;
+    font-weight: 900;
     border-radius: .313rem;
 }
 
@@ -334,3 +348,5 @@ table.table.dataTable.table-striped > tbody > tr.selected:nth-of-type(odd) > * {
 #taskFiltering.shadow {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
+
+

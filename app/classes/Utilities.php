@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\classes;
 
 use App\Models\TenancyModel;
-
 use App\Models\UserModel;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 use League\OAuth2\Client\Provider\GenericProvider;
+use XeroAPI\XeroPHP\JWTClaims;
 
 //use XeroAPI\XeroPHP\Configuration;
 use PDO;
@@ -55,7 +55,7 @@ class Utilities
     {
         if (!array_key_exists('user_id', $_SESSION)) {
             ob_start();
-            $jwt = new XeroAPI\XeroPHP\JWTClaims();
+            $jwt = new JWTClaims();
             $jwt->setTokenId((string)$storage->getIdToken());
             // Set access token in order to get authentication event id
             $jwt->setTokenAccess((string)$storage->getAccessToken());
@@ -78,7 +78,7 @@ class Utilities
         $storage = new StorageClass();
         $xeroTenantId = (string)$storage->getSession()['tenant_id'];
 
-        if ($storage->getHasExpired()) {
+        if ($storage->hasExpired()) {
             $provider = self::getProvider();
             try {
                 $newAccessToken = $provider->getAccessToken('refresh_token', [
@@ -102,7 +102,7 @@ class Utilities
             );
             self::setTenanciesForUser($provider, $storage);
         }
-        setJWTValues($storage);
+        self::setJWTValues($storage);
 
 
         return $storage;

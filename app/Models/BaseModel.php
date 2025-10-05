@@ -8,6 +8,7 @@ use App\Models\Traits\PdoTrait;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\FunctionsTrait;
 use App\Models\Traits\LoggerTrait;
+use App\classes\Utilities;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -74,10 +75,13 @@ abstract class BaseModel
      */
     public function get(string $key, mixed $keyVal, bool $defaults = true): array
     {
+
         // pass 0 if you just want the defaults for the table
-        if ($keyVal != 0)
+        if ($keyVal !== 0) {
             $data = $this->getRecord($key, $keyVal);
-        else $data = [];
+        } else {
+            $data = [];
+        }
 
         // either we didn't have a value or there isn't a record in the database
         if (count($data)) {
@@ -122,6 +126,7 @@ abstract class BaseModel
             $sql = 'SELECT * ' . $this->getVirtuals() . " 
                 FROM $this->table 
                 WHERE `$key` = :keyVal";
+
 
             $result = $this->runQuery($sql, ['keyVal' => $keyVal]);
 

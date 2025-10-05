@@ -1,9 +1,7 @@
 <?php
-
-namespace App\Views\Widgets;
 // Display and clear the notification on the next page
 
-use App\StorageClass;
+use App\classes\StorageClass;
 
 if (!isset($storage) || !$storage instanceof StorageClass) {
     $storage = new StorageClass(); // Instantiate if not set

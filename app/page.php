@@ -8,6 +8,10 @@ use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
 use App\Models\TasksModel;
+use App\classes\JsonClass;
+use App\classes\StorageClass;
+use App\classes\Utilities;
+use App\classes\Loader;
 use DateTime;
 
 //ini_set('display_errors', 'On');
@@ -29,6 +33,13 @@ $provider = Utilities::getProvider();
 
 // if not logged in, will show the login button
 Utilities::checkAccessToken();
+
+// checkAccessToken seems to be doing a good job
+// this code isn't right
+//if (!$storage->xeroIsLoggedIn()) {
+//    header('Location: /index.php');
+//    exit;
+//}
 const LOGGEDOUT = false;
 
 $message = "no API calls";

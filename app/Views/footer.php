@@ -1,15 +1,20 @@
 <?php
 namespace App\Views\Footer;
 
-use App\ExtraFunctions;
-use App\Loader;
+use App\classes\ExtraFunctions;
+use App\classes\Loader;
 
 ?>
 </div>
 </div>
 <!--SIDEBAR-RIGHT-->
-<?php include 'Layouts/sidebar-right.php'; ?>
+<?php
+$loggedOut = !defined('\App\LOGGEDOUT') || (bool)\App\LOGGEDOUT;
+if (!$loggedOut) {
 
+    include 'Layouts/sidebar-right.php';
+}
+?>
 <!--/SIDEBAR-RIGHT-->
 
 
@@ -42,7 +47,11 @@ if (!isset($loader)) {
 }
 
 $loader->outputJS('footer');
-$loader->outputModals();
+
+
+if (!$loggedOut) {
+    $loader->outputModals();
+}
 //todo remove code below, should be handled by loader
 //if (isset($modals) && is_array($modals) && count($modals)) {
 //    foreach ($modals as $filename) {

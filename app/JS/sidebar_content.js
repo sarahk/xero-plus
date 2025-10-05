@@ -12,8 +12,14 @@ export function initSidebarContent(root = document) {
     const sidebarEl = document.querySelector('.sidebar');
 
 // Only proceed if the JS instance is live
-    const inst = Sidebars.getInstance(sidebarEl) || Sidebars.create(sidebarEl);
+    const inst = Sidebars.getInstance(sidebarEl) || Sidebars.create(sidebarEl, {toggle: false});
 
+    const LS_OPEN = 'sidebar:open';
+    if (localStorage.getItem(LS_OPEN) === '1') {
+        inst.show();
+    } else {
+        inst.hide(); // ensures it stays closed if previously closed
+    }
 
     // === Sidebar filters (status) ===
     const filterToggle = sidebarEl.querySelector('#toggleTaskFiltering');
@@ -113,6 +119,12 @@ export function initSidebarContent(root = document) {
 
         sidebarEl.dataset.loaded = '1';
     });
+    const saveState = () => localStorage.setItem(LS_OPEN, inst.isOpen() ? '1' : '0');
+    
+
+// Save whenever it changes normally
+    sidebarEl.addEventListener('shown.bs.sidebar', saveState);
+    sidebarEl.addEventListener('hidden.bs.sidebar', saveState);
 
 // --- helpers ---
 
@@ -132,6 +144,7 @@ export function initSidebarContent(root = document) {
         const body = taskBlock.groups.map(g => {
             // g = { name, badge, tasks }
             const iconHtml = g.badge ? addClassToIcon(g.badge, 'small') : g.name; // use badge HTML if present
+
             const headerHtml = `<div class="row">
                                             <div class="col-2">${iconHtml}</div>
                                             <div class="col-10">`;
@@ -156,27 +169,10 @@ export function initSidebarContent(root = document) {
 
     // addClassToIcon
 
-    function getListOpenByTaskType(task_type) {
-        switch (task_type) {
-            case 'buy':
-                return `<ul class="text-start ms-3">`;
-            case 'wof':
-                return `<ul class="list-inline text-start comma-list ms-3">`;
-            case 'repair':
-                return `<ul class="list-inline text-start comma-list ms-3">`;
-            default:
-                return `<ul class="text-start ms-3">`;
-        }
-    }
-
-    function getListCloseByTaskType(task_type) {
-        if (task_type === 'wof') return `</ul><button type='submit' class="btn btn-sm mb-3">Done</button>`;
-        return `</ul>`;
-    }
 
     function renderListItem(task_type, task) {
 
-        const cabin = `<a href="#" data-bs-toggle="modal" data-bs-target="#cabinSingle" data-key="${task.raw.cabinnumber}">${task.raw.cabinnumber}</a>`;
+        const cabin = `<a href="#" data-bs-toggle="modal" data-bs-target="#cabinSingle" data-key="${task.raw.cabin_id}">${task.raw.cabinnumber}</a>`;
         const checkBox = task.quick_close ? `<input type="checkbox" name="data[task_id][${task.raw.task_id}]" value="1"/>` : '';
 
         switch (task_type) {

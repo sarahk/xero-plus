@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Views;
 
-use App\Loader;
+use App\classes\Loader;
 
 ?>
 <!doctype html>
@@ -86,4 +86,4 @@ use App\Loader;
 
                 <!-- CONTAINER -->
                 <div class="main-container container-fluid">
-                    <?php include 'Widgets/alert.php'; ?>
+                    <?php include __DIR__ . '/Widgets/alert.php'; ?>

@@ -1,5 +1,6 @@
 <?php
-echo getcwd();
+
+namespace App\Models;
 require_once('vendor/autoload.php');
 
 class ClicksendModel

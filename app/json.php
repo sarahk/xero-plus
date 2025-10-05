@@ -14,12 +14,12 @@ use App\Models\Query\ActivityQueryModel;
 use App\Models\Query\BadDebtsManagementModel;
 use App\Models\Query\BadDebtsReminderModel;
 use App\Models\Query\HomeWatchList;
-use App\StorageClass;
-use App\JsonClass;
+use App\classes\StorageClass;
+use App\classes\JsonClass;
 use App\Models\TemplateModel;
 use \XeroAPI\XeroPHP\Configuration;
-use \XeroAPI\XeroPHP\Api\AccountingApi;
-use App\Utilities;
+use \XeroApi\XeroPHP\Api\AccountingApi;
+use App\classes\Utilities;
 
 header('Access-Control-Allow-Origin: *');
 header("Content-type: application/json; charset=utf-8");

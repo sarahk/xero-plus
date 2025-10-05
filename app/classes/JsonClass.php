@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\classes;
 
 //use App\Models\AddressModel;
 use App\Models\CabinModel;
@@ -16,7 +16,7 @@ use App\Models\InvoiceModel;
 use App\Models\TasksModel;
 
 //use App\Models\TenancyModel;
-
+use App\classes\StorageClass;
 
 // E N U M S
 use App\Models\Enums\CabinStyle;
@@ -28,12 +28,14 @@ use App\Models\TenancyModel;
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\LoggerTrait;
 use Hoa\Math\Util;
+
 use PDO;
 use DateTime;
 use DateTimeImmutable;
 
-use \XeroAPI\XeroPHP\Api\AccountingApi;
-
+//use \XeroAPI\XeroPHP\Api\AccountingApi;
+//use XeroApi\XeroPHP\Api\AccountingApi;
+use XeroAPI\XeroPHP\Api\AccountingApi;
 
 class JsonClass
 {

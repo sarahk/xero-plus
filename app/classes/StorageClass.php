@@ -1,9 +1,9 @@
 <?php
 
-namespace App;
+namespace App\classes;
 
 use DateTime;
-use Dotenv\Dotenv;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 
 class StorageClass
 {
@@ -90,6 +90,63 @@ class StorageClass
     public function getExpires()
     {
         return $_SESSION['oauth2']['expires'];
+    }
+
+    public function xeroIsLoggedIn(): bool
+    {
+        // 1) Get the access token from your StorageClass
+        $token = $this->getToken();   // adjust to your StorageClass API
+
+        if (!$token) {
+//            echo 'no token';
+//            exit;
+            return false;
+        }
+
+        // 2) Validate it according to what you store
+        if ($token instanceof AccessTokenInterface) {
+            if ($token->hasExpired()) {
+//                echo 'expired';
+//                exit;
+                return false;
+            }
+            if (!$token->getToken()) {
+//                echo 'false from getToken';
+//                exit;
+                return false;
+            }
+        } elseif (is_array($token)) {
+            // If you store as an array
+            if (empty($token['access_token'])) {
+//                var_dump($token);
+//                echo 'empty token';
+//                exit;
+                return false;
+            }
+            if (!empty($token['expires']) && $token['expires'] <= time()) {
+//                var_dump($token);
+//                echo 'expired token';
+//                exit;
+                return false;
+            }
+        } else {
+            // Unknown shape
+//            echo 'something else went wrong';
+//            exit;
+            return false;
+        }
+
+        // 3) (Optional but common) ensure a tenant is selected
+        // Many Xero examples expose getXeroTenantId() / getTenants()
+        //$tenantId = method_exists(StorageClass::class, 'getXeroTenantId')
+        //    ? StorageClass::getXeroTenantId()
+        //    : null;
+
+        // If your pages require a tenant, enforce it:
+        // return !empty($tenantId);
+
+        // If a tenant isn't strictly required for "logged in", allow it:
+        return true;
     }
 
     public function getXeroTenantId()
