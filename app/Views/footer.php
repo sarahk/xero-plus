@@ -10,8 +10,8 @@ use App\Classes\Loader;
 <!--SIDEBAR-RIGHT-->
 <?php
 $loggedOut = !defined('\App\LOGGEDOUT') || (bool)\App\LOGGEDOUT;
-if (!$loggedOut) {
 
+if (!$loggedOut) {
     include 'Layouts/sidebar-right.php';
 }
 ?>
@@ -24,7 +24,6 @@ if (!$loggedOut) {
             <div class="col-md-12 col-sm-12 text-center">
                 Copyright © <span id="year"><?php echo date('Y'); ?></span> <a href="https://cabinking.nz/">Cabin King
                     NZ Ltd</a>.
-
             </div>
         </div>
     </div>
@@ -48,9 +47,11 @@ if (!isset($loader)) {
 
 $loader->outputJS('footer');
 
-
 if (!$loggedOut) {
+    echo '<!-- logged in, output modals -->';
     $loader->outputModals();
+} else {
+    echo '<!-- logged out, no modals -->';
 }
 //todo remove code below, should be handled by loader
 //if (isset($modals) && is_array($modals) && count($modals)) {
@@ -64,7 +65,6 @@ if (!$loggedOut) {
 <script defer type="text/javascript" src="/JS/menu.js"></script>
 <script defer type="text/javascript" src="/JS/home.js"></script>
 <script defer type="text/javascript" src="/JS/activity.js"></script>
-<script defer type="text/javascript" src="/JS/cabins.js"></script>
 <script defer type="module" src="/JS/combo.js"></script>
 <script defer type="text/javascript" src="/JS/contacts.js"></script>
 <script defer type="text/javascript" src="/JS/contracts.js"></script>

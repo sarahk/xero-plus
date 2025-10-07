@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class='table table-striped table-bordered' id='tCabins' style='width:100%'>
+                    <table class='table table-striped table-bordered table-sm' id='tCabins' style='width:100%'>
                         <thead>
                         <tr>
                             <th>#</th>
@@ -23,3 +23,8 @@
         </div>
     </div>
 </div>
+<script type="module">
+    import {CabinsIndexTable} from '/JS/DataTables/cabinsIndex.js';
+
+    window.addEventListener('DOMContentLoaded', () => CabinsIndexTable.init());
+</script>

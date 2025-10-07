@@ -144,7 +144,7 @@ switch ($action) {
 
     case 13:
         // list of cabins
-        $loader->addModal('cabin-single.php');
+        $loader->addModal('cabin-view.php');
         break;
 
     case 14:
@@ -175,7 +175,7 @@ switch ($action) {
         $data['tasks'] = $tasks->getChildren('cabins', $_GET['cabin_id'], false);
 
         $loader->addModal('task-single.php');
-        $loader->addModal('cabin-edit-basics.php');
+        $loader->addModal('cabin-edit.php');
         $loader->addJS('/JS/Widgets/notesTabAccordionWidget.js');
         break;
 
@@ -282,7 +282,7 @@ $view = __DIR__ . '/' . match ($action) {
         11 => 'Views/cabin-locations.php',
         12 => 'Views/invoice_single.php',
         13 => 'Views/cabins-index.php',
-        14 => 'Views/cabin-single.php',
+        14 => 'Views/cabin-view.php',
         16 => 'Views/bad_debts_index.php',
         160 => 'Views/bad_debts_management.php',
         17 => 'Views/templates-index.php',

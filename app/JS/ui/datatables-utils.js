@@ -36,3 +36,28 @@ the code it replaces...
 createdRow: (row, data) => { if (data?.colour) row.classList.add('bar-' + data.colour); }
 
  */
+
+export function setDataFilter(dt, value, onChange) {
+    if (typeof onChange === 'function') onChange(value);   // lets caller update its own state
+    dt.ajax.reload(null, true);                            // reload & reset paging
+
+    // Toggle .active based on data-filter attr
+    const nodes = dt.buttons().nodes();
+    Array.prototype.forEach.call(nodes, (btn) => {
+        const btnValue = btn.getAttribute('data-filter');
+        btn.classList.toggle('active', btnValue === value);
+    });
+}
+
+export function wireDTEvents(listenFor, onTaskCreated) {
+    document.removeEventListener(listenFor, onTaskCreated);
+    document.addEventListener(listenFor, onTaskCreated);
+}
+
+export function paintActiveFilter(dt, value) {
+    const nodes = dt.buttons().nodes();
+    Array.prototype.forEach.call(nodes, (btn) => {
+        const btnValue = btn.getAttribute('data-filter');
+        btn.classList.toggle('active', btnValue === value);
+    });
+}

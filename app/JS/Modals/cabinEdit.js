@@ -1,7 +1,8 @@
 import {
     SELECTORS, initGuard, showAlert, hideAlert, populateSelect,
-    toDDMMYY, fetchJSON, getFormPayload, initClickableAlerts
+    getFormPayload, initClickableAlerts
 } from '/JS/ui/modal-utils.js';
+import {toDDMMYY, fetchJSON} from '/JS/ui/helpers.js';
 
 export function initCabinEditBasicsModal(modalEl) {
     if (!initGuard(modalEl)) return;

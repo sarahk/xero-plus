@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\TasksModel;
 use App\Models\Enums\CabinPainted;
 use App\Models\Enums\CabinStyle;
+use App\Models\Enums\CabinStatus;
+
 use PDOException;
 use PDO;
 
@@ -156,9 +159,9 @@ class CabinModel extends BaseModel
             }
         }
 
-        if (!empty($output['button'])) {
+        if (!empty($output['dataFilter']) && CabinStatus::isValid($output['dataFilter'])) {
             $conditions[] = "`cabins`.`status` = :status";
-            $search_values['status'] = strtoupper($output['button']);
+            $search_values['status'] = strtoupper($output['dataFilter']);
         } else {
             $conditions[] = "`cabins`.`status` = 'active'";
         }
@@ -187,7 +190,8 @@ class CabinModel extends BaseModel
         ORDER BY {$order} 
         LIMIT {$params['start']}, {$params['length']}";
 
-
+        $output['sql'] = $sql;
+        $output['search_values'] = [$search_values];
         $cabins = $this->runQuery($sql, $search_values);
 
 //        $output['recordsTotal'] = $this->getTotalRecordCount($conditions[0], $tenancies['bind_vars']);
@@ -204,10 +208,12 @@ class CabinModel extends BaseModel
         $output['recordsFiltered'] = $this->runQuery($records_filtered, $search_values, 'column');
 
         if (count($cabins)) {
-            foreach ($cabins as $k => $row) {
+            $task = new TasksModel($this->pdo);
 
+            foreach ($cabins as $k => $row) {
+                $tasks_due = $task->getTaskCounts('Cabin', $row['cabin_id']);
                 $output['data'][] = [
-                    'number' => "<a href='#' class='' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']} <sup><span class='badge badge-info'>4</span></sup></a>",
+                    'number' => "<a href='#' class='' data-bs-toggle='modal' data-bs-target='#cabinViewModal' data-key='{$row['cabin_id']}'>{$row['cabinnumber']} <sup><span class='badge badge-info'>{$tasks_due['due']}</span></sup></a>",
                     //'number' => "<button type='button' class='btn btn-link' data-bs-toggle='modal' data-bs-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</button>",
                     //'number' => "<a href='/page.php?action=14' data-toggle='modal' data-target='#cabinSingle' data-key='{$row['cabin_id']}'>{$row['cabinnumber']}</a>",
                     'style' => CabinStyle::getLabel($row['style']),

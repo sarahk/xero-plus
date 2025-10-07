@@ -1,11 +1,12 @@
 <?php
 /*
- * Saves records and sends back to Authorised Resource
+ * Saves records and sends back to Authorized Resource
  * Prevents resubmits
  */
 
 namespace App;
 
+use App\Classes\Utilities;
 use App\Models\CabinModel;
 use App\Models\ContactJoinModel;
 use App\Models\ContactModel;
@@ -18,7 +19,7 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 // if this script returns anything, it'll be json
 header('Access-Control-Allow-Origin: *');
-header("Content-type: application/json; charset=utf-8");
+header('Content-type: application/json; charset=utf-8');
 
 
 require '../vendor/autoload.php';
@@ -89,7 +90,14 @@ switch ($action) {
                 break;
             case 'task':
                 $task = new TasksModel($pdo);
-                $output['result'] = $task->prepAndSave($data);
+                var_dump($_POST);
+                $quick_close = (array_key_exists('quick_close', $_POST) && $_POST['quick_close'] === 'true');
+                var_dump($quick_close);
+                if ($quick_close) {
+                    $output['result'] = $task->prepAndUpdate($data);
+                } else {
+                    $output['result'] = $task->prepAndSave($data);
+                }
                 $output['message'] = 'Task saved';
         }
 }

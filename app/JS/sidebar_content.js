@@ -120,7 +120,7 @@ export function initSidebarContent(root = document) {
         sidebarEl.dataset.loaded = '1';
     });
     const saveState = () => localStorage.setItem(LS_OPEN, inst.isOpen() ? '1' : '0');
-    
+
 
 // Save whenever it changes normally
     sidebarEl.addEventListener('shown.bs.sidebar', saveState);
@@ -172,7 +172,7 @@ export function initSidebarContent(root = document) {
 
     function renderListItem(task_type, task) {
 
-        const cabin = `<a href="#" data-bs-toggle="modal" data-bs-target="#cabinSingle" data-key="${task.raw.cabin_id}">${task.raw.cabinnumber}</a>`;
+        const cabin = `<a href="#" data-bs-toggle="modal" data-bs-target="#cabinViewModal" data-key="${task.raw.cabin_id}">${task.raw.cabinnumber}</a>`;
         const checkBox = task.quick_close ? `<input type="checkbox" name="data[task_id][${task.raw.task_id}]" value="1"/>` : '';
 
         switch (task_type) {

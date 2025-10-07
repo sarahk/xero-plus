@@ -3,30 +3,28 @@
 namespace App\Classes;
 
 //use App\Models\AddressModel;
-use App\Models\CabinModel;
 use App\Models\ActivityModel;
+use App\Models\CabinModel;
 use App\Models\ComboModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
-
-use App\Models\Enums\CabinStatus;
 use App\Models\InvoiceModel;
-
-//use App\Models\PhoneModel;
 use App\Models\TasksModel;
-
-use App\Classes\StorageClass;
-
-// E N U M S
-use App\Models\Enums\CabinStyle;
-use App\Models\Enums\CabinOwners;
-
-
 use App\Models\PaymentModel;
 use App\Models\TenancyModel;
+use App\Models\TemplateModel;
+use App\Models\UserModel;
+
+// E N U M S
+use App\Models\Enums\CabinStatus;
+use App\Models\Enums\CabinStyle;
+use App\Models\Enums\CabinOwners;
+use App\Models\Enums\TaskStatus;
+use App\Models\Enums\TaskType;
+
+// T R A I T S
 use App\Models\Traits\DebugTrait;
 use App\Models\Traits\LoggerTrait;
-use Hoa\Math\Util;
 
 use PDO;
 use DateTime;
@@ -99,7 +97,7 @@ class JsonClass
     public function getEnquiryCabinList()
     {
         $cabins = new CabinModel($this->pdo);
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $params['xerotenant_id'] = $_GET['xerotenant_id'] ?? '';
         $params['cabin_id'] = $_GET['cabin_id'] ?? '';
         $params['painted'] = $_GET['painted'] ?? '';
@@ -111,14 +109,14 @@ class JsonClass
     public function getCabins()
     {
         $cabins = new CabinModel($this->pdo);
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         return $cabins->list($params);
     }
 
     public function getCabinSingle(): string
     {
         $cabins = new CabinModel($this->pdo);
-        $params = $this->getParams();
+        $params = Utilities::getParams();
 
         $cabin = $cabins->get('cabin_id', $params['key'])['cabins'];
 
@@ -143,7 +141,7 @@ class JsonClass
     public function getCabinEditData(): string
     {
         $cabins = new CabinModel($this->pdo);
-        $params = $this->getParams();
+        $params = Utilities::getParams();
 
         $cabin = $cabins->get('cabin_id', $params['key']);
 
@@ -223,27 +221,27 @@ class JsonClass
     public function getTemplateList(): string
     {
         $params = Utilities::getParams();
-        $template = new Models\TemplateModel($this->pdo);
+        $template = new TemplateModel($this->pdo);
         return $template->search($params);
     }
 
     public function getTemplate($id): string
     {
-        $template = new Models\TemplateModel($this->pdo);
+        $template = new TemplateModel($this->pdo);
         return json_encode($template->get('id', $id));
     }
 
 
     public function closeTask()
     {
-        $params = $this->getParams();
-        $tasks = new Models\TasksModel($this->pdo);
+        $params = Utilities::getParams();
+        $tasks = new TasksModel($this->pdo);
         return $tasks->closeTask($params);
     }
 
     public function ListTasks($for)
     {
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $params['specialise'] = $for;
         $tasks = new TasksModel($this->pdo);
         return json_encode($tasks->list($params));
@@ -252,8 +250,8 @@ class JsonClass
 
     public function getTaskSingle()
     {
-        $tasks = new Models\TasksModel($this->pdo);
-        $params = $this->getParams();
+        $tasks = new TasksModel($this->pdo);
+        $params = Utilities::getParams();
 
         $record = $tasks->get('task_id', $params['key'])['tasks'];
         if ($params['key']) {
@@ -263,9 +261,9 @@ class JsonClass
 
         }
 
-        $task['tasktypesoptions'] = Models\Enums\TaskType::getSelectOptionsArray();
-        $task['statusoptions'] = Models\Enums\TaskStatus::getSelectOptionsArray();
-        $user = new Models\UserModel($this->pdo);
+        $task['tasktypesoptions'] = TaskType::getSelectOptionsArray();
+        $task['statusoptions'] = TaskStatus::getSelectOptionsArray();
+        $user = new UserModel($this->pdo);
         $task['assignedtooptions'] = $user->getSelectOptionsArray();
 
         //$task['type'] = Models\Enums\TaskType::tryFrom($task['task_type']);
@@ -283,11 +281,11 @@ class JsonClass
         );
 
         if (!empty($task['cabin_id'])) {
-            $cabins = new Models\CabinModel($this->pdo);
+            $cabins = new CabinModel($this->pdo);
             $task['cabin'] = $cabins->getCurrentContract($task['cabin_id']);
 
             if (!empty($task['cabin']['ckcontact_id'])) {
-                $contacts = new Models\ContactModel($this->pdo);
+                $contacts = new ContactModel($this->pdo);
                 $task['contact'] = $contacts->get('id', $task['cabin']['ckcontact_id'], false);
             }
         }
@@ -297,7 +295,7 @@ class JsonClass
 
     public function getTaskCounts(): string
     {
-        $tasks = new Models\TasksModel($this->pdo);
+        $tasks = new TasksModel($this->pdo);
         $counts = $tasks->getCounts();
         return json_encode($counts);
     }
@@ -455,29 +453,6 @@ class JsonClass
         $str = $str . "Get BankTransaction total: " . count($result->getBankTransfers()) . "<br>";
 
         return $str;
-    }
-
-
-    public function getParams()
-    {
-        $output = ['data' => []];
-
-        $output['draw'] = $_GET['draw'] ?? 1;
-        $output['start'] = $_GET['start'] ?? 1;
-        $output['length'] = $_GET['length'] ?? 10;
-        $output['order'] = $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']];
-        $output['search'] = $_GET['search']['value'] ?? '';
-        // getInvoice
-        $output['invoice_status'] = $_GET['invoice_status'] ?? '';
-
-        $output['dates'] = $_GET['search']['dates'] ?? '';
-        $output['contact_status'] = $_GET['search']['dates'] ?? '';
-        $output['button'] = $_GET['search']['button'] ?? '';
-        $output['tenancies'] = $this->getTenancies();
-        // prima
-        $output['key'] = $_GET['search']['key'] ?? '';
-
-        return $output;
     }
 
     public function initPDOContact()
@@ -767,7 +742,7 @@ class JsonClass
     {
         return $this->getContactSingleton();
 //        $this->initPDOContact();
-//        $output = $this->getParams();
+//        $output = Utilities::getParams();
 //
 //        //check the age of the record first?
 //
@@ -1530,7 +1505,7 @@ class JsonClass
 
     public function getInvoiceList($returnObj = false)
     {
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $invoice = new InvoiceModel($this->pdo);
         $output = $invoice->list($params);
         return json_encode($output);
@@ -1551,7 +1526,7 @@ class JsonClass
 
     public function getBadDebtTotal(): string
     {
-        $params = $this->getParams();
+        $params = Utilities::getParams();
         $invoice = new InvoiceModel($this->pdo);
         return json_encode($invoice->getBadDebtTotal($params));
     }

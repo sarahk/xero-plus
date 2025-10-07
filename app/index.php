@@ -36,7 +36,7 @@ require_once('Views/header.php');
                      </div>-->
                     <div class="card-body">
                         <p>Log into Xero to get started</p>
-                        <a href="/Classes/authorization.php"><img src="images/connect-blue.svg" alt="Xero Login Button"></a>
+                        <a href="/authorization.php"><img src="images/connect-blue.svg" alt="Xero Login Button"></a>
                     </div>
                 </div>
             </div>

@@ -323,6 +323,7 @@ class Utilities
             'contract_id' => $_GET['contract_id'] ?? 0,
             'foreign_id' => $_GET['foreign_id'] ?? 0,
             'parent' => $_GET['parent'] ?? '',
+            'dataFilter' => $_GET['dataFilter'] ?? '',
         ];
     }
 

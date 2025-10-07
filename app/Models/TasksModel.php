@@ -44,12 +44,26 @@ class TasksModel extends BaseModel
 
     public function getCurrentCabin(string $cabin_id): array
     {
-        $sql = "SELECT * " . $this->getVirtuals() . " 
+        $output = [];
+        $sql = "SELECT tasks.* " . $this->getVirtuals() . " , cabins.cabinnumber
             FROM `tasks`
+            LEFT JOIN `cabins` on `tasks`.`cabin_id` = `cabins`.`cabin_id`
             WHERE `tasks`.`cabin_id` = :cabin_id
-            AND `tasks`.`status` != 'closed'";
+            AND `tasks`.`status` != 'closed'
+            ORDER BY `tasks`.`due_date` DESC";
+        // todo fine tune orderby to use the scheduled date too
+        $result = $this->runQuery($sql, ["cabin_id" => $cabin_id]);
 
-        return $this->runQuery($sql, ["cabin_id" => $cabin_id]);
+        foreach ($result as $row) {
+            $output[] = ['raw' => $row ?? [],
+                'task_id' => $row['task_id'],
+                'name' => $this->getModalLink($row['task_id'], $row['cabinnumber'], $row['name']),
+                'quick_close' => TaskStatus::allowQuickClose($row['status'] ?? ''),
+                'status' => TaskStatus::getLabel($row['status'] ?? ''),
+            ];
+        }
+
+        return $output;
     }
 
     public function getLastWOFDate(string $cabin_id)
@@ -138,12 +152,12 @@ class TasksModel extends BaseModel
             }
         }
 
-        $taskFilter = $_GET['taskFilter'] ?? 'all';
-        switch ($taskFilter) {
+        $data_filter = $_GET['dataFilter'] ?? 'all';
+        switch ($data_filter) {
             case 'overdue':
             case 'due':
                 $conditions[] = "task_window_bucket(tasks.due_date, tasks.scheduled_date) = :taskFilter";
-                $searchValues['taskFilter'] = $taskFilter;
+                $searchValues['taskFilter'] = $data_filter;
                 break;
 
             case 'myjobs':
@@ -152,9 +166,9 @@ class TasksModel extends BaseModel
                 break;
 
             default:
-                if (TaskType::isValid($taskFilter)) {
+                if (TaskType::isValid($data_filter)) {
                     $conditions[] = "tasks.task_type = :taskFilter";
-                    $searchValues['taskFilter'] = $taskFilter;
+                    $searchValues['taskFilter'] = $data_filter;
                 }
                 break;
         }
@@ -232,8 +246,8 @@ class TasksModel extends BaseModel
                     'DT_RowClass' => "bar-$colour",
                     'icon' => "<i class='fa fa-{$iconName}' aria-hidden='false'></i>",
                     'cabinnumber' => "<a href='/page.php?action=14&cabin_id={$cabinId}'>$cabinNo</a>",
-                    'task_id' => "<a href='#' data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='$taskId' data-cabinno='$cabinNo'>$taskId</a>",
-                    'name' => "<a href='#' data-bs-toggle='modal' data-bs-target='#cabinTaskEditModal' data-key='{$row['task_id']}' data-cabinno='$cabinNo'>$name</a>",
+                    'task_id' => $this->getModalLink($taskId, $cabinNo, $taskId),
+                    'name' => $this->getModalLink($taskId, $cabinNo, $name),
                     'status' => TaskStatus::getTaskStatusBadge($statusRaw),
                     'due_date' => $this->getDateWithOrnaments($statusRaw, $row['due_date'] ?? ''),
                     'scheduled_date' => $this->getPrettyDate($row['scheduled_date']),
@@ -255,6 +269,11 @@ class TasksModel extends BaseModel
         return $output;
     }
 
+    private function getModalLink(int $record_id, $cabin_no, string $label, $target = '#cabinTaskEditModal'): string
+    {
+        return "<a href='#' data-bs-toggle='modal' data-bs-target='$target' data-key='$record_id' data-cabinno='$cabin_no'>$label</a>";
+    }
+
     private function getDateWithOrnaments(string $status, string $date, ?string $icon = null): string
     {
         $date = trim($date);
@@ -270,7 +289,7 @@ class TasksModel extends BaseModel
     }
 
 
-    private function getTaskCounts($for = 'All', $key = ''): array
+    public function getTaskCounts($for = 'All', $key = ''): array
     {
         $sql = 'select * from `vTaskCounts`';
 
@@ -330,17 +349,18 @@ class TasksModel extends BaseModel
             $output = [];
             foreach ($data['task_id'] as $task_id => $switch) {
                 if ($switch) {
-                    $new_save = [
+
+                    $output[] = $this->prepAndUpdate([
                         'task_id' => $task_id,
                         'status' => 'done'
-                    ];
-
-                    $output[] = $this->prepAndUpdate($new_save);
+                    ]);
                 }
             }
 
             return implode(',', $output);
         }
+
+        // a regular save
         if (!empty($data['cabinnumber']) && empty($data['cabin_id'])) {
             $cabin = new CabinModel($this->pdo);
             $data['cabin_id'] = $cabin->field('cabin_id', 'cabinnumber', $data['cabinnumber']);
@@ -355,7 +375,7 @@ class TasksModel extends BaseModel
         return $result;
     }
 
-    private function prepAndUpdate(array $data): string
+    public function prepAndUpdate(array $data): string
     {
         $save = ['task_id' => $data['task_id']];
         foreach ($data as $key => $value) {

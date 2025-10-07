@@ -1,13 +1,21 @@
-import {waitForDataTables, pageIsReady, dtAddClassToRow, dtAddColourToRow} from '/JS/ui/datatables-utils.js';
+import {
+    waitForDataTables,
+    pageIsReady,
+    setDataFilter,
+    wireDTEvents,
+    paintActiveFilter
+} from '/JS/ui/datatables-utils.js';
 
 export const TasksIndexTable = (() => {
     let dt = null;
     let $table = null;
     let tableSel = '#tTasksIndex';
-    let currentTaskFilter = 'all';
+    let currentDataFilter = 'all';
 
     function init(opts = {}) {
         // allow overrides
+
+        const listenFor = 'task:created';
 
         if (!pageIsReady()) {
             return waitForDataTables()
@@ -21,7 +29,7 @@ export const TasksIndexTable = (() => {
 
         if ($.fn.dataTable.isDataTable($table)) {
             dt = $table.DataTable();
-            wireEvents();
+            wireDTEvents(listenFor, onTaskCreated);
             return dt;
         }
 
@@ -33,7 +41,7 @@ export const TasksIndexTable = (() => {
                 data(d) {
                     d.endpoint = 'Tasks';
                     d.action = 'ListIndex';
-                    d.taskFilter = currentTaskFilter;
+                    d.dataFilter = currentDataFilter;
                     return d;
                 }
             },
@@ -68,53 +76,53 @@ export const TasksIndexTable = (() => {
                         {
                             text: 'All', name: 'all', attr: {'data-filter': 'all'}, className: 'btn-lg',
                             action: function (e, dt) {
-                                setTaskFilter(dt, 'all');
+                                setDataFilter(dt, 'all');
                             }
                         },
                         {
                             text: 'WOF', name: 'wof', attr: {'data-filter': 'wof'}, className: 'btn-lg',
                             action: function (e, dt) {
-                                setTaskFilter(dt, 'wof');
+                                setDataFilter(dt, 'wof');
                             }
                         },
                         {
                             text: 'Repairs', name: 'repair', attr: {'data-filter': 'repair'}, className: 'btn-lg',
-                            action: function (e, dt) {
-                                setTaskFilter(dt, 'repair');
+                            action: (e, dt) => {
+                                setDataFilter(dt, 'repair', applyFilter);
                             }
                         },
                         {
                             text: 'Buy', name: 'buy', attr: {'data-filter': 'buy'}, className: 'btn-lg',
-                            action: function (e, dt) {
-                                setTaskFilter(dt, 'buy');
+                            action: (e, dt) => {
+                                setDataFilter(dt, 'buy', applyFilter);
                             }
                         },
                         {
                             text: 'My Jobs', name: 'myjobs', attr: {'data-filter': 'myjobs'}, className: 'btn-lg',
-                            action: function (e, dt) {
-                                setTaskFilter(dt, 'myjobs');
+                            action: (e, dt) => {
+                                setDataFilter(dt, 'myjobs', applyFilter);
                             }
                         },
                         {
                             text: 'Overdue', name: 'overdue', attr: {'data-filter': 'overdue'}, className: 'btn-lg',
-                            action: function (e, dt) {
-                                setTaskFilter(dt, 'overdue');
+                            action: (e, dt) => {
+                                setDataFilter(dt, 'overdue', applyFilter);
                             }
                         },
                         {
                             text: 'Current', name: 'due', attr: {'data-filter': 'due'}, className: 'btn-lg',
-                            action: function (e, dt) {
-                                setTaskFilter(dt, 'due');
+                            action: (e, dt) => {
+                                setDataFilter(dt, 'due', applyFilter);
                             }
                         },
                     ]
                 }
             },
-            stateSaveParams: function (settings, data) {
-                data.taskFilter = currentTaskFilter;
+            stateSaveParams: (settings, data) => {
+                data.dataFilter = currentDataFilter;
             },
-            stateLoadParams: function (settings, data) {
-                if (data.taskFilter) currentTaskFilter = data.taskFilter;
+            stateLoadParams: (settings, data) => {
+                if (data.dataFilter) currentDataFilter = data.dataFilter;
             },
             select: {
                 style: 'single',
@@ -122,32 +130,17 @@ export const TasksIndexTable = (() => {
             },
 
         });
+// After DT initializes, paint the saved-active button (no reload)
+        dt.on('init.dt', () => paintActiveFilter(dt, currentDataFilter));
 
-
-        wireEvents();
+        wireDTEvents(listenFor, onTaskCreated);
         return dt;
     }
 
 //createdRow: (row, data) => dtAddColourToRow(row, data)
-
-    function setTaskFilter(dt, value) {
-        currentTaskFilter = value;  // update the closure var
-        console.log(['setTaskFilter', dt, value]);
-
-        dt.ajax.reload(null, true); // reload and reset paging
-
-        // nodes() returns the DOM nodes for all buttons
-        const nodes = dt.buttons().nodes();
-
-        // Remove active from all; add to the one with matching data-filter
-        Array.prototype.forEach.call(nodes, (btn) => {
-            const btnValue = btn.getAttribute('data-filter');
-            const isActive = btnValue === value;
-            console.log(['setTaskFilter', value, btnValue, isActive]);
-            btn.classList.toggle('active', isActive);
-        });
+    function applyFilter(val) {
+        currentDataFilter = val;
     }
-
 
     async function saveTaskPatch({task_id, status}) {
         const form = new FormData();
@@ -191,13 +184,6 @@ export const TasksIndexTable = (() => {
         }
     });
 
-    function wireEvents() {
-        //reload the table
-        reload();
-
-        document.removeEventListener('task:created', onTaskCreated);
-        document.addEventListener('task:created', onTaskCreated);
-    }
 
     function onTaskCreated() {
         reload(false);
@@ -207,16 +193,7 @@ export const TasksIndexTable = (() => {
         if (dt) dt.ajax.reload(null, !keepPaging);
     }
 
-    function destroy() {
-        if (!$table) return;
-        document.removeEventListener('task:created', onTaskCreated);
-        $table.off('.tasks');
-        if (dt) dt.destroy();
-        dt = null;
-        $table = null;
-    }
-
-    return {init, reload, destroy};
+    return {init, reload};
 })();
 
 export default TasksIndexTable;

@@ -7,6 +7,7 @@
 /** @var string|null $jsFunction */
 /** @var string|null $jsFile */
 /** @var string|null $formType */
+/** @var bool $showButtons */
 ?>
 <div class="modal fade" id="<?= $modalStub; ?>Modal" tabindex="-1" role="dialog"
      aria-labelledby="<?= $modalStub; ?>Modal" aria-hidden="true">
@@ -27,25 +28,26 @@
                     <div class="alert alert-danger d-none" id="<?= $modalStub; ?>Alert" role="alert"
                          aria-live="polite"
                          data-ck="alert"></div>
-                    <input type="hidden" name="action" data-ck="action" value="<?= $modalAction; ?>">
+                    <input type="hidden" name="action" data-ck="action" value="<?= $modalAction ?? ''; ?>">
                     <input type="hidden" name="formType" data-ck="form-type" value="<?= $formType ?? ''; ?>">
                     <?= $bodyHtml; ?>
                 </div>
-
-                <div class="modal-footer gap-2">
+                <?php if ($showButtons): ?>
+                    <div class="modal-footer gap-2">
                         <span data-ck="updated" class="me-auto text-gray">Updated: <span
                                     data-ck="updated-from-db"></span></span>
 
-                    <!-- submit the form -->
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-2"></i>Save
-                        changes
-                    </button>
-                    <!-- close (BS5 attribute) -->
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-xmark me-2"></i>Close
-                    </button>
+                        <!-- submit the form -->
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-2"></i>Save
+                            changes
+                        </button>
+                        <!-- close (BS5 attribute) -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                                    class="fa-solid fa-xmark me-2"></i>Close
+                        </button>
 
-                </div>
+                    </div>
+                <?php endif; ?>
             </form>
         </div>
     </div>

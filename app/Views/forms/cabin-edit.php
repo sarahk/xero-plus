@@ -27,7 +27,7 @@ echo '<pre>' . var_export($data) . '</pre>';
         <div class="col-md-6">
             <form type='GET' id='modalForm'>
                 <?php
-                ExtraFunctions::getCard('/Views/forms/cabin-edit-basics.php', 'Basics', 'cabinBasics', $data);
+                ExtraFunctions::getCard('/Views/forms/cabin-edit.php', 'Basics', 'cabinBasics', $data);
                 ?>
             </form>
         </div>

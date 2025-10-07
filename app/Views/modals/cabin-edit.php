@@ -29,5 +29,5 @@ echo ViewFunctions::render('components/modal.php', [
     'title' => 'Cabin',
     'bodyHtml' => ViewFunctions::getFormFields($form_fields),
     'jsFunction' => 'initCabinEditBasics',
-    'jsFile' => 'Modals/cabinEditBasic.js'
+    'jsFile' => 'Modals/cabinEdit.js'
 ]);

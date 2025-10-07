@@ -29,6 +29,8 @@ final class ViewFunctions
         extract($data, EXTR_SKIP);
         $validate = $validate ?? false;
         $validation = $validate ? 'class="needs-validation"' : 'novalidate';
+        $showButtons = $showButtons ?? true;
+
         ob_start();
         include $view_file;
         return (string)ob_get_clean();
