@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered text-nowrap border-bottom w-100" id="tContracts">
+                    <table class="table table-bordered table-sm text-nowrap border-bottom w-100" id="tContracts">
                         <thead>
                         <tr>
                             <th>ID</th>
@@ -23,7 +23,11 @@
         </div>
     </div>
 </div>
+<script type="module">
+    import {ContractsIndexTable} from '/JS/DataTables/contractsIndex.js';
 
+    window.addEventListener('DOMContentLoaded', () => ContractsIndexTable.init());
+</script>
 <?php /*
 { data: "checkbox", orderable: false },
            { data: "theyowe", className: 'dt-right' },

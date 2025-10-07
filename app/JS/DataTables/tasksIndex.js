@@ -75,13 +75,13 @@ export const TasksIndexTable = (() => {
                         {extend: 'csv', text: 'Export', split: ['copy', 'excel', 'pdf', 'print']},
                         {
                             text: 'All', name: 'all', attr: {'data-filter': 'all'}, className: 'btn-lg',
-                            action: function (e, dt) {
+                            action: (e, dt) => {
                                 setDataFilter(dt, 'all');
                             }
                         },
                         {
                             text: 'WOF', name: 'wof', attr: {'data-filter': 'wof'}, className: 'btn-lg',
-                            action: function (e, dt) {
+                            action: (e, dt) => {
                                 setDataFilter(dt, 'wof');
                             }
                         },

@@ -175,7 +175,7 @@ class ContractModel extends BaseModel
         $raw = $tenancy->list();
         $tenancyList = array_column($raw, null, 'tenant_id');
 
-        $searchValues = [];
+        $search_values = [];
 
         $tenancies = $this->getTenanciesWhere($params);
 
@@ -193,7 +193,7 @@ class ContractModel extends BaseModel
             ];
 
             for ($i = 1; $i <= count($search); $i++) {
-                $searchValues["search$i"] = '%' . $params['search'] . '%';
+                $search_values["search$i"] = '%' . $params['search'] . '%';
             }
 
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
@@ -213,18 +213,21 @@ class ContractModel extends BaseModel
 
 
         // todo what buttons
-        if (!empty($params['button']) && $params['button'] !== 'read') {
-            if ($params['button'] == 'overdue') {
-                $searchValues['overduedate'] = date('Y-m-d', strtotime('-7 days'));
-                $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
+        if (!empty($params['dataFilter'])) {
+            switch ($params['dataFilter']) {
+                case 'overdue':
+                    $conditions[] = "`vdebts`.`amount_due` > 0";
+                    break;
+                case 'New':
+                case 'Enquiry':
+                case 'Active':
+                    $conditions[] = "`contracts`.`status` = :status";
+                    $search_values['status'] = $params['dataFilter'];
 
-            } else {
-                $searchValues['status'] = strtoupper($params['button']);
-                $conditions[] = "`invoices`.`status` = :status";
+                default:
+//                    $search_values['status'] = strtoupper($params['button']);
+//                    $conditions[] = "`invoices`.`status` = :status";
             }
-        } else {
-            //todo
-            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
         }
 
         $sql = "SELECT `contracts`.`contract_id`, contracts.repeating_invoice_id, contracts.`status`, 
@@ -234,29 +237,28 @@ class ContractModel extends BaseModel
                     contracts.schedule_unit,
 	                `contacts`.`id` as `ckcontact_id`, `contacts`.`name`, `contacts`.`email_address`,
                     `contracts`.`xerotenant_id`,
-                    (SELECT SUM(`amount_due`) 
-                        FROM `invoices` 
-                        WHERE `invoices`.`repeating_invoice_id` = `contracts`.`repeating_invoice_id`) AS `amount_due`,
+                    vdebts.`amount_due`,
                     (SELECT concat(`phone_area_code`,' ', `phone_number`) AS `phone_number`
                         FROM `phones`
                         WHERE `phones`.`ckcontact_id` = contacts.`id`
                         ORDER BY `phone_type` DESC LIMIT 1) AS `phone_number`
                 FROM `contracts`
                 LEFT JOIN `contacts` ON `contracts`.`ckcontact_id` = `contacts`.`id`
+                LEFT JOIN vdebts ON vdebts.repeating_invoice_id = contracts.repeating_invoice_id 
                 WHERE " . implode(' AND ', $conditions) . "
                 ORDER BY $order 
                 LIMIT {$params['start']}, {$params['length']}";
 
 
-        $result = $this->runQuery($sql, $searchValues);
+        $result = $this->runQuery($sql, $search_values);
 
         $output = $params;
         $output['mainquery'] = $sql;
-        $output['mainsearchvals'] = $searchValues;
+        $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
         $output['recordsTotal'] = $this->getRecordsTotal($tenancies);
-        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $searchValues);
+        $output['recordsFiltered'] = $this->getRecordsFiltered($conditions, $search_values);
         $output['result'] = $result;
 
         if (count($result) > 0) {
@@ -269,8 +271,12 @@ class ContractModel extends BaseModel
                 } else {
                     $idCell[] = "<img src='/images/Xero_disabled.svg' height='15' width='15' style='margin-left: .5em' alt='Record is NOT in Xero'>";
                 }
+                $contract_id = $row['contract_id'] ?? '';
+                $colour = $tenancyList[$row['xerotenant_id']]['colour'];
 
                 $output['data'][] = [
+                    'DT_RowId' => "row_$contract_id",
+                    'DT_RowClass' => "bar-$colour",
                     'contract_id' => implode($idCell),
                     'status' => $row['status'],
                     'name' => "<a href='/page.php?action=10&id={$row['ckcontact_id']}'>{$row['name']}</a>",
@@ -281,7 +287,7 @@ class ContractModel extends BaseModel
                     'amount_due' => $row['amount_due'],
                     'date' => $this->getPrettyDate($row['date'] ?? ''),
                     'scheduled_delivery_date' => $this->getPrettyDate($row['scheduled_delivery_date'] ?? ''),
-                    'colour' => $tenancyList[$row['xerotenant_id']]['colour'],
+                    'colour' => $colour,
                     'rating' => EnquiryRating::getImage($row['enquiry_rating'] ?? 0),
                     'schedule_unit' => $row['schedule_unit'] ?? '',
                 ];
@@ -292,6 +298,21 @@ class ContractModel extends BaseModel
         }
 
         return $output;
+    }
+
+
+    protected function getRecordsFiltered(array $conditions, array $searchValues, string $sql = ''): int
+    {
+        if (empty($sql))
+            $recordsFiltered = 'SELECT count(*) as `filtered` 
+                FROM  `contracts`
+                LEFT JOIN `contacts` ON `contracts`.`ckcontact_id` = `contacts`.`id`
+                LEFT JOIN vdebts ON vdebts.repeating_invoice_id = contracts.repeating_invoice_id 
+                WHERE  ' . implode(' AND ', $conditions);
+        else $recordsFiltered = $sql;
+
+        return $this->runQuery($recordsFiltered, $searchValues, 'column');
+
     }
 
     /**

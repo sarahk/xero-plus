@@ -7,12 +7,12 @@
         </div>
         <div class="card-body px-0">
             <div class="table-responsive">
-                <table class='table table-striped table-bordered' id='tHomeEnquiries'>
+                <table class='table table-striped table-bordered table-sm' id='tHomeEnquiries'>
                     <thead>
                     <tr>
                         <th>Date</th>
                         <th>Details</th>
-                        <th>Rating</th>
+                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                 </table>
@@ -31,12 +31,12 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class='table table-striped table-bordered' id='tHomeWaitlist' style=''>
+                <table class='table table-striped table-bordered table-sm' id='tHomeWaitlist' style=''>
                     <thead>
                     <tr>
                         <th>Date</th>
                         <th>Details</th>
-                        <th>Rating</th>
+                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                 </table>
@@ -56,7 +56,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class='table table-striped table-bordered' id='tHomeWatchlist' style=''>
+                <table class='table table-striped table-bordered table-sm' id='tHomeWatchlist' style=''>
                     <thead>
                     <tr>
                         <th>Name</th>

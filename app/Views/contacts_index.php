@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered text-nowrap border-bottom w-100" id="tContacts">
+                    <table class="table table-bordered text-nowrap border-bottom w-100 table-sm" id="tContacts">
                         <thead>
                         <tr>
                             <th>Lifecycle</th>

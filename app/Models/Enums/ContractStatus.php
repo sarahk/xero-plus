@@ -8,6 +8,7 @@ enum ContractStatus: string
 {
     use EnumHelper;
 
+    case New = 'New';
     case Enquiry = 'Enquiry';
     case Active = 'Active';
     case Returned = 'Returned';

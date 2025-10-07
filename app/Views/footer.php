@@ -67,7 +67,6 @@ if (!$loggedOut) {
 <script defer type="text/javascript" src="/JS/activity.js"></script>
 <script defer type="module" src="/JS/combo.js"></script>
 <script defer type="text/javascript" src="/JS/contacts.js"></script>
-<script defer type="text/javascript" src="/JS/contracts.js"></script>
 <script defer type="text/javascript" src="/JS/enquiry.js"></script>
 <script defer type="text/javascript" src="/JS/invoices.js"></script>
 <script defer type="module" src="/JS/bad_debts.js"></script>

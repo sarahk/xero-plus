@@ -26,7 +26,7 @@
 
 
             <div class="table-responsive mb-3">
-                <table class='table table-striped table-bordered mb-0' id='tHomeTasks'>
+                <table class='table table-striped table-bordered mb-0 table-sm' id='tHomeTasks'>
                     <thead>
                     <tr>
 
