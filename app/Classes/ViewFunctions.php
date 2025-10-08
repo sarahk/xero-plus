@@ -88,6 +88,7 @@ final class ViewFunctions
     {
         extract($vars);
         $value = $value ?? '';
+        $fieldId = $fieldId ?? '';
         return "<input type='hidden' name='data[$fieldId]' value='$value'>";
     }
 

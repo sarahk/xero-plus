@@ -297,7 +297,7 @@ class ExtraFunctions
         $js = json_encode($keys, JSON_PRETTY_PRINT);
         ?>
         <script>
-            const keys = <?= $js ?>;
+            window.keys = <?= $js ?>;
         </script>
         <?php
     }

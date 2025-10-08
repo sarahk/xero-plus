@@ -20,6 +20,7 @@ class Loader
         $this->addModal('cabin-view.php'); //used by sidebar
         $this->addModal('cabin-edit.php'); //used by sidebar
         $this->addModal('task-single.php'); //used by sidebar
+        $this->addJS('/JS/ui/tab-helpers.js');
     }
 
     public function outputJS($where = 'footer'): void

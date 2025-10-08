@@ -2,13 +2,13 @@
 
 namespace Tests\Unit;
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Level;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use App\Models\InvoiceModel;
-use App\Utilities;
+use App\classes\Utilities;
 use ReflectionClass;
 
 

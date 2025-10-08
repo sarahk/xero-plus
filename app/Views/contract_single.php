@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Views;
 
 //create some variables for the widgets
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 
 $newNote = ['parent' => 'contact', 'foreign_id' => $keys['contract']['contract_id']];
 //var_dump($data);

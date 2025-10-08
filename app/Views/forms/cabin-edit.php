@@ -1,8 +1,8 @@
 <?php
 namespace App\Views\forms;
 
-use App\ExtraFunctions;
-use App\Utilities;
+use App\classes\ExtraFunctions;
+use App\classes\Utilities;
 
 if (empty($data['cabins']['cabinnumber'])) $label = 'New Cabin';
 else $label = 'Cabin #' . $data['cabins']['cabinnumber'];

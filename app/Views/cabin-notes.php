@@ -1,6 +1,6 @@
 <?php
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 
 ?>
 <div class="row mb-2">

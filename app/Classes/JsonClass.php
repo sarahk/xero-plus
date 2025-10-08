@@ -5,7 +5,7 @@ namespace App\Classes;
 //use App\Models\AddressModel;
 use App\Models\ActivityModel;
 use App\Models\CabinModel;
-use App\Models\ComboModel;
+use App\Models\Query\ComboQueryModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
@@ -189,25 +189,8 @@ class JsonClass
 
     public function getComboList()
     {
-        $params = Utilities::getParams();
-        $params['contact_id'] = $_GET['contact_id'] ?? 0;
-        // do we want a generic list or one filtered for a contract or contact?
-        if (empty($params['contact_id'])) {
-            $id = $_GET['ckcontact_id'] ?? 0;
-            if (!empty($id)) {
-                $contact = new ContactModel($this->pdo);
-                $params['contact_id'] = $contact->field('contact_id', 'contact_id', $id);
-            }
-        }
-        if (empty($params['contract_id'])) {
-            $params['repeating_invoice_id'] = $_GET['repeating_invoice_id'] ?? 0;
-            if (!empty($params['repeating_invoice_id'])) {
-                $contract = new ContractModel($this->pdo);
-                $params['contract_id'] = $contract->field('contract_id', 'repeating_invoice_id', $params['repeating_invoice_id']);
-            }
-        }
-        $combo = new ComboModel($this->pdo);
-        return json_encode($combo->list($params));
+        $combo = new ComboQueryModel($this->pdo);
+        return $combo->list();
     }
 
     public function getContractList()

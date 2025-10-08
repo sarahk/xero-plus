@@ -1,31 +1,47 @@
-<div class="row row-sm">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Invoices & Payments</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped text-nowrap border-bottom w-100" id="tCombo">
-                        <thead>
-                        <tr>
-                            <th>&nbsp;</th>
-                            <th>#</th>
-                            <th>Ref</th>
-                            <th>Customer</th>
-                            <th>Status</th>
-                            <th>Total</th>
-                            <th>$ Due</th>
-                            <th>Date</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
+<?php
+/** @var array $keys */
+?>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Invoices & Payments</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm table-striped text-nowrap border-bottom w-100"
+                   id="tContractCombo">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>&nbsp;</th>
+                    <th>#</th>
+                    <th>Ref</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>$ Due</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="8" class="text-center">No data to display</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
+<script type="module">
+    import {ContractComboTable} from '/JS/DataTables/contractCombo.js';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        ContractComboTable.init({
+            contractId: '<?=  $keys['contract']['contract_id']; ?>'
+        });
+    });
+</script>
 <?php /*
 "number": "INV-46244",
 "reference": "1062",

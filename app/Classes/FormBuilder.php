@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Views\Widgets;
+namespace App\Classes;
 
-use App\ExtraFunctions;
+use App\Classes\ExtraFunctions;
 
 
 class FormBuilder

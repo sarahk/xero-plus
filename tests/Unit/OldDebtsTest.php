@@ -3,9 +3,9 @@
 
 namespace Tests\Unit;
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 use App\Models\InvoiceModel;
-use App\Utilities;
+use App\classes\Utilities;
 
 return;
 // Adjust the namespace as needed

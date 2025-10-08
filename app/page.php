@@ -8,10 +8,13 @@ use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
 use App\Models\TasksModel;
+
 use App\Classes\JsonClass;
 use App\Classes\StorageClass;
 use App\Classes\Utilities;
 use App\Classes\Loader;
+use App\Classes\ExtraFunctions;
+
 use DateTime;
 
 //ini_set('display_errors', 'On');
@@ -87,8 +90,11 @@ switch ($action) {
 //        $user = $users->get('user_id', $_SESSION['xero_user_id']);
 
         $contracts = new ContractModel($pdo);
-        $contract_id = $_GET['contract_id'] ?? 0;
-
+        $contract_id =
+            filter_input(INPUT_GET, 'contract_id', FILTER_VALIDATE_INT) ??
+            filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ??
+            0;
+        
         $raw = $contracts->get('contract_id', $contract_id);
 
         $data['Contract'] = $raw['contracts'];

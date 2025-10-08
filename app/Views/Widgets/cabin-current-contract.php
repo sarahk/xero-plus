@@ -1,7 +1,7 @@
 <?php
 namespace App\Views\Cabin;
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 
 if (!count($data['contracts'])) {
     echo "<p>No current contract</p>";

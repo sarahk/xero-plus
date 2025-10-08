@@ -45,7 +45,6 @@ export const TasksIndexTable = (() => {
                     return d;
                 }
             },
-
             deferRender: true,
             searchDelay: 300,
             rowId: 'DT_RowId',

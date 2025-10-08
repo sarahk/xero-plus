@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;

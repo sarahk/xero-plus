@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Query;
 
 
-// S E A R C H   O N L Y
-class ComboModel extends BaseModel
+use App\Classes\Utilities;
+
+/**
+ * S E A R C H   O N L Y
+ */
+class ComboQueryModel extends BaseQueryModel
 {
     protected string $table = 'mcombo';
     protected bool $view = true;
@@ -20,7 +24,14 @@ class ComboModel extends BaseModel
         6 => "mcombo.date DIR",
     ];
 
-    public function list($params): array
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addToParams('contact_id');
+        $this->addToParams('contract_id', ['contract_id', 'id']);
+    }
+
+    public function list(): string
     {
         /*
         <th>#</th>
@@ -34,22 +45,22 @@ class ComboModel extends BaseModel
 
         $search_values = [];
 
-        $tenancies = $this->getTenanciesWhere($params);
+        $tenancies = $this->getTenanciesWhere($this->params);
 
 
-        if (!empty($params['contact_id'])) {
+        if (!empty($this->params['contact_id'])) {
             // added to tenancies because we need it to run on the total and filter count queries
             $tenancies .= " AND `contact_id` = :contact_id";
-            $search_values['contact_id'] = $params['contact_id'];
+            $search_values['contact_id'] = $this->params['contact_id'];
         }
 
 
-        if (!empty($params['contract_id'])) {
+        if (!empty($this->params['contract_id'])) {
             $tenancies .= " AND `contract_id` = :contract_id";
-            $search_values['contract_id'] = $params['contract_id'];
+            $search_values['contract_id'] = $this->params['contract_id'];
         }
 
-        $order = $this->getOrderBy($params);
+        $order = $this->getOrderBy();
 
         $conditions = [$tenancies];
         if (!empty($params['search'])) {
@@ -57,24 +68,32 @@ class ComboModel extends BaseModel
                 "mcombo.reference LIKE :search",
                 'contacts.name LIKE :search'
             ];
-            $search_values['search'] = '%' . $params['search'] . '%';
+            $search_values['search'] = '%' . $this->params['search'] . '%';
 
             $conditions[] = ' (' . implode(' OR ', $search) . ') ';
         }
 
 
+        $secondFilter = '';
         // todo what buttons
-        if (!empty($params['button']) && $params['button'] !== 'read') {
-            if ($params['button'] == 'overdue') {
-                $search_values['overduedate'] = date('Y-m-d', strtotime('-7 days'));
-                $conditions[] = "`invoices`.`due_date` <= :overduedate AND `invoices`.`amount_due` > 0";
-            } else {
-                $search_values['status'] = strtoupper($params['button']);
-                $conditions[] = "`invoices`.`status` = :status";
+        if (!empty($this->params['dataFilter'])) {
+            switch ($this->params['dataFilter']) {
+                case 'invoices':
+                case 'payments':
+                    $conditions[] = "`row_type` = :row_type";
+                    $search_values['row_type'] = strtoupper(substr($this->params['dataFilter'], 0, 1));
+                    $secondFilter = " AND `row_type` = :row_type";
+                    break;
+                case 'due':
+                    $conditions[] = "amount_due > 0";
+                    $secondFilter = " AND `row_type` = 'I'";
+                    break;
+                case 'overdue':
+                    $conditions[] = "`due_date` <= :overduedate AND `amount_due` > 0";
+                    $search_values['overduedate'] = date('Y-m-d', strtotime('-7 days'));
+                    $secondFilter = " AND `row_type` = 'I'";
+                    break;
             }
-        } else {
-            //todo
-            //$conditions[] = "`invoices`.`status` = 'AUTHORISED'";  // VOIDED, PAID
         }
 
 
@@ -107,7 +126,7 @@ class ComboModel extends BaseModel
             LEFT JOIN contacts on `mcombo`.`contact_id` = `contacts`.`contact_id`
             WHERE " . implode(' AND ', $conditions) . "
             ORDER BY $order, row_type DESC
-            LIMIT {$params['start']}, {$params['length']}";
+            LIMIT {$this->params['start']}, {$this->params['length']}";
 
 
         $result = $this->runQuery($sql, $search_values);
@@ -117,7 +136,7 @@ class ComboModel extends BaseModel
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
 
-        $records_total = "SELECT COUNT(*) FROM mcombo WHERE $tenancies";
+        $records_total = "SELECT COUNT(*) FROM mcombo WHERE $tenancies $secondFilter";
         $records_filtered = "SELECT COUNT(*) 
                                 FROM mcombo 
                                 LEFT JOIN contacts on `mcombo`.`contact_id` = `contacts`.`contact_id`
@@ -130,9 +149,13 @@ class ComboModel extends BaseModel
 
 // todo change the links if it's payment
                 $url = "/page.php?action=12&invoice_id={$row['invoice_id']}";
+                $colour = $tenancy_list[$row['xerotenant_id']]['colour'];
+                $status = strtolower($row['status']);
                 $output['data'][] = [
+                    'DT_RowId' => "row_{$row['invoice_id']}",
+                    'DT_RowClass' => "status-{$status}",
                     'row_type' => "{$tenancy_list[$row['xerotenant_id']]['shortname']} <b>{$row['row_type']}</b>",
-                    'number' => "<a href='$url'>{$row['invoice_number']}</a>",
+                    'invoice_number' => "<a href='$url'>{$row['invoice_number']}</a>",
                     'reference' => $row['reference'],
                     'name' => "<a href='$url'>{$row['name']}</a>",
                     'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
@@ -143,7 +166,7 @@ class ComboModel extends BaseModel
                     'balance' => $row['balance'],
                     'date' => $this->getPrettyDate($row['date']),
                     'due_date' => $this->getPrettyDate($row['due_date']),
-                    'colour' => $tenancy_list[$row['xerotenant_id']]['colour'],
+                    'colour' => $colour,
                     'activity' => $this->getActivityDescription($row),
                 ];
 // for debugging
@@ -161,7 +184,7 @@ class ComboModel extends BaseModel
 
         }
 
-        return $output;
+        return json_encode($output);
     }
 
     protected function getActivityDescription(array $row): string
@@ -169,6 +192,45 @@ class ComboModel extends BaseModel
         $url = '/page.php?action=12&invoice_id=' . $row['invoice_id'];
         $display = ($row['row_type'] === 'I' ? 'Invoice #' . $row['invoice_number'] : 'Payment on Invoice #' . $row['invoice_number']);
         return "<a href='$url' target='_blank'>$display</a>";
+    }
+
+    /**
+     * overrides the parent method
+     * @param array $params
+     * @return string
+     */
+    protected function getOrderBy(): string
+    {
+        $orderParams = $this->params['order'][0];
+        $colName = $orderParams['name'] ?? '';
+        $direction = strtoupper($orderParams['dir'] ?? 'DESC');
+
+        $orderBy = match ($colName) {
+            'date' => '`date`',
+            'row_type' => '`row_type`',
+            'invoice_number' => '`invoice_number`',
+            'reference' => '`reference`',
+            'name' => '`contacts`.`name`',
+            'amount' => '`amount`',
+            'amount_due' => '`amount_due`',
+            'status' => '`status`',
+            default => '',
+        };
+
+        if (!empty($orderBy)) {
+            return $orderBy . ' ' . $direction;
+        }
+
+
+        // the name didn't make sense? do we have a column number?
+        if (array_key_exists($orderParams['column'], $this->orderByColumns)) {
+            //$this->logInfo('OrderBy using the column', [str_replace('DIR', $direction, $this->orderByColumns[$orderParams['column']])]);
+            return str_replace('DIR', $direction, $this->orderByColumns[$orderParams['column']]);
+        }
+
+        // nothing else indicated? use this
+        //$this->logInfo('OrderBy default', [str_replace('DIR', 'DESC', $this->orderByColumns[$this->defaultOrderByColumn])]);
+        return str_replace('DIR', 'DESC', $this->orderByColumns[$this->defaultOrderByColumn]);
     }
 }
 

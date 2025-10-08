@@ -101,10 +101,11 @@ try {
             switch ($action) {
                 case 'List':
                 case 'list':
+                case 'ListByContract':
                     echo $json->getComboList();
                     break;
 
-
+                    
             }
             break;
 

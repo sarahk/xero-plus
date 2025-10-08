@@ -2,7 +2,8 @@
 declare(strict_types=1);
 namespace App\Views\Widgets;
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
+use App\Classes\FormBuilder;
 use App\Models\Enums\CabinPainted;
 use App\Models\Enums\CabinStyle;
 use App\Models\Enums\CabinUse;
@@ -63,7 +64,7 @@ function getBestAddress(array $addresses): array
     ?>
 
     <div class="row row-sm">
-        <div class="col-md-9">
+        <div class="col-9">
             <?php
             //ExtraFunctions::debug($data);
             require 'enquiry-contact-panel.php';
@@ -71,12 +72,11 @@ function getBestAddress(array $addresses): array
             ?>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-3">
             <?php
-
             FormBuilder::select('status', 'data[contract][status]',
                 'Status',
-                EnquiryStatus::getSelectOptions($data['Contract']['status']),
+                EnquiryStatus::getSelectOptions($data['Contract']['status'] ?? ''),
             );
             ?>
             <div id="doyoumean"></div>
@@ -104,8 +104,8 @@ function getBestAddress(array $addresses): array
         <h3 class="card-title">Cabin Details </h3>
     </div>
     <div class="card-body pb-2">
-        <div class="row row-sm">
-            <div class="col-md-6">
+        <div class="row">
+            <div class="col-6">
                 <div class="form-group">
                     <?php FormBuilder::buttonRadioButtons($data, TENANCIES);
 
@@ -143,11 +143,11 @@ function getBestAddress(array $addresses): array
                     $data['Contract']['sms_reminder_invoice']);
                 ?>
 
-                <div class='form-group col-md-4'>
+                <div class='form-group col-4'>
                     <input type="submit" value="Save" id='saveEnquiry' class="btn btn-lg btn-primary">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-3">
                 <?php
                 FormBuilder::radio('data[contract][cabin_type]',
                     'Cabin Type',

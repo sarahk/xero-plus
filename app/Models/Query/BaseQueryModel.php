@@ -30,6 +30,27 @@ class BaseQueryModel
         $this->params = Utilities::getParams();
     }
 
+    protected function addToParams(string $key, array $getKeys = []): void
+    {
+        if (empty($getKeys)) {
+            $this->params[$key] = $_GET[$key] ?? '';
+            return;
+        }
+        if (is_array($getKeys)) {
+            foreach ($getKeys as $getkey) {
+                $test = $_GET[$getkey] ?? null;
+                if (!is_null($test)) {
+                    $this->params[$key] = $test;
+                    return;
+                }
+            }
+        } else {
+            $this->params[$key] = $_GET[$getKeys] ?? '';
+            return;
+        }
+        $this->params[$key] = '';
+    }
+
     public function list(): string
     {
         return json_encode('');

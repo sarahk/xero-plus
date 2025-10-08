@@ -3,9 +3,12 @@
 namespace App\Views\Widgets;
 
 
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
+use App\Classes\FormBuilder;
 use App\Models\Enums\BestWayToContact;
 use App\Models\Enums\PhoneType;
+
+/** @var array $data */
 
 function getEnquiryContactRow(string $key, array $row): void
 {
@@ -34,15 +37,15 @@ function getEnquiryContactRow(string $key, array $row): void
             } else {
                 // Iterate over phone types for multi-phone scenarios
                 foreach (['DEFAULT', 'MOBILE'] as $phone_type) {
-                    ExtraFunctions::debug($row['Phones']);
-                    ExtraFunctions::debug($phone_type);
+                    //ExtraFunctions::debug($row['Phones']);
+                    //ExtraFunctions::debug($phone_type);
 
                     // Filter phones by type if $row['Phones'] is an array
                     $phone = is_array($row['Phones']) ?
                         array_filter($row['Phones'], fn($phone) => $phone['phone_type'] === $phone_type)
                         : [];
 
-                    ExtraFunctions::debug($phone);
+                    //ExtraFunctions::debug($phone);
 
                     // Use the matching phone or a default placeholder
                     $phoneData = !empty($phone) ? current($phone) : ['phone_type' => $phone_type, 'phone_number' => ''];

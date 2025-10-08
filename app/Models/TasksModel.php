@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Models\Enums\TaskType;
 use App\Models\Enums\TaskStatus;
 use App\Models\Enums\TaskDateStatus;
-use App\ExtraFunctions;
+use App\classes\ExtraFunctions;
 use PDO;
 
 class TasksModel extends BaseModel
