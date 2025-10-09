@@ -131,7 +131,7 @@ class ComboQueryModel extends BaseQueryModel
 
         $result = $this->runQuery($sql, $search_values);
 
-        $output = $params;
+        $output = $this->params;
         $output['mainquery'] = $this->cleanSql($sql);
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions

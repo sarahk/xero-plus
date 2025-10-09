@@ -1,6 +1,12 @@
 <?php
-$templateModel = new \App\Models\TemplateModel(\App\Utilities::getPDO());
-$templates = $templateModel->getSelectChoices('SMS');
+declare(strict_types=1);
+
+use App\Classes\Utilities;
+use App\Classes\FormBuilder;
+use App\Models\TemplateModel;
+
+$template_model = new TemplateModel(Utilities::getPDO());
+$templates = $template_model->getSelectChoices('SMS');
 
 ?>
 <div class="modal fade" id="saveSmsRequest" tabindex="-1" aria-labelledby="saveSmsLabel" aria-hidden="true">
@@ -31,7 +37,7 @@ $templates = $templateModel->getSelectChoices('SMS');
                             </div>
                             <hr>
                             <div class="mb-3">
-                                <?php echo \App\Views\Widgets\FormBuilder::select('templateId', 'data[activity][template_id]', 'SMS Template', $templates); ?>
+                                <?php echo FormBuilder::select('templateId', 'data[activity][template_id]', 'SMS Template', $templates); ?>
                             </div>
 
 

@@ -7,6 +7,8 @@ class Loader
 {
     private array $priorities = ['high', 'med', 'low'];
     private array $js = ['head' => [], 'high' => [], 'med' => [], 'low' => []];
+    // modules are added as the page is constructed and therefore can't be in the "head".
+    private array $jsModule = ['high' => [], 'med' => [], 'low' => []];
     private array $css = ['high' => [], 'med' => [], 'low' => []];
     private array $preconnect = [];
     private array $modals = [];
@@ -48,6 +50,21 @@ class Loader
             }
         }
         echo '<!-- /L O A D E R   J S -->' . PHP_EOL;
+    }
+
+    public function outputJSModule($where = 'footer'): void
+    {
+        echo '<!-- L O A D E R   J S   M O D U L E -->' . PHP_EOL;
+
+        foreach ($this->priorities as $priority) {
+            if (count($this->jsModule[$priority])) {
+                echo '<!-- ' . $priority . ' -->' . PHP_EOL;
+                foreach ($this->js[$priority] as $source) {
+                    echo "<script type='module' src='$source'></script>" . PHP_EOL;
+                }
+            }
+        }
+        echo '<!-- /L O A D E R   J S   M O D U L E -->' . PHP_EOL;
     }
 
     public function outputCSS(): void
@@ -98,6 +115,14 @@ class Loader
             $priority = 'low';
         }
         $this->js[$priority][] = $src;
+    }
+
+    public function addJSModule(string $src, $priority = 'low'): void
+    {
+        if (!in_array($priority, $this->priorities)) {
+            $priority = 'low';
+        }
+        $this->jsModule[$priority][] = $src;
     }
 
     /*
@@ -182,6 +207,7 @@ class Loader
 
         //<!-- STYLE CSS -->
         $this->css['low'][] = "/assets/css/style.css";
+        $this->css['low'][] = "/assets/css/custom-card.css";
         $this->css['low'][] = "/assets/css/plugins.css";
 
 //<!--- FONT-ICONS CSS -->

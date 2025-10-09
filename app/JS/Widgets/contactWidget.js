@@ -1,9 +1,11 @@
-class ContactWidget {
-    tagId = '#contactCard';
+import {fetchJSON, isJQueryReady} from "/JS/ui/helpers.js";
 
-    constructor(keys) {
-        this.keys = keys;
-        if ($(this.tagId).length) {
+class ContactWidget {
+    constructor() {
+        this.tagId = '#contactCard';                 // moved from class field
+        this.keys = window.keys || {};
+
+        if (window.jQuery && $(this.tagId).length) {
             this.populateWidget();
             this.addOtherContracts();
             this.addListeners();
@@ -11,34 +13,55 @@ class ContactWidget {
     }
 
     addListeners() {
-        $('#saveSMSButton').on('click', (event) => {
-            let saveSmsModal = new bootstrap.Modal($('#saveSmsRequest'));
-            saveSmsModal.show();
-        });
-
+        const el = document.getElementById('saveSmsRequest');
+        const btn = document.getElementById('saveSMSButton');
+        if (btn && el && window.bootstrap?.Modal) {
+            btn.addEventListener('click', () => new bootstrap.Modal(el).show());
+        }
     }
 
-    populateWidget() {
-        $.getJSON('/json.php', {
+    async populateWidget() {
+
+        const contactId = this.keys?.contact?.contact_id ?? 0;
+        const id = this.keys?.contact?.id ?? 0;
+        const qs = new URLSearchParams({
             endpoint: 'Contacts',
             action: 'Singleton',
-            contact_id: this.keys.contact.contact_id ?? 0,
-            id: this.keys.contact.id ?? 0
-        }, (data) => {
-            //console.log(['populateWidget', data]);
-            $('#contactCardTitle').text(data.contacts.name);
-            $('#contactCardName').text(data.contacts.name);
-            $('#contactCardFirstName').text(data.contacts.first_name);
-            $('#contactCardLastName').text(data.contacts.last_name);
-            $('#contactCardEmail').text(data.contacts.email_address);
-            // todo - move this to the contract card?
-            console.log(data);
-            this.addPhones(data);
-            this.addAddresses(data);
-            this.addNotes(data);
+            contact_id: contactId ?? id
         });
 
+        // Fetch JSON (throws if not OK)
+        const data = await fetchJSON(`/json.php?${qs.toString()}`);
+
+        if (!isJQueryReady()) {
+            await waitForJQuery().catch(() => console.warn('jQuery not available'));
+        }
+
+        $('#contactCardTitle').text(data.contacts.name);
+        $('#contactCardName').text(data.contacts.name);
+        $('#contactCardFirstName').text(data.contacts.first_name);
+        $('#contactCardLastName').text(data.contacts.last_name);
+        $('#contactCardEmail').text(data.contacts.email_address);
+        this.addPhones(data);
+        this.addAddresses(data);
+        this.addNotes(data);
+
     }
+
+    addNotes(data) {
+        if ($('#notesCard').length && Array.isArray(data.notes)) {
+            data.notes.forEach(note => {
+                if (note.note) this.addNoteToTable(note);
+            });
+        }
+    }
+
+    addNoteToTable(note) {
+        const createdby = note.createdbyname || note.createdby || '';
+        const row = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
+        $('#notesCardTable tbody').append(row);
+    }
+
 
     addPhones(data) {
         if (data.phones && data.phones.length > 0) {
@@ -68,46 +91,44 @@ class ContactWidget {
         }
     }
 
-    addNotes(data) {
-// only if the notes card is on the page too
-        if ($('#notesCard').length) {
-            if (data.notes && data.notes.length > 0) {
-                data.notes.forEach(note => {
-                    // Check if the address contains meaningful data
-                    if (note.note) {
-                        //todo - tidy up date - get name of user
-                        addNoteToTable(note);
-                    }
-                });
-            }
-        }
-    }
-
-    addNoteToTable(note) {
-        console.log(note);
-        let createdby = note.createdbyname ?? note.createdby;
-        let newRow = `<tr><td>${note.note}</td><td>${note.created}</td><td>${createdby}</td></tr>`;
-        $('#notesCardTable tbody').append(newRow);
-    }
-
-    addOtherContracts() {
-        $.getJSON('/json.php', {
+    async addOtherContracts() {
+        const qs = new URLSearchParams({
             endpoint: 'Contracts',
             action: 'otherContracts',
-            ckcontact_id: keys.contact.id ?? 0,
-            contact_id: keys.contact.contact_id ?? 0,
-            contract_id: keys.invoice.contract_id ?? keys.contract.contract_id ?? 0
-        }, (data) => {
-            if (data.length) {
-                let newList = $('<ul></ul>');
-                $.each(data.items, function (index, item) {
-                    let listItem = $('<li></li>').text(item);
-                    newList.append(listItem);
-                });
-                $('#contactOtherContracts').append(newList);
-            }
+            ckcontact_id: window.keys.contact.id ?? 0,
+            contact_id: window.keys.contact.contact_id ?? 0,
+            contract_id: window.keys.invoice.contract_id ?? window.keys.contract.contract_id ?? 0
         });
+        const data = await fetchJSON(`/json.php?${qs.toString()}`);
+
+
+        if (data.length) {
+            let newList = $('<ul></ul>');
+            $.each(data.items, function (index, item) {
+                let listItem = $('<li></li>').text(item);
+                newList.append(listItem);
+            });
+            $('#contactOtherContracts').append(newList);
+        }
+
     }
 }
 
-export const nsContactWidget = new ContactWidget(getKeys());
+export const nsContactWidget = new ContactWidget();
+
+function bootContactWidget() {
+    if (!isJQueryReady()) return; // ensure jQuery present
+    const el = document.getElementById('contactCard');
+    console.log(el);
+    if (!el) return;
+    new ContactWidget(el);
+
+}
+
+// Modules are deferred by default, but just in case:
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootContactWidget);
+} else {
+    bootContactWidget();
+}
+

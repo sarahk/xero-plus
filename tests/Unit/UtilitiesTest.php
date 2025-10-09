@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Utilities;
+use App\Classes\Utilities;
 
 use League\OAuth2\Client\Provider\GenericProvider;
 

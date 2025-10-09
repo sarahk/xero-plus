@@ -254,7 +254,7 @@ abstract class BaseModel
     abstract public function prepAndSave(array $data): string;
 
 
-    protected function checkNullableValues($data, $force_add)
+    protected function checkNullableValues($data, $force_add = false)
     {
         if (count($this->nullable) == 0) {
             return $data;

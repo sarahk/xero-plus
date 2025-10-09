@@ -1,5 +1,6 @@
 <?php
-namespace App\Views\Widgets;
+declare(strict_types=1);
+
 
 // if there's an invoice loaded we'll use it, otherwise we'll use ajax
 // todo - write ajax
@@ -10,7 +11,7 @@ namespace App\Views\Widgets;
         <div class="card-title">Invoice: <span id="invoiceCardTitle"><strong></strong></span></div>
     </div>
     <div class="card-body">
-        <table class="table table-bordered border-primary" id="invoiceCardTable">
+        <table class="table table-bordered table-sm border-primary" id="invoiceCardTable">
             <tr>
                 <th>Number</th>
                 <td id="invoiceNumber"><?= $data['invoices']['invoice_number'] ?? ''; ?></td>
@@ -42,7 +43,8 @@ namespace App\Views\Widgets;
         </table>
         <hr>
         <!-- this will always be ajax -->
-        <table id="tInvCardPayments" class="table table-bordered table-striped text-nowrap border-bottom w-100">
+        <table id="tInvCardPayments"
+               class="table table-bordered table-striped table-sm text-nowrap border-bottom w-100">
             <thead>
             <tr>
                 <th>Date</th>

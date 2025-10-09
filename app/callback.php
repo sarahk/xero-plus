@@ -13,8 +13,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require '../vendor/autoload.php';
 
-//use function App\Utilities\getProvider;
-
 // Storage Class uses sessions for storing token > extend to your DB of choice
 $storage = new StorageClass();
 $provider = Utilities::getProvider();

@@ -39,7 +39,7 @@
     // Handle sidebar toggle
     $(document).on('click', '[data-bs-toggle="sidebar"]', function (event) {
         event.preventDefault();
-        
+
         $('.app').toggleClass('sidenav-toggled');
     });
 
@@ -143,7 +143,7 @@
 
     // Handle sticky headers
     $(window).on("scroll", function () {
-        console.log('scrolling');
+        //console.log('scrolling');
         const isScrolled = $(window).scrollTop() >= menuMetrics.scroll_threshold;
         $('.app-header, .horizontal-main').toggleClass('fixed-header visible-title', isScrolled);
     });

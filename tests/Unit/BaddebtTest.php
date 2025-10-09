@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\InvoiceModel;
-use App\Utilities;
+use App\Classes\Utilities;
 
 
 // Adjust the namespace as needed

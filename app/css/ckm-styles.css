@@ -71,19 +71,23 @@ select. form-control {
     border-bottom: 1px solid #ef476f;
 }
 
-tr.bar-yellow td:nth-child(1) {
+tr.bar-yellow td:nth-child(1),
+td.bar-yellow {
     border-left: 0.25em solid #ecb403 !important;
 }
 
-tr.bar-cyan td:nth-child(1) {
+tr.bar-cyan td:nth-child(1),
+td.bar-cyan {
     border-left: 0.25em solid #17a2b8 !important;
 }
 
-tr.bar-purple td:nth-child(1) {
+tr.bar-purple td:nth-child(1),
+td.bar-purple {
     border-left: 0.25em solid #867efc !important;
 }
 
-tr.bar-coral td:nth-child(2) {
+tr.bar-coral td:nth-child(2),
+td.bar-coral {
     border-left: 0.25em solid #ef476f !important;
 }
 
@@ -354,3 +358,10 @@ dd, dt {
     font-size: 1.1em;
 }
 
+/* makes a card look disabled */
+.card-haze {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, .3);
+}

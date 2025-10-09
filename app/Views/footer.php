@@ -46,6 +46,7 @@ if (!isset($loader)) {
 }
 
 $loader->outputJS('footer');
+$loader->outputJSModule('footer');
 
 if (!$loggedOut) {
     echo '<!-- logged in, output modals -->';

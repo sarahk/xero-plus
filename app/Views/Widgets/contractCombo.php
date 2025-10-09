@@ -9,7 +9,7 @@
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered table-sm table-striped text-nowrap border-bottom w-100"
-                   id="tComboIndex">
+                   id="tContractCombo">
                 <thead>
                 <tr>
                     <th>Date</th>
@@ -34,10 +34,12 @@
 </div>
 
 <script type="module">
-    import {ComboIndexTable} from '/JS/DataTables/comboIndex.js';
+    import {ContractComboTable} from '/JS/DataTables/contractCombo.js';
 
     window.addEventListener('DOMContentLoaded', () => {
-        ComboIndexTable.init();
+        ContractComboTable.init({
+            contractId: '<?=  $keys['contract']['contract_id'] ?? ''; ?>'
+        });
     });
 </script>
 <?php /*

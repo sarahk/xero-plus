@@ -1,13 +1,14 @@
 <?php
-
-namespace App\Views;
+/** @var array $data */
+/** @var array $keys */
 
 //create some variables for the widgets
 $newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
 //var_dump($data);
 ?>
     <script>
-        const keys = <?=  json_encode($keys, JSON_PRETTY_PRINT) ?>;
+        window.keys = <?=
+            json_encode($keys, JSON_PRETTY_PRINT) ?>;
     </script>
 
     <!-- PAGE-HEADER -->
@@ -25,15 +26,15 @@ $newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
 
     <div class="row">
         <div class="col-md-6 ">
-            <?php include 'Views/Widgets/combo-single-card.php' ?>
-            <?php include 'Views/Widgets/contact-card.php' ?>
+            <?php include __DIR__ . '/Widgets/combo-single-card.php' ?>
+            <?php include __DIR__ . '/Widgets/contact-card.php' ?>
 
 
         </div>
         <div class="col-md-6">
-            <?php include 'Views/Widgets/contract-card.php' ?>
-            <?php include 'Views/Widgets/notes-card.php' ?>
+            <?php include __DIR__ . '/Widgets/contract-card.php' ?>
+            <?php include __DIR__ . '/Widgets/notes-card.php' ?>
         </div>
     </div>
-    <?php
-include 'Widgets/combo-contact.php';
+<?php
+include __DIR__ . '/Widgets/combo-contact.php';

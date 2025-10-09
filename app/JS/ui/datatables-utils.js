@@ -1,4 +1,9 @@
-export const pageIsReady = () => !!(window.jQuery && jQuery.fn && jQuery.fn.DataTable);
+import {isDTjQueryReady} from "/JS/ui/helpers.js";
+
+export const pageIsReady = isDTjQueryReady;
+
+//export const pageIsReady = () => !!(window.jQuery && jQuery.fn && jQuery.fn.DataTable);
+
 
 export function waitForDataTables({timeout = 10000, interval = 50} = {}) {
     return new Promise((resolve, reject) => {

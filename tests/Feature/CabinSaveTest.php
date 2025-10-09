@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use App\Models\CabinModel;
-use App\Utilities;
+use App\Classes\Utilities;
 use Tests\Integration\TestLogger;
 
 // ./vendor/bin/pest tests/Feature/CabinSaveTest.php -v --stop-on-failure
@@ -12,7 +12,6 @@ use Tests\Integration\TestLogger;
 test('Utilities::getPDO returns PDO', function () {
     $logger = new TestLogger();
     $pdo = Utilities::getPDO();                 // with use
-    // $pdo = \App\Utilities::getPDO();         // fully qualified alternative
     expect($pdo)->toBeInstanceOf(PDO::class);
 });
 

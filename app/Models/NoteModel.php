@@ -26,6 +26,7 @@ class NoteModel extends BaseModel
 
             $data['note']['created'] = date('Y-m-d H:i:s');
             $data['note']['createdby'] = $_SESSION['user_id'];
+
             $checked = $this->checkNullableValues($data['note']);
             $save = $this->getSaveValues($checked);
 
@@ -78,35 +79,35 @@ class NoteModel extends BaseModel
     public function listAssociated(array $params): array
     {
 // todo = buttons? search field?
+        $select_from_notes = 'SELECT notes.note, users.first_name as createdby, notes.created FROM notes';
         $sql_parts = $search_values = [];
 
         // get anything linked to the contract_id
         if (!empty($params['contract_id'])) {
-            $sql_parts[] = "(SELECT notes.note, users.first_name as createdby, notes.created
-                 FROM notes
+            $sql_parts[] = "($select_from_notes
                  LEFT JOIN users ON users.id = notes.createdby
-                 WHERE notes.foreign_id = :contract_id
+                 WHERE notes.foreign_id = :contract_id1
                    AND notes.parent = 'contract'
                 )
                 UNION ALL
-                (SELECT notes.note, users.first_name as createdby, notes.created
-                 FROM notes
+                ($select_from_notes
                  LEFT JOIN users ON users.id = notes.createdby
                  LEFT JOIN contactjoins ON notes.foreign_id = contactjoins.ckcontact_id
                  WHERE contactjoins.join_type = 'contract'
                    AND notes.parent = 'contact'
-                   AND contactjoins.foreign_id = :contract_id
+                   AND contactjoins.foreign_id = :contract_id2
                 ) ";
-            $search_values['contract_id'] = $params['contract_id'];
+            $search_values['contract_id1'] = $params['contract_id'];
+            $search_values['contract_id2'] = $params['contract_id'];
         }
-        if (!empty($params['ckcontact_id'])) {
-            $sql_parts[] = "(SELECT notes.note, users.first_name as createdby, notes.created
-                 FROM notes
+        if (!empty($params['parent']) && !empty($params['foreign_id'])) {
+            $sql_parts[] = "($select_from_notes
                  LEFT JOIN users ON users.id = notes.createdby
-                 WHERE notes.foreign_id = :contact_id
-                   AND notes.parent = 'contact'
+                 WHERE notes.foreign_id = :foreign_id
+                   AND notes.parent = :parent
                 ) ";
-            $search_values['contact_id'] = $params['ckcontact_id'];
+            $search_values['foreign_id'] = $params['foreign_id'];
+            $search_values['parent'] = $params['parent'];
         }
 
         if (!count($sql_parts)) return ['data' => [], 'recordsTotal' => 0, 'recordsFiltered' => 0, 'draw' => $params['draw']];

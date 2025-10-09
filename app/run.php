@@ -6,6 +6,7 @@ use App\Models\ActivityModel;
 use App\Models\InvoiceModel;
 use App\Models\NoteModel;
 use App\Models\TemplateModel;
+use App\Classes\Utilities;
 
 
 error_reporting(E_ALL);
@@ -62,7 +63,7 @@ switch ($endpoint) {
     case 'Save':
 
         switch ($form) {
-            
+
 
             case 'template':
             case 'Template':

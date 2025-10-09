@@ -79,7 +79,7 @@ ExtraFunctions::outputKeysAsJs($keys);
                         <?php include 'Widgets/enquiry-notes-index.php'; ?>
                     </div>
                     <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-                        <?php include 'combo-index.php'; ?>
+                        <?php include 'Widgets/contractCombo.php'; ?>
                     </div>
                     <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
                         <?php include 'activity-index.php'; ?>

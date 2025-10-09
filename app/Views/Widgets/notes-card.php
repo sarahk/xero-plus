@@ -1,41 +1,53 @@
 <?php
-namespace App\Views\Widgets;
+/** @var array $newNote */
+/** @var \App\Classes\Loader $loader */
 ?>
-<div class="card custom-card" id="notesCard">
+<div class="card custom-card" id="notesCard"
+     data-foreign-id="<?= $newNote['foreign_id']; ?>"
+     data-parent="<?= $newNote['parent'] ?? 'contact'; ?>"
+     data-form-createdby="<?= $_SESSION['user_id']; ?>"
+     data-form-createdby-name="<?= $_SESSION['user_name']; ?>"
+     data-form-created="<?= date('Y-m-d H:i:s'); ?>">
     <div class="card-header">
         <div class="card-title">Notes</div>
     </div>
     <div class="card-body">
-        <table class="table table-bordered border-primary" id="notesCardTable">
-            <thead>
-            <tr>
-                <th>Note</th>
-                <th>Date</th>
-                <th>By</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td colspan="2">Add a Note<br/>
-                    <form id="notesCardForm">
-                        <textarea class="form-control" rows="3" data-gramm="false" id="notesCardText"></textarea>
-                        <input type="hidden" name="parent" id="notesFormParent" value="<?= $newNote['parent']; ?>">
-                        <input type="hidden" name="foreign_id" id="notesFormForeignid"
-                               value="<?= $newNote['foreign_id']; ?>">
-                        <input type="hidden" name="createdby" id="notesFormCreatedby"
-                               value="<?= $_SESSION['user_id']; ?>">
-                        <input type="hidden" name="createdbyanme" id="notesFormCreatedbyname"
-                               value="<?= $_SESSION['user_name']; ?>">
-                        <input type="hidden" name="created" id="notesFormCreated" value="<?= date('Y-m-d H:i:s'); ?>"
-                    </form>
+        <form id="notesCardForm">
+            <table class="table table-bordered table-sm border-primary" id="notesCardTable">
+                <thead>
+                <tr>
+                    <th>Note</th>
+                    <th>Date</th>
+                    <th>By</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="2"><label for="notesCardText">Add a Note</label><br/>
 
-                <td><?= $_SESSION['user_name']; ?><br/>
-                    <button type="submit" class="btn btn-primary mt-2" form="notesCardForm" id="notesCardSubmit">Save
-                    </button>
-                </td>
-            </tr>
+                        <textarea class="form-control" rows="3" data-gramm="false" name="data[note]"
+                                  id="notesCardText"></textarea>
 
-            </tbody>
-        </table>
+
+                    <td>&nbsp;<br/>
+                        <button type="submit" class="btn btn-primary mt-2" form="notesCardForm"
+                                id="notesCardSubmit">
+                            Save
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </form>
     </div>
 </div>
+
+<script type="module">
+    import {initNotesWidget} from '/JS/widgets/notesWidget.js';
+
+    // Run once the DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+        initNotesWidget();
+    });
+</script>
