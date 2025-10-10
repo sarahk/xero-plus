@@ -801,7 +801,9 @@ class JsonClass
 
         //$xeroTenantId = $_GET['xeroTenantId'];
 
-        $contact_id = $_GET['contact_id'] ?? 0;
+        // xero's uuid
+        $contact_id = $_GET['contact_id'] ?? '';
+        // autoincrement from our table
         $id = $_GET['id'] ?? 0;
         $contact = new ContactModel($this->pdo);
 

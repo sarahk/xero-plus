@@ -320,13 +320,13 @@ class InvoiceModel extends BaseModel
                         (
                         SELECT SUM(invoices.total)
                         FROM invoices 
-                        WHERE invoices.contract_id = :contract_id
+                        WHERE invoices.contract_id = :contract_id1
                           AND FLOOR(DATEDIFF(CURDATE(), invoices.date) / 7) >= weeks.week_number
                     ) AS `owing`,
                     (
                         SELECT SUM(payments.amount) 
                         FROM payments 
-                        WHERE payments.contract_id = :contract_id
+                        WHERE payments.contract_id = :contract_id2
                           AND FLOOR(DATEDIFF(CURDATE(), payments.date) / 7) >= weeks.week_number
                     ) AS `paid`
                 FROM 
@@ -335,7 +335,7 @@ class InvoiceModel extends BaseModel
 
         $output = array_fill(0, 16, 0);
 
-        $result = $this->runQuery($sql, ['contract_id' => $contract_id]);
+        $result = $this->runQuery($sql, ['contract_id1' => $contract_id, 'contract_id2' => $contract_id]);
 
         if (count($result)) {
             foreach ($result as $row) {

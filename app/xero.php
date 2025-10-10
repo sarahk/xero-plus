@@ -2,6 +2,10 @@
 
 namespace App;
 
+use App\Classes\StorageClass;
+use App\Classes\Utilities;
+use App\Classes\XeroClass;
+
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;

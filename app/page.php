@@ -94,7 +94,7 @@ switch ($action) {
             filter_input(INPUT_GET, 'contract_id', FILTER_VALIDATE_INT) ??
             filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ??
             0;
-        
+
         $raw = $contracts->get('contract_id', $contract_id);
 
         $data['Contract'] = $raw['contracts'];
@@ -138,10 +138,12 @@ switch ($action) {
                 'invoice_id' => $data['invoices']['invoice_id'] ?? 0,
                 'repeating_invoice_id' => $data['invoices']['repeating_invoice_id'] ?? 0,
                 'contract_id' => $data['invoices']['contract_id'] ?? 0,
+                'contact_id' => $data['invoices']['contact_id'] ?? 0,
             ],
             'contact' => [
-                'id' => $data['contacts']['ckcontact_id'] ?? 0,
-                'contact_id' => $data['contacts']['ckcontact_id'] ?? 0,
+                'id' => $data['contact']['id'] ?? 0,
+                'contact_id' => $data['invoices']['contact_id'] ?? 0,
+               
             ]];
 
         unset($invoice);

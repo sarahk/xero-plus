@@ -1,6 +1,6 @@
 <?php
 //use XeroAPI\XeroPHP\AccountingObjectSerializer;
-namespace App;
+namespace App\Classes;
 
 use App\Models\ContactJoinModel;
 use App\Models\PaymentModel;
@@ -1335,7 +1335,7 @@ class XeroClass
             'tax_type' => $lineItems[0]->getTaxType(),
             'stub' => 0,
             'xerotenant_id' => $xeroTenantId,
-            'raw_schedule_unit' => $row['schedule']->getPeriod() . ' ' . $row['schedule']->getUnit(),
+            'raw_schedule_unit' => $row['schedule']->getPeriod() . ' XeroClass.php' . $row['schedule']->getUnit(),
             'schedule_unit' => $this->getScheduleFromXeroObject($row['schedule'])
         ];
 

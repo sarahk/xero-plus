@@ -24,17 +24,22 @@ $newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
     </div>
     <!-- PAGE-HEADER END -->
 
-    <div class="row">
-        <div class="col-md-6 ">
+    <div class="row g-3">
+        <div class="col-12 col-md-6">
             <?php include __DIR__ . '/Widgets/combo-single-card.php' ?>
-            <?php include __DIR__ . '/Widgets/contact-card.php' ?>
-
-
         </div>
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
+            <?php include __DIR__ . '/Widgets/contact-card.php' ?>
+        </div>
+        <div class="col-12 col-md-6">
             <?php include __DIR__ . '/Widgets/contract-card.php' ?>
+        </div>
+        <div class="col-12 col-md-6">
             <?php include __DIR__ . '/Widgets/notes-card.php' ?>
+        </div>
+        <div class="col-12 ">
+            <?php include __DIR__ . '/Widgets/combo-contact.php'; ?>
         </div>
     </div>
 <?php
-include __DIR__ . '/Widgets/combo-contact.php';
+

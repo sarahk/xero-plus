@@ -6,15 +6,20 @@ declare(strict_types=1);
 // todo - write ajax
 ?>
 
-<div class="card custom-card card-haze" id="invoiceCard">
+<div class="card custom-card" id="invoiceCard">
     <div class="card-header">
-        <div class="card-title">Invoice: <span id="invoiceCardTitle"><strong></strong></span></div>
+        <div class="card-title">Invoice: <span id="invoiceCardTitle"></span></div>
     </div>
     <div class="card-body">
         <table class="table table-bordered table-sm border-primary" id="invoiceCardTable">
             <tr>
                 <th>Number</th>
-                <td id="invoiceNumber"><?= $data['invoices']['invoice_number'] ?? ''; ?></td>
+                <td id="invoiceNumber"><?php
+                    echo $data['invoices']['invoice_number'] ?? '';
+                    if ($data['invoices']['status'] == 'VOIDED') {
+                        echo ' <span class="badge badge-danger">VOIDED</span>';
+                    }
+                    ?></td>
             </tr>
             <tr>
                 <th>Reference</th>

@@ -31,9 +31,9 @@ class ContractWidget {
                 $('#contractCardDelivered').text(data.contracts.delivery_date);
             });
 
-        if (contract_id > 0) {
-            $('#contactCardPaymentsImage').attr("src", "/run.php?endpoint=image&imageType=baddebt&contract_id=" + contract_id);
-        }
+        //if (contract_id > 0) {
+        //    $('#contactCardPaymentsImage').attr("src", "/run.php?endpoint=image&imageType=baddebt&contract_id=" + contract_id);
+        //}
     }
 
     getContractSummary() {

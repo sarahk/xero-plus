@@ -46,7 +46,8 @@ if (!isset($loader)) {
 }
 
 $loader->outputJS('footer');
-$loader->outputJSModule('footer');
+$loader->outputJSModule();
+
 
 if (!$loggedOut) {
     echo '<!-- logged in, output modals -->';
@@ -54,12 +55,6 @@ if (!$loggedOut) {
 } else {
     echo '<!-- logged out, no modals -->';
 }
-//todo remove code below, should be handled by loader
-//if (isset($modals) && is_array($modals) && count($modals)) {
-//    foreach ($modals as $filename) {
-//        include("Views/Modals/$filename");
-//    }
-//}
 ?>
 
 <script defer type="text/javascript" src="/JS/functions.js"></script>

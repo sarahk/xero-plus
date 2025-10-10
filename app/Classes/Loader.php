@@ -52,19 +52,34 @@ class Loader
         echo '<!-- /L O A D E R   J S -->' . PHP_EOL;
     }
 
-    public function outputJSModule($where = 'footer'): void
+    public function outputJSModule(): void
     {
-        echo '<!-- L O A D E R   J S   M O D U L E -->' . PHP_EOL;
+        if ($this->countUp($this->jsModule) === 0) {
+            echo '<!-- no JS modules -->' . PHP_EOL;
+            return;
+        }
 
+        echo '<!-- L O A D E R   J S   M O D U L E -->' . PHP_EOL;
         foreach ($this->priorities as $priority) {
             if (count($this->jsModule[$priority])) {
                 echo '<!-- ' . $priority . ' -->' . PHP_EOL;
-                foreach ($this->js[$priority] as $source) {
+                foreach ($this->jsModule[$priority] as $source) {
                     echo "<script type='module' src='$source'></script>" . PHP_EOL;
                 }
             }
         }
         echo '<!-- /L O A D E R   J S   M O D U L E -->' . PHP_EOL;
+    }
+
+    private function countUp(array $array): int
+    {
+        $count = 0;
+        foreach ($array as $sources) {
+            if (count($sources)) {
+                $count++;
+            }
+        }
+        return $count;
     }
 
     public function outputCSS(): void
@@ -109,7 +124,7 @@ class Loader
         }
     }
 
-    public function addJS(string $src, $priority = 'low'): void
+    public function addJS(string $src, string $priority = 'low'): void
     {
         if (!in_array($priority, $this->priorities)) {
             $priority = 'low';
@@ -117,7 +132,7 @@ class Loader
         $this->js[$priority][] = $src;
     }
 
-    public function addJSModule(string $src, $priority = 'low'): void
+    public function addJSModule(string $src, string $priority = 'low'): void
     {
         if (!in_array($priority, $this->priorities)) {
             $priority = 'low';
