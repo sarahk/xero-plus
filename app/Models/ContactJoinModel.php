@@ -63,4 +63,17 @@ class ContactJoinModel extends BaseModel
             }
         }
     }
+
+    public function prepAndSave(array $data): string
+    {
+// todo this is a rough setup of prepandsave - it needs testing
+        // now convert data into saveable values
+        $save = $this->getSaveValues($data);
+        $save['updated'] = $save['upd8_updated'] = date('Y-m-d H:i:s');
+
+        $save = $this->checkNullableValues($save);
+
+        $result = $this->runQuery($this->insert, $save, 'insert');
+        return "$result";
+    }
 }

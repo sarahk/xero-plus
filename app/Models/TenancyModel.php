@@ -18,7 +18,8 @@ class TenancyModel extends BaseModel
     public function list(): array
     {
         $sql = "SELECT * FROM `tenancies` ORDER BY `sortorder`";
-        $result = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        //$result = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->runQuery($sql, []);
 
         $output = [];
         foreach ($result as $row) {

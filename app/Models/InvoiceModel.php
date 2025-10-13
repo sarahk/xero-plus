@@ -59,7 +59,8 @@ class InvoiceModel extends BaseModel
         $checked = $this->checkNullableValues($data);
         $save = $this->getSaveValues($checked);
 
-
+        //$this->debug($this->insert);
+        //$this->debug($save);
         return $this->runQuery($this->insert, $save, 'insert');
     }
 

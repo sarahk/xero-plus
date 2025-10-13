@@ -19,15 +19,60 @@ class StorageClass
 
     public function startSession()
     {
+        $this->startSessionSafely();
+        return;
+        /*
         if (!isset($_SESSION)) {
-            ini_set('session.cookie_lifetime', 3600); // Lifetime of the cookie (1 hour)
-            ini_set('session.cookie_path', '/'); // Path where the cookie is available
+            try {
+                ini_set('session.cookie_lifetime', 3600); // Lifetime of the cookie (1 hour)
+                ini_set('session.cookie_path', '/'); // Path where the cookie is available
+            } catch (\Exception $e) {
+                error_log("startSession" . ' headers=' . json_encode($_GET));
+                error_log("startSession" . ' exception=' . json_encode($e));
+            }
             //ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS only
             //ini_set('session.cookie_httponly', 1); // Make the cookie HTTP only (not accessible by JavaScript)
 
             session_start();
         }
+        */
     }
+
+    // Put this in your bootstrap before you touch sessions
+    private function startSessionSafely(): void
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? 'cli';
+
+        // Turn *only for this block* warnings into exceptions
+        set_error_handler(function ($severity, $message, $file, $line) use ($uri) {
+            // Log with context so you know which page
+            error_log("SESSION warning on {$uri}: {$message} in {$file}:{$line}");
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+
+        try {
+            // Helpful when chasing “headers already sent”
+            if (headers_sent($f, $l)) {
+                error_log("SESSION: headers already sent at {$f}:{$l} for {$uri}");
+                return;
+            }
+            if (session_status() === PHP_SESSION_NONE) {
+                // Prefer the options array over ini_set
+                session_start([
+                    'cookie_lifetime' => 3600,
+                    'cookie_path' => '/',
+                    'cookie_httponly' => true,
+                    'cookie_secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                    'use_strict_mode' => 1,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            error_log("SESSION exception on {$uri}: {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
+        } finally {
+            restore_error_handler();
+        }
+    }
+
 
     public function setToken($token, $expires, $tenantId, $refreshToken, $idToken)
     {
@@ -207,12 +252,18 @@ class StorageClass
         $next_runtime = new DateTime($_SESSION['ckm'][$type]['next_runtime'] ?? '');
         $current_time = new DateTime(); // Get the current time
         $future = $next_runtime > $current_time; // Compare the times
+
+        $override = (int)($_GET['override'] ?? 0);
+        if ($override) {
+            $future = false;
+        }
+
         return ['next_runtime' => $next_runtime, 'future' => $future, 'last_batch' => $_SESSION['ckm'][$type]['last_batch']];
     }
 
     public function setNextRuntime(string $type): void
     {
-        $minutes = 30;
+        $minutes = 3;
         $date_time = new DateTime();
         $date_time->modify("+{$minutes} minutes");
         $next_runtime = $date_time->format('Y-m-d H:i:s');

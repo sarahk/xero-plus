@@ -2,7 +2,8 @@
 
 namespace App\Models\Query;
 
-
+use App\Classes\XeroUrl;
+use App\Models\Enums\ComboStatus;
 use App\Classes\Utilities;
 
 /**
@@ -29,6 +30,15 @@ class ComboQueryModel extends BaseQueryModel
         parent::__construct();
         $this->addToParams('contact_id');
         $this->addToParams('contract_id', ['contract_id', 'id']);
+    }
+
+    private function getTotalDue($contract_id): string
+    {
+        $sql = "SELECT SUM(amount_due) as total_due 
+                    FROM mcombo 
+                    WHERE contract_id = :contract_id
+                    AND row_type = 'I'";
+        return $this->runQuery($sql, ['contract_id' => $contract_id], 'column');
     }
 
     public function list(): string
@@ -144,6 +154,7 @@ class ComboQueryModel extends BaseQueryModel
         $output['recordsTotal'] = $this->runQuery($records_total, $search_values, 'column');
         $output['recordsFiltered'] = $this->runQuery($records_filtered, $search_values, 'column');
 
+        $xeroLinkMaker = new XeroUrl();
         if (count($result) > 0) {
             foreach ($result as $row) {
 
@@ -151,12 +162,21 @@ class ComboQueryModel extends BaseQueryModel
                 $url = "/page.php?action=12&invoice_id={$row['invoice_id']}";
                 $colour = $tenancy_list[$row['xerotenant_id']]['colour'];
                 $status = strtolower($row['status']);
+                if ($row['row_type'] === 'I') {
+                    $xeroUrl = $xeroLinkMaker->viewInvoice($row['xerotenant_id'], $row['invoice_id']);
+                    //$xeroUrl = "https://api.xero.com/api.xro/2.0/Invoices/" . $row['invoice_id'];
+                    $xeroLink = $xeroLinkMaker->getIconLink($xeroUrl);
+                } else {
+                    $xeroLink = '';
+                }
+
                 $output['data'][] = [
                     'DT_RowId' => "row_{$row['invoice_id']}",
-                    'DT_RowClass' => "status-{$status}",
+                    'DT_RowClass' => 'status-' . ComboStatus::getStatusByDate($row['row_type'], $row['date'], $row['due_date'], $row['amount_due']),
                     'row_type' => "{$tenancy_list[$row['xerotenant_id']]['shortname']} <b>{$row['row_type']}</b>",
-                    'invoice_number' => "<a href='$url'>{$row['invoice_number']}</a>",
+                    'invoice_number' => "<a href='$url'>{$row['invoice_number']}</a> $xeroLink",
                     'reference' => $row['reference'],
+                    'name_only' => $row['name'],
                     'name' => "<a href='$url'>{$row['name']}</a>",
                     'status' => "<a href='https://go.xero.com/AccountsReceivable/View.aspx?InvoiceID={$row['invoice_id']}' target='_blank'>{$row['status']}</a>",
                     'amount' => $row['amount'],
@@ -184,6 +204,8 @@ class ComboQueryModel extends BaseQueryModel
 
         }
 
+        $output['total_due'] = $this->getTotalDue($this->params['contract_id']);
+
         return json_encode($output);
     }
 
@@ -203,29 +225,31 @@ class ComboQueryModel extends BaseQueryModel
     {
         $orderParams = $this->params['order'][0];
         $colName = $orderParams['name'] ?? '';
-        $direction = strtoupper($orderParams['dir'] ?? 'DESC');
+        $column = (int)$orderParams['column'];
+        $direction = ($column >= 0 || !empty($colName)) ? $orderParams['dir'] : $this->orderByDefaultDirection;
 
-        $orderBy = match ($colName) {
-            'date' => '`date`',
-            'row_type' => '`row_type`',
-            'invoice_number' => '`invoice_number`',
-            'reference' => '`reference`',
-            'name' => '`contacts`.`name`',
-            'amount' => '`amount`',
-            'amount_due' => '`amount_due`',
-            'status' => '`status`',
-            default => '',
-        };
+        if (!empty($colName)) {
+            $orderBy = match ($colName) {
+                'date' => '`date`',
+                'row_type' => '`row_type`',
+                'invoice_number' => '`invoice_number`',
+                'reference' => '`reference`',
+                'name' => '`contacts`.`name`',
+                'amount' => '`amount`',
+                'amount_due' => '`amount_due`',
+                'status' => '`status`',
+                default => '',
+            };
 
-        if (!empty($orderBy)) {
-            return $orderBy . ' ' . $direction;
+            if (!empty($orderBy)) {
+                return $orderBy . ' ' . $direction;
+            }
         }
 
-
         // the name didn't make sense? do we have a column number?
-        if (array_key_exists($orderParams['column'], $this->orderByColumns)) {
+        if (array_key_exists($column, $this->orderByColumns)) {
             //$this->logInfo('OrderBy using the column', [str_replace('DIR', $direction, $this->orderByColumns[$orderParams['column']])]);
-            return str_replace('DIR', $direction, $this->orderByColumns[$orderParams['column']]);
+            return str_replace('DIR', $direction, $this->orderByColumns[$column]);
         }
 
         // nothing else indicated? use this

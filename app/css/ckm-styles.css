@@ -56,19 +56,19 @@ select. form-control {
 
 /* if the colours for the tenancies change they need to be added here */
 .border-bottom-yellow {
-    border-bottom: 1px solid #ecb403;
+    border-bottom: 4px solid #ecb403 !important;
 }
 
 .border-bottom-cyan {
-    border-bottom: 1px solid #17a2b8;
+    border-bottom: 4px solid #17a2b8 !important;
 }
 
 .border-bottom-purple {
-    border-bottom: 1px solid #867efc;
+    border-bottom: 4px solid #867efc !important;
 }
 
 .border-bottom-coral {
-    border-bottom: 1px solid #ef476f;
+    border-bottom: 4px solid #ef476f !important;
 }
 
 tr.bar-yellow td:nth-child(1),
@@ -91,6 +91,21 @@ td.bar-coral {
     border-left: 0.25em solid #ef476f !important;
 }
 
+tr.status-ok td:nth-child(1) {
+    border-left: 0.25em solid var(--ck-scheduled) !important;
+}
+
+tr.status-due td:nth-child(1) {
+    border-left: 0.25em solid var(--ck-due) !important;
+}
+
+tr.status-overdue td:nth-child(1) {
+    border-left: 0.25em solid var(--ck-overdue) !important;
+}
+
+tr.status-future td:nth-child(1) {
+    border-left: 0.25em solid var(--ck-future) !important;
+}
 
 .badge-active,
 .badge-active i,

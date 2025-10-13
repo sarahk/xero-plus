@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-
+/** @var array $data */
+/** @var array $keys */
 // if there's an invoice loaded we'll use it, otherwise we'll use ajax
 // todo - write ajax
 ?>
 
 <div class="card custom-card" id="invoiceCard">
-    <div class="card-header">
+    <div class="card-header border-bottom-<?= $keys['misc']['colour'] ?>">
         <div class="card-title">Invoice: <span id="invoiceCardTitle"></span></div>
     </div>
     <div class="card-body">

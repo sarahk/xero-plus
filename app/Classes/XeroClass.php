@@ -16,6 +16,13 @@ use App\Models\SettingModel;
 use App\Models\TenancyModel;
 use PDO;
 use Exception;
+use DateTimeZone;
+use DateTimeImmutable;
+
+use XeroAPI\XeroPHP\Api\AccountingApi;
+use XeroAPI\XeroPHP\ApiException;
+use GuzzleHttp\Exception\RequestException;
+
 
 class XeroClass
 {
@@ -47,6 +54,40 @@ class XeroClass
 
         $this->initLogger('XeroClass');
     }
+
+
+    /**
+     * Convert a Xero /Date(1532036227297+0000)/ string to a DateTimeImmutable
+     * in the given (or default) timezone. Returns null on parse failure.
+     */
+    private function xeroDateToLocal(string $xeroDate, string $tz = 'Pacific/Auckland'): ?DateTimeImmutable
+    {
+
+        $localTz = new DateTimeZone($tz);
+        if (!preg_match('/\/Date\((\d+)([+\-]\d{4})?\)\/$/', $xeroDate, $m)) {
+            return null; // not a match
+        }
+
+        $ms = (int)$m[1];                // milliseconds since epoch (UTC)
+        $seconds = intdiv($ms, 1000);     // to seconds
+
+
+        // "@" creates from epoch seconds in UTC
+        return (new DateTimeImmutable("@{$seconds}"))->setTimezone($localTz);
+    }
+
+    /**
+     * Convenience: return an SQL-safe datetime string (Y-m-d H:i:s),
+     * or null if the input can’t be parsed.
+     */
+    private function xeroDateToSql(string $xeroDate, string $tz = 'Pacific/Auckland'): ?string
+    {
+        $dt = $this->xeroDateToLocal($xeroDate, $tz);
+        return $dt?->format('Y-m-d H:i:s');
+    }
+
+// Examples
+
 
     public function getTenantIdArray()
     {
@@ -128,9 +169,9 @@ class XeroClass
     {
         $output = ['data' => []];
 
-        $output['draw'] = int_val($_GET['draw'] ?? 1);
-        $output['start'] = int_val($_GET['start'] ?? 1);
-        $output['length'] = int_val($_GET['length'] ?? 10);
+        $output['draw'] = (int)$_GET['draw'] ?? 1;
+        $output['start'] = (int)$_GET['start'] ?? 1;
+        $output['length'] = (int)$_GET['length'] ?? 10;
         $output['order'] = $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']];
         $output['search'] = $_GET['search']['value'] ?? '';
         // getInvoice
@@ -718,10 +759,60 @@ class XeroClass
         $created_by_my_app = false;
         $page = 1;
 
-        $result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only);
+        // Example usage (RepeatingInvoice by ID)
+        $result = $this->xeroCallWithRetry(
+            fn(AccountingApi $api) => $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only),
+            $this->apiInstance, 3, 'getXeroInvoices'
+        );
 
+        //$result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only);
+        $this->logInfo('getXeroInvoices: Row: ', [$xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only]);
+        $this->logInfo('getXeroInvoices', [count($result)]);
         return $result->getInvoices();
     }
+
+
+    /**
+     * Run a Xero call with polite retry on 429 (rate limit).
+     * $fn receives ($apiInstance) and must perform the SDK call.
+     */
+    private function xeroCallWithRetry(callable $fn, AccountingApi $api, int $maxRetries = 3, $nickname = '')
+    {
+        $attempt = 0;
+
+        while (true) {
+            try {
+                return $fn($api);
+            } catch (ApiException $e) {
+                $status = $e->getCode();
+                $headers = $e->getResponseHeaders() ?? [];
+                $problem = $headers['x-rate-limit-problem'][0] ?? '';
+                $retryAfter = (int)($headers['Retry-After'][0] ?? 0);
+
+                // Only retry on 429
+                if ($status !== 429 || $attempt >= $maxRetries) {
+                    // Log headers for diagnostics
+                    error_log("Xero ApiException [$nickname]" . $status . ' problem=' . $problem . ' headers=' . json_encode($headers));
+                    $this->logError("Xero ApiException [$nickname]", ['status' => $status, 'problem=' => $problem, 'headers=' => json_encode($headers)]);
+                    //throw $e;
+                    return;
+                }
+
+                // Backoff: prefer server hint, else exponential with jitter
+                $wait = $retryAfter > 0 ? $retryAfter : min(60, (2 ** $attempt) + random_int(0, 3));
+                error_log("Xero 429 hit (problem=$problem). Backing off for {$wait}s (attempt " . ($attempt + 1) . "/$maxRetries)");
+                $this->logInfo("xeroCallWithRetry [$nickname]", ['attempt' => $attempt, 'maxRetries=' => $maxRetries]);
+                sleep($wait);
+                $attempt++;
+                continue;
+            } catch (RequestException $e) {
+                // Network-level issues – you might add similar retry here if desired
+                $this->logError("xeroCallWithRetry [$nickname]", ['catch' => $e]);
+                throw $e;
+            }
+        }
+    }
+
 
     /**
      * gets invoices from xero and save in local database
@@ -734,7 +825,9 @@ class XeroClass
     {
         $storage = new StorageClass();
         $next_runtime = $storage->getNextRuntime('Invoices');
+
         if ($next_runtime['future']) {
+            $this->logInfo('getInvoiceRefresh: next_runtime', [$next_runtime, $xeroTenantName,]);
             return 0;
         }
 
@@ -745,12 +838,13 @@ class XeroClass
             $updated_date_utc = $objInvoice->getUpdatedDate($xeroTenantId);
         }
         $data = $this->getXeroInvoices($xeroTenantId, $updated_date_utc);
+        $this->logInfo('getInvoiceRefresh: count', [count($data), $updated_date_utc]);
 
         if (count($data) === 0) {
             if ($next_runtime['last_batch'] > 0) {
                 $storage->setNotification([
                     'class' => 'danger',
-                    'message' => 'Importing of Invoices from Xero is complete. <a onclick="rebuildMTables()">Complete Now</a>Complete Now</a> or wait until next login?'
+                    'message' => 'Importing of Invoices from Xero has finished. There is one more step. <a onclick="rebuildMTables()">Complete Now</a> or wait until next login?'
                 ]);
             }
             $storage->setNextRuntime('Invoices');
@@ -763,7 +857,7 @@ class XeroClass
         foreach ($data as $k => $row) {
 
             $repeating_invoice_id = $row->getRepeatingInvoiceId();
-
+            $this->logInfo('getInvoiceRefresh: loop', [$k, $repeating_invoice_id]);
             // only save the repeating_invoices
             if ($repeating_invoice_id) {
                 // these don't return anything, they just ensure we have the records in our
@@ -778,11 +872,11 @@ class XeroClass
                     'total' => $row['total'],
                     'amount_due' => $row['amount_due'],
                     'amount_paid' => $row['amount_paid'],
-                    'date' => ExtraFunctions::getDateFromXero($row['date']),
-                    'due_date' => ExtraFunctions::getDateFromXero($row['due_date']),
+                    'date' => $this->xeroDateToSql($row['date']),
+                    'due_date' => $this->xeroDateToSql($row['due_date']),
                     'repeating_invoice_id' => $repeating_invoice_id,
                     'xero_status' => $row['status'],
-                    'updated_date_utc' => ExtraFunctions::getDateFromXero($row['updated_date_utc']),
+                    'updated_date_utc' => $this->xeroDateToSql($row['updated_date_utc']),
                     'xerotenant_id' => $xeroTenantId
                 ];
 
@@ -1111,7 +1205,16 @@ class XeroClass
         $updated_date_utc = $payments->getUpdatedDate($xeroTenantId);
         //$this->debug($updated_date_utc);
         $page_size = 50;  //100
-        $result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
+        //$result = $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size);
+
+
+        $result = $this->xeroCallWithRetry(
+            fn(AccountingApi $api) => $this->apiInstance->getPayments($xeroTenantId, $updated_date_utc, null, null, 0, $page_size),
+            $this->apiInstance, 3, 'getPayments'
+        );
+
+        //$this->logInfo('getPayments: Row: ', [$xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only]);
+        $this->logInfo('getPayments', [count($result)]);
 
 
         if (count($result) === 0) {
@@ -1320,7 +1423,17 @@ class XeroClass
 
     public function getSingleRepeatingInvoiceStub(string $xeroTenantId, string $repeating_invoice_id, int $ckcontact_id): array
     {
-        $result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
+        $result = $this->xeroCallWithRetry(
+            fn(AccountingApi $api) => $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id),
+            $this->apiInstance, 3, 'getSingleRepeatingInvoiceStub'
+        );
+
+        //$result = $this->apiInstance->getInvoices($xeroTenantId, $updated_date_utc, $where, $order, $ids, $invoice_numbers, $contact_ids, $statuses, $page, $include_archived, $created_by_my_app, $unitdp, $summary_only);
+        $this->logInfo('getSingleRepeatingInvoiceStub: ', [$xeroTenantId, $repeating_invoice_id]);
+        $this->logInfo('getSingleRepeatingInvoiceStub', [count($result)]);
+
+
+        //$result = $this->apiInstance->getRepeatingInvoice($xeroTenantId, $repeating_invoice_id);
         //[/RepeatingInvoices:Read]
         $contact_id = $result[0]->getContact()->getContactId();
         $row = $result[0];
@@ -1364,15 +1477,17 @@ class XeroClass
         $id = $objContract->field('contract_id', 'repeating_invoice_id', $repeatingInvoiceId);
         //if ($id) return $id;
 
-        $contract = $this->getSingleRepeatingInvoiceStub($xeroTenantId, $repeatingInvoiceId, $ckcontact_id);
-
+        if (!$id) {
+            $contract = $this->getSingleRepeatingInvoiceStub($xeroTenantId, $repeatingInvoiceId, $ckcontact_id);
+            return $objContract->saveXeroStub($contract);
+        }
         //$this->debug(['getSingleRepeatingInvoiceStub' => $contract]);
         if ($id) {
-            $objContract->updateXeroStub($id, $contract);
+            //$objContract->updateXeroStub($id, $contract);
             return $id;
         }
         //else
-        return $objContract->saveXeroStub($contract);
+        //return $objContract->saveXeroStub($contract);
     }
 
 

@@ -74,25 +74,19 @@ export const ComboContractSingleTable = (() => {
                 {data: 'date', name: 'date', defaultContent: ''},
                 {data: 'activity', name: 'activity', defaultContent: ''},
                 {data: 'reference', name: 'reference', defaultContent: ''},
-                {data: 'due_date', name: 'due_date', defaultContent: ''},
+                {data: 'due_date', name: 'due_date', defaultContent: '', className: 'text-center',},
                 {
                     data: 'invoice_amount', name: 'amount',
                     className: 'text-end',
-                    defaultContent: '',
-                    render: val => (val == null ? '' : Number(val).toFixed(2))
+                    defaultContent: ''
                 },
                 {
                     data: 'payment_amount',
                     className: 'text-end',
-                    defaultContent: '',
-                    render: val => (val == null ? '' : Number(val).toFixed(2))
+                    defaultContent: ''
                 },
                 {data: 'balance', name: 'balance', defaultContent: ''}
             ],
-
-            createdRow: (row, data) => {
-                if (data?.colour) row.classList.add('bar-' + data.colour);
-            },
 
             layout: {
                 topStart: {
@@ -105,6 +99,16 @@ export const ComboContractSingleTable = (() => {
 
             language: {
                 emptyTable: 'No invoices or payments for this contract'
+            },
+            initComplete: function (settings, json) {
+                const rawName = json.data[0].name_only;
+                const cardEl = document.querySelector(tableSel).closest('.card');          // HTMLDivElement | null
+// (optional)
+                const comboName = cardEl?.querySelector('#comboContactName');
+                comboName.innerText = rawName;
+                const comboTotalDue = cardEl?.querySelector('#comboContactTotal');
+                comboTotalDue.innerText = json.total_due;
+
             }
         });
 

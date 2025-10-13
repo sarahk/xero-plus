@@ -1,10 +1,17 @@
 // Functions to load data from Xero
+import {fetchJSON} from "/JS/ui/helpers.js";
+
 class AutoRunXeroImports {
 
     constructor() {
         this.tenancies = ['auckland', 'waikato', 'bop'];
 
         this.intervalId = setInterval(() => {
+            // let qs = new URLSearchParams({
+            //     endpoint: "Xero",
+            // });
+            //await data = fetchJSON(`/json.php?${qs.toString()}`);
+
             $.ajax({
                 url: "/json.php",
                 data: {endpoint: "Xero"}

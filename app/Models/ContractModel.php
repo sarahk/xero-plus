@@ -61,10 +61,11 @@ class ContractModel extends BaseModel
      */
     public function saveXeroStub(array $data): int
     {
-        $data['updated'] = date('Y-m-d H:i:s');
+        $data['updated'] = $data['date'] = date('Y-m-d H:i:s');
 
         $contract_id = $this->field('contract_id', 'repeating_invoice_id', $data['repeating_invoice_id']);
-        $this->debug($contract_id);
+        //$this->debug($contract_id);
+        //$this->debug($data);
         $sql = "INSERT INTO `contracts` (
                     `repeating_invoice_id`,
                     `xerotenant_id`,
@@ -80,7 +81,7 @@ class ContractModel extends BaseModel
                 )
                 VALUES 
                     (:repeating_invoice_id, :xerotenant_id, :contact_id, :ckcontact_id,
-                     :reference, :schedule_unit, :total, :tax_type, :stub, :updated, :updated);";
+                     :reference, :schedule_unit, :total, :tax_type, :stub, :date, :updated);";
 
         return $this->runQuery($sql, $data, 'insert');
     }

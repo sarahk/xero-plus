@@ -31,10 +31,11 @@
     "npm-asset/jszip": "*",
     "npm-asset/mdb-ui-kit": "^3.11",
     "npm-asset/pdfmake": "^0.2",
-    "npm-asset/simplebar": "^6",
+    "npm-asset/simplebar": "^6.2",
+    "npm-asset/simplebar-core": "^1.2",
     "npm-asset/sweetalert2": "^11",
     "tinymce/tinymce": "^7.9.0",
-    "xeroapi/xero-php-oauth2": "^9.1"
+    "xeroapi/xero-php-oauth2": "^10.1"
   },
   "require-dev": {
     "pestphp/pest": "^3.8.2",

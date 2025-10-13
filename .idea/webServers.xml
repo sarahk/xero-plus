@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="29bb6df7-62a5-4ece-827d-69530213475c" name="MAMP" url="http://ckm.local:8890">
+        <fileTransfer mountedRoot="$PROJECT_DIR$/app" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>

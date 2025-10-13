@@ -39,6 +39,7 @@ $newNote = ['parent' => 'contact', 'foreign_id' => $data['contact']['id']];
         </div>
         <div class="col-12 ">
             <?php include __DIR__ . '/Widgets/combo-contact.php'; ?>
+            
         </div>
     </div>
 <?php

@@ -2,8 +2,13 @@
 declare(strict_types=1);
 namespace App;
 
+// Ensure no premature output breaks headers/cookies
+if (!ob_get_level()) {
+    ob_start();
+}
+
 use App\Models\CabinModel;
-use App\Models\ComboModel;
+use App\Models\Query\ComboQueryModel;
 use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\InvoiceModel;
@@ -14,6 +19,7 @@ use App\Classes\StorageClass;
 use App\Classes\Utilities;
 use App\Classes\Loader;
 use App\Classes\ExtraFunctions;
+use App\Classes\XeroClass;
 
 use DateTime;
 
@@ -24,9 +30,6 @@ use DateTime;
 //Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
 
 require __DIR__ . '/../bootstrap/runtime.php';
-
-//var_dump($_GET);
-//exit;
 
 
 $pdo = Utilities::getPDO();
@@ -77,17 +80,6 @@ switch ($action) {
 
 
     case 10:
-        // enquiries
-        //$contacts = new ContactModel($pdo);
-        //$data = $contacts->get('id', $id);
-        //$data['contact'] = $data['contacts'];
-
-        //$users = new UserModel($pdo);
-        //$xeroUserId = $_SESSION['xero_user_id'] ?? 0;
-//        if (!$xeroUserId) {
-//            header('/');
-//        }
-//        $user = $users->get('user_id', $_SESSION['xero_user_id']);
 
         $contracts = new ContractModel($pdo);
         $contract_id =
@@ -143,8 +135,9 @@ switch ($action) {
             'contact' => [
                 'id' => $data['contact']['id'] ?? 0,
                 'contact_id' => $data['invoices']['contact_id'] ?? 0,
-               
-            ]];
+            ],
+            'misc' => ['colour' => ExtraFunctions::getTenantField($data['invoices']['xerotenant_id'], 'colour')],
+        ];
 
         unset($invoice);
         unset($contact);
@@ -161,7 +154,7 @@ switch ($action) {
         $cabin_id = $_GET['cabin_id'] ?? 0;
         if (!$cabin_id) {
             //reload the dashboard
-            header('Location: page.php');
+            header('Location: /page.php');
             exit;
         }
 
@@ -276,7 +269,10 @@ switch ($action) {
 
         break;
 }
-
+if (ob_get_level()) {
+    $flush = ob_get_contents();
+    ob_end_clean();
+}
 require_once(__DIR__ . '/Views/header.php');
 
 $view = __DIR__ . '/' . match ($action) {
@@ -309,4 +305,11 @@ $view = __DIR__ . '/' . match ($action) {
 </div>
 <?php
 require_once 'Views/footer.php';
+//todo remove flush after I've found out what is sending text before session starts
+if (!empty($flush)) {
+    echo PHP_EOL . '====================' . PHP_EOL;
+    var_dump($flush);
+    echo PHP_EOL . '====================' . PHP_EOL;
+    error_log("Flush contained [$flush]" . json_encode($_GET['REQUEST_URI']));
+}
 ?>

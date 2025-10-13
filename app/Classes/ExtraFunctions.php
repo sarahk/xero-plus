@@ -2,6 +2,7 @@
 
 namespace App\Classes;
 
+use App\Models\TenancyModel;
 use DateTime;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -17,6 +18,8 @@ class ExtraFunctions
     /*
     Xero send the date like this... "/Date(1589414400000+0000)/"
     this function turns it into a nice date time string.
+
+    // obsolete, imports can convert the date using XeroClass->objectToArray
     */
     public static function getDateFromXero($str): string
     {
@@ -187,25 +190,40 @@ class ExtraFunctions
         return implode('<br>', $address);
     }
 
+    public static function getTenancyArray()
+    {
+        if (!defined('TENANCIES') || TENANCIES === '') {
+            error_log('ExtraFunctions: TENANCIES not defined or empty');
+            $tenancyModel = new TenancyModel(Utilities::getPDO());
+            $raw = $tenancyModel->list();
+        } else {
+            try {
+                $raw = json_decode(TENANCIES, true, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                error_log('Invalid TENANCIES JSON: ' . $e->getMessage());
+                return [];
+            }
+        }
+
+        $output = [];
+        foreach ($raw as $row) {
+            $output[$row['tenant_id']] = $row;
+        }
+        return $output;
+
+    }
 
     public static function getTenancyInfo($xerotenant_id): array
     {
-        if (defined('TENANCIES')) {
+        $tenancies = self::getTenancyArray();
 
-            foreach (json_decode(TENANCIES, true) as $row) {
-
-                if ($row['tenant_id'] === $xerotenant_id) {
-                    return $row;
-                }
-            }
-        }
-        return [];
+        return $tenancies[$xerotenant_id];
     }
 
     public static function getTenantField($xerotenant_id, $fld): string
     {
-        $tenancy = self::getTenancyInfo($xerotenant_id);
-        return $tenancy[$fld];
+        $tenancies = self::getTenancyArray();
+        return $tenancies[$xerotenant_id][$fld];
     }
 
     public static function hasIdValue(string $name, string $fld = ''): bool

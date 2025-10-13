@@ -77,3 +77,5 @@ ALTER TABLE tenancies
     MODIFY tenant_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
     MODIFY colour VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
+ALTER TABLE `xeroplus`.`invoices`
+    ADD COLUMN `updated_date` DATETIME NULL DEFAULT NULL AFTER `updated_date_utc`;

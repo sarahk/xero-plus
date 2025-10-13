@@ -11,7 +11,7 @@
          data-contact-id="<?= $keys['contact']['contact_id']; ?>"
          data-id="<?= $keys['contact']['id']; ?>"
     >
-        <div class="card-header">
+        <div class="card-header border-bottom-<?= $keys['misc']['colour'] ?>">
             <div class="card-title">Contact: <span id="contactCardTitle"></span></div>
         </div>
         <div class="card-body">

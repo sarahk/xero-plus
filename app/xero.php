@@ -19,23 +19,23 @@ use Monolog\Handler\StreamHandler;
  */
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 require_once '../vendor/autoload.php';
 
-$log = new Logger('Index');
-$log->pushHandler(new StreamHandler('monolog.index.log', Level::Info));
-$log->info('New Xero Import', [date('d-m-Y-H-i-s')]);
-
-
 // Storage Class uses sessions for storing token > extend to your DB of choice
 //require_once('authorizedXero.php');
-
 
 $storage = new StorageClass();
 $provider = Utilities::getProvider();
 
 Utilities::checkAccessToken();
+
+$log = new Logger('Index');
+$log->pushHandler(new StreamHandler('monolog.index.log', Level::Info));
+$log->info('New Xero Import', [date('d-m-Y-H-i-s')]);
+
 
 $xero = new XeroClass();
 //$json = new JsonClass();

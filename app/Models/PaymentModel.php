@@ -28,6 +28,7 @@ class PaymentModel extends BaseModel
         $this->buildInsertSQL();
     }
 
+
     public function getContractId($invoice_id): int
     {
         $sql = 'SELECT contract_id FROM invoices where invoice_id = :invoice_id LIMIT 1';
@@ -140,7 +141,7 @@ class PaymentModel extends BaseModel
         $save = $this->checkNullableValues($save);
 
         $result = $this->runQuery($this->insert, $save, 'insert');
-        return $result;
+        return "$result";
     }
 
 }

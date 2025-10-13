@@ -313,7 +313,7 @@ class Utilities
             'start' => $_GET['start'] ?? 0,
             'length' => ($_GET['length'] ?? 10) == -1 ? 10 : ($_GET['length'] ?? 10),
             'search' => $_GET['search']['value'] ?? '',
-            'order' => $_GET['order'] ?? [0 => ['column' => '0', 'dir' => 'ASC']],
+            'order' => $_GET['order'] ?? [0 => ['column' => -1, 'dir' => 'ASC']],
             'invoice_status' => $_GET['invoice_status'] ?? '',
             'dates' => $_GET['search']['dates'] ?? '',
             'contact_status' => $_GET['search']['contact_status'] ?? '',

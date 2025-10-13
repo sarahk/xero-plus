@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
-
 
 class SettingModel extends BaseModel
 {
@@ -27,5 +25,15 @@ class SettingModel extends BaseModel
         $this->debug($value);
         //$value = $this->pdo->query($sql)->fetchColumn();
         return $value;
+    }
+
+    //todo this is cut and paste and needs to be reviewed
+    public function prepAndSave(array $data): string
+    {
+        $checked = $this->checkNullableValues($data);
+        $save = $this->getSaveValues($checked);
+
+        $this->debug($this->insert);
+        return $this->runQuery($this->insert, $save, 'insert');
     }
 }

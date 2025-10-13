@@ -74,7 +74,7 @@ if (!$loggedOut) {
 
 <?php if (!\App\LOGGEDOUT) {
     // todo autorun is throwing api errors
-    //echo '<script type="module" src="/JS/autorun.js"></script>';
+    echo '<script type="module" src="/JS/autorun.js"></script>';
 }
 ?>
 

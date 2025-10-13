@@ -33,6 +33,7 @@ use App\Classes\Loader;
     <link rel="manifest" href="/site.webmanifest">
     <style>
         <?php
+        /*
         if (defined('TENANCIES')):
         foreach (json_decode(TENANCIES, true) as $row):
         $colour = "var(--bs-{$row['colour']})";
@@ -45,7 +46,7 @@ use App\Classes\Loader;
     ";
          endforeach;
          endif;
-         ?>
+     */    ?>
     </style>
 </head>
 

@@ -1,4 +1,3 @@
-<!-- Modal cabin-single.php-->
 <?php
 
 use App\Classes\ViewFunctions;
@@ -7,7 +6,7 @@ ob_start();
 include __DIR__ . '/partials/cabin-view.php';
 $stub = ob_get_clean();
 
-echo PHP_EOL . '=================================================' . PHP_EOL;
+echo '<!-- Modal cabin-view.php-->';
 
 echo ViewFunctions::render('components/modal.php', [
     'modalAction' => intval($_GET['action'] ?? 0),

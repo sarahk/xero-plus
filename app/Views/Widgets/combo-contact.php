@@ -2,11 +2,11 @@
 /** @var array $keys */
 ?>
 
-<div class="card custom-card">
-    <div class="card-header d-flex justify-content-between">
+<div class="card custom-card" data-contract-id="<?= $keys['invoice']['contract_id'] ?>">
+    <div class="card-header d-flex justify-content-between border-bottom-<?= $keys['misc']['colour'] ?>">
         <h3 class="card-title">Invoices & Payments for <span id="comboContactName" class="text-primary"></span>
         </h3>
-        <span class="text-end">Total Due: <span id="comboContactTotal"></span></span>
+        <span class="text-end">Total Due: <span id="comboContactTotal" class="text-primary"></span></span>
     </div>
 
     <div class="card-body">

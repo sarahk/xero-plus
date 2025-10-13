@@ -4,10 +4,10 @@ namespace App\Views\Widgets;
 
 // todo
 // add addresses and phone numbers
-
+/** @var array $keys */
 ?>
 <div class="card custom-card" id="contractCard">
-    <div class="card-header">
+    <div class="card-header border-bottom-<?= $keys['misc']['colour'] ?>">
         <div class="card-title">Contract: <span id="contractCardTitle"><strong></strong></span></div>
     </div>
     <div class="card-body">
