@@ -28,7 +28,7 @@ final  class XeroUrl
             'shortcode' => $short_code,
             'redirecturl' => $redirect,
         ], '', '&', PHP_QUERY_RFC3986);
-        error_log($qs);
+        
         return "https://{$this->host}/organisationlogin/default.aspx?{$qs}";
     }
 

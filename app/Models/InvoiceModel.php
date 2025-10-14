@@ -304,80 +304,77 @@ class InvoiceModel extends BaseModel
         return 'https://image-charts.com/chart?' . implode('&', $parts) . '&';
     }
 
-    //https://ckm:8825/run.php?endpoint=image&imageType=baddebt&contract_id=191
+    //https://ckm.local:8890//run.php?endpoint=image&imageType=baddebt&contract_id=191
     public function getChartData(string $contract_id): array
     {
         $xaxis = [
-            'full' => '0:|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16',
+            'full' => '0:|0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16',
             'slim' => '0:||2||4||6||8||10||12||14||16',
             'slim-r' => '0:|16||14||12||10||8||6||4||2'
         ];
 
-        //$contract = new ContractModel($this->pdo);
-        //$contact_id = $contract->field('contact_id', 'contract_id', $contract_id);
+        // Balance as of each Monday (inclusive), for weeks 0..16 (oldest→newest).
+        // Base Monday = Monday of the *current* week.
+        $sql = "
+        SELECT
+            w.week_number,
+            -- Monday anchor for this point (current week's Monday minus (16 - n) weeks)
+            DATE_SUB(
+                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY),
+                INTERVAL (16 - w.week_number) WEEK
+            ) AS anchor_monday,
+            (
+                SELECT COALESCE(SUM(i.total), 0)
+                FROM invoices i
+                WHERE i.contract_id = :cid
+                  AND i.date <= DATE_SUB(
+                        DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY),
+                        INTERVAL (16 - w.week_number) WEEK
+                      )
+            ) AS owing,
+            (
+                SELECT COALESCE(SUM(p.amount), 0)
+                FROM payments p
+                WHERE p.contract_id = :cid
+                  AND p.date <= DATE_SUB(
+                        DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY),
+                        INTERVAL (16 - w.week_number) WEEK
+                      )
+            ) AS paid
+        FROM weeks w
+        WHERE w.week_number BETWEEN 0 AND 16
+        ORDER BY w.week_number ASC
+    ";
 
-        $sql = "SELECT 
-                    weeks.week_number,
-                        (
-                        SELECT SUM(invoices.total)
-                        FROM invoices 
-                        WHERE invoices.contract_id = :contract_id1
-                          AND FLOOR(DATEDIFF(CURDATE(), invoices.date) / 7) >= weeks.week_number
-                    ) AS `owing`,
-                    (
-                        SELECT SUM(payments.amount) 
-                        FROM payments 
-                        WHERE payments.contract_id = :contract_id2
-                          AND FLOOR(DATEDIFF(CURDATE(), payments.date) / 7) >= weeks.week_number
-                    ) AS `paid`
-                FROM 
-                    weeks
-                    ORDER BY week_number ASC";
+        $rows = $this->runQuery($sql, ['cid' => $contract_id]);
 
-        $output = array_fill(0, 16, 0);
-
-        $result = $this->runQuery($sql, ['contract_id1' => $contract_id, 'contract_id2' => $contract_id]);
-
-        if (count($result)) {
-            foreach ($result as $row) {
-                $output[$row['week_number']] = $row['owing'] - $row['paid'];
-            }
+        $points = array_fill(0, 17, 0.0);   // 0..16
+        $this->logInfo('getChartData: $rows', [$rows]);
+        foreach ($rows as $r) {
+            $i = (int)$r['week_number'];
+            $points[$i] = (float)$r['owing'] - (float)$r['paid'];
         }
-        var_dump($output);
 
-        $max = ceil(max($output) / 10) * 10;
-        $min = floor(min($output) / 10) * 10;
-        $mid = round($min + (($max - $min) / 2));
+        // Optional: pretty x-labels for Mondays (e.g., "07 Jul")
+        // $labels = array_map(fn($r) => date('d M', strtotime($r['anchor_monday'])), $rows);
+
+        // Y-axis ticks
+        $max = ceil(max($points) / 10) * 10;
+        $min = floor(min($points) / 10) * 10;
+        if ($max === $min) {
+            $max += 10;
+            $min -= 10;
+        }
+        $mid = (int)round($min + (($max - $min) / 2));
+
         return [
-            'data' => implode(',', array_reverse($output)),
+            'data' => implode(',', $points),   // oldest → newest
             'xaxis' => $xaxis['slim-r'],
-            'yaxis' => "1:||$min||$mid||$max"
+            'yaxis' => "1:||$min||$mid||$max",
+            // 'labels' => $labels,              // if your chart lib supports custom labels
         ];
-
-
-//        $this->getStatement($sql);
-//        try {
-//            $this->statement->execute(['contract1' => $contract_id, 'contract2' => $contract_id]);
-//            $result = $this->statement->fetchAll(PDO::FETCH_ASSOC);
-//            $data = array_column($result, 'totaldue');
-//            $data = array_reverse($data);
-//
-//            $max = ceil(max($data) / 10) * 10;
-//            //$number = ceil($input / 10) * 10;
-//            $min = floor(min($data) / 10) * 10;
-//            $mid = round($min + (($max - $min) / 2));
-//            return [
-//                'data' => implode(',', $data),
-//                'xaxis' => $xaxis['slim'],
-//                'yaxis' => "1:||$min||$mid||$max"
-//            ];
-//
-//        } catch (PDOException $e) {
-//            echo "[list] Error Message for $this->table: " . $e->getMessage() . "\n$sql\n";
-//            $this->statement->debugDumpParams();
-//        }
-        //return [];
     }
+
 
     // only available on invoices for pest testing
     public function pestRunQuery(string $sql, array $search_values = [], $what = ''): array|int

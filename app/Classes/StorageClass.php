@@ -7,35 +7,17 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
 
 class StorageClass
 {
-    function __construct()
+    function __construct($starter = true)
     {
-        $this->startSession();
+        // logger trait needs to use storage but doesn't need to start the session
+        if ($starter) {
+            $this->startSessionSafely();
+        }
     }
 
     public function getSession(): array
     {
         return $_SESSION['oauth2'] ?? ['tenant_id' => '', 'oauth2' => []];
-    }
-
-    public function startSession()
-    {
-        $this->startSessionSafely();
-        return;
-        /*
-        if (!isset($_SESSION)) {
-            try {
-                ini_set('session.cookie_lifetime', 3600); // Lifetime of the cookie (1 hour)
-                ini_set('session.cookie_path', '/'); // Path where the cookie is available
-            } catch (\Exception $e) {
-                error_log("startSession" . ' headers=' . json_encode($_GET));
-                error_log("startSession" . ' exception=' . json_encode($e));
-            }
-            //ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS only
-            //ini_set('session.cookie_httponly', 1); // Make the cookie HTTP only (not accessible by JavaScript)
-
-            session_start();
-        }
-        */
     }
 
     // Put this in your bootstrap before you touch sessions
@@ -48,12 +30,14 @@ class StorageClass
             // Log with context so you know which page
             error_log("SESSION warning on {$uri}: {$message} in {$file}:{$line}");
             throw new \ErrorException($message, 0, $severity, $file, $line);
+
         });
 
         try {
             // Helpful when chasing “headers already sent”
             if (headers_sent($f, $l)) {
                 error_log("SESSION: headers already sent at {$f}:{$l} for {$uri}");
+                error_log((new \Exception())->getTraceAsString());
                 return;
             }
             if (session_status() === PHP_SESSION_NONE) {
