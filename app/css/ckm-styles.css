@@ -222,6 +222,29 @@ table.table.dataTable.table-striped > tbody > tr.selected:nth-of-type(odd) > * {
 
 /* end of data tables processing */
 
+/* Make header/body select cells identical */
+table.dataTable thead th.dt-select,
+table.dataTable tbody td.dt-select {
+    text-align: center;
+    vertical-align: middle;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+}
+
+/* Remove Bootstrap’s default checkbox margins */
+table.dataTable .dt-select .form-check-input {
+    margin: 0;
+}
+
+table.dataTable thead th.dt-select {
+    border-left: 0.25em solid #eaedf1 !important;
+}
+
+
+/* If you still see a 1–2px vertical nudge, add: */
+/* table.dataTable .dt-select .form-check-input { transform: translateY(1px); } */
+
+
 /* R I P P L E   F I X */
 /* .modal-footer .btn,*/
 /* todo, actually fix it */

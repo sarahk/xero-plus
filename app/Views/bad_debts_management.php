@@ -1,10 +1,9 @@
 <?php
-
-namespace App\Views\bad_debts;
+/** @var \App\Classes\Loader $loader */
 ?>
-    <div class="row row-sm">
+    <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card custom-card">
                 <div class="card-header">
                     <h3 class="card-title">Outstanding Rent Management <span id="badDebtsTitle"
                                                                              class="text-danger"></span></h3>
@@ -12,7 +11,8 @@ namespace App\Views\bad_debts;
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered text-nowrap border-bottom w-100" id="tBadDebtsManagement">
+                        <table class="table table-bordered table-striped text-nowrap border-bottom w-100"
+                               id="tBadDebtsManagement">
                             <thead>
                             <tr>
                                 <th></th>
@@ -31,5 +31,7 @@ namespace App\Views\bad_debts;
         </div>
     </div>
 
-    <?php
-include('modals/contact-single.php');
+<?php
+$loader->addModal('contact-single.php');
+//include('modals/contact-single.php');
+$loader->addJSModule('/JS/DataTables/badDebtManagement.js');

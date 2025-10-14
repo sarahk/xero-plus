@@ -25,22 +25,17 @@ class BadDebtsReminderModel extends BaseQueryModel
     {
 
         $search_values = [];
-        $tenancies = $this->getTenanciesWhere($this->params, 'vold_debts');
+        $tenancies = $this->getTenanciesWhere($this->params, 'mold_debts');
 
         $order = $this->getOrderBy();
 
 
         $conditions = [$tenancies];
-        if (!empty($this->params['search'])) {
-            $search = [
-                "contacts.name LIKE :search ",
-                "contacts.last_name LIKE :search ",
-                "contacts.first_name LIKE :search "
-            ];
-            $search_values['search'] = '%' . $this->params['search'] . '%';
 
-            $conditions[] = ' (' . implode(' OR ', $search) . ') ';
-        }
+        $fields = ['contacts.name', 'contacts.last_name', 'contacts.first_name'];
+        ['conds' => $search_conds, 'params' => $search_values] = $this->buildSearchVars($this->params['search'], $fields);
+        $conditions = array_merge($conditions, $search_conds);
+
 
 //todo obsolete?
         $search_values = array_merge($search_values, [
@@ -50,29 +45,29 @@ class BadDebtsReminderModel extends BaseQueryModel
         ]);
 //'older' => date('Y-m-d', strtotime('-30 days')),
 
-        $conditions[] = match ($this->params['button']) {
-            '1 Week' => 'unpaidweek1 = 1',
-            '2 Weeks' => 'unpaidweek2 = 1',
-            '3 Weeks' => 'unpaidweek3 = 1',
+        $conditions[] = match ($this->params['dataFilter']) {
+            'week1' => 'unpaidweek1 = 1',
+            'week2' => 'unpaidweek2 = 1',
+            'week3' => 'unpaidweek3 = 1',
             default => '(unpaidweek1 = 1 OR unpaidweek2 = 1 OR unpaidweek3 = 1)', // Optional: handle unexpected values of $button
         };
 
-        if (isset($_GET['repeating_invoice_id'])) {
-            $conditions[] = "vold_debts.repeating_invoice_id = :repeating_invoice_id";
+        if (isset($_GET['repeating_invoice_id']) && !empty($_GET['repeating_invoice_id'])) {
+            $conditions[] = "mold_debts.repeating_invoice_id = :repeating_invoice_id";
             $search_values['repeating_invoice_id'] = $_GET['repeating_invoice_id'];
         }
 
         // this clause defines what a bad debt actually is
-        //$conditions[] = "vold_debts.amount_due > 0";
+        //$conditions[] = "mold_debts.amount_due > 0";
 
 
         // use the view
-        $sql = 'SELECT vold_debts.*,
+        $sql = 'SELECT mold_debts.*,
             contacts.id as ckcontact_id, contacts.name, contacts.first_name, contacts.last_name,
             tenancies.xero_shortcode, tenancies.colour
-            FROM `mold_debts` as vold_debts
-            LEFT JOIN contacts on (vold_debts.contact_id = contacts.contact_id)
-            LEFT JOIN tenancies on (vold_debts.xerotenant_id = tenancies.tenant_id)
+            FROM `mold_debts` 
+            LEFT JOIN contacts on (mold_debts.contact_id = contacts.contact_id)
+            LEFT JOIN tenancies on (mold_debts.xerotenant_id = tenancies.tenant_id)
             WHERE ' . implode(' AND ', $conditions) . "
             ORDER BY $order 
             LIMIT {$this->params['start']}, {$this->params['length']}";
@@ -86,12 +81,14 @@ class BadDebtsReminderModel extends BaseQueryModel
         $output['mainquery'] = $this->cleanSql($sql);
         $output['mainsearchvals'] = $search_values;
         // adds in tenancies because it doesn't use $conditions
-        $recordsTotal = "SELECT count(repeating_invoice_id) FROM `mold_debts` as vold_debts
+        $recordsTotal = "SELECT count(repeating_invoice_id) FROM `mold_debts` as mold_debts
                 WHERE $tenancies 
                 AND (unpaidweek1 = 1 OR unpaidweek2 = 1 OR unpaidweek3 = 1)";
 
         $recordsFiltered = "SELECT count(repeating_invoice_id) as `filtered` 
-                FROM `mold_debts` as vold_debts
+                FROM `mold_debts` 
+                LEFT JOIN contacts on (mold_debts.contact_id = contacts.contact_id)
+                LEFT JOIN tenancies on (mold_debts.xerotenant_id = tenancies.tenant_id)
                 WHERE " . implode(' AND ', $conditions);
 
 
@@ -145,7 +142,7 @@ class BadDebtsReminderModel extends BaseQueryModel
                     SUM(unpaidweek2) AS week2,
                     SUM(unpaidweek3) AS week3
                 FROM
-                    vold_debts
+                    mold_debts
                 WHERE $tenancies";
         $result = $this->runQuery($sql);
 

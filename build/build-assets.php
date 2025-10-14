@@ -57,6 +57,8 @@ addIfExists($js, $root, 'vendor/npm-asset/datatables.net-responsive/js/dataTable
 addIfExists($js, $root, 'vendor/npm-asset/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js');
 addIfExists($js, $root, 'vendor/npm-asset/datatables.net-select/js/dataTables.select.min.js');
 addIfExists($js, $root, 'vendor/npm-asset/datatables.net-select-bs5/js/select.bootstrap5.min.js');
+addIfExists($js, $root, 'vendor/npm-asset/datatables.net-fixedcolumns-bs5/js/fixedColumns.bootstrap5.min.js');
+
 
 // Runtime deps for Buttons HTML5 export
 // If you removed these from Composer (due to conflicts), place self-hosted copies in public/vendor and we pick them up.
@@ -87,6 +89,8 @@ addIfExists($css, $root, 'vendor/npm-asset/datatables.net-bs5/css/dataTables.boo
 addIfExists($css, $root, 'vendor/npm-asset/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css');
 addIfExists($css, $root, 'vendor/npm-asset/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css');
 addIfExists($css, $root, 'vendor/npm-asset/datatables.net-select-bs5/css/select.bootstrap5.min.css');
+addIfExists($css, $root, 'vendor/npm-asset/datatables.net-fixedcolumns-bs5/css/fixedColumns.bootstrap5.min.css');
+
 addIfExists($css, $root, 'vendor/npm-asset/sweetalert2/dist/sweetalert2.min.css');
 addIfExists($css, $root, 'vendor/npm-asset/simplebar/dist/simplebar.min.css');
 // your overrides

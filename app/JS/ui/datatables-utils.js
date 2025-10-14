@@ -66,3 +66,21 @@ export function paintActiveFilter(dt, value) {
         btn.classList.toggle('active', btnValue === value);
     });
 }
+
+//used by bad debt management and reminders
+export function getFilterButton(text, value, extra) {
+    const base = {
+        text,
+        name: value,
+        className: 'btn-lg',
+        attr: {'data-filter': value},
+        // DataTables buttons 'action' signature
+        action: function (e, dt /*, node, config */) {
+            const inst = $(dt.table().node()).data('controller');
+            if (inst && typeof inst.applyFilter === 'function') {
+                inst.applyFilter(value);
+            }
+        }
+    };
+    return extra ? Object.assign(base, extra) : base;
+}

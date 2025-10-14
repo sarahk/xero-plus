@@ -157,6 +157,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hoa/ustring" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hoa/visitor" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hoa/zformat" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/npm-asset/datatables.net-fixedcolumns" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/npm-asset/datatables.net-fixedcolumns-bs5" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

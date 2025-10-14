@@ -43,19 +43,19 @@ class BadDebtsManagementModel extends BaseQueryModel
         }
 
 
-        if (!empty($this->params['button'])) {
+        if (!empty($this->params['dataFilter'])) {
 
             $clauses = [
-                'Weekly' => '(mbdmgmt.schedule_unit = "Weekly" AND mbdmgmt.is_unpaid >= 3)',
-                'Fortnightly' => '(mbdmgmt.schedule_unit = "FORTNIGHTLY" AND mbdmgmt.is_unpaid >= 2)',
-                'Monthly' => '(mbdmgmt.schedule_unit = "MONTHLY" AND mbdmgmt.is_unpaid >= 1)',
-                'Other' => '(mbdmgmt.schedule_unit NOT IN ("WEEKLY", "FORTNIGHTLY", "MONTHLY") AND mbdmgmt.is_unpaid >= 1)'
+                'weekly' => '(mbdmgmt.schedule_unit = "Weekly" AND mbdmgmt.is_unpaid >= 3)',
+                'gortnightly' => '(mbdmgmt.schedule_unit = "FORTNIGHTLY" AND mbdmgmt.is_unpaid >= 2)',
+                'monthly' => '(mbdmgmt.schedule_unit = "MONTHLY" AND mbdmgmt.is_unpaid >= 1)',
+                'other' => '(mbdmgmt.schedule_unit NOT IN ("WEEKLY", "FORTNIGHTLY", "MONTHLY") AND mbdmgmt.is_unpaid >= 1)'
             ];
             // cant I change this to a match?
-            if ($this->params['button'] === 'All') {
+            if ($this->params['dataFilter'] === 'all') {
                 $conditions[] = '(' . implode(' OR ', $clauses) . ')';
-            } else if (array_key_exists($this->params['button'], $clauses)) {
-                $conditions[] = $clauses[$this->params['button']];
+            } else if (array_key_exists($this->params['dataFilter'], $clauses)) {
+                $conditions[] = $clauses[$this->params['dataFilter']];
             }
         }
 
@@ -110,6 +110,7 @@ class BadDebtsManagementModel extends BaseQueryModel
 
                 $output['data'][] = [
                     'DT_RowId' => $row['repeating_invoice_id'],
+                    'DT_RowClass' => "bar-{$row['colour']}",
                     'contact' => $this->getFormattedContactCell($row),
                     'name' => $row['name'],
                     'amount_due' => $link . $row['amount_due'] . '</a>',

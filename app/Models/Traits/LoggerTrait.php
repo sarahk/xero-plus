@@ -28,7 +28,7 @@ trait LoggerTrait
             $log_path = dirname(__DIR__, 3) . "/monolog/{$day_name}/";
             // maybe should be using DIRECTORY_SEPARATOR
             $this_log = $this->table ?? get_class($this) ?? static::class;
-            error_log('Setting log path to ' . $log_path . ' for ' . $this_log);
+            //error_log('Setting log path to ' . $log_path . ' for ' . $this_log);
 
             $this->cleanOldLogsByDate($log_path, $tz);
 
@@ -71,7 +71,6 @@ trait LoggerTrait
         if ($this->saveLog && $this->logger) {
             $this->logger->log($level, $message, $context);
         }
-
     }
 
     protected function logInfo(string $message, array $context = []): void
@@ -133,7 +132,7 @@ trait LoggerTrait
                 }
             }
         }
-        error_log("cleanOldLogsByDate: deleted $deleted/$eligible files");
+        //error_log("cleanOldLogsByDate: deleted $deleted/$eligible files");
         $storage->setMonologLastCleanupDate($today);
         return $deleted;
     }
@@ -149,7 +148,7 @@ trait LoggerTrait
         // Read just the first line
         $line = fgets($fh, 4096) ?: '';
         fclose($fh);
-        error_log("read_created_at: path: $path line: $line");
+
         if (str_starts_with($line, $this->created_prefix)) {
             $iso = trim(substr($line, strlen($this->created_prefix)));;
             $ts = strtotime($iso);

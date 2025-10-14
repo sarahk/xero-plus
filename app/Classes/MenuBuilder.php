@@ -48,7 +48,7 @@ class MenuBuilder
             ['type' => 'dropdown', 'action' => '16', 'label' => 'Outstanding Rents', 'icon' => 'fa-solid fa-circle-exclamation',
                 'children' => [
                     ['type' => 'simple', 'action' => '16', 'icon' => 'fa-solid fa-bell', 'label' => 'Reminders'],
-                    ['type' => 'simple', 'action' => '168', 'icon' => 'fa-solid fa-phone', 'label' => 'Management'],
+                    ['type' => 'simple', 'action' => '160', 'icon' => 'fa-solid fa-phone', 'label' => 'Management'],
                 ]],
             ['type' => 'simple', 'action' => '13', 'icon' => 'fa-solid fa-square', 'label' => 'Cabins'],
             ['type' => 'simple', 'action' => '17', 'icon' => 'fa-regular fa-message', 'label' => 'Message Templates'],

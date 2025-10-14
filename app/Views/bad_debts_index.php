@@ -1,18 +1,18 @@
 <?php
-
-namespace App\Views\bad_debts;
+/** @var \App\Classes\Loader $loader */
 ?>
-    <div class="row row-sm">
-        <div class="col-lg-12">
-            <div class="card">
+    <div class="row">
+        <div class="col-12">
+            <div class="card custom-card">
                 <div class="card-header">
                     <h3 class="card-title">Outstanding Rent Reminders <span id="badDebtsTitle"
                                                                             class="text-danger"></span></h3>
                 </div>
-                
+
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered text-nowrap border-bottom w-100" id="tBadDebts">
+                        <table class="table table-bordered table-striped table-sm text-nowrap border-bottom w-100"
+                               id="tBadDebts">
                             <thead>
                             <tr>
                                 <th></th>
@@ -29,6 +29,9 @@ namespace App\Views\bad_debts;
         </div>
     </div>
 
-    <?php
-include('modals/contact-single.php');
-include('modals/save-sms-request.php');
+<?php
+$loader->addModal('contact-single.php');
+$loader->addModal('save-sms-request.php');
+//include('modals/contact-single.php');
+//include('modals/save-sms-request.php');
+$loader->addJSModule('/JS/DataTables/badDebtReminders.js');

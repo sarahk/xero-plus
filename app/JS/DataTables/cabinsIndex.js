@@ -58,9 +58,7 @@ export const CabinsIndexTable = (() => {
                 {data: 'paintinside', name: 'paintinside'}, // verify this key exists in JSON
                 {data: 'actions', name: 'actions', orderable: false, searchable: false},
             ],
-            createdRow: (row, data) => {
-                if (data?.colour) row.classList.add(`bar-${data.colour}`);
-            },
+
             layout: {
                 topStart: {
                     buttons: [

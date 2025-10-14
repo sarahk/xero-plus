@@ -91,4 +91,30 @@ class BaseQueryModel
     {
         return [];
     }
+
+    /**
+     * Build an ORed LIKE condition with unique named params.
+     * @param string $term Raw user term
+     * @param string[] $fields Columns to search (e.g. ['contacts.name', ...])
+     * @param string $base Param name base (default 'q')
+     * @return array
+     */
+    function buildSearchVars(string $term, array $fields, string $base = 'search'): array
+    {
+        $term = trim($term);
+        $params = [];
+        if ($term === '' || !$fields) return ['conds' => [], 'params' => []];
+
+        // Escape user wildcards so literal %/_ don't expand matches
+        $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term);
+        $like = "%{$escaped}%";
+
+        $parts = [];
+        foreach ($fields as $i => $col) {
+            $name = $base . ($i + 1);              // q1, q2, q3...
+            $parts[] = "$col LIKE :$name ESCAPE '!'";
+            $params[$name] = $like;
+        }
+        return ['conds' => ['(' . implode(' OR ', $parts) . ')'], 'params' => $params];
+    }
 }
