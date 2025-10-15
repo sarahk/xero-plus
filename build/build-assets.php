@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use MatthiasMullie\Minify\JS;
 use MatthiasMullie\Minify\CSS;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 // run with
 // php build/build-assets.php
@@ -128,5 +130,17 @@ css_replace($cssOut, function (string $css) use ($jqUiBase) {
     return $css;
 });
 
+$fs = new Filesystem();
+$src = __DIR__ . '/../vendor/tinymce/tinymce';
+$dst = __DIR__ . '/../app/assets/tinymce';
+
+$fs->mirror($src, $dst, null, [
+    'override' => true,   // overwrite existing
+    'copy_on_windows' => true,
+    'delete' => false,    // don’t delete extras in dest
+    'chmod_copy' => 0664,
+]);
+
+echo "Copied TinyMCE to app/assets/tinymce\n";
 
 echo "Done.\n";

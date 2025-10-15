@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-
+use App\Models\Enums\TemplateStatus;
+use App\Models\Enums\TemplateType;
 use PDO;
 
 class TemplateModel extends BaseModel
@@ -16,7 +17,7 @@ class TemplateModel extends BaseModel
     protected string $insert = "INSERT INTO `templates` (`id`,  `status`, `messagetype`,
                       `label`, `subject`, `body`, `dateupdate`)
                 values (:id, :status, :messagetype , :label, :subject, :body,:dateupdate)
-                ON DUPLICATE KEY UPDATE `status` = :status, `label` = :label, `subject` = :subject, `body` = :body, `dateupdate` = :dateupdate";
+                ON DUPLICATE KEY UPDATE `status` = :upd8_status, `label` = :upd8_label, `subject` = :upd8_subject, `body` = :upd8_body, `dateupdate` = :upd8_dateupdate";
 
     protected array $orderByColumns = [
         0 => "templates.id DIR",
@@ -40,12 +41,18 @@ class TemplateModel extends BaseModel
     {
         $data['dateupdate'] = date('Y-m-d H:i:s');
         $this->logInfo('Template save data', $data);
-        if ($data['messagetype'] === 'SMS') {
+        if ($data['messagetype'] === 'sms') {
             $data['body'] = strip_tags($data['body']);
         }
         $data['id'] = (empty($data['id']) ? null : $data['id']);
 
-        return $this->runQuery($this->insert, $data, 'insert');
+        $save_values = [];
+        foreach ($data as $key => $value) {
+            $save_values[$key] = $value;
+            $save_values["upd8_$key"] = $value;
+        }
+
+        return $this->runQuery($this->insert, $save_values, 'insert');
     }
 
 
@@ -67,15 +74,16 @@ class TemplateModel extends BaseModel
             }
         }
 
-        if (!empty($params['button'])) {
-            switch ($params['button']) {
+        if (!empty($params['dataFilter'])) {
+            switch ($params['dataFilter']) {
                 case 'active':
-                    $conditions[] = 'templates.status = 1';
+                    $conditions[] = 'templates.status = :template_status ';
+                    $search_values['template_status'] = $params['dataFilter'];;
                     break;
-                case 'SMS':
-                case 'Email':
+                case 'sms':
+                case 'email':
                     $conditions[] = 'templates.messagetype = :messagetype';
-                    $search_values['messagetype'] = $params['button'];
+                    $search_values['messagetype'] = $params['dataFilter'];
                 default:
             }
         }
@@ -91,9 +99,10 @@ class TemplateModel extends BaseModel
         foreach ($list as $row) {
 
             $output[] = [
+                'DT_RowId' => $row['id'],
                 'id' => $row['id'],
-                'messagetype' => $row['messagetype'],
-                'status' => $row['status'] ? 'Active' : 'Archived',
+                'messagetype' => TemplateType::getLabel($row['messagetype']),
+                'status' => TemplateStatus::getLabel($row['status']),
                 'subject' => $row['subject'],
                 'body' => $row['body'],
                 'preview' => $this->getPreview($row['messagetype'], $row['subject'], $row['body']),
@@ -102,6 +111,7 @@ class TemplateModel extends BaseModel
         }
 
         $recordsTotal = 'SELECT count(*) FROM templates';
+        //todo this isn't right
         $recordsFiltered = 'SELECT count(*) FROM templates WHERE templates.status = 1';
 
         return json_encode([
@@ -117,7 +127,7 @@ class TemplateModel extends BaseModel
 
     protected function getPreview(string $messagetype, string $subject, string $body): string
     {
-        if ($messagetype === 'SMS') {
+        if ($messagetype === 'sms') {
             return $body;
         } else {
             return "<b>$subject</b><br/>$body";
@@ -128,7 +138,7 @@ class TemplateModel extends BaseModel
     {
         return "<a href='#' class='templateRow' 
                     data-bs-toggle='modal' 
-                    data-bs-target='#templateModal'
+                    data-bs-target='#templateEditModal'
                     data-template_id='$id' 
                     >$label</a>";
     }

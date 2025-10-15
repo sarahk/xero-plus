@@ -13,6 +13,7 @@ use App\Models\ContactModel;
 use App\Models\ContractModel;
 use App\Models\NoteModel;
 use App\Models\TasksModel;
+use App\Models\TemplateModel;
 
 
 ini_set('display_errors', 'On');
@@ -100,5 +101,13 @@ switch ($action) {
                 }
                 $output['message'] = 'Task saved';
         }
+        break;
+    case 17:
+    case 'template':
+    case 'Template':
+
+        $template = new TemplateModel($pdo);
+        $output = $template->prepAndSave($data);
+
 }
 echo json_encode($output);

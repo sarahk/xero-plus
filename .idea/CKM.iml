@@ -159,6 +159,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hoa/zformat" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/npm-asset/datatables.net-fixedcolumns" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/npm-asset/datatables.net-fixedcolumns-bs5" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/filesystem" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

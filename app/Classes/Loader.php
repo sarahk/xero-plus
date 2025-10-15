@@ -195,10 +195,11 @@ class Loader
 
     public function addTinyMCE(): void
     {
-        $this->js['head'][] = [
-            'src' => 'https://cdn.tiny.cloud/1/358b52j7udus5vp44svtm76psq44rezjrxzt0m3gwfosew62/tinymce/7/tinymce.min.js',
-            'referrerpolicy' => 'origin'
-        ];
+        $this->js['head'][] = '/assets/tinymce/tinymce.min.js';
+//        $this->js['head'][] = [
+//            'src' => 'https://cdn.tiny.cloud/1/358b52j7udus5vp44svtm76psq44rezjrxzt0m3gwfosew62/tinymce/7/tinymce.min.js',
+//            'referrerpolicy' => 'origin'
+//        ];
     }
 
     private function addMiscScripts(): void

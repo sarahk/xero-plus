@@ -6,6 +6,7 @@ composer.lock
 # Zanex files
 /pages/
 /app/assets_old/
+/app/assets/tinymce/
 /node_modules/
 pestresults.txt
 

@@ -1,43 +1,68 @@
+import {fetchJSON} from "/JS/ui/helpers.js";
+
 export default class SendSmsReminders {
-
-    sendSmsModal;
-    tBadDebts;
-    smsBody;
-    popType = 'contract';
-    readyToUse = false;
-
     constructor() {
+        this.sendSmsModal = null;
+        this.tBadDebts = null;
+        this.smsBody = null;
+        this.popType = 'contract';
+        this.readyToUse = false;
 
-        if ($('#saveSmsRequest').length) {
-            this.sendSmsModal = new bootstrap.Modal($('#saveSmsRequest'));
-
+        const el = document.getElementById('saveSmsRequest'); // DOM element, not jQuery
+        if (el) {
+            this.sendSmsModal = new bootstrap.Modal(el);
             this.smsBody = $('#smsBody');
-
-            this.setListeners();
+            this.setListeners();       // keep your other listeners (send, select-all, etc.)
             this.readyToUse = true;
         }
     }
 
     setListeners() {
-        // Prevent duplicate modal event listeners
-        $('#saveSmsRequest').off('show.bs.modal').on('show.bs.modal', () => this.showModal());
+        // REMOVE the show.bs.modal handler that calls showModal()
+        // $('#saveSmsRequest').off('show.bs.modal')...
 
-        // Prevent duplicate click listener for sending SMS
         $('#smsSendButton').off('click').on('click', (e) => this.sendSms(e));
-
-        // Prevent duplicate change listener for template selection
-        $('#templateId').off('change').on('change', (e) => {
-            this.getTemplateBody(e);
-        });
-
-        // Prevent duplicate click listener for select all
+        $('#templateId').off('change').on('change', () => this.getTemplateBody());
         $('#selectAll').off('click').on('click', (e) => {
             e.preventDefault();
             this.selectAll();
         });
+        this.smsBody?.off('input').on('input', () => this.updateCharCounter());
+    }
 
-        // Prevent duplicate input listener for SMS body character count
-        this.smsBody.off('input').on('input', (e) => this.updateCharCounter());
+    // New entry point: populate, then actually show
+    open(groupName) {
+        if (!this.readyToUse) return;
+
+        $('#saveSmsGroupLabel').text(groupName ?? '');
+
+        // Capture table if present
+        if ($('#tBadDebts').length) {
+            this.tBadDebts = $('#tBadDebts').DataTable();
+            this.popType = 'datatable';
+        } else {
+            this.popType = 'contract';
+        }
+
+        if (this.popType === 'datatable') {
+            $('#sendFromList').show();
+            $('#sendSMSname').hide();
+
+            const info = this.tBadDebts.page.info();
+            const selected = this.tBadDebts.rows({selected: true}).count();
+            const unselected = info.recordsDisplay - selected;
+
+            if (unselected) {
+                $('#unselected').text(unselected);
+                $('#showAddAll').show();
+            }
+            $('#smsCount').text(selected);
+        } else {
+            $('#sendSMSname').show();
+            $('#sendFromList').hide();
+        }
+
+        this.sendSmsModal.show();  // <-- actually open the modal
     }
 
     showModal(groupName) {
@@ -104,20 +129,24 @@ export default class SendSmsReminders {
     }
 
 
-    getTemplateBody() {
+    // sendSmsReminders.js
+    async getTemplateBody() {
+        const id = $('#templateId').val();
+        if (!id) return;
 
-        let payload = {
+        const qs = new URLSearchParams({
             endpoint: 'Templates',
             action: 'Single',
-            id: $('#templateId').val()
-        };
+            id
+        });
 
-        $.getJSON('/json.php', payload)
-            .done((data) => { // Use arrow function
-
-                this.smsBody.val(data.templates.body);
-                this.updateCharCounter();
-            });
+        try {
+            const data = await fetchJSON(`/json.php?${qs.toString()}`);
+            this.smsBody.val(data?.templates?.body || '');
+            this.updateCharCounter();
+        } catch (err) {
+            console.error('getTemplateBody failed:', err);
+        }
     }
 
 
@@ -147,7 +176,7 @@ export default class SendSmsReminders {
             method: "POST",
         })
             .done(function (msg) {
-                
+
                 Swal.fire({
                     title: "Good job!",
                     text: "Successfully Queued",

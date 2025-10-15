@@ -2,6 +2,8 @@ import SendSmsReminders from '/JS/Modals/sendSmsReminders.js';
 import BaseBadDebtTable from '/JS/DataTables/baseBadDebtTable.js';
 import {getFilterButton} from "../ui/datatables-utils.js";
 
+const sendSmsReminders = new SendSmsReminders();
+
 export default class BadDebtRemindersTable extends BaseBadDebtTable {
     constructor() {
         super({
@@ -41,14 +43,14 @@ export default class BadDebtRemindersTable extends BaseBadDebtTable {
                     className: 'btn-lg',
                     action: () => {
                         // Prefer your ES module modal
-                        if (sendSmsReminders?.showModal) {
-                            sendSmsReminders.showModal(this.currentButtonValue);
+                        if (sendSmsReminders?.open) {
+                            sendSmsReminders.open(this.currentButtonValue);
                             return;
                         }
-                        // Fallbacks
+                        // Fallbacks (if the module didn't init)
                         const el = document.getElementById('saveSmsRequest');
                         if (el && window.bootstrap?.Modal) new bootstrap.Modal(el).show();
-                        else $('#saveSmsRequest').modal?.('show');
+                        else $('#saveSmsRequest').modal?.('show'); // only if you’ve loaded the jQuery bridge
                     }
                 }
             ]
@@ -65,3 +67,4 @@ export default class BadDebtRemindersTable extends BaseBadDebtTable {
 }
 
 new BadDebtRemindersTable();
+

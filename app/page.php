@@ -188,7 +188,7 @@ switch ($action) {
     case 17:
         // Message Templates
         $loader->addTinyMCE();
-        $loader->addModal('template-single.php');
+        $loader->addModal('template-edit.php');
         break;
     case 18:
         // activity

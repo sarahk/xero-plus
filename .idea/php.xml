@@ -182,6 +182,7 @@
       <path value="$PROJECT_DIR$/vendor/hoa/compiler" />
       <path value="$PROJECT_DIR$/vendor/npm-asset/datatables.net-fixedcolumns" />
       <path value="$PROJECT_DIR$/vendor/npm-asset/datatables.net-fixedcolumns-bs5" />
+      <path value="$PROJECT_DIR$/vendor/symfony/filesystem" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1">

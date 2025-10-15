@@ -61,11 +61,9 @@ if (!$loggedOut) {
 <script defer type="text/javascript" src="/JS/menu.js"></script>
 <script defer type="text/javascript" src="/JS/home.js"></script>
 <script defer type="text/javascript" src="/JS/activity.js"></script>
-<!--<script defer type="module" src="/JS/combo.js"></script>-->
 <script defer type="text/javascript" src="/JS/contacts.js"></script>
 <script defer type="text/javascript" src="/JS/enquiry.js"></script>
 <script defer type="text/javascript" src="/JS/invoices.js"></script>
-<script defer type="text/javascript" src="/JS/templates.js"></script>
 <!--<script type="text/javascript" src="/JS/vehicles.js"></script>-->
 <script defer type="module" src="/JS/widgets.js"></script>
 <script defer type="text/javascript" src="/assets/js/custom.js"></script>

@@ -59,21 +59,7 @@ switch ($endpoint) {
         }
         break;
 
-    case 'save':
-    case 'Save':
 
-        switch ($form) {
-
-
-            case 'template':
-            case 'Template':
-                $data = $_POST['payload'];
-                var_dump($data);
-                $template = new TemplateModel($pdo);
-                $template->prepAndSave($data);
-                exit;
-        }
-        break;
     case 'MaterialTables':
         Utilities::refreshMaterialTables();
         break;

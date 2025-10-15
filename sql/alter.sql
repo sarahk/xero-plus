@@ -79,3 +79,6 @@ ALTER TABLE tenancies
 
 ALTER TABLE `xeroplus`.`invoices`
     ADD COLUMN `updated_date` DATETIME NULL DEFAULT NULL AFTER `updated_date_utc`;
+
+ALTER TABLE `xeroplus`.`templates`
+    CHANGE COLUMN `status` `status` CHAR(8) NOT NULL;

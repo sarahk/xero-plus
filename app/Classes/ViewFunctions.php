@@ -94,10 +94,16 @@ final class ViewFunctions
 
     private static function getSelect(array $vars, string $class = ''): string
     {
+        $options_html = '';
         extract($vars);
+        if (count($options ?? [])) {
+            foreach ($options as $option) {
+                $options_html .= "<option value='{$option['value']}'>{$option['label']}</option>" . PHP_EOL;
+            }
+        }
         return "<div class='$class mb-3'>
                 <label for='$fieldId' class='form-label'>$label</label>
-                <select id='$fieldId' name='data[$fieldId]' class='form-control'></select>
+                <select id='$fieldId' name='data[$fieldId]' class='form-control'>$options_html</select>
             </div>";
     }
 

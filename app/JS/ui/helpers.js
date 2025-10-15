@@ -1,7 +1,55 @@
 export async function fetchJSON(url, opts = {}) {
-    const res = await fetch(url, {headers: {'Accept': 'application/json'}, ...opts});
+    const init = Object.assign({headers: {'Accept': 'application/json'}}, opts);
+    const res = await fetch(url, init);   // async/await is ES2017 👍
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json();
+}
+
+export async function postForm(url, data) {
+    var fd = toFormData(data, new FormData());
+
+    const res = await fetch(url, {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin' // send cookies
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const ct = res.headers.get('content-type') || '';
+    return ct.indexOf('application/json') !== -1 ? res.json() : res.text();
+}
+
+// jQuery-like bracket serialization for nested objects / arrays
+function toFormData(obj, fd, prefix) {
+    for (var key in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+
+        var value = obj[key];
+        if (value == null) continue;
+
+        var formKey = prefix ? (prefix + '[' + key + ']') : key;
+
+        if (value instanceof Blob || (typeof File !== 'undefined' && value instanceof File)) {
+            fd.append(formKey, value);
+        } else if (Object.prototype.toString.call(value) === '[object Array]') {
+            for (var i = 0; i < value.length; i++) {
+                var v = value[i];
+                // simple arrays => key[]
+                if (typeof v !== 'object' || v instanceof Blob) {
+                    fd.append(formKey + '[]', v);
+                } else {
+                    // array of objects => key[0][a]=...
+                    toFormData(v, fd, formKey + '[' + i + ']');
+                }
+            }
+        } else if (typeof value === 'object') {
+            toFormData(value, fd, formKey);
+        } else {
+            fd.append(formKey, value);
+        }
+    }
+    return fd;
 }
 
 // Quick predicates
