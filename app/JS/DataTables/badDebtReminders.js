@@ -1,8 +1,8 @@
-import SendSmsReminders from '/JS/Modals/sendSmsReminders.js';
+//import SendSmsReminders from '/JS/Modals/sendSmsReminders.js';
 import BaseBadDebtTable from '/JS/DataTables/baseBadDebtTable.js';
 import {getFilterButton} from "../ui/datatables-utils.js";
 
-const sendSmsReminders = new SendSmsReminders();
+//const sendSmsReminders = new SendSmsReminders();
 
 export default class BadDebtRemindersTable extends BaseBadDebtTable {
     constructor() {
@@ -33,24 +33,25 @@ export default class BadDebtRemindersTable extends BaseBadDebtTable {
             buttons: [
                 'pageLength',
                 {extend: 'csv', text: 'Export', split: ['copy', 'excel', 'pdf', 'print']},
-                {text: 'All', name: 'all', className: 'btn-lg', action: () => this.filter('All')},
+                getFilterButton('All', 'all'),
                 getFilterButton('1 Week', 'week1'),
                 getFilterButton('2 Weeks', 'week2'),
                 getFilterButton('3 Weeks', 'week3'),
                 {
                     text: 'SMS',
                     name: 'sms',
-                    className: 'btn-lg',
-                    action: () => {
-                        // Prefer your ES module modal
-                        if (sendSmsReminders?.open) {
-                            sendSmsReminders.open(this.currentButtonValue);
-                            return;
-                        }
-                        // Fallbacks (if the module didn't init)
+                    className: 'btn-lg btn-primary',
+                    attr: {'data-send-mode': "datatable", 'data-group-name': 'Bad Debts Reminders'},
+                    action: function (e, dt, node/*, config */) {
+                        // Fallback if your module didn’t init
                         const el = document.getElementById('saveSmsRequest');
-                        if (el && window.bootstrap?.Modal) new bootstrap.Modal(el).show();
-                        else $('#saveSmsRequest').modal?.('show'); // only if you’ve loaded the jQuery bridge
+                        if (el && window.bootstrap?.Modal) {
+                            console.log('launch option 1');
+                            new bootstrap.Modal(el).show();
+                        } else if (window.jQuery?.fn?.modal) {
+                            console.log('launch option 2');
+                            jQuery('#saveSmsRequest').modal('show');
+                        }
                     }
                 }
             ]

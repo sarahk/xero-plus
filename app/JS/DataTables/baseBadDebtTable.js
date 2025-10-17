@@ -27,6 +27,7 @@ export default class BaseBadDebtTable {
         this.valueToColorMap = valueToColorMap;
 
         this.currentDataFilter = 'all';   // ← instance state, mirrors cabinsIndex
+        this.currentDataLabel = 'All';
         this._lastXhr = null;
 
         // DT2 layout: allow override; otherwise build from buttons
@@ -65,13 +66,22 @@ export default class BaseBadDebtTable {
                     this._lastXhr = xhr;
                 },
             },
-            createdRow: (row, data) => {
-                row.classList.add('bar-' + data.colour);
+            stateSaveParams: (settings, data) => {
+                data.dataFilter = this.currentDataFilter;
+                data.dataLabel = this.currentDataLabel;
+            },
+            stateLoadParams: (settings, data) => {
+                console.log('stateLoadParams', data, settings);
+                if (data.dataFilter) this.currentDataFilter = data.dataFilter;
+                if (data.dataLabel) this.currentDataLabel = data.dataLabel;
             },
         });
 
         // Paint active button on first init (same pattern as cabins index)
-        this.dt.on('init.dt', () => paintActiveFilter(this.dt, this.currentDataFilter));
+        this.dt.on('init.dt', () => {
+            paintActiveFilter(this.dt, this.currentDataFilter);
+            this.$title?.text?.(this.currentDataLabel);
+        });
 
         // Colour the processing state using your CSS vars
         this.dt.on('processing.dt', (_e, _s, processing) => {
@@ -85,9 +95,10 @@ export default class BaseBadDebtTable {
     }
 
     /** Public filter API (CabinsIndex-style) */
-    applyFilter(value) {
+    applyFilter(text, value) {
         this.currentDataFilter = value;
-        this.$title?.text?.(value);                     // optional title text
+        this.currentDataLabel = text;
+        this.$title?.text?.(text);                     // optional title text
         this.setProcessingColour(value);
         paintActiveFilter(this.dt, value);
         this.dt.ajax.reload(null, true);                // reload, reset paging

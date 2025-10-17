@@ -17,31 +17,39 @@ class ActivityModel extends BaseModel
 
 
     protected string $account_sid = 'ACcca2973426cdb7e4d07756ace82be488';
-    protected string $auth_token = '1389609818fc296c08a5f624234cecb8';
-    protected string $fromNumber = '+15407798990';
+    protected string $auth_token = '6edff2c0b22ca0c7a3071faaf7eada18';
+    protected string $fromNumber = '+15075705370';
 
 
-    public function processQueue(): void
+    public function processQueue(): string
     {
         $queue = $this->getSMSQueue();
 
         $client = new Client($this->account_sid, $this->auth_token);
 
-        foreach ($queue as $k => $message) {
-            $client->messages->create(
-                '+64273711298',// $message['mobile']
-                [
-                    'from' => $this->fromNumber,
-                    'body' => $message['body']
-                ]
-            );
-            $this->markAsSent($message);
+        if (count($queue)) {
+            $sent = 0;
+            foreach ($queue as $message) {
+                // use my number for now
+                // todo swap to use $message['mobile']
+                $client->messages->create(
+                    '+64273711298',// $message['mobile']
+                    [
+                        'from' => $this->fromNumber,
+                        'body' => $message['body']
+                    ]
+                );
+                $this->markAsSent($message);
+                $sent++;
+            }
+            return "$sent messages sent to Twilio";
         }
+        return "No messages to send";
     }
 
     protected function markAsSent(array $message): void
     {
-        $sql = "UPDATE activity 
+        $sql = "UPDATE `activity` 
                 SET activity_status = 'Sent'
                 WHERE activity_id = :activity_id";
         $this->runQuery($sql, ['activity_id' => $message['activity_id']]);
@@ -65,7 +73,7 @@ class ActivityModel extends BaseModel
                 contacts.first_name, contacts.name, contracts.contract_id
                  FROM contracts 
                  LEFT JOIN contacts ON contacts.id = contracts.ckcontact_id 
-                WHERE repeating_invoice_id IN('" . implode("','", $data['repeating_invoice_ids']) . "')";
+                WHERE repeating_invoice_id IN('{$data['repeating_invoice_ids']}')";
         $result = $this->runQuery($sql, []);
 
         $this->logInfo('Sql', [$sql]);

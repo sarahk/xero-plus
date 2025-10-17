@@ -35,13 +35,14 @@ switch ($endpoint) {
         switch ($action) {
 
             case 'processSMSQueue':
-                $activity->processQueue();
+                $output = $activity->processQueue();
+                echo json_encode($output);
                 break;
 
             case 'SaveManySMS':
                 $payload = [
                     'sms_body' => $_POST['smsBody'],
-                    'repeating_invoice_ids' => $_POST['repeatingInvoiceIds'],
+                    'repeating_invoice_ids' => $_POST['ids'],
                 ];
 
                 $activity->prepAndSaveMany($payload);

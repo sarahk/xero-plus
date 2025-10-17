@@ -1,13 +1,20 @@
-export async function fetchJSON(url, opts = {}) {
-    const init = Object.assign({headers: {'Accept': 'application/json'}}, opts);
-    const res = await fetch(url, init);   // async/await is ES2017 👍
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+export async function fetchJSON(url, opts) {
+    var init = Object.assign({method: 'GET', credentials: 'same-origin'}, opts || {});
+    init.headers = Object.assign({Accept: 'application/json'}, init.headers || {});
+
+    const res = await fetch(url, init); // ES2017 async/await
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
 }
 
 export async function postForm(url, data) {
     var fd = toFormData(data, new FormData());
 
+    if (typeof FormData !== 'undefined' && data instanceof FormData) {
+        fd = data; // <-- keep caller's FormData intact
+    } else {
+        fd = toFormData(data, new FormData());
+    }
     const res = await fetch(url, {
         method: 'POST',
         body: fd,
@@ -232,3 +239,15 @@ function coerceVal(v) {
 }
 
 ////////////////////
+
+export function urlHasAction(val, url = location.href) {
+    const u = new URL(url);
+    return Number(u.searchParams.get('action')) === Number(val);
+}
+
+
+export function sleep(ms) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, ms);
+    });
+}

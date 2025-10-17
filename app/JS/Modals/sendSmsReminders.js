@@ -1,254 +1,402 @@
-import {fetchJSON} from "/JS/ui/helpers.js";
+// /JS/sms/sendSmsReminders.js
+import {fetchJSON, postForm, urlHasAction} from '/JS/ui/helpers.js';
 
-export default class SendSmsReminders {
-    constructor() {
-        this.sendSmsModal = null;
-        this.tBadDebts = null;
-        this.smsBody = null;
-        this.popType = 'contract';
-        this.readyToUse = false;
+/**
+ * Initialize the "Send SMS Reminders" modal exactly once per modal element.
+ * - Works on a single-contract page or a DataTables-powered list page.
+ * - Safe alerts (no HTML injection in messages).
+ * - Auto-updating selection counts tied to DataTables events.
+ * - Accurate SMS segment counter (GSM-7 vs UCS-2).
+ *
+ * @param {string} modalId
+ * @param {{tableSel?: string}} opts
+ */
+export function initSendSmsReminders(modalId = 'saveSmsRequest', {tableSel = '#tBadDebts'} = {}) {
 
-        const el = document.getElementById('saveSmsRequest'); // DOM element, not jQuery
-        if (el) {
-            this.sendSmsModal = new bootstrap.Modal(el);
-            this.smsBody = $('#smsBody');
-            this.setListeners();       // keep your other listeners (send, select-all, etc.)
-            this.readyToUse = true;
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl || modalEl.dataset.smsInit === '1') return;
+    modalEl.dataset.smsInit = '1';
+
+    // Cache DOM
+    const btnSend = modalEl.querySelector('#smsSendButton');
+    const selTemplate = modalEl.querySelector('#templateId');
+    const btnSelectAll = modalEl.querySelector('#selectAll');
+    const smsBodyEl = modalEl.querySelector('#smsBody');
+    const lblGroup = modalEl.querySelector('#saveSmsGroupLabel');
+    const lblCount = modalEl.querySelector('#smsCount');
+    const lblUnsel = modalEl.querySelector('#unselected');
+    const rowListWrap = modalEl.querySelector('#sendFromList');
+    const rowSingle = modalEl.querySelector('#sendFromSingle');
+    const charCounter = modalEl.querySelector('#charCounter');
+    const addAllRow = modalEl.querySelector('#showAddAll');
+
+    let mode = 'contract';   // 'datatable' | 'contract'
+    let triggerEl = null;
+    let dt = null;
+    let dtBound = false;
+
+    // ---- utilities ----
+    const ensureAlertHost = () => {
+        let host = modalEl.querySelector('.sms-alert-host');
+        if (host) return host;
+        host = document.createElement('div');
+        host.className = 'sms-alert-host';
+        const hdr = modalEl.querySelector('.modal-header');
+        (hdr?.parentNode || modalEl.querySelector('.modal-content'))?.insertBefore(host, hdr?.nextSibling || null);
+        return host;
+    };
+
+    const showAlert = (type, message, action) => {
+        const host = ensureAlertHost();
+        host.innerHTML = '';
+        const wrap = document.createElement('div');
+        wrap.className = `alert alert-${type} alert-dismissible fade show mb-0 rounded-0`;
+        wrap.setAttribute('role', 'alert');
+
+        const msgSpan = document.createElement('span');
+        msgSpan.textContent = message;
+        wrap.appendChild(msgSpan);
+
+        if (action?.href) {
+            const a = document.createElement('a');
+            a.href = action.href;
+            a.className = 'text-decoration-none text-reset';
+            a.innerHTML = `${message}${action.text ? ` &nbsp;<u>${action.text}</u>` : ''}`;
+            wrap.appendChild(a);
         }
-    }
 
-    setListeners() {
-        // REMOVE the show.bs.modal handler that calls showModal()
-        // $('#saveSmsRequest').off('show.bs.modal')...
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close';
+        closeBtn.setAttribute('data-bs-dismiss', 'alert');
+        closeBtn.setAttribute('aria-label', 'Close');
+        wrap.appendChild(closeBtn);
 
-        $('#smsSendButton').off('click').on('click', (e) => this.sendSms(e));
-        $('#templateId').off('change').on('change', () => this.getTemplateBody());
-        $('#selectAll').off('click').on('click', (e) => {
-            e.preventDefault();
-            this.selectAll();
-        });
-        this.smsBody?.off('input').on('input', () => this.updateCharCounter());
-    }
+        host.appendChild(wrap);
+    };
 
-    // New entry point: populate, then actually show
-    open(groupName) {
-        if (!this.readyToUse) return;
+    const clearAlert = () => {
+        const host = modalEl.querySelector('.sms-alert-host');
+        if (host) host.innerHTML = '';
+    };
 
-        $('#saveSmsGroupLabel').text(groupName ?? '');
+    const inferMode = (trigger) => {
+        // Prefer an explicit data attribute from the trigger
+        const attr = trigger?.getAttribute('data-send-mode');
+        if (attr === 'datatable' || attr === 'contract') return attr;
 
-        // Capture table if present
-        if ($('#tBadDebts').length) {
-            this.tBadDebts = $('#tBadDebts').DataTable();
-            this.popType = 'datatable';
+        // Otherwise: if action=16 in URL, treat as datatable page
+        if (urlHasAction(16)) return 'datatable';
+
+        // Or if a table is present that DataTables can bind to
+        if (document.querySelector(tableSel)) return 'datatable';
+
+        return 'contract';
+    };
+
+    const toggleOrigins = () => {
+        if (mode === 'datatable') {
+            rowListWrap?.classList.remove('d-none');
+            rowSingle?.classList.add('d-none');
         } else {
-            this.popType = 'contract';
+            rowSingle?.classList.remove('d-none');
+            rowListWrap?.classList.add('d-none');
         }
+    };
 
-        if (this.popType === 'datatable') {
-            $('#sendFromList').show();
-            $('#sendSMSname').hide();
+    const ensureDataTable = () => {
+        if (mode !== 'datatable') return null;
+        if (dt) return dt;
 
-            const info = this.tBadDebts.page.info();
-            const selected = this.tBadDebts.rows({selected: true}).count();
-            const unselected = info.recordsDisplay - selected;
+        // Prefer the table related to the trigger, fallback to known selector
+        const tableNode = triggerEl?.closest('table') || document.querySelector(tableSel);
+        if (!tableNode) return null;
 
-            if (unselected) {
-                $('#unselected').text(unselected);
-                $('#showAddAll').show();
-            }
-            $('#smsCount').text(selected);
-        } else {
-            $('#sendSMSname').show();
-            $('#sendFromList').hide();
+        if (window.DataTable?.get) {
+            dt = window.DataTable.get(tableNode) || new window.DataTable(tableNode);
+        } else if (window.jQuery?.fn?.DataTable) {
+            dt = window.jQuery(tableNode).DataTable();
         }
+        return dt || null;
+    };
 
-        this.sendSmsModal.show();  // <-- actually open the modal
-    }
-
-    showModal(groupName) {
-
-        if (!this.readyToUse) {
-            console.log('not ready to use');
-            return;
-        }
-        console.log('about to call saveSmsModal');
-        //this.sendSmsModal.show();
-        console.log('should be showing');
-        $('#saveSmsGroupLabel').text(groupName);
-
-
-        if ($('#tBadDebts').length) {
-            this.tBadDebts = $('#tBadDebts').DataTable();
-            this.popType = 'datatable';
-        }
-
-
-// Get the count of selected rows
-        if (this.popType == 'datatable') {
-            $('#sendFromList').show();
-            $('#sendSMSname').hide();
-            let info = this.tBadDebts.page.info();
-            let selectedRowCount = this.tBadDebts.rows({selected: true}).count();
-            let recordsDisplay = info.recordsDisplay;
-            let unselectedCount = recordsDisplay - selectedRowCount;
-            console.log([info, unselectedCount, recordsDisplay, selectedRowCount]);
-
-            if (unselectedCount) {
-                $('#unselected').text(unselectedCount);
-                $('#showAddAll').show();
-            }
-            $('#smsCount').text(selectedRowCount);
-        } else {
-            $('#sendSMSname').show();
-            $('#sendFromList').hide();
-        }
-
-    }
-
-    selectAll() {
-
-        let info = this.tBadDebts.page.info();
-        let recordsDisplay = info.recordsDisplay;
-
-        if (info.pages > 1) {
-            let newLength = this.getBiggerTableLength(recordsDisplay);
-            this.tBadDebts.page.len(newLength).draw();
-
-            // Wait for the datatable draw to complete, then select all rows
-            this.tBadDebts.on('draw', () => {
-                this.tBadDebts.rows().select();
-                // Remove the event listener to avoid multiple triggers
-                this.tBadDebts.off('draw');
-            });
-
-        } else {
-            this.tBadDebts.rows().select();
-        }
-        $('#showAddAll').hide();
-        $('#smsCount').text(recordsDisplay);
-    }
-
-
-    // sendSmsReminders.js
-    async getTemplateBody() {
-        const id = $('#templateId').val();
-        if (!id) return;
-
-        const qs = new URLSearchParams({
-            endpoint: 'Templates',
-            action: 'Single',
-            id
-        });
+    const getDataTableInfo = () => {
+        const table = ensureDataTable();
+        if (!table) return null;
 
         try {
-            const data = await fetchJSON(`/json.php?${qs.toString()}`);
-            this.smsBody.val(data?.templates?.body || '');
-            this.updateCharCounter();
-        } catch (err) {
-            console.error('getTemplateBody failed:', err);
+            const info = table.page.info();
+            console.log('getDataTableInfo: Got page info.', info);
+            return info;
+        } catch {
+            console.error('getDataTableInfo: Failed to get page info.');
+            return null;
         }
-    }
+        return null;
+    };
+
+    const primeCounts = () => {
+        if (mode !== 'datatable') return;
+        const table = ensureDataTable();
+        if (!table) return;
+
+        const info = getDataTableInfo();
+        if (!info) return;
+        const total = info?.recordsDisplay || 0;
+
+        let selected = 0;
+        try {
+            selected = table.rows({selected: true}).count();
+        } catch {
+            selected = 0;
+            console.error('Failed to select the rows.', info);
+        }
 
 
-    sendSms() {
-        let payload = {
+        const unselected = Math.max(total - selected, 0);
+
+        if (lblCount) lblCount.textContent = String(selected);
+        if (addAllRow) {
+            if (unselected > 0) {
+                if (lblUnsel) lblUnsel.textContent = String(unselected);
+                addAllRow.classList.remove('d-none');
+            } else {
+                addAllRow.classList.add('d-none');
+            }
+        }
+    };
+
+// ---------- Selection helpers ----------
+    const nextLength = (current) => {
+        const presets = [10, 25, 50, 100];
+        if (current > 100) return Math.ceil(current / 25) * 25;
+        for (const p of presets) if (p > current) return p;
+        return 100;
+    };
+
+
+    const selectAllRows = () => {
+        const table = ensureDataTable();
+        if (!table) return;
+
+        try {
+            table.rows({search: 'applied'}).select();
+        } catch {
+            // Select extension missing
+            showAlert('warning', 'Row selection is unavailable on this table.');
+            return;
+        }
+        primeCounts();
+        // addAllRow?.classList.add('d-none');
+        //
+        // const info = getDataTableInfo();
+        // if (!info) return;
+        //
+        // const total = info?.recordsDisplay || 0;
+        // console.log(['selectAllRows', info, total]);
+        // if (info?.pages > 1 && table.page?.len) {
+        //     const newLen = nextLength(total);
+        //     table.one('draw', () => {
+        //         try {
+        //             table.rows().select();
+        //         } catch {
+        //         }
+        //         primeCounts();
+        //     });
+        //     table.page.len(newLen).draw(false);
+        // } else {
+        //     try {
+        //         table.rows().select();
+        //     } catch {
+        //     }
+        //     primeCounts();
+        // }
+        //
+        // addAllRow?.classList.add('d-none');
+    };
+// ---------- SMS Segments ----------
+    const GSM7_BASIC =
+        "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞ\u001BÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ`¿abcdefghijklmnopqrstuvwxyzäöñü^{}\\[~]|";
+    const GSM7_EXT = "^{}\\[~]|€";
+
+    const isGsm7 = (text) => {
+        // Why: segmentation cost differs; if any char not in basic+ext, it's UCS-2.
+        for (const ch of text) {
+            if (GSM7_BASIC.includes(ch)) continue;
+            if (GSM7_EXT.includes(ch)) continue;
+            return false;
+        }
+        return true;
+    };
+
+    const calcSmsSegments = (text) => {
+        const gsm = isGsm7(text);
+        const single = gsm ? 160 : 70;
+        const concat = gsm ? 153 : 67;
+        const len = text.length;
+        if (len === 0) return {blocks: 1, used: 0, per: single, alphabet: gsm ? 'GSM-7' : 'UCS-2'};
+        if (len <= single) return {blocks: 1, used: len, per: single, alphabet: gsm ? 'GSM-7' : 'UCS-2'};
+        const blocks = Math.ceil(len / concat);
+        const usedInBlock = len % concat || concat;
+        return {blocks, used: usedInBlock, per: concat, alphabet: gsm ? 'GSM-7' : 'UCS-2'};
+    };
+    const updateCharCounter = () => {
+        if (!smsBodyEl || !charCounter) return;
+        const {blocks, used, per, alphabet} = calcSmsSegments(smsBodyEl.value || '');
+        charCounter.textContent = `${blocks} SMS, ${used}/${per} (${alphabet})`;
+
+        // if (!smsBodyEl || !charCounter) return;
+        // const txt = smsBodyEl.value || '';
+        // const per = 160;
+        // const blocks = Math.ceil(txt.length / per) || 1;
+        // const lastLen = txt.length % per || Math.min(txt.length, per);
+        // charCounter.textContent = `${blocks} SMS, ${lastLen}/160`;
+    };
+
+    // ---- network bits ----
+    const loadTemplateBody = async () => {
+        const id = selTemplate?.value;
+        if (!id) return;
+
+        const qs = new URLSearchParams({endpoint: 'Templates', action: 'Single', id});
+        try {
+            const data = await fetchJSON(`/json.php?${qs.toString()}`);
+            const body = data?.templates?.body || '';
+            if (smsBodyEl) {
+                smsBodyEl.value = body;
+                updateCharCounter();
+            }
+        } catch {
+            showAlert('danger', 'Failed to load template.');
+        }
+    };
+
+    const sendSms = async () => {
+        const body = smsBodyEl?.value?.trim() || '';
+        if (!body) {
+            showAlert('warning', 'Please enter a message before sending.');
+            return;
+        }
+
+        const form = new FormData();
+        form.append('endpoint', 'Activity');
+        form.append('action', 'SaveManySMS');
+        form.append('smsBody', body);
+        console.log('sendSms: 1', form);
+        let mode = inferMode(triggerEl);
+
+        var idsArr = [];
+        if (mode === 'datatable' && ensureDataTable()) {
+            try {
+                idsArr = dt.rows({selected: true}).ids().toArray();
+            } catch (err) {
+                idsArr = [];
+            }
+            if (!idsArr.length) {
+                showAlert('warning', 'No rows selected.');
+                return;
+            }
+        } else {
+            var contractId = (window.keys && window.keys.contract) ? window.keys.contract.repeating_invoice_id : null;
+            if (!contractId) {
+                showAlert('danger', 'Missing contract id.');
+                return;
+            }
+            idsArr = [String(contractId)];
+        }
+        var payload = {
             endpoint: 'Activity',
             action: 'SaveManySMS',
-            smsBody: this.smsBody.val()
+            smsBody: body,                // lowercase key as requested
+            ids: idsArr.join(',')         // single "ids" field; comma-separated list
         };
 
-        if (this.popType == 'datatable') {
-            console.log('table', this.tBadDebts);
-            console.log('rows', this.tBadDebts.rows());
-            console.log('selected', this.tBadDebts.rows({selected: true}));
-            console.log('ids', this.tBadDebts.rows({selected: true}).ids());
-            let selectedRowIds = this.tBadDebts.rows({selected: true}).ids().toArray();
-            payload.repeatingInvoiceIds = selectedRowIds;
+        // if (mode === 'datatable' && ensureDataTable()) {
+        //     let ids = [];
+        //
+        //     try {
+        //         ids = dt.rows({selected: true}).ids().toArray();
+        //     } catch {
+        //         ids = [];
+        //     }
+        //
+        //     if (!ids.length) {
+        //         showAlert('warning', 'No rows selected.');
+        //         return;
+        //     }
+        //     ids.forEach(id => form.append('repeatingInvoiceIds[]', id));
+        // } else {
+        //     const contractId = window.keys?.contract?.repeating_invoice_id || null;
+        //     if (!contractId) {
+        //         showAlert('danger', 'Missing contract id.');
+        //         return;
+        //     }
+        //     form.append('repeatingInvoiceIds[]', contractId);
+        // }
 
-        } else {
-            console.log(keys);
-            payload.repeatingInvoiceIds = [keys.contract.repeating_invoice_id];
-        }
-        console.log('sendSms Payload:', payload);
-        $.ajax({
-            url: '/run.php',
-            data: payload,
-            method: "POST",
-        })
-            .done(function (msg) {
-
-                Swal.fire({
-                    title: "Good job!",
-                    text: "Successfully Queued",
-                    icon: "success"
-                });
-            });
-
-    }
-
-    updateCharCounter() {
-        let text = this.smsBody.val();
-        let blocks = this.splitIntoBlocks(text);
-        let last = blocks[blocks.length - 1];
-        let msg = `${blocks.length} SMS,  ${last.length}/160`;
-        $('#charCounter').text(msg);
-    }
-
-
-    splitIntoBlocks(text, blockSize = 160) {
-        let blocks = [];
-        let start = 0;
-
-        while (start < text.length) {
-            // Slice up to the blockSize limit
-            let end = start + blockSize;
-            let slice = text.slice(start, end);
-
-            // If slice length exceeds the limit due to multi-byte characters (like emojis), adjust the end
-            if (slice.length > blockSize) {
-                end = this.findLastSpace(text, start, end);
-                slice = text.slice(start, end); // Re-slice the text within adjusted bounds
-            }
-
-            blocks.push(slice);
-            start = end;
+        const prevHtml = btnSend?.innerHTML;
+        if (btnSend) {
+            btnSend.disabled = true;
+            btnSend.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending…`;
         }
 
-        return blocks;
-    }
-
-// Helper function to find the last space within the block size limit
-    findLastSpace(text, start, end) {
-        const subText = text.slice(start, end);
-        const lastSpace = subText.lastIndexOf(' ');
-
-        return lastSpace === -1 ? end : start + lastSpace;
-    }
-
-
-    getBiggerTableLength(currentLength) {
-        let lengths = [10, 25, 50, 100];
-
-        if (currentLength > 100) {
-            return Math.ceil(currentLength / 25) * 25;
-        }
-
-        for (let length of lengths) {
-            if (length > currentLength) {
-                return length;
+        try {
+            console.log('sendSms: 2', payload);
+            await postForm('/run.php', payload);
+            //await postForm('/run.php', form);
+            showAlert('success', 'Successfully queued SMS.', {href: '/page.php?action=18', text: 'View queue'});
+        } catch {
+            showAlert('danger', 'Failed to queue SMS. Please try again.');
+        } finally {
+            if (btnSend) {
+                btnSend.disabled = false;
+                btnSend.innerHTML = prevHtml || 'Send';
             }
         }
-        return 100;
-    }
+    };
 
-//Get the Count of Selected Rows: Use table.rows({ selected: true }).count().
-//Get the Row IDs of Selected Rows: Use table.rows({ selected: true }).ids().toArray().
-//let info = table.page.info();
+    // ---- events ----
+    modalEl.addEventListener('show.bs.modal', (e) => {
+        clearAlert();
+        triggerEl = e.relatedTarget || null;
+        mode = inferMode(triggerEl);
+        toggleOrigins();
 
-// todo
-// show how many in group
-// option to select all
-// if more than will show on the page then change the page length first
-// can all that be done behind a modal?
+        // Optional label from trigger
+        //const groupName = triggerEl?.getAttribute('data-group-name') || '';
+        const groupName = document.getElementById('badDebtsTitle')?.textContent || '';
+        console.log(['groupName', groupName]);
 
+        if (lblGroup) lblGroup.textContent = groupName;
+    });
+
+    modalEl.addEventListener('shown.bs.modal', async () => {
+        // when visible, compute counts if using table
+        if (mode === 'datatable') {
+            ensureDataTable();
+            primeCounts();
+        }
+        if (smsBodyEl && !smsBodyEl.value && selTemplate?.value) {
+            await loadTemplateBody();
+        }
+        updateCharCounter();
+    });
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        clearAlert();
+        triggerEl = null;
+        // keep dt ref; it can be reused
+    });
+
+    btnSend?.addEventListener('click', (e) => {
+        e.preventDefault();
+        sendSms();
+    });
+
+    selTemplate?.addEventListener('change', loadTemplateBody);
+    btnSelectAll?.addEventListener('click', (e) => {
+        e.preventDefault();
+        selectAllRows();
+    });
+    smsBodyEl?.addEventListener('input', updateCharCounter);
 }

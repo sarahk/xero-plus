@@ -43,15 +43,17 @@ createdRow: (row, data) => { if (data?.colour) row.classList.add('bar-' + data.c
  */
 
 export function setDataFilter(dt, value, onChange) {
+    console.log('setDataFilter', typeof onChange, value);
     if (typeof onChange === 'function') onChange(value);   // lets caller update its own state
     dt.ajax.reload(null, true);                            // reload & reset paging
 
     // Toggle .active based on data-filter attr
-    const nodes = dt.buttons().nodes();
-    Array.prototype.forEach.call(nodes, (btn) => {
-        const btnValue = btn.getAttribute('data-filter');
-        btn.classList.toggle('active', btnValue === value);
-    });
+    paintActiveFilter(dt, value);
+    // const nodes = dt.buttons().nodes();
+    // Array.prototype.forEach.call(nodes, (btn) => {
+    //     const btnValue = btn.getAttribute('data-filter');
+    //     btn.classList.toggle('active', btnValue === value);
+    // });
 }
 
 export function wireDTEvents(listenFor, onTaskCreated) {
@@ -78,7 +80,7 @@ export function getFilterButton(text, value, extra) {
         action: function (e, dt /*, node, config */) {
             const inst = $(dt.table().node()).data('controller');
             if (inst && typeof inst.applyFilter === 'function') {
-                inst.applyFilter(value);
+                inst.applyFilter(text, value);
             }
         }
     };

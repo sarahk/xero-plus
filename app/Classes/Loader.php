@@ -13,6 +13,8 @@ class Loader
     private array $preconnect = [];
     private array $modals = [];
 
+    private bool $debug = true;
+
     public function __construct()
     {
         $this->addBuilderFiles();
@@ -59,12 +61,15 @@ class Loader
             return;
         }
 
+        $debug_string = ($this->debug) ? '?v=' . time() : '';
+
         echo '<!-- L O A D E R   J S   M O D U L E -->' . PHP_EOL;
         foreach ($this->priorities as $priority) {
             if (count($this->jsModule[$priority])) {
                 echo '<!-- ' . $priority . ' -->' . PHP_EOL;
                 foreach ($this->jsModule[$priority] as $source) {
-                    echo "<script type='module' src='$source'></script>" . PHP_EOL;
+                    $version = (stristr($source, 'build') ? '' : $debug_string);
+                    echo "<script type='module' src='$source$version'></script>" . PHP_EOL;
                 }
             }
         }

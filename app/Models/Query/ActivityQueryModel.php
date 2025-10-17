@@ -45,12 +45,12 @@ class ActivityQueryModel extends BaseQueryModel
             $search_values['contract_id'] = $params['contract_id'];
         }
 
-        $button = $this->params['button'] ?? '';
+        $dataFilter = $this->params['dataFilter'] ?? '';
 
-        if (in_array($button, ['SMS', 'Email'])) {
-            $search_values['activity_type'] = $button;
+        if (in_array($dataFilter, ['SMS', 'Email'])) {
+            $search_values['activity_type'] = $dataFilter;
             $conditions[] = "activity_type = :activity_type ";
-        } else if ($button == "New") {
+        } else if ($dataFilter == "New") {
             $search_values['activity_status'] = 'New';
             $conditions[] = "activity_status = :activity_status ";
         }
@@ -84,9 +84,12 @@ class ActivityQueryModel extends BaseQueryModel
         $output['recordsTotal'] = $this->runQuery($recordsTotal, $search_values, 'column');
         $output['recordsFiltered'] = $this->runQuery($recordsFiltered, $search_values, 'column');
 
+        $tenancyList = $this->getTenancyList();
+
         if (count($result) > 0) {
             foreach ($result as $row) {
                 $output['data'][] = array_merge($row, [
+                    'DT_RowClass' => 'bar-' . $tenancyList[$row['xerotenant_id']]['colour'],
                     'date' => $this->getPrettyDate($row['activity_date']),
                     'preview' => $this->getPreview($row['activity_type'], $row['subject'], $row['body']),
                 ]);

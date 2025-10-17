@@ -1,12 +1,13 @@
-<div class="row row-sm">
+<div class="row ">
     <div class="col-lg-12">
-        <div class="card">
+        <div class="card custom-card">
             <div class="card-header">
                 <h3 class="card-title">SMS & Emails Sent</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped text-nowrap border-bottom w-100" id="tActivity">
+                    <table class="table table-bordered table-striped table-sm text-nowrap border-bottom w-100"
+                           id="tActivity">
                         <thead>
                         <tr>
                             <th>#</th>
@@ -23,7 +24,11 @@
         </div>
     </div>
 </div>
+<script type="module">
+    import {ActivityList} from '/JS/DataTables/activityIndex.js';
 
+    window.addEventListener('DOMContentLoaded', () => new ActivityList());
+</script>
 <?php /*
 "number": "INV-46244",
 "reference": "1062",

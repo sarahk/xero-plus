@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
 use App\Models\Enums\TemplateStatus;
 use App\Models\Enums\TemplateType;
-use PDO;
+
 
 class TemplateModel extends BaseModel
 {
@@ -20,10 +21,10 @@ class TemplateModel extends BaseModel
                 ON DUPLICATE KEY UPDATE `status` = :upd8_status, `label` = :upd8_label, `subject` = :upd8_subject, `body` = :upd8_body, `dateupdate` = :upd8_dateupdate";
 
     protected array $orderByColumns = [
-        0 => "templates.id DIR",
-        1 => "templates.status DIR",
-        2 => "templates.messagetype DIR",
-        3 => "templates.label DIR",
+        0 => 'templates.id DIR',
+        1 => 'templates.status DIR',
+        2 => 'templates.messagetype DIR',
+        3 => 'templates.label DIR',
     ];
 
     protected string $table = 'templates';
@@ -35,7 +36,7 @@ class TemplateModel extends BaseModel
 
     /**
      * @param array $data <mixed>
-     * @return int
+     * @return string
      */
     public function prepAndSave(array $data): string
     {
@@ -78,7 +79,7 @@ class TemplateModel extends BaseModel
             switch ($params['dataFilter']) {
                 case 'active':
                     $conditions[] = 'templates.status = :template_status ';
-                    $search_values['template_status'] = $params['dataFilter'];;
+                    $search_values['template_status'] = $params['dataFilter'];
                     break;
                 case 'sms':
                 case 'email':
@@ -88,9 +89,9 @@ class TemplateModel extends BaseModel
             }
         }
 
-        $sql = "SELECT * FROM `templates`"
-            . (count($conditions) ? " WHERE (" . implode(' AND ', $conditions) . ")" : '')
-            . " ORDER BY " . $this->getOrderBy($params)
+        $sql = 'SELECT * FROM `templates`'
+            . (count($conditions) ? ' WHERE (' . implode(' AND ', $conditions) . ')' : '')
+            . ' ORDER BY ' . $this->getOrderBy($params)
             . " LIMIT {$params['start']}, {$params['length']}";
 
         $output = [];
@@ -110,15 +111,15 @@ class TemplateModel extends BaseModel
             ];
         }
 
-        $recordsTotal = 'SELECT count(*) FROM templates';
+        $records_total = 'SELECT count(*) FROM templates';
         //todo this isn't right
-        $recordsFiltered = 'SELECT count(*) FROM templates WHERE templates.status = 1';
+        $records_filtered = 'SELECT count(*) FROM templates ' . count($conditions) ? ' WHERE ' . implode(' AND ', $conditions) : '';
 
         return json_encode([
             'count' => count($output),
             'draw' => $params['draw'],
-            'recordsTotal' => $this->runQuery($recordsTotal, [], 'column'),
-            'recordsFiltered' => $this->runQuery($recordsFiltered, $search_values, 'column'),
+            'recordsTotal' => $this->runQuery($records_total, [], 'column'),
+            'recordsFiltered' => $this->runQuery($records_filtered, $search_values, 'column'),
             'mainquery' => $sql,
             'mainsearchvals' => $search_values,
             'data' => $output
@@ -145,8 +146,12 @@ class TemplateModel extends BaseModel
 
     public function getSelectChoices($message_type): string
     {
-        $sql = "SELECT id, label FROM templates WHERE `status` = 1 AND `messagetype` = '$message_type' ORDER BY sortorder";
-        $result = $this->runQuery($sql, []);
+        $sql = "SELECT id, label 
+            FROM `templates` 
+            WHERE `status` = 'active' 
+            AND `messagetype` = :message_type
+            ORDER BY label";
+        $result = $this->runQuery($sql, ['message_type' => $message_type]);;
         $output = [];
         foreach ($result as $row) {
             $output[] = "<option value='$row[id]'>$row[label]</option>";

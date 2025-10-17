@@ -38,6 +38,7 @@
     "npm-asset/sweetalert2": "^11",
     "symfony/filesystem": "^7.3",
     "tinymce/tinymce": "^8.1",
+    "twilio/sdk": "^8.8",
     "xeroapi/xero-php-oauth2": "^10.1"
   },
   "require-dev": {

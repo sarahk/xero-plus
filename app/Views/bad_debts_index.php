@@ -6,7 +6,7 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <h3 class="card-title">Outstanding Rent Reminders <span id="badDebtsTitle"
-                                                                            class="text-danger"></span></h3>
+                                                                            class="text-danger">All</span></h3>
                 </div>
 
                 <div class="card-body">
